@@ -1,0 +1,6 @@
+slots-lfu warmup explain: 47.47 tok/s
+slots-lfu measured explain: 57.61 tok/s
+slots-lfu measured code: 57.83 tok/s
+slots-lfu measured reason: 51.17 tok/s
+slots-lfu measured story: 42.99 tok/s
+slots-lfu measured long-context: 41.55 tok/s

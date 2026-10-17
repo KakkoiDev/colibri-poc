@@ -1,0 +1,14 @@
+{
+  "name": "compact-deferred-unequal-packed",
+  "backend": "mlx",
+  "description": "Miss-pressure allocation from 20261017T171558.896165Z/r1-slots-packed-grouped.json, sha256 acdb2160d6fe92f1663e8f0dfaf6dbd7503099aec89f93741a9d4f9995813247; exactly 512 slots; capacities [34, 37, 34, 32, 31, 29, 29, 29, 31, 33, 35, 31, 32, 32, 32, 31]; heuristic, not optimal",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T172211.404589Z/r1-compact-deferred-unequal-packed.plugin.py",
+  "env": {
+    "SLOTS_LAYOUT": "packed",
+    "SLOTS_GROUP_READS": "1",
+    "SLOTS_DEFERRED": "1",
+    "SLOTS_COMPACT": "1",
+    "SLOTS_CAPACITIES": "[34, 37, 34, 32, 31, 29, 29, 29, 31, 33, 35, 31, 32, 32, 32, 31]"
+  }
+}

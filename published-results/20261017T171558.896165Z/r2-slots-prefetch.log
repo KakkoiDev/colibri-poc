@@ -1,0 +1,6 @@
+slots-prefetch warmup explain: 44.81 tok/s
+slots-prefetch measured explain: 45.15 tok/s
+slots-prefetch measured code: 50.29 tok/s
+slots-prefetch measured reason: 46.74 tok/s
+slots-prefetch measured story: 46.16 tok/s
+slots-prefetch measured long-context: 39.65 tok/s

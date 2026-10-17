@@ -1,0 +1,6 @@
+slots-eager-original warmup explain: 42.62 tok/s
+slots-eager-original measured explain: 43.23 tok/s
+slots-eager-original measured code: 49.67 tok/s
+slots-eager-original measured reason: 46.18 tok/s
+slots-eager-original measured story: 44.87 tok/s
+slots-eager-original measured long-context: 38.39 tok/s

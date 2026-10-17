@@ -1,0 +1,6 @@
+slots-packed-grouped warmup explain: 44.11 tok/s
+slots-packed-grouped measured explain: 46.15 tok/s
+slots-packed-grouped measured code: 43.91 tok/s
+slots-packed-grouped measured reason: 36.19 tok/s
+slots-packed-grouped measured story: 35.95 tok/s
+slots-packed-grouped measured long-context: 36.01 tok/s

@@ -1,0 +1,6 @@
+slots-lazy-original warmup explain: 43.70 tok/s
+slots-lazy-original measured explain: 43.61 tok/s
+slots-lazy-original measured code: 49.55 tok/s
+slots-lazy-original measured reason: 46.40 tok/s
+slots-lazy-original measured story: 45.79 tok/s
+slots-lazy-original measured long-context: 38.16 tok/s

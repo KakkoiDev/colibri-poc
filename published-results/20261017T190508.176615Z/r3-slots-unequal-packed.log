@@ -1,0 +1,6 @@
+slots-unequal-packed warmup explain: 38.66 tok/s
+slots-unequal-packed measured explain: 38.86 tok/s
+slots-unequal-packed measured code: 45.22 tok/s
+slots-unequal-packed measured reason: 40.36 tok/s
+slots-unequal-packed measured story: 43.84 tok/s
+slots-unequal-packed measured long-context: 35.34 tok/s

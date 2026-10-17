@@ -1,0 +1,10 @@
+{
+  "name": "resident-compiled",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T190252.063406Z/r1-resident-compiled.plugin.py",
+  "env": {
+    "POC_COMPILE": "1"
+  },
+  "description": "Resident execution experiment; weights and routing unchanged"
+}

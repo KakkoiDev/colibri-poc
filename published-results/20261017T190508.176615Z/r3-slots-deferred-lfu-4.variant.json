@@ -1,0 +1,14 @@
+{
+  "name": "slots-deferred-lfu-4",
+  "backend": "mlx",
+  "description": "Explicit combination: deferred waits, packed grouped reads, four I/O workers and LFU at uniform capacity32",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T190508.176615Z/r3-slots-deferred-lfu-4.plugin.py",
+  "env": {
+    "SLOTS_LAYOUT": "packed",
+    "SLOTS_GROUP_READS": "1",
+    "SLOTS_DEFERRED": "1",
+    "SLOTS_WORKERS": "4",
+    "SLOTS_POLICY": "lfu"
+  }
+}

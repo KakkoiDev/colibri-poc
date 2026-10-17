@@ -1,4 +1,54 @@
-## LIVE UPDATE 2 (newest, takes precedence)
+## LIVE UPDATE 4 (newest, takes precedence over everything below)
+
+All planned campaigns are FINISHED. Nothing is running. GPU idle.
+
+- `COLIBRI_GPU_TESTS=1 make test`: 14/14 passed.
+- Broad streaming screen `20261017T171558.896165Z`: 32/32 workers succeeded; published.
+- Deferred/unequal screen `20261017T172211.404589Z`: 7/7 succeeded; published.
+- Resident confirmation `20261017T190252.063406Z` (baseline, fused, compiled,
+  compiled-fused; 3 rounds, 256 tokens): 12/12 succeeded, all tokens exact.
+  Paired gains 0.6-0.9%, below run-to-run drift. Fusion costs +0.09 GB GPU and
+  ~0.1 s first use. NO all-aspects resident win. Published.
+- Streaming confirmation `20261017T190508.176615Z` (baseline, stream-lru-32,
+  slots-packed-grouped, slots-lfu, slots-deferred-packed, slots-unequal-packed,
+  slots-deferred-lfu-4; 3 rounds, 128 tokens): 21/21 succeeded. Published.
+  Winner at equal 32-slot budget: `slots-deferred-lfu-4`, paired ratio 0.336 vs
+  0.245 for old stream-lru-32 (~1.37x), better on every prompt and worst case,
+  startup GPU 0.268 vs 4.110 GB. Unequal allocation lost again (negative result).
+- Token equality: old stream-lru-32 diverges on `explain` at token 36; all fixed
+  slot variants match 4/5 prompts and diverge on `long-context` at token 9
+  (prefill partitioning is the suspected cause; not proven).
+- Results written in docs/09 "Confirmation campaigns". Research for the next
+  round is in docs/10-next-experiments.md (trace simulator with Belady bound,
+  global pool + Least-Stale, logit-level divergence, real-SSD read methods
+  needing user approval, next-layer prediction accuracy first).
+- Remaining open ablation: deferred+4 readers without LFU; deferred+LFU with
+  one reader. Not run.
+
+---
+
+## LIVE UPDATE 3
+
+- Checkpoint `a77a524` includes resident/smoke public archives and the analysis tool.
+- Broad streaming screen `20261017T171558.896165Z` is still active, session `31960`;
+  last observed round 2 capacity variants. All first-round variants succeeded.
+- Preliminary first-round tok/s (NOT final rankings): old stream32 48.4,
+  fixed packed-grouped32 46.1, LFU32 51.2, hybrid32 51.1, workers4 48.6,
+  prefetch32 46.3 (increased bytes), capacity48 69.8, capacity8 23.8.
+- New `slots-deferred-lfu-4` combines deferred waits, LFU and 4 workers at uniform32.
+- After broad screen: run expanded tests (expected 14), then deferred/unequal screen:
+  `.venv/bin/python bench.py run --variants variants/baseline.json variants/stream-lru-32.json variants/streaming/slots-deferred-packed.json variants/streaming/compact-deferred-packed.json variants/streaming/slots-unequal-packed.json variants/streaming/compact-deferred-unequal-packed.json variants/streaming/slots-deferred-lfu-4.json --rounds 1 --tokens 32 --timeout 600`
+- Then clean resident confirmation (baseline + fused + compiled + compiled-fused,
+  three rounds, 256 tokens), and streaming finalist confirmation (at least three
+  rounds, 128 tokens; include old32 and new uniform32 controls). Preserve all
+  output differences. Update docs/09 and publish each completed campaign.
+- `make bench-matrix`, `bench-resident`, `bench-streaming` targets added, default
+  three rounds/128 tokens; preparation verifies ignored packed file. Deferred
+  and unequal variants were registered after broad screen started and still pending.
+
+---
+
+## LIVE UPDATE 2
 
 - Source matrix checkpoint pushed as `a62bc6c` after initial handoff `5ae9d69`.
 - Streaming broad screen is `results/20261017T171558.896165Z`, process `31960`.

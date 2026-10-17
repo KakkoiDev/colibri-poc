@@ -1,0 +1,6 @@
+slots-deferred-packed warmup explain: 58.01 tok/s
+slots-deferred-packed measured explain: 57.85 tok/s
+slots-deferred-packed measured code: 63.27 tok/s
+slots-deferred-packed measured reason: 55.48 tok/s
+slots-deferred-packed measured story: 46.78 tok/s
+slots-deferred-packed measured long-context: 43.47 tok/s

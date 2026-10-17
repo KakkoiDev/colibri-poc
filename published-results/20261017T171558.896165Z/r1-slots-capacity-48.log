@@ -1,0 +1,6 @@
+slots-capacity-48 warmup explain: 75.66 tok/s
+slots-capacity-48 measured explain: 70.04 tok/s
+slots-capacity-48 measured code: 73.35 tok/s
+slots-capacity-48 measured reason: 69.77 tok/s
+slots-capacity-48 measured story: 68.15 tok/s
+slots-capacity-48 measured long-context: 58.38 tok/s

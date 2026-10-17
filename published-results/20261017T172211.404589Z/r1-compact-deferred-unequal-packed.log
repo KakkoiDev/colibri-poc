@@ -1,0 +1,6 @@
+compact-deferred-unequal-packed warmup explain: 47.49 tok/s
+compact-deferred-unequal-packed measured explain: 47.14 tok/s
+compact-deferred-unequal-packed measured code: 52.30 tok/s
+compact-deferred-unequal-packed measured reason: 49.95 tok/s
+compact-deferred-unequal-packed measured story: 46.83 tok/s
+compact-deferred-unequal-packed measured long-context: 42.29 tok/s
