@@ -83,7 +83,7 @@ Replacing originals with views removed most duplicate allocation. All output
 sequences matched baseline over three rounds. The paired median decode ratio
 was **1.0121** (+1.21%). Long-prompt peak GPU allocation was **4.737 GB** versus
 **4.644 GB** for baseline, instead of 7.152 GB in the first implementation.
-Long-prompt first-token latency was about 0.522 s versus 0.524 s for this
+Long-prompt first-token latency was about 0.522 s versus 0.518 s for this
 campaign's baseline (inspect the raw rows for exact values).
 
 This small gain needs more repetitions and workload coverage before promotion.
