@@ -202,7 +202,9 @@ memory, and with one cache slot per layer there is nearly nothing to substitute.
 | 0.20 | 0.55 | 0.51 | 6,981 (~25%) |
 | 0.30 | 0.91 | 0.89 | 16,666 (~60%) |
 | 0.40 | 1.30 | — | 21,277 (~77%) |
-| 0.50 | 1.57 | — | 23,163 (~84%) |
+| 0.50 | 1.57 | 1.46 | 23,163 (~84%) |
+| 0.70 | 1.82 | — | 24,244 (~88%) |
+| 1.00 (skip every missed expert) | 1.95 | — | 24,338 |
 
 ```mermaid
 flowchart LR
@@ -214,9 +216,6 @@ the code answer kept the same structure through 0.30. Once most expert reads are
 skipped, attention and engine overhead become the bottleneck (at 0.50: SSD 39%,
 attention 30%, other 26%). A few dozen tokens on two prompts is **not** a quality
 evaluation; a short factual quiz follows.
-| 0.70 | 1.82 | — | 24,244 (~88%) |
-| 1.00 (skip every missed expert) | 1.95 | — | 24,338 |
-| 0.50, code prompt | — | 1.46 | 24,209 |
 
 At 0.70 the sky answer contained grammar errors; at 1.00 it fell into a loop
 ("and the air, and the air, ..."). That marks the breaking point.
