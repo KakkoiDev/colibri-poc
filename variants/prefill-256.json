@@ -1,0 +1,1 @@
+{"name":"prefill-256", "backend":"mlx", "prefill_step_size":256, "description":"Smaller prefill chunks; same weights and sampling"}

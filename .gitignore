@@ -1,0 +1,9 @@
+.venv/
+models/
+engines/
+results/
+__pycache__/
+*.pyc
+.DS_Store
+.bench.lock
+qwen-download-cancelled.json
