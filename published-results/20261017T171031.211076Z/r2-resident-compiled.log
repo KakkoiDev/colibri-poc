@@ -1,0 +1,6 @@
+resident-compiled warmup explain: 199.40 tok/s
+resident-compiled measured explain: 199.62 tok/s
+resident-compiled measured code: 199.56 tok/s
+resident-compiled measured reason: 200.06 tok/s
+resident-compiled measured story: 200.87 tok/s
+resident-compiled measured long-context: 144.28 tok/s

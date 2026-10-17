@@ -1,0 +1,6 @@
+allocator-256mb warmup explain: 199.20 tok/s
+allocator-256mb measured explain: 195.22 tok/s
+allocator-256mb measured code: 196.54 tok/s
+allocator-256mb measured reason: 198.14 tok/s
+allocator-256mb measured story: 198.07 tok/s
+allocator-256mb measured long-context: 142.91 tok/s

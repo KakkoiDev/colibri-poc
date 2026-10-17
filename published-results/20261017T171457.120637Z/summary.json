@@ -1,0 +1,38 @@
+[
+  {
+    "variant": "baseline",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 211.05789564744438,
+    "min_decode_tps": 154.02585017751466,
+    "max_decode_tps": 214.47026595004056,
+    "paired_median_speedup": 1.0,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04967316700003721
+  },
+  {
+    "variant": "slots-lazy-original",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 42.92674550880946,
+    "min_decode_tps": 39.442946478020794,
+    "max_decode_tps": 45.43046962878776,
+    "paired_median_speedup": 0.20445823955188228,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.42431650000003174
+  },
+  {
+    "variant": "slots-packed-grouped",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 43.710417945641446,
+    "min_decode_tps": 40.11610684456438,
+    "max_decode_tps": 46.27701982861969,
+    "paired_median_speedup": 0.20980970681601968,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.4092605000000731
+  }
+]

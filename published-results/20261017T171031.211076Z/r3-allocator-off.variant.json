@@ -1,0 +1,10 @@
+{
+  "name": "allocator-off",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T171031.211076Z/r3-allocator-off.plugin.py",
+  "env": {
+    "POC_ALLOCATOR_MB": "0"
+  },
+  "description": "Resident execution experiment; weights and routing unchanged"
+}

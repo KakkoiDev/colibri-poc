@@ -19,6 +19,8 @@ made by this lab and not a comparable score for OLMoE.
 6. [First measured results](docs/06-first-results.md)
 7. [Kernel and KV experiments](docs/07-experiment-round-two.md)
 8. [Expert streaming and cache experiments](docs/08-expert-streaming.md)
+9. [Resident versus streaming experiments](docs/09-two-track-experiments.md)
+10. [AI takeover instructions and live state](EXPERIMENT_HANDOFF.md)
 
 ```mermaid
 flowchart LR

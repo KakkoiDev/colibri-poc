@@ -1,0 +1,6 @@
+group-128 warmup explain: 198.56 tok/s
+group-128 measured explain: 198.24 tok/s
+group-128 measured code: 198.38 tok/s
+group-128 measured reason: 196.90 tok/s
+group-128 measured story: 183.81 tok/s
+group-128 measured long-context: 138.79 tok/s

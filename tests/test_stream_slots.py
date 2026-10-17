@@ -5,6 +5,18 @@ import unittest
 @unittest.skipUnless(os.environ.get('COLIBRI_GPU_TESTS')=='1','opt-in Metal test')
 class SlotTests(unittest.TestCase):
     def test_fixed_slots_partition_and_eviction(self):
+        self.check_slots(False, False)
+
+    def test_compact_partition_and_eviction(self):
+        self.check_slots(True, False)
+
+    def test_deferred_fixed_slots(self):
+        self.check_slots(False, True)
+
+    def test_deferred_compact_slots(self):
+        self.check_slots(True, True)
+
+    def check_slots(self, compact, deferred):
         import json
         import struct
         import tempfile
@@ -31,14 +43,15 @@ class SlotTests(unittest.TestCase):
                 for p in ('up_proj','gate_proj','down_proj'):
                     for s in ('weight','scales','biases'):del getattr(module,p)[s]
                 state=dict(capacity=8,layer=0,header=json.loads(os.pread(fd,size,8)),fd=fd,offset=8+size,
-                    banks={},slots=poc.OrderedDict(),frequency={},last={},clock=0,prefetch={},hits=0,misses=0)
+                    banks={},rows={},slots=poc.OrderedDict(),frequency={},last={},clock=0,prefetch={},hits=0,misses=0)
                 poc.states[id(module)]=state
-                poc.config.update(workers=1,group_reads=True,policy='hybrid',prefetch=False)
+                poc.config.update(workers=1,group_reads=True,policy='hybrid',prefetch=False,compact=compact,deferred=deferred)
                 poc.install({})
                 for (x,i),ref in zip(cases,expected):
                     actual=module(x,i);mx.eval(actual)
                     self.assertTrue(mx.allclose(actual,ref,atol=1e-4,rtol=1e-4).item())
                     self.assertLessEqual(len(state['slots']),8)
+                    self.assertLessEqual(len(state['rows']),8)
                     self.assertTrue(all(bank.shape[0]==8 for bank in state['banks'].values()))
                 self.assertGreater(state['misses'],8)
                 self.assertGreater(poc.stats['read_bytes'],0)

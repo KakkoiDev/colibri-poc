@@ -150,7 +150,8 @@ def compute(state,module,x,indices,flat):
                 bank=state['banks'][key]
                 bank[mx.array(targets)]=mx.stack(arrays)
                 state['banks'][key]=bank
-        mx.eval([a for rows in state.get('rows',{}).values() for a in rows.values()] if config.get('compact') else list(state['banks'].values()))
+        if not config.get('deferred'):
+            mx.eval([a for rows in state.get('rows',{}).values() for a in rows.values()] if config.get('compact') else list(state['banks'].values()))
         stats['upload_seconds']+=time.perf_counter()-start;stats['bank_updates']+=1
     mapping={e:i for i,e in enumerate(unique)} if config.get('compact') else state['slots']
     remapped=mx.array([mapping[e] for e in flat],dtype=mx.uint32).reshape(indices.shape)
@@ -163,7 +164,8 @@ def compute(state,module,x,indices,flat):
     start=time.perf_counter()
     up=project('up_proj',x);gate=project('gate_proj',x)
     y=project('down_proj',module.activation(up,gate))
-    mx.eval(y)
+    if not config.get('deferred'):
+        mx.eval(y)
     stats['compute_seconds']+=time.perf_counter()-start
     if config['prefetch']:
         # Temporal predictor: most frequently used absent expert, one in-flight record/layer.
@@ -187,7 +189,7 @@ def after_load(model,tokenizer,root):
     config=dict(workers=int(os.environ.get('SLOTS_WORKERS','1')),
         group_reads=os.environ.get('SLOTS_GROUP_READS','0')=='1',
         policy=os.environ.get('SLOTS_POLICY','lru'),prefetch=os.environ.get('SLOTS_PREFETCH','0')=='1',
-        layout=os.environ.get('SLOTS_LAYOUT','original'),capacities=capacities,compact=os.environ.get('SLOTS_COMPACT','0')=='1')
+        layout=os.environ.get('SLOTS_LAYOUT','original'),capacities=capacities,deferred=os.environ.get('SLOTS_DEFERRED','0')=='1',compact=os.environ.get('SLOTS_COMPACT','0')=='1')
     if config['workers'] not in (1,2,4,8) or config['policy'] not in ('lru','lfu','hybrid'):raise ValueError('Invalid streaming configuration')
     executor=ThreadPoolExecutor(max_workers=max(1,config['workers']))
     folder=root/'models/olmoe-1b-7b-4bit'
@@ -215,5 +217,6 @@ def telemetry():
     retained+=sum(t.nbytes for s in states.values() for rows in s.get('rows',{}).values() for t in rows.values())
     layers=[dict(layer=s['layer'],capacity=s['capacity'],hits=s['hits'],misses=s['misses']) for s in states.values()]
     return dict(stats,retained_expert_bytes=retained,configuration=config,layers=layers,
+        timing_scope='enqueue-only upload/compute timers when deferred=true; read timers are CPU syscall time',
         prefetch_record_limit=16 if config['prefetch'] else 0,
         counters='cumulative since worker start, including warmup; read seconds sum across threads')

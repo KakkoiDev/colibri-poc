@@ -1,0 +1,6 @@
+resident-fused warmup explain: 195.36 tok/s
+resident-fused measured explain: 192.90 tok/s
+resident-fused measured code: 199.19 tok/s
+resident-fused measured reason: 198.61 tok/s
+resident-fused measured story: 199.18 tok/s
+resident-fused measured long-context: 143.94 tok/s

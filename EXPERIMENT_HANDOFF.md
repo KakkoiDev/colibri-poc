@@ -1,3 +1,34 @@
+## LIVE UPDATE 2 (newest, takes precedence)
+
+- Source matrix checkpoint pushed as `a62bc6c` after initial handoff `5ae9d69`.
+- Streaming broad screen is `results/20261017T171558.896165Z`, process `31960`.
+  Last observed round 2 descending through worker-count variants; no failures so far.
+  This campaign froze pre-deferred source at start and contains 16 variants x 2 rounds.
+- Resident screen and streaming smoke have extended `analysis.json` / `analysis.md`
+  and sanitized public copies. New tool `analyze_campaign.py TIMESTAMP` reports
+  startup, first-use and memory alongside paired throughput; read-byte deltas
+  exclude warmup but include measured prefill.
+- Added deferred-synchronization ablations AFTER broad screen started:
+  `variants/streaming/slots-deferred-packed.json`, `compact-deferred-packed.json`.
+  They have NOT run yet. Timers are enqueue-only for deferred upload/compute;
+  end-to-end request timings still synchronized. Pending new GPU tests cover both.
+- S6 allocation GENERATED from completed pilot worker
+  `results/20261017T171558.896165Z/r1-slots-packed-grouped.json`.
+  `derive_cache_allocation.py` creates `slots-unequal-packed` and
+  `compact-deferred-unequal-packed` variants, with worker hash/provenance.
+  Capacities: [34,37,34,32,31,29,29,29,31,33,35,31,32,32,32,31], sum 512.
+  Equal retained bytes to uniform32; NOT benchmarked yet.
+- New docs/09-two-track-experiments.md explains methods and preliminary findings.
+- Exact next action AFTER broad screen completes: run
+  `COLIBRI_GPU_TESTS=1 make test` (expanded suite now expected 14 tests), then
+  short deferred/unequal screen, then three-round longer confirmation campaigns.
+- Source pocs/stream_slots.py and tests changed after checkpoint, but running
+  campaign uses its own frozen source; do not confuse live source with snapshots.
+- No validated all-aspects resident winner. Fixed slots were slower than old
+  streaming in smoke despite better bounded prefill/startup. Preserve negatives.
+
+---
+
 ## LIVE UPDATE (takes precedence over historical notes below)
 
 - Handoff document was pushed in commit `5ae9d69`.

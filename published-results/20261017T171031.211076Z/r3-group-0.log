@@ -1,0 +1,6 @@
+group-0 warmup explain: 191.65 tok/s
+group-0 measured explain: 191.71 tok/s
+group-0 measured code: 191.62 tok/s
+group-0 measured reason: 190.97 tok/s
+group-0 measured story: 189.22 tok/s
+group-0 measured long-context: 139.17 tok/s

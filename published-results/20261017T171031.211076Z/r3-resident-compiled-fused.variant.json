@@ -1,0 +1,11 @@
+{
+  "name": "resident-compiled-fused",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T171031.211076Z/r3-resident-compiled-fused.plugin.py",
+  "env": {
+    "POC_COMPILE": "1",
+    "POC_FUSED": "1"
+  },
+  "description": "Resident execution experiment; weights and routing unchanged"
+}
