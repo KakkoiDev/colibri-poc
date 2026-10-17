@@ -1,4 +1,22 @@
-## LIVE UPDATE 4 (newest, takes precedence over everything below)
+## LIVE UPDATE 5 (newest, takes precedence over everything below)
+
+GLM-5.3 testing on the user's real Colibri setup is documented in
+docs/11-glm-on-this-mac.md, with raw numbers in published-results/glm-20261018/.
+- Installed engine is CPU-only and single-threaded (no libomp); with the user's
+  apps open it refuses to start. libomp installed via Homebrew (user approved).
+- Test engines built in separate clones (Colibri bf244291). User binary untouched.
+- Exact best: METAL=1 + libomp, PIPE=1 DIRECT=1 COLI_METAL_RESSET=1
+  COLI_METAL_SPIN=1, --ram 18 --ctx 1024: 0.43 tok/s, identical text.
+- Lossy: DEGRADE_ZERO=1 DEGRADE_TAU=0.5 about 1.5 tok/s; 0.7 grammar errors;
+  1.0 loops. 5 tok/s not reached. SSD ceiling ~6.5 GB/s.
+- Runs used USAGE_SAVE=0 KVSAVE=0 --no-tune-profile; user state files verified
+  unchanged by hash. New file .coli_ssd (Metal SSD probe cache) was created.
+- Open: rebuild the user's own engine (needs their OK), Metal attention scheduling
+  work in Colibri, broader quality evaluation of DEGRADE_ZERO.
+
+---
+
+## LIVE UPDATE 4
 
 All planned campaigns are FINISHED. Nothing is running. GPU idle.
 

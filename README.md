@@ -21,7 +21,8 @@ made by this lab and not a comparable score for OLMoE.
 8. [Expert streaming and cache experiments](docs/08-expert-streaming.md)
 9. [Resident versus streaming experiments](docs/09-two-track-experiments.md)
 10. [Candidate next experiments](docs/10-next-experiments.md)
-11. [AI takeover instructions and live state](EXPERIMENT_HANDOFF.md)
+11. [GLM-5.3 on this Mac: what limits it](docs/11-glm-on-this-mac.md)
+12. [AI takeover instructions and live state](EXPERIMENT_HANDOFF.md)
 
 ```mermaid
 flowchart LR
