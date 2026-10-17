@@ -48,6 +48,7 @@ def measure_worker(args):
         raise RuntimeError('Metal is unavailable; refusing CPU fallback')
     mx.set_default_device(mx.gpu)
     mx.random.seed(0)
+    mod = None
     plugin_hash = None
     if v.get('plugin'):
         plugin = (ROOT / v['plugin']).resolve()
@@ -58,6 +59,8 @@ def measure_worker(args):
         plugin_hash = digest(plugin.read_bytes())
     load_start = time.perf_counter()
     model, tokenizer = load(str(ROOT / 'models/olmoe-1b-7b-4bit'))
+    if mod is not None and hasattr(mod, 'after_load'):
+        mod.after_load(model, tokenizer, ROOT)
     mx.synchronize()
     load_s = time.perf_counter() - load_start
     prompts = read(args.workload)
@@ -65,6 +68,8 @@ def measure_worker(args):
     out = {'variant': v, 'plugin_sha256': plugin_hash, 'load_s': load_s,
            'metal_available': True, 'cache_state': 'OS page cache uncontrolled; fresh KV per request; weights resident',
            'metal_device': mx.device_info(), 'requests': rows}
+    if mod is not None and hasattr(mod, 'cache_description'):
+        out['cache_state'] = mod.cache_description
     save(args.output, out)
     for phase, prompt in [('warmup', prompts[0])] + [('measured', p) for p in prompts]:
         text = tokenizer.apply_chat_template([{'role':'user','content':prompt['text']}],
@@ -95,6 +100,8 @@ def measure_worker(args):
                'decode_tps':last.generation_tps, 'request_s':elapsed,
                'ttft_s':first_token, 'first_text_s':first_text, 'peak_gpu_gb':last.peak_memory,
                'finish_reason':last.finish_reason, 'token_ids':ids, 'text':''.join(chunks)}
+        if mod is not None and hasattr(mod, 'telemetry'):
+            row['plugin_telemetry'] = mod.telemetry()
         rows.append(row)
         save(args.output, out)
         print(f"{v['name']} {phase} {prompt['id']}: {last.generation_tps:.2f} tok/s", flush=True)
@@ -137,6 +144,8 @@ def campaign(args):
     except BlockingIOError:
         raise RuntimeError('Another benchmark campaign is already running')
     variants = [validate(read(p)) for p in args.variants]
+    plugin_sources = {v['plugin']:(ROOT/v['plugin']).resolve().read_bytes()
+                      for v in variants if v.get('plugin')}
     names = [v['name'] for v in variants]
     if len(names)!=len(set(names)) or args.baseline not in names:
         raise ValueError('Variant names must be unique and include baseline')
@@ -166,7 +175,7 @@ def campaign(args):
             if v.get('plugin'):
                 plugin = (ROOT/v['plugin']).resolve()
                 plugin_snapshot = folder/f'{tag}.plugin.py'
-                plugin_snapshot.write_bytes(plugin.read_bytes())
+                plugin_snapshot.write_bytes(plugin_sources[v['plugin']])
                 v = dict(v, plugin=str(plugin_snapshot))
             config = folder/f'{tag}.variant.json'
             save(config, v)

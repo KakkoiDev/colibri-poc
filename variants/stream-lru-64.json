@@ -1,0 +1,10 @@
+{
+  "name": "stream-lru-64",
+  "backend": "mlx",
+  "description": "Original expert tensors, 64 retained experts per layer/projection; active batch scratch extra",
+  "prefill_step_size": 512,
+  "plugin": "pocs/expert_stream.py",
+  "env": {
+    "COLIBRI_EXPERT_CACHE": "64"
+  }
+}

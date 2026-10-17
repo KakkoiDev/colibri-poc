@@ -1,0 +1,6 @@
+stream-lru-32 warmup explain: 48.29 tok/s
+stream-lru-32 measured explain: 47.73 tok/s
+stream-lru-32 measured code: 52.39 tok/s
+stream-lru-32 measured reason: 49.95 tok/s
+stream-lru-32 measured story: 48.87 tok/s
+stream-lru-32 measured long-context: 43.88 tok/s

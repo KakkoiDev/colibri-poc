@@ -17,6 +17,8 @@ made by this lab and not a comparable score for OLMoE.
 4. [Research and PoC ideas](docs/04-research-and-pocs.md)
 5. [Can more RAM make GLM faster?](docs/05-more-memory.md)
 6. [First measured results](docs/06-first-results.md)
+7. [Kernel and KV experiments](docs/07-experiment-round-two.md)
+8. [Expert streaming and cache experiments](docs/08-expert-streaming.md)
 
 ```mermaid
 flowchart LR

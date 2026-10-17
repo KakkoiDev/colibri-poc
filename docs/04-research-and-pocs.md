@@ -73,8 +73,10 @@ tokens per second**, not draft acceptance alone.
 
 ## Proposed experiments, in order
 
-These are hypotheses, not implemented features. The initial runnable variants
-only cover prefill chunk sizes; new systems work needs code and telemetry.
+The table tracks a continuing research program. Runnable experiments now include
+prefill chunks, quantized KV, expert grouping, fused projections, bounded expert
+streaming, LRU/LFU eviction and packing a full cache. Results are recorded in the
+experiment guides; remaining rows are hypotheses.
 
 | PoC | Change | Main measurement | Priority |
 |---|---|---|---|

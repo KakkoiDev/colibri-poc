@@ -1,0 +1,6 @@
+stream-packed-64 warmup explain: 68.75 tok/s
+stream-packed-64 measured explain: 70.48 tok/s
+stream-packed-64 measured code: 78.23 tok/s
+stream-packed-64 measured reason: 86.00 tok/s
+stream-packed-64 measured story: 120.14 tok/s
+stream-packed-64 measured long-context: 142.84 tok/s

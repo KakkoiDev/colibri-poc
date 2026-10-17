@@ -1,0 +1,50 @@
+[
+  {
+    "variant": "baseline",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 203.60967114885716,
+    "min_decode_tps": 146.94469828122266,
+    "max_decode_tps": 205.3308495657988,
+    "paired_median_speedup": 1.0,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04795191599998816
+  },
+  {
+    "variant": "stream-lru-8",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 29.026520773715486,
+    "min_decode_tps": 26.852379761402567,
+    "max_decode_tps": 30.821341804705508,
+    "paired_median_speedup": 0.14359186037490643,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.402901459000077
+  },
+  {
+    "variant": "stream-lru-32",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 48.87052145997233,
+    "min_decode_tps": 43.87781126508128,
+    "max_decode_tps": 52.393163512122,
+    "paired_median_speedup": 0.24537644433674236,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.33348866699998325
+  },
+  {
+    "variant": "stream-lru-64",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 71.28754128069247,
+    "min_decode_tps": 63.1303686916341,
+    "max_decode_tps": 71.72928476692493,
+    "paired_median_speedup": 0.35150029969514207,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.14236362500002997
+  }
+]

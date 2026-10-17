@@ -1,0 +1,10 @@
+{
+  "name": "stream-lru-8",
+  "backend": "mlx",
+  "description": "Original expert tensors, 8 retained experts per layer/projection; active batch scratch extra",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T165844.803566Z/r1-stream-lru-8.plugin.py",
+  "env": {
+    "COLIBRI_EXPERT_CACHE": "8"
+  }
+}

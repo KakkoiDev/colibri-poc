@@ -16,3 +16,7 @@ bench:
 
 smoke:
 	$(PYTHON) bench.py run --variants variants/baseline.json --rounds 1 --tokens 16
+
+.PHONY: bench-cache
+bench-cache:
+	$(PYTHON) bench.py run --variants variants/baseline.json variants/stream-lru-8.json variants/stream-lru-32.json variants/stream-lfu-32.json variants/stream-lru-64.json variants/stream-packed-64.json --rounds 3 --tokens 64

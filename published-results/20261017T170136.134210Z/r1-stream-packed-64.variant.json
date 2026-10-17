@@ -1,0 +1,11 @@
+{
+  "name": "stream-packed-64",
+  "backend": "mlx",
+  "description": "Once all 64 experts are cached, pack once and bypass host routing reads",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T170136.134210Z/r1-stream-packed-64.plugin.py",
+  "env": {
+    "COLIBRI_EXPERT_CACHE": "64",
+    "COLIBRI_PACK_FULL_CACHE": "1"
+  }
+}
