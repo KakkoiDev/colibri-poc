@@ -1,0 +1,10 @@
+{
+  "name": "allocator-256mb",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "pocs/resident_matrix.py",
+  "env": {
+    "POC_ALLOCATOR_MB": "256"
+  },
+  "description": "Resident execution experiment; weights and routing unchanged"
+}

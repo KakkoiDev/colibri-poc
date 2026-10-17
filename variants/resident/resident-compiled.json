@@ -1,0 +1,10 @@
+{
+  "name": "resident-compiled",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "pocs/resident_matrix.py",
+  "env": {
+    "POC_COMPILE": "1"
+  },
+  "description": "Resident execution experiment; weights and routing unchanged"
+}

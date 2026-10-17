@@ -1,0 +1,10 @@
+{
+  "name": "slots-eager-original",
+  "backend": "mlx",
+  "description": "Bounded complete-expert GPU slots; original weights and routing; explicit staging and I/O policy",
+  "prefill_step_size": 512,
+  "plugin": "pocs/stream_slots.py",
+  "env": {
+    "SLOTS_LAZY": "0"
+  }
+}

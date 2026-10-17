@@ -58,14 +58,16 @@ def measure_worker(args):
         mod.install(v)  # Runs before load: patch kernels/modules here.
         plugin_hash = digest(plugin.read_bytes())
     load_start = time.perf_counter()
-    model, tokenizer = load(str(ROOT / 'models/olmoe-1b-7b-4bit'))
+    mx.reset_peak_memory()
+    model, tokenizer = load(str(ROOT / 'models/olmoe-1b-7b-4bit'), **getattr(mod, 'load_options', {}))
     if mod is not None and hasattr(mod, 'after_load'):
         mod.after_load(model, tokenizer, ROOT)
     mx.synchronize()
     load_s = time.perf_counter() - load_start
     prompts = read(args.workload)
     rows = []
-    out = {'variant': v, 'plugin_sha256': plugin_hash, 'load_s': load_s,
+    out = {'variant': v, 'plugin_sha256': plugin_hash, 'load_s': load_s, 'load_peak_gpu_gb': mx.get_peak_memory()/1e9,
+           'loaded_active_gpu_gb': mx.get_active_memory()/1e9,
            'metal_available': True, 'cache_state': 'OS page cache uncontrolled; fresh KV per request; weights resident',
            'metal_device': mx.device_info(), 'requests': rows}
     if mod is not None and hasattr(mod, 'cache_description'):
@@ -102,6 +104,8 @@ def measure_worker(args):
                'finish_reason':last.finish_reason, 'token_ids':ids, 'text':''.join(chunks)}
         if mod is not None and hasattr(mod, 'telemetry'):
             row['plugin_telemetry'] = mod.telemetry()
+        import resource
+        row['process_peak_rss_gb'] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e9
         rows.append(row)
         save(args.output, out)
         print(f"{v['name']} {phase} {prompt['id']}: {last.generation_tps:.2f} tok/s", flush=True)

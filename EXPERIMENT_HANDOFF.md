@@ -1,3 +1,28 @@
+## LIVE UPDATE (takes precedence over historical notes below)
+
+- Handoff document was pushed in commit `5ae9d69`.
+- Resident screen `20261017T171031.211076Z` FINISHED: all 30 runs succeeded.
+  Compiled+fused paired median ratio 1.0086, exact tokens true; other candidates
+  did not beat paired baseline overall. No all-aspects win established.
+- Nine real Metal tests PASSED, including new fixed-slot prefill/eviction test.
+- Streaming smoke `20261017T171457.120637Z` FINISHED: all three runs succeeded.
+  Lazy startup peak GPU 0.268 GB versus resident 4.110 GB. Fixed-slot decode around
+  43 tok/s; tokens differed. Need final longer-output comparisons.
+- Added `compact-packed-grouped` streaming variant: retains individual expert
+  arrays and packs only active rows instead of updating full banks. Same per-layer
+  retained-capacity limit and prefill partitions. This is an additional ablation
+  because MLX indexed bank updates may copy large banks. No speed result yet.
+- All streaming variants are now RUNNING as a serial broad screen:
+  `.venv/bin/python bench.py run --variants variants/baseline.json variants/stream-lru-32.json variants/streaming/*.json --rounds 2 --tokens 32 --timeout 600`
+  Process session `31960`. Find campaign with latest results folder / campaign.json.
+  Do not overlap GPU work. Source is frozen at campaign start.
+- Need add a compact-mode numerical test after this campaign (existing fixed-slot
+  test does not yet exercise compact mode), generate unequal-layer variant from
+  pilot, run confirmations, document/public archive and push remaining results.
+- Experiment source is checkpointed with this update; weight artifacts stay ignored.
+
+---
+
 # Acceleration experiments: handoff for another agent
 
 Updated during active work on 2026-10-18 JST (benchmark timestamps use UTC).
