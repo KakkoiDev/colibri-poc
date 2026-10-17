@@ -89,3 +89,13 @@ Export a completed run with `python publish_results.py <campaign-folder-name>`. 
 
 - [Three-round prefill campaign](published-results/20261017T163907.740295Z/by-prompt.md)
 - [Three-round KV-cache campaign](published-results/20261017T164710.744425Z/by-prompt.md)
+
+- [Follow-up experiments and tradeoffs](docs/07-experiment-round-two.md)
+
+The experiment set now includes KV-cache quantization, expert grouping, and
+fused gate/up projections. These are candidates, not recommended defaults.
+Rejected numerical variants live under `variants/rejected/` and are not discovered
+by the default runner. Run optional real-Metal numerical checks with
+`COLIBRI_GPU_TESTS=1 make test`.
+
+- [Compact fusion: small candidate gain, matching outputs](published-results/20261017T165212.334140Z/by-prompt.md)

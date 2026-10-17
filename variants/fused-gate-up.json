@@ -1,0 +1,1 @@
+{"name":"fused-gate-up","backend":"mlx","prefill_step_size":512,"plugin":"pocs/fused_gate_up.py","description":"Combine gate and up expert matrices; preserve routing; extra resident weight copy"}

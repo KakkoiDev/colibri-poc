@@ -1,0 +1,10 @@
+{
+  "name": "sort-always",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T164833.914769Z/r1-sort-always.plugin.py",
+  "env": {
+    "COLIBRI_SORT_THRESHOLD": "0"
+  },
+  "description": "Change expert grouping only; baseline sorts at 64 selected expert indices"
+}

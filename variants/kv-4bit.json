@@ -1,0 +1,9 @@
+{
+  "name": "kv-4bit",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "kv_bits": 4,
+  "kv_group_size": 64,
+  "quantized_kv_start": 0,
+  "description": "4-bit attention KV cache from the first step; quality-changing experiment, same model weights"
+}

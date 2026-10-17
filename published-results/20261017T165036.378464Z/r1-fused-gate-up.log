@@ -1,0 +1,6 @@
+fused-gate-up warmup explain: 198.85 tok/s
+fused-gate-up measured explain: 199.86 tok/s
+fused-gate-up measured code: 196.05 tok/s
+fused-gate-up measured reason: 196.87 tok/s
+fused-gate-up measured story: 199.39 tok/s
+fused-gate-up measured long-context: 143.68 tok/s

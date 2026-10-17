@@ -1,0 +1,6 @@
+kv-8bit warmup explain: 195.96 tok/s
+kv-8bit measured explain: 194.82 tok/s
+kv-8bit measured code: 192.06 tok/s
+kv-8bit measured reason: 192.72 tok/s
+kv-8bit measured story: 195.31 tok/s
+kv-8bit measured long-context: 161.46 tok/s

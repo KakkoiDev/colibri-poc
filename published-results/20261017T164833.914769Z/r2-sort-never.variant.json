@@ -1,0 +1,10 @@
+{
+  "name": "sort-never",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T164833.914769Z/r2-sort-never.plugin.py",
+  "env": {
+    "COLIBRI_SORT_THRESHOLD": "1000000000"
+  },
+  "description": "Change expert grouping only; baseline sorts at 64 selected expert indices"
+}

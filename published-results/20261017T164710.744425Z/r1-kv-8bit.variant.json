@@ -1,0 +1,9 @@
+{
+  "name": "kv-8bit",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "kv_bits": 8,
+  "kv_group_size": 64,
+  "quantized_kv_start": 0,
+  "description": "8-bit attention KV cache from the first step; quality-changing experiment, same model weights"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "fused-gate-up-compact",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T165212.334140Z/r3-fused-gate-up-compact.plugin.py",
+  "description": "Fused gate/up projections; replace originals with views into packed weights",
+  "env": {
+    "COLIBRI_FUSED_RELEASE_ORIGINALS": "1"
+  }
+}
