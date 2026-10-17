@@ -81,5 +81,11 @@ OLMoE's Colibri engine has no native Metal path at the inspected commit; its MLX
 implementation does. Colibri's merged-int8 weights and these MLX 4-bit weights
 are different quantizations, so their speed comparison alone is not a kernel A/B.
 
-Nothing is uploaded or published. Model files and generated benchmark results
-are ignored by Git. See `docs/03-benchmarks.md` before drawing conclusions.
+Model files and raw local benchmark results are ignored by Git. Reviewed public
+archives live in `published-results/`; local home paths are replaced with `~`.
+Export a completed run with `python publish_results.py <campaign-folder-name>`. See `docs/03-benchmarks.md` before drawing conclusions.
+
+## Published measurements
+
+- [Three-round prefill campaign](published-results/20261017T163907.740295Z/by-prompt.md)
+- [Three-round KV-cache campaign](published-results/20261017T164710.744425Z/by-prompt.md)

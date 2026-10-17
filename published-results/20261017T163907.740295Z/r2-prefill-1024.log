@@ -1,0 +1,6 @@
+prefill-1024 warmup explain: 201.84 tok/s
+prefill-1024 measured explain: 201.87 tok/s
+prefill-1024 measured code: 200.55 tok/s
+prefill-1024 measured reason: 200.55 tok/s
+prefill-1024 measured story: 201.12 tok/s
+prefill-1024 measured long-context: 145.39 tok/s

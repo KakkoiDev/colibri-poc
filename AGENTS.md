@@ -14,4 +14,5 @@ The user's GLM-5.3 speed of 0.1 token/s is user-reported context, not a lab resu
 
 Use .venv/bin/python, run make test after runner changes, and run a real smoke
 benchmark after model/runtime changes. Do not modify the user's running GLM or
-Ollama configuration as part of lab setup. Downloads and results stay out of Git.
+Ollama configuration as part of lab setup. Downloads and raw local results stay out of Git. User-authorized, reviewed
+archives belong in published-results/ with local home paths removed.
