@@ -16,6 +16,8 @@ docs/11-glm-on-this-mac.md, with raw numbers in published-results/glm-20261018/.
 - Quiet rerun: owner runs `make glm-quiet` (glm_quiet.py) later. When they report
   results/glm-quiet-<stamp>, publish it (no local paths), add busy-vs-quiet to
   docs/11, site/data/glm-performance.json (new `quiet_rerun` key) and the brief.
+  It includes the original engine (backup ~/Code/colibri-engine-backup-20261018):
+  use it to replace the user-reported 0.10 start with a measured one.
 - Open: rebuild the user's own engine (needs their OK), Metal attention scheduling
   work in Colibri, broader quality evaluation of DEGRADE_ZERO.
 

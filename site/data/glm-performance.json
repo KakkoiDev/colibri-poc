@@ -12,7 +12,7 @@
   "Single runs unless noted; differences under ~10% are noise.",
   "OS page cache uncontrolled: some expert reads may have been served from memory rather than the SSD.",
   "Lossy settings change the model's computation; small prompt sets are smoke tests, not quality benchmarks.",
-  "0.10 tok/s starting point is user-reported; the installed engine later refused to start at all for lack of free RAM."
+  "0.10 tok/s starting point is user-reported; the installed engine later refused to start at all for lack of free RAM. The original engine will be re-measured on a quiet machine."
  ],
  "starting_point": {
   "user_reported_tok_s": 0.1,

@@ -1,13 +1,17 @@
 """Quiet-machine GLM rerun: repeat the busy-machine runs with other apps closed.
 
     .venv/bin/python glm_quiet.py check              # is the machine quiet enough? (changes nothing)
-    .venv/bin/python glm_quiet.py run                # ~15-20 min: comparison set, 2 repeats
+    .venv/bin/python glm_quiet.py run                # ~30-45 min: comparison set (2 repeats) + original engine
+    .venv/bin/python glm_quiet.py run --skip-original  # comparison set only (~15-20 min)
     .venv/bin/python glm_quiet.py run --ram-sweep    # + exact runs at larger RAM budgets
     .venv/bin/python glm_quiet.py run --full         # + the full 144-run quality bench (hours)
     .venv/bin/python glm_quiet.py report results/glm-quiet-<stamp>
 
 Each case reuses a busy-machine run's prompt, length and settings, so the report can
-compare them one to one. Machine conditions (free RAM, swap, process count) are
+compare them one to one. The original engine (CPU-only, single-threaded, backed up
+before the rebuild) is also run, to measure the user-reported 0.10 tok/s start: once
+with its default settings (automatic RAM, default context) and once at --ram 18
+--ctx 1024 in case the defaults refuse to start. Machine conditions (free RAM, swap, process count) are
 recorded before and after. Nothing is closed or killed for you: close apps yourself.
 User Colibri state is not changed (USAGE_SAVE=0, KVSAVE=0, --no-tune-profile).
 """
@@ -31,6 +35,11 @@ CASES = [
 ]
 RAM_SWEEP = [22, 26]          # exact sky runs at larger total budgets (busy runs used 18)
 QUIET_FREE_GB = 20.0          # free RAM we call "quiet" (busy runs had 10-17.5 GB)
+ORIGINAL_BIN = Path('~/Code/colibri-engine-backup-20261018/colibri').expanduser()
+ORIGINAL_DIR = ROOT / 'engines' / 'colibri-original'      # launcher around the original binary (ignored)
+ORIGINAL_ENV = {'USAGE_SAVE': '0', 'KVSAVE': '0', 'COLI_TEMP': '0', 'PROF': '1'}   # no Metal or I/O settings
+# (case, ram, ctx): None = leave it to the launcher's defaults, as the user ran it
+ORIGINAL_CASES = [('original-defaults', None, None), ('original-r18-c1k', 18, 1024)]
 
 
 def free_gb():
@@ -80,22 +89,54 @@ def check(args, quiet=False):
         problems.append('a Colibri engine is already running:\n    ' + engines.replace('\n', '\n    '))
     if not metal:
         problems.append(f'{coli} is not a Metal build (make -C {coli.parent} glm METAL=1)')
+    if not ORIGINAL_BIN.exists():
+        print(f'Note: original engine backup not found ({ORIGINAL_BIN}); use run --skip-original')
     if c['free_gb'] < QUIET_FREE_GB:
         problems.append(f"only {c['free_gb']} GB free: close more apps for a quiet run (or pass --force)")
     print('\nReady.' if not problems else '\nNot ready:\n- ' + '\n- '.join(problems))
     return c, problems
 
 
-def run_case(out_dir, coli, model, name, prompt, ngen, extra, ram, ctx):
-    env = dict(os.environ, **gb.BASE_ENV, **extra, RAM_GB=str(ram))
-    cmd = [str(coli), 'run', '--model', model, '--no-tune-profile', '--no-think', '--ngen', str(ngen),
-           '--ram', str(ram), '--ctx', str(ctx), prompt]
+def prepare_original(coli_dir):
+    """A launcher folder at the installed commit whose engine is the original backed-up binary."""
+    src = Path(coli_dir).expanduser()
+    if not ORIGINAL_BIN.exists():
+        raise SystemExit(f'Original engine backup not found: {ORIGINAL_BIN}')
+    if not (ORIGINAL_DIR / 'c' / 'coli').exists():
+        ORIGINAL_DIR.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(['git', 'clone', '-q', '--local', str(src), str(ORIGINAL_DIR)], check=True)
+        head = subprocess.run(['git', '-C', str(src), 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
+        subprocess.run(['git', '-C', str(ORIGINAL_DIR), 'checkout', '-q', head], check=True)
+    eng = ORIGINAL_DIR / 'c' / 'colibri'
+    if not eng.exists() or eng.read_bytes() != ORIGINAL_BIN.read_bytes():
+        eng.write_bytes(ORIGINAL_BIN.read_bytes()); eng.chmod(0o755)
+        cfg = ORIGINAL_BIN.parent / '.build-config'
+        if cfg.exists():
+            (ORIGINAL_DIR / 'c' / '.build-config').write_bytes(cfg.read_bytes())
+    libs = subprocess.run(['otool', '-L', str(eng)], capture_output=True, text=True).stdout
+    return ORIGINAL_DIR / 'c' / 'coli', dict(metal='Metal' in libs, openmp='libomp' in libs)
+
+
+def run_case(out_dir, coli, model, name, prompt, ngen, extra, ram, ctx, base_env=None):
+    env = dict(os.environ, **(gb.BASE_ENV if base_env is None else base_env), **extra)
+    sizing = []
+    if ram is not None:
+        env['RAM_GB'] = str(ram); sizing += ['--ram', str(ram)]
+    if ctx is not None:
+        sizing += ['--ctx', str(ctx)]
+    cmd = [str(coli), 'run', '--model', model, '--no-tune-profile', '--no-think', '--ngen', str(ngen)] + sizing + [prompt]
     t0 = time.time()
     p = subprocess.run(cmd, env=env, capture_output=True, text=True, errors='replace', timeout=3600)
     log = p.stdout + '\n' + p.stderr
     (out_dir / f'{name}.log').write_text(log)
     rec = dict(case=name, exit=p.returncode, wall_s=round(time.time() - t0, 2), ram=ram, ctx=ctx, ngen=ngen,
                env=extra, refused='refusing to start' in log, **gb.parse_log(log))
+    auto = re.search(r'\[RAM_GB=([\d.]+) auto\]', log)
+    if auto:
+        rec['auto_ram_gb'] = float(auto[1])
+    why = re.search(r'\[RAM\] refusing to start: ([^\n]*)', log)
+    if why:
+        rec['refused_reason'] = why[1].strip()
     (out_dir / f'{name}.json').write_text(json.dumps(rec, ensure_ascii=False, indent=1))
     print(f"  {name}: {rec.get('decode_tok_s', 'no result')} tok/s"
           f"{' (refused: not enough free RAM)' if rec['refused'] else ''}", flush=True)
@@ -129,6 +170,13 @@ def run(args):
         print('RAM sweep (exact, sky prompt)')
         for ram in RAM_SWEEP:
             run_case(out_dir, coli, model, f'exact-sky-24-ram{ram}__r1', SKY, 24, {}, ram, 1024)
+    if not args.skip_original:
+        print('Original engine (CPU-only, single-threaded): the user-reported starting point. '
+              'Each run can take 10-20 minutes.')
+        ocoli, libs = prepare_original(args.coli_dir)
+        meta['original_engine'] = dict(binary=str(ORIGINAL_BIN).replace(str(Path.home()), '~'), **libs)
+        for case, ram, ctx in ORIGINAL_CASES:
+            run_case(out_dir, ocoli, model, f'{case}__r1', SKY, 24, {}, ram, ctx, base_env=ORIGINAL_ENV)
     meta['conditions_after'] = conditions()
     (out_dir / 'meta.json').write_text(json.dumps(meta, indent=1))
     lock.close()
@@ -166,6 +214,16 @@ def report(args):
                          same_text=same))
         table.append(f"| {case} | {b if b is not None else '—'} | {', '.join(f'{v:.2f}' for v in vals) or '—'} | "
                      f"{f'{mean:.2f}' if mean else '—'} | {change} | {sum(same)}/{len(same)} |")
+    orig = [r for r in recs if r['case'].startswith('original-')]
+    if orig:
+        table += ['', '## Original engine (the user-reported 0.10 tok/s start)', '',
+                  '| Run | RAM / context | tok/s | Prompt reading s | Result |', '|---|---|---:|---:|---|']
+        for r in orig:
+            size = 'automatic' + (f" ({r['auto_ram_gb']} GB)" if r.get('auto_ram_gb') else '') + ' / default' \
+                if r['ram'] is None else f"{r['ram']} GB / {r['ctx']}"
+            res = ('refused: ' + r.get('refused_reason', 'not enough free RAM')) if r['refused'] else \
+                  ('ok' if 'decode_tok_s' in r else f"failed (exit {r.get('exit')})")
+            table.append(f"| {r['case'].split('__')[0]} | {size} | {r.get('decode_tok_s', '—')} | {r.get('prefill_s', '—')} | {res} |")
     sweep = [r for r in recs if '-ram' in r['case']]
     if sweep:
         table += ['', '| RAM budget GB | tok/s | Expert hit rate % | Result |', '|---:|---:|---:|---|']
@@ -180,7 +238,7 @@ def report(args):
             + (' **Run was forced on a machine that failed the quiet check.**' if meta['forced'] else ''), '']
     text = '\n'.join(head + table) + '\n'
     (out_dir / 'comparison.md').write_text(text)
-    (out_dir / 'comparison.json').write_text(json.dumps(dict(meta=meta, cases=rows, ram_sweep=sweep), ensure_ascii=False, indent=1))
+    (out_dir / 'comparison.json').write_text(json.dumps(dict(meta=meta, cases=rows, ram_sweep=sweep, original=orig), ensure_ascii=False, indent=1))
     print('\n' + text)
 
 
@@ -196,6 +254,7 @@ def main():
             p.add_argument('--ram-sweep', action='store_true')
             p.add_argument('--full', action='store_true')
             p.add_argument('--force', action='store_true')
+            p.add_argument('--skip-original', action='store_true')
     r = sub.add_parser('report')
     r.add_argument('dir')
     a = ap.parse_args()

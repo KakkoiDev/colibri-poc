@@ -31,6 +31,21 @@ class GlmQuietTests(unittest.TestCase):
             self.assertIn('+12%', md)
             self.assertIn('refused: not enough free RAM', md)
 
+    def test_report_lists_original_engine_runs(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            cond = dict(free_gb=24.0, swap_used_mb=0.0, process_count=300)
+            (d / 'meta.json').write_text(json.dumps(dict(stamp='T', forced=False, repeats=1, conditions_before=cond)))
+            (d / 'original-defaults__r1.json').write_text(json.dumps(dict(case='original-defaults__r1', ram=None, ctx=None,
+                refused=True, auto_ram_gb=15.4, refused_reason='that peak also exceeds the 17.5 GB actually available')))
+            (d / 'original-r18-c1k__r1.json').write_text(json.dumps(dict(case='original-r18-c1k__r1', ram=18, ctx=1024,
+                refused=False, decode_tok_s=0.07, prefill_s=300.1)))
+            gq.report(argparse.Namespace(dir=str(d)))
+            md = (d / 'comparison.md').read_text()
+            self.assertIn('| original-defaults | automatic (15.4 GB) / default | — | — | refused: that peak', md)
+            self.assertIn('| original-r18-c1k | 18 GB / 1024 | 0.07 | 300.1 | ok |', md)
+            self.assertEqual(len(json.loads((d / 'comparison.json').read_text())['original']), 2)
+
 
 if __name__ == '__main__':
     unittest.main()

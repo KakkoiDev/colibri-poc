@@ -319,10 +319,14 @@ flowchart LR
 2. `make glm-quiet-check` changes nothing. It shows free RAM, swap, the largest
    apps still open, and whether a benchmark or Colibri engine is already running.
    "Ready" needs at least 20 GB free.
-3. `make glm-quiet` takes about 20 minutes. It runs five cases twice each: exact and
+3. `make glm-quiet` takes about 45 minutes. It runs five cases twice each: exact and
    skip 0.3/0.5 on the sky prompt, exact and skip 0.5 on the code prompt. It then
    tries exact runs at 22 and 26 GB RAM budgets; Colibri refuses a budget that does
    not fit, and the refusal is recorded.
+   It also runs the **original engine** (the CPU-only, single-threaded binary backed up
+   before the rebuild) to measure the user-reported 0.10 tok/s start: once exactly as
+   it was used (automatic RAM, default context), which may refuse to start, and once
+   at `--ram 18 --ctx 1024`. These take 10-20 minutes each; `--skip-original` skips them.
    `make glm-quiet-full` also runs the full 144-run quality bench (hours).
 4. Tell Claude the printed results folder. `comparison.md` lists busy vs quiet
    tok/s per case, whether the text matches the busy run, and conditions before
