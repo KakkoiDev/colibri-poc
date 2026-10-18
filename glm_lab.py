@@ -242,8 +242,11 @@ def build_engine(plan):
     print(f'Building Colibri {ref} in {d.relative_to(ROOT)} ...', flush=True)
     src = Path('~/Code/colibri').expanduser()
     for cmd in (['git', 'clone', '-q', '--local', str(src), str(d)],
-                ['git', '-C', str(d), 'fetch', '-q', 'https://github.com/JustVugg/colibri', ref],
-                ['git', '-C', str(d), 'checkout', '-q', 'FETCH_HEAD'],
+                # GitHub refuses to fetch an abbreviated SHA by name: fetch every upstream
+                # branch, then check out the ref (short SHA, full SHA or upstream/<branch>)
+                ['git', '-C', str(d), 'fetch', '-q', 'https://github.com/JustVugg/colibri',
+                 '+refs/heads/*:refs/remotes/upstream/*'],
+                ['git', '-C', str(d), 'checkout', '-q', ref],
                 ['make', '-C', str(d / 'c'), '-j8', 'glm', 'METAL=1']):
         if not (d.exists() and cmd[1] == 'clone'):
             subprocess.run(cmd, check=True, capture_output=cmd[0] == 'make')

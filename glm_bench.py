@@ -24,6 +24,9 @@ CONFIGS = {
     'exact': {},
     'd030': {'DEGRADE_ZERO': '1', 'DEGRADE_TAU': '0.30'},
     'd050': {'DEGRADE_ZERO': '1', 'DEGRADE_TAU': '0.50'},
+    # 12 threads (OMP_NUM_THREADS) work around colibri#2194; output is identical to 2 threads
+    'd030t12': {'DEGRADE_ZERO': '1', 'DEGRADE_TAU': '0.30', 'OMP_NUM_THREADS': '12'},
+    'd040t12': {'DEGRADE_ZERO': '1', 'DEGRADE_TAU': '0.40', 'OMP_NUM_THREADS': '12'},
 }
 ENGINE_LINE = re.compile(r'^(\[[A-Z][A-Z0-9_ -]*\]|PROFIL|PROFILE:|ATTENTION:|P0-EXEC:|METAL|PILOT|DEGRADE_ZERO )')
 
