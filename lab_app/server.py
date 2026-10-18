@@ -19,6 +19,7 @@ HOME = Path.home()
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import actions  # noqa: E402
+import bench_catalog  # noqa: E402
 RUNNER = {'last': 'not started'}
 PORT = 8766
 
@@ -567,6 +568,15 @@ def storage():
 QUIET_HOLD_S = 120   # a model swap in Ollama frees RAM for a moment; wait until it stays free
 
 
+def bench_catalog_view():
+    """Every startable bench, grouped, with an estimate, how far it got, and presets."""
+    groups, items = bench_catalog.items()
+    for i in items:
+        i['est_s'] = estimate_item(dict(kind=i['kind'], args=i['job']['args']))
+    return dict(groups=groups, items=items, presets=bench_catalog.presets(items),
+                quiet_threshold_gb=machine()['quiet_threshold_gb'], quiet_hold_s=QUIET_HOLD_S)
+
+
 def gpu_status():
     js, holders = jobs()
     busy = bool(holders) or any(j.get('gpu') for j in js)
@@ -644,6 +654,12 @@ def act(path, body):
     if path == '/api/queue/add':
         return dict(queued=actions.queue_add(body.get('kind'), body.get('args'), front=bool(body.get('front')),
                                              only_when_quiet=bool(body.get('only_when_quiet'))))
+    if path == '/api/queue/add-selection':
+        ids = body.get('ids')
+        if not isinstance(ids, list) or not ids or not all(isinstance(x, str) for x in ids):
+            raise actions.ActionError('ids: a non-empty list of bench ids from /api/bench-catalog')
+        return dict(queued=bench_catalog.queue_selection(ids, front=bool(body.get('front')),
+                                                         all_when_quiet=bool(body.get('only_when_quiet'))))
     if path == '/api/queue/remove':
         actions.queue_remove(body.get('qid')); return dict(ok=True)
     if path == '/api/queue/move':
@@ -683,6 +699,7 @@ API = {
     '/api/now': lambda q: now(),
     '/api/models': lambda q: models(),
     '/api/benches': lambda q: benches(),
+    '/api/bench-catalog': lambda q: bench_catalog_view(),
     '/api/bench': lambda q: bench_detail(q.get('name', [''])[0]),
     '/api/runs': lambda q: dict(runs=runs_table()),
     '/api/run-output': lambda q: dict(text=run_output(q.get('run', [''])[0])),
