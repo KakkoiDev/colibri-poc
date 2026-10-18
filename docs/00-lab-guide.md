@@ -173,8 +173,11 @@ A speed win that changes output is not a win until quality is checked:
 ## 6. Follow the research
 
 Cadence: a scheduled task (`glm-research-scan`, Claude desktop app, 1st of each month
-at 10:00) does the monthly scan, updates the watch list and reports what is worth
-testing. Do a deeper scan each quarter or when a new Colibri release, GLM release or
+at 10:00) does the monthly scan, updates the watch list, plans experiments for new
+possibilities and runs the quick safe ones itself (settings on the installed engine, or a
+new Colibri version built in a separate clone under `engines/`, only when the machine is
+free, at most ~8 runs). Anything needing a download, install, hardware or a lossy quality
+judgement is reported as an option for the owner. Do a deeper scan each quarter or when a new Colibri release, GLM release or
 Apple chip lands. Record every item reviewed in
 [research/watchlist.md](../research/watchlist.md), including the ones rejected.
 

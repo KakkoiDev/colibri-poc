@@ -17,8 +17,10 @@ bottleneck here).
 | 2026-10-18 | GLM round 2: pruning, mixed-precision experts, CPU/GPU hybrid, Colibri formats | Claude |
 
 Next scan due: 2026-11-01. A monthly scheduled task (`glm-research-scan`, 1st of each
-month at 10:00 on the owner's Mac) appends new items here, adds candidates to the
-experiment log, pushes, and reports anything worth testing. Do a deeper manual scan
+month at 10:00 on the owner's Mac) appends new items here, plans experiments for new
+possibilities, runs the quick safe ones (no downloads, installs or changes to the owner's
+engine; only when the machine is free), records them in the experiment log, pushes, and
+reports results plus the options that need the owner's OK. Do a deeper manual scan
 quarterly or on any new Colibri release, GLM release or Mac.
 
 ## Items
