@@ -270,3 +270,25 @@ Raw per-run numbers and generated text: [published-results/glm-20261018](../publ
 All runs are single runs on an OS-page-cache-uncontrolled system with other apps
 open. The test engines were built from Colibri `bf244291` in separate clones; the
 user's installed engine was not rebuilt.
+
+## Vulkan dense chain on the M6 (negative result)
+
+Colibri's Vulkan backend can run every layer's dense work (attention, norms,
+residual adds) on the GPU as one "dense chain", instead of Metal's per-layer
+CPU↔GPU round trips. It had never run on an Apple GPU: Colibri's Vulkan instance
+did not opt in to portability drivers, so the loader hid MoltenVK. A 2-line opt-in
+([patch](../patches/colibri-moltenvk-portability.diff), test clone only) made it work.
+Requires `brew install molten-vk vulkan-loader shaderc` (installed with approval).
+
+| Engine | Exact tok/s | Skip < 0.5 tok/s | Why |
+|---|---:|---:|---|
+| **Metal, best settings** | **0.43** | **1.57** | reference |
+| Vulkan chain, experts on CPU | 0.18 | — | CPU expert math 71% |
+| Vulkan chain + 3 GB GPU expert tier | 0.13 | 0.43 | only ~3% of experts reached the GPU tier |
+| Vulkan chain + Metal experts (both backends) | — | 0.60 | chain attention 78% of time |
+
+All 78 layers' dense weights (8.6 GiB) fit on the device, and the host copy was
+released, which raised the expert-cache hit rate. But the chain's GPU time per
+token (~0.4 s) was no better than Metal's attention plus overhead, and prompt
+processing was 3-6× slower (77-154 s vs 23 s for 17 tokens). Metal stays the
+recommended backend on this Mac.

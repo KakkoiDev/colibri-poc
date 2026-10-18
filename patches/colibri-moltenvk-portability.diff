@@ -1,0 +1,37 @@
+diff --git a/c/backend_vulkan.c b/c/backend_vulkan.c
+index 2e149043..62bab4d6 100644
+--- a/c/backend_vulkan.c
++++ b/c/backend_vulkan.c
+@@ -953,6 +953,13 @@ int coli_vk_init(const char *spv_path) {
+         .apiVersion = VK_API_VERSION_1_2};
+     VkInstanceCreateInfo ici = {.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+         .pApplicationInfo = &app};
++#ifdef __APPLE__
++    /* MoltenVK is a portability driver: the loader lists it only to an instance that opts in */
++    static const char *iext[] = {VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME,
++                                 VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
++    ici.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
++    ici.enabledExtensionCount = 2; ici.ppEnabledExtensionNames = iext;
++#endif
+     VKCHECK(vkCreateInstance(&ici, NULL, &G.inst), "vkCreateInstance");
+ 
+     uint32_t nd = 0;
+@@ -1044,7 +1051,7 @@ int coli_vk_init(const char *spv_path) {
+     /* Pressure-proofing extensions (both optional, detected at runtime):
+      * memory_priority ranks allocations for the kernel's eviction order,
+      * memory_budget exposes how much VRAM a new allocation can still take. */
+-    const char *dext[6]; uint32_t ndext = 0;
++    const char *dext[10]; uint32_t ndext = 0;
+     int has_cm = 0, has_ssc = 0;
+     {
+         uint32_t ne = 0;
+@@ -1149,6 +1156,9 @@ int coli_vk_init(const char *spv_path) {
+     /* host memory the device reads in place (no copy): measured by the harness
+      * (COLI_VK_TEST_HOSTMEM), see docs/vulkan.md on integrated GPUs */
+     if (G.has_hostmem) dext[ndext++] = VK_EXT_EXTERNAL_MEMORY_HOST_EXTENSION_NAME;
++#endif
++#ifdef __APPLE__
++    dext[ndext++] = "VK_KHR_portability_subset";   /* required when the device exposes it (MoltenVK) */
+ #endif
+     di.enabledExtensionCount = ndext; di.ppEnabledExtensionNames = ndext ? dext : NULL;
+     G.prio = 0.75f;                              /* default class: dense/resident weights */

@@ -1,0 +1,2 @@
+![router] indice expert 2147483647 fuori range al layer 3: azzerato
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!![VK] tier colibri run: device 0 of 0 routed experts (0.0%; this run 0 of 0) | CPU RAM hits 1875, disk loads 75 | resident 15 (budget 15, 587.2 MiB of 614.9 MiB, 3 blocks, frag 0.02) | uploads 15 (270.0 MiB, 15 warm), evictions 0, skipped 0 queue + 0 rate, failed 0 | device 0.0 ms, CPU share 0.0 ms, waited 0.0 ms (0% of device time hidden) | balance: device share 1.00, 0 rows handed to the CPU | exclusive: 0 RAM copies of device experts given up first

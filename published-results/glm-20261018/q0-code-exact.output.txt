@@ -1,9 +1,7 @@
 Here's an iterative Python function to compute the n-th Fibonacci number:
 
 ```python
-
 def fibonacci(n):
-    """Return the n-th Fibonacci number (iteratively
-).
+    """Return the n-th Fibonacci number (iteratively).
     
     Uses the convention: F(0) = 0, F

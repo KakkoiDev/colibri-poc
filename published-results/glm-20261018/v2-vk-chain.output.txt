@@ -1,0 +1,1 @@
+The sky appears blue because molecules in Earth's atmosphere scatter shorter wavelengths of sunlight (blue and violet) more strongly than longer[VK] colibri chain: 24 forwards, 3797 frames (35568 ops, 13104 matmuls, 546 tiled GEMM), 10944.7 ms waiting for the device, 198293.6 ms of routed experts on the host, 47.7 MiB on the device
