@@ -32,6 +32,8 @@ CASES = [
     ('skip050-sky-48', 'l10-degrade-050', SKY, 48, SKIP('0.50')),
     ('exact-code-48', 'q0-code-exact', CODE, 48, {}),
     ('skip050-code-48', 'q3-code-degrade-050', CODE, 48, SKIP('0.50')),
+    ('exact-sky-24-t12', 't-metal-exact-t12', SKY, 24, {'OMP_NUM_THREADS': '12'}),
+    ('skip050-sky-48-t12', 't-metal-skip050-t12', SKY, 48, dict(SKIP('0.50'), OMP_NUM_THREADS='12')),
 ]
 RAM_SWEEP = [22, 26]          # exact sky runs at larger total budgets (busy runs used 18)
 QUIET_FREE_GB = 20.0          # free RAM we call "quiet" (busy runs had 10-17.5 GB)

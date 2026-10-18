@@ -49,6 +49,30 @@ Test builds lived in separate clones. On 2026-10-18, at the user's request, the
 installed engine was rebuilt with `METAL=1` and libomp (previous binary backed up to
 `~/Code/colibri-engine-backup-20261018/`). Smoke test: 0.44 tok/s, same text.
 
+## Finding 1b: even with libomp, Colibri uses 2 of 12 cores on the M6
+
+Colibri sizes its OpenMP thread team from `hw.perflevel0`, assuming that is the
+performance-core tier. The M6 has three tiers: 2 "Super", 4 Performance and 6
+Efficiency cores, so Colibri used **2 threads**. Every run on this page used 2
+threads unless it says otherwise. The owner's original setup had no OpenMP at all
+(a local misconfiguration: libomp was not installed), so it used one.
+
+`OMP_NUM_THREADS` overrides the default. Same prompt; output text was identical at
+every thread count, and identical to the earlier runs.
+
+| Setup | 2 threads (default) | 6 threads | 12 threads |
+|---|---:|---:|---:|
+| CPU-only, exact, tok/s | 0.12 | 0.24 | **0.27** |
+| CPU-only, prompt reading (17 tokens) | 135 s | 51 s | **36 s** |
+| Metal, exact, tok/s | 0.44 | 0.46 | 0.44 |
+| Metal, skip < 0.50, tok/s | 1.56 | 1.84 | **1.91** |
+
+Exact Metal runs are limited by the SSD, so threads do not matter there. With
+skipping, the CPU-side share of each token fell from 26% to 9%, giving +22%.
+Use `OMP_NUM_THREADS=12`. Whether the Efficiency cores help or just add heat was not
+measured separately beyond 6 vs 12. This looks like a Colibri bug worth reporting
+upstream (the `coli_physical_cores` heuristic in `omp_tune.h`).
+
 ## Finding 2: the installed engine is CPU-only
 
 `coli doctor` reports "GPU detected but the engine is CPU-only". The engine was
@@ -173,7 +197,7 @@ not help. The installed engine would need `METAL=1` and libomp, plus these
 environment settings:
 
 ```sh
-COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 \
+COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 OMP_NUM_THREADS=12 \
   coli chat --model ~/colibri-models/glm-5.3 --ram 18 --ctx 1024
 ```
 

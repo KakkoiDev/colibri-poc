@@ -12,15 +12,16 @@
   "Single runs unless noted; differences under ~10% are noise.",
   "OS page cache uncontrolled: some expert reads may have been served from memory rather than the SSD.",
   "Lossy settings change the model's computation; small prompt sets are smoke tests, not quality benchmarks.",
-  "0.10 tok/s starting point is user-reported; the installed engine later refused to start at all for lack of free RAM. The original engine will be re-measured on a quiet machine."
+  "0.10 tok/s starting point is user-reported; the installed engine later refused to start at all for lack of free RAM. The original engine will be re-measured on a quiet machine.",
+  "Thread count: all runs except the thread test used Colibri's default of 2 threads on the M6 (see `threads`). Exact Metal speed did not change with more threads; lossy and CPU-only runs did."
  ],
  "starting_point": {
   "user_reported_tok_s": 0.1,
-  "installed_engine": "CPU-only, single-threaded (no libomp), refused to start: projected 19.0 GB peak vs 17.5 GB free"
+  "installed_engine": "CPU-only, no OpenMP (single-threaded, a local setup issue), refused to start: projected 19.0 GB peak vs 17.5 GB free"
  },
  "exact_progression": [
   {
-   "label": "CPU + libomp (multithreaded)",
+   "label": "CPU + libomp (2 threads: Colibri default on M6)",
    "run": "c1-omp-cpu-r18-c1k",
    "status": "ok",
    "backend": "cpu",
@@ -1118,11 +1119,12 @@
  "headline": {
   "exact_speedup_vs_user_reported": 4.3,
   "exact_tok_s": 0.43,
-  "lossy_tok_s_at_0_5": 1.57,
-  "lossy_speedup": 15,
+  "lossy_tok_s_at_0_5": 1.91,
+  "lossy_speedup": 19,
   "target_reached": false,
   "max_seen_tok_s": 1.95,
-  "max_seen_note": "skip all missed experts; output broken"
+  "max_seen_note": "skip all missed experts; output broken",
+  "lossy_note": "skip < 0.50 with 12 threads; 1.57 at Colibri's default 2"
  },
  "pending": {
   "quality_speed_bench": "published-results/glm-bench-v1/summary.json (24 graded prompts × exact/0.3/0.5 × normal/terse); running"
@@ -1142,5 +1144,143 @@
   ],
   "swap_observed": true,
   "implication": "results are conservative; a quieter machine may be faster (unmeasured)"
+ },
+ "threads": {
+  "note": "Colibri sizes its OpenMP team from hw.perflevel0; on the M6 that is the 2-core 'Super' tier (M6: 2 Super + 4 Performance + 6 Efficiency cores), so every engine used 2 threads. OMP_NUM_THREADS overrides it. Output text was identical at every thread count.",
+  "groups": [
+   {
+    "name": "CPU-only, exact (12 tokens)",
+    "runs": [
+     {
+      "label": "2 threads",
+      "run": "t-cpu-exact-t2",
+      "threads": 2,
+      "tok_s": 0.12,
+      "prefill_s": 135.33,
+      "time_share_pct": {
+       "ssd_io": 22.0,
+       "expert_math": 37.0,
+       "attention": 32.0,
+       "other": 9.0
+      }
+     },
+     {
+      "label": "6 threads",
+      "run": "t-cpu-exact-t6",
+      "threads": 6,
+      "tok_s": 0.24,
+      "prefill_s": 50.56,
+      "time_share_pct": {
+       "ssd_io": 38.0,
+       "expert_math": 30.0,
+       "attention": 24.0,
+       "other": 7.0
+      }
+     },
+     {
+      "label": "12 threads",
+      "run": "t-cpu-exact-t12",
+      "threads": 12,
+      "tok_s": 0.27,
+      "prefill_s": 36.18,
+      "time_share_pct": {
+       "ssd_io": 43.0,
+       "expert_math": 26.0,
+       "attention": 24.0,
+       "other": 7.0
+      }
+     }
+    ]
+   },
+   {
+    "name": "Metal, exact (24 tokens)",
+    "runs": [
+     {
+      "label": "2 threads",
+      "run": "t-metal-exact-t2",
+      "threads": 2,
+      "tok_s": 0.44,
+      "prefill_s": 23.59,
+      "time_share_pct": {
+       "ssd_io": 76.0,
+       "expert_math": 9.0,
+       "attention": 8.0,
+       "other": 7.0
+      }
+     },
+     {
+      "label": "6 threads",
+      "run": "t-metal-exact-t6",
+      "threads": 6,
+      "tok_s": 0.46,
+      "prefill_s": 23.39,
+      "time_share_pct": {
+       "ssd_io": 80.0,
+       "expert_math": 9.0,
+       "attention": 9.0,
+       "other": 3.0
+      }
+     },
+     {
+      "label": "12 threads",
+      "run": "t-metal-exact-t12",
+      "threads": 12,
+      "tok_s": 0.44,
+      "prefill_s": 23.49,
+      "time_share_pct": {
+       "ssd_io": 75.0,
+       "expert_math": 12.0,
+       "attention": 11.0,
+       "other": 2.0
+      }
+     }
+    ]
+   },
+   {
+    "name": "Metal, skip < 0.50 (48 tokens)",
+    "lossy": true,
+    "runs": [
+     {
+      "label": "2 threads",
+      "run": "t-metal-skip050-t2",
+      "threads": 2,
+      "tok_s": 1.56,
+      "prefill_s": 23.47,
+      "time_share_pct": {
+       "ssd_io": 39.0,
+       "expert_math": 6.0,
+       "attention": 29.0,
+       "other": 26.0
+      }
+     },
+     {
+      "label": "6 threads",
+      "run": "t-metal-skip050-t6",
+      "threads": 6,
+      "tok_s": 1.84,
+      "prefill_s": 23.36,
+      "time_share_pct": {
+       "ssd_io": 46.0,
+       "expert_math": 7.0,
+       "attention": 35.0,
+       "other": 12.0
+      }
+     },
+     {
+      "label": "12 threads",
+      "run": "t-metal-skip050-t12",
+      "threads": 12,
+      "tok_s": 1.91,
+      "prefill_s": 23.38,
+      "time_share_pct": {
+       "ssd_io": 47.0,
+       "expert_math": 7.0,
+       "attention": 37.0,
+       "other": 9.0
+      }
+     }
+    ]
+   }
+  ]
  }
 }

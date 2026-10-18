@@ -132,7 +132,7 @@ svg .lbl{fill:var(--ink);font-weight:600}
 <section id="why"><div class="wrap">
   <h2><span class="n">01</span>Why it was slow</h2>
   <div class="cards3">
-    <div class="card"><h3 style="margin-top:0">Single-threaded build</h3><p class="muted small">Apple's compiler ships without OpenMP. Without libomp, Colibri's build only warns, and all expert math runs on one CPU core.</p><div class="fix">Fix: install libomp and rebuild</div></div>
+    <div class="card"><h3 style="margin-top:0">Too few CPU threads</h3><p class="muted small">The original build had no OpenMP (libomp was not installed), so it ran on one core. Even with libomp, Colibri uses only the M6's 2 "Super" cores out of 12.</p><div class="fix">Fix: install libomp, rebuild, set <code>OMP_NUM_THREADS=12</code></div></div>
     <div class="card"><h3 style="margin-top:0">CPU-only build</h3><p class="muted small">The engine was built without the Apple GPU backend, so the GPU sat idle while the CPU did everything.</p><div class="fix">Fix: rebuild with <code>METAL=1</code></div></div>
     <div class="card"><h3 style="margin-top:0">No RAM left for an expert cache</h3><p class="muted small" id="why-ram"></p><div class="fix">Fix: explicit <code>--ram 18 --ctx 1024</code></div></div>
   </div>
@@ -144,6 +144,10 @@ svg .lbl{fill:var(--ink);font-weight:600}
   <figure class="chart" id="chart-a"><figcaption class="cap" id="cap-a"></figcaption><div class="plot"></div>
     <p class="foot">tok/s, axis starts at 0. Single run each; differences under ~10% are noise. Hover a bar for its run; click to read its output.</p></figure>
   <div class="tbl"><table id="tbl-exact"><thead><tr><th>Setting</th><th class="num">tok/s</th><th class="num">× vs 0.10</th><th class="num">SSD share</th><th>Same output</th><th>Run (raw output)</th></tr></thead><tbody></tbody></table></div>
+  <h3>Thread count: Colibri uses 2 of 12 cores on the M6</h3>
+  <p class="muted small" id="threads-note"></p>
+  <div class="tbl"><table id="tbl-threads"><thead><tr><th>Setup</th><th class="num">2 threads (default)</th><th class="num">6 threads</th><th class="num">12 threads</th><th class="num">Gain at 12</th><th>Same output</th></tr></thead><tbody></tbody></table></div>
+  <p class="muted small">tok/s, single run each. Prompt reading on the CPU went from <span id="threads-prefill"></span>. Everything else on this page used the default 2 threads.</p>
 </div></section>
 
 <section id="time"><div class="wrap">
@@ -201,16 +205,17 @@ svg .lbl{fill:var(--ink);font-weight:600}
   <pre><code>brew install libomp
 make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
   <h3>2a · Exact <span class="badge exact">same output</span></h3>
-  <pre><code>COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 \
+  <pre><code>COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 OMP_NUM_THREADS=12 \
   &lt;colibri&gt;/c/coli chat --model &lt;models&gt;/glm-5.3 --ram 18 --ctx 1024</code></pre>
   <h3>2b · Lossy <span class="badge lossy">changes output</span></h3>
-  <pre><code>COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 \
+  <pre><code>COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 OMP_NUM_THREADS=12 \
   DEGRADE_ZERO=1 DEGRADE_TAU=0.5 \
   &lt;colibri&gt;/c/coli chat --model &lt;models&gt;/glm-5.3 --ram 18 --ctx 1024</code></pre>
   <ul class="small">
     <li><strong>Power use.</strong> <code>COLI_METAL_SPIN=1</code> keeps a GPU keep-alive running the whole time; drop it on battery (about 10-15% slower).</li>
     <li><strong>Short conversations.</strong> <code>--ctx 1024</code> caps conversation length; it was needed to fit beside other apps.</li>
     <li><strong>May refuse to start.</strong> The engine stops if its projected memory peak exceeds free RAM. Close apps or lower <code>--ram</code>.</li>
+    <li><strong>Threads.</strong> <code>OMP_NUM_THREADS=12</code> overrides Colibri's 2-thread default on the M6. It made no difference for exact runs and +22% for skip 0.5.</li>
     <li><strong>Don't go above 0.5.</strong> At 0.7 answers had grammar errors; at 1.0 the model repeated itself.</li>
   </ul>
 </div></section>
@@ -341,7 +346,7 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
     $('#hero-exact-note').textContent = '~' + H.exact_speedup_vs_user_reported.toFixed(1) + '× faster than the user-reported start. Identical text on every tested prompt.';
     $('#hero-lossy').innerHTML = '';
     $('#hero-lossy').append('→ ' + f2(H.lossy_tok_s_at_0_5) + ' ', el('small', {}, 'tok/s'));
-    $('#hero-lossy-note').textContent = '~' + H.lossy_speedup + '× faster. Facts held in a 5-question smoke test; instruction following got worse.';
+    $('#hero-lossy-note').textContent = '~' + H.lossy_speedup + '× faster (' + (H.lossy_note || 'skip < 0.50') + '). Facts held in a 5-question smoke test; instruction following got worse.';
     $('#target-badge').textContent = 'Target ' + C.target_tok_s + ' tok/s: not reached';
     $('#machine').textContent = [D.machine.chip, D.machine.ram_gb + ' GB RAM', D.machine.model, D.machine.engine].join(' · ');
     var tc = D.test_conditions;
@@ -375,6 +380,22 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
       row(tb, [{ t: r.label }, { t: f2(r.tok_s), cls: 'num' }, { t: (r.tok_s / base).toFixed(1) + '×', cls: 'num' },
         { t: r.time_share_pct.ssd_io + '%', cls: 'num' }, { node: el('span', { class: 'ok' }, '✓ same') }, { node: runLink(r.run) }]);
     });
+
+    // thread count
+    if (D.threads) {
+      $('#threads-note').textContent = D.threads.note;
+      var tt = $('#tbl-threads tbody');
+      D.threads.groups.forEach(function (g) {
+        var r = g.runs, first = r[0].tok_s, last = r[r.length - 1].tok_s, name = el('span', {}, g.name + ' ');
+        if (g.lossy) name.appendChild(el('span', { class: 'badge lossy' }, 'changes output'));
+        var cells = [{ node: name }];
+        r.forEach(function (x) { cells.push({ node: el('a', { href: href(x.run) }, f2(x.tok_s)), cls: 'num' }); });
+        cells.push({ t: (last / first).toFixed(2) + '×', cls: 'num' }, { node: el('span', { class: 'ok' }, '✓ identical') });
+        row(tt, cells, g.lossy ? 'lossy' : '');
+      });
+      var cpu = D.threads.groups[0].runs;
+      $('#threads-prefill').textContent = cpu[0].prefill_s.toFixed(0) + ' s at 2 threads to ' + cpu[cpu.length - 1].prefill_s.toFixed(0) + ' s at 12';
+    }
 
     // chart B: time shares
     var find = function (arr, id) { return arr.filter(function (r) { return r.run === id; })[0]; };
