@@ -262,9 +262,23 @@
         } }))) : null]);
   }
 
-  function covCell(c) {
+  function covCell(c, onRun) {
     var map = { done: ['st-done', 'Done'], running: ['st-running', 'Running'], missing: ['st-missing', 'Missing'], failed: ['st-failed', 'Failed'], queued: ['st-queued', 'Queued'] }[c.status];
-    return h('div', { class: 'cov' + (c.status === 'missing' ? ' missing' : '') }, h('span', { class: 'chip ' + map[0], style: 'align-self:flex-start', text: map[1] }), h('span', { class: 'hint num', text: c.detail || '' }));
+    return h('div', { class: 'cov' + (c.status === 'missing' ? ' missing' : '') }, h('span', { class: 'chip ' + map[0], style: 'align-self:flex-start', text: map[1] }), h('span', { class: 'hint num', text: c.detail || '' }),
+      onRun ? h('button', { type: 'button', class: 'btn btn-sm', style: 'align-self:flex-start', onclick: onRun, text: c.status === 'done' ? 'Run again' : 'Run' }) : null);
+  }
+  // Queue job args for one standard bench on one model (defaults match how each bench is usually run).
+  function benchJob(bench, m, opts) {
+    opts = opts || {};
+    if (bench === 'quality') return { kind: 'bench', args: { name: opts.name || (m.owner_model ? 'v1' : m.id), configs: opts.configs || ['exact', 'd030t12'], styles: opts.styles || ['terse'], model: m.id } };
+    if (bench === 'quiet') return { kind: 'quiet', args: { flags: ['skip-original'] }, only_when_quiet: true };
+    return { kind: 'suite', args: { bench: bench, model: m.id }, only_when_quiet: bench === 'ram' };
+  }
+  function queueBench(bench, m, opts, now) {
+    var j = benchJob(bench, m, opts);
+    return post(now ? '/api/run' : '/api/queue/add', { kind: j.kind, args: j.args, only_when_quiet: !now && j.only_when_quiet })
+      .then(function (r) { toast(r.started ? 'Started: ' + r.started.title + ' (PID ' + r.started.pid + ')' : (r.note ? r.note + ': ' : 'Queued: ') + r.queued.title + (r.queued.only_when_quiet ? ' (when quiet)' : '')); route(); },
+            function (e) { toast(e.message, true); });
   }
 
   function screenBenches(main) {
@@ -277,8 +291,34 @@
           quietMissing ? h('button', { type: 'button', class: 'btn btn-sm', style: 'align-self:flex-start', text: 'Queue quiet run + RAM sweep',
             onclick: function () { post('/api/queue/add', { kind: 'quiet', args: { flags: ['ram-sweep', 'skip-original'] }, only_when_quiet: true }).then(function () { toast('Queued: quiet run (starts when ≥ 20 GB free)'); route(); }, function (e) { toast(e.message, true); }); } }) : null,
           !m.installed && !m.download ? h('a', { class: 'btn btn-sm', style: 'align-self:flex-start', href: '#install', text: 'Install first' }) : null)),
-          suite.map(function (b) { return td(covCell(m.coverage[b.id])); }));
+          suite.map(function (b) {
+            var c = m.coverage[b.id];
+            var can = m.installed && c.status !== 'running' && (b.id === 'quiet' ? m.owner_model : m.suite);
+            return td(covCell(c, can ? function () { queueBench(b.id, m); } : null));
+          }));
       }));
+      var runnable = d.models.filter(function (m) { return m.installed && m.suite; });
+      var mSel = h('select', { class: 'input', 'aria-label': 'Model' }, runnable.map(function (m) { return h('option', { value: m.id, text: m.name }); }));
+      var bSel = h('select', { class: 'input', 'aria-label': 'Bench' }, suite.map(function (b) { return h('option', { value: b.id, text: b.name + ' · ' + b.duration }); }));
+      var cbx = function (v, on, label) { return h('label', { class: 'row', style: 'gap:4px;font-size:13px' }, h('input', { type: 'checkbox', value: v, checked: on ? '' : null }), label); };
+      var qCfg = h('div', { class: 'row' }, ['exact', 'd030', 'd030t12', 'd040t12', 'd050'].map(function (c) { return cbx(c, c === 'exact' || c === 'd030t12', CFG[c] || c); }));
+      var qSty = h('div', { class: 'row' }, ['normal', 'terse'].map(function (x) { return cbx(x, x === 'terse', x); }));
+      var qName = h('input', { class: 'input', style: 'width:160px', 'aria-label': 'Results name' });
+      var qOpts = h('div', { class: 'stack', style: 'gap:6px' }, h('span', { class: 'hint', text: 'Quality bench options' }), qCfg, qSty,
+        h('label', { class: 'hint row', style: 'gap:6px' }, 'Results name', qName, h('span', { text: '(blank = model id; reuse a name to resume)' })));
+      var checked = function (box) { return Array.prototype.filter.call(box.querySelectorAll('input'), function (i) { return i.checked; }).map(function (i) { return i.value; }); };
+      function syncOpts() { qOpts.style.display = bSel.value === 'quality' ? '' : 'none'; }
+      bSel.addEventListener('change', syncOpts); syncOpts();
+      function chosen() {
+        var m = runnable.filter(function (x) { return x.id === mSel.value; })[0];
+        return [bSel.value, m, bSel.value === 'quality' ? { name: qName.value.trim() || null, configs: checked(qCfg), styles: checked(qSty) } : null];
+      }
+      var runCard = runnable.length ? card([h('h3', { style: 'font-size:15px', text: 'Run a bench' }),
+        h('div', { class: 'row' }, h('label', { class: 'hint row', style: 'gap:6px' }, 'Model', mSel), h('label', { class: 'hint row', style: 'gap:6px' }, 'Bench', bSel)), qOpts,
+        h('p', { class: 'hint', text: 'Quiet comparison and RAM sweep wait for a quiet machine (≥ 20 GB free). Quiet comparison runs on your main model only. GLM-5.3-Flash is not supported by the bench tools yet.' }),
+        h('div', { class: 'row' },
+          h('button', { type: 'button', class: 'btn btn-primary', text: 'Add to queue', onclick: function () { var c = chosen(); queueBench(c[0], c[1], c[2], false); } }),
+          h('button', { type: 'button', class: 'btn', text: 'Run now (if the GPU is free)', onclick: function () { var c = chosen(); queueBench(c[0], c[1], c[2], true); } }))]) : null;
       var suiteTbl = table(['Bench', 'What it measures', 'Duration (int4, busy)', 'Runs with'], suite.map(function (b) {
         return h('tr', {}, td(h('strong', { text: b.name })), td(b.what), td(b.duration, 'n'), td(h('span', { class: 'mono', text: b.runs_with })));
       }));
@@ -297,6 +337,7 @@
             r.notes.length ? h('p', { class: 'hint', text: 'Notes in the results folder: ' + r.notes.join(', ') + ' (e.g. downloads that ran during the bench).' }) : null));
       });
       put(main, header('Benches', 'The standard suite every model gets, so models are comparable. Suite ' + d.suite.version + '.'),
+        runCard,
         section('Coverage · models × benches', h('div', { class: 'row' }, chip('st-done', 'Done'), chip('st-running', 'Running'), chip('st-missing', 'Missing')), cov),
         section('Standard suite ' + d.suite.version, null, suiteTbl), results);
     });
@@ -605,7 +646,7 @@
                  ['Free disk after', '~' + after + ' GB'], ['Saved to', '~/' + (m.download_path || m.path), true], ['Runs', m.prep, true], ['Unlocks', (m.unlocks || []).join(', ')]],
           warn: after < 30 || gpuBusy,
           note: after < 30 ? 'This would leave less than 30 GB free.' : gpuBusy ? 'A GPU job is running: the download will skew its timings (quality results are unaffected).' : 'Resumable: if it stops, start it again here.' })
-          .then(function (ok) { if (ok) post('/api/download', { model: m.id }).then(function (r) { toast('Started: ' + r.started.title + ' (PID ' + r.started.pid + ')'); route(); }, function (e) { toast(e.message, true); }); });
+          .then(function (ok) { if (ok) { toast('Starting the download… checking it really runs (about 6 s).'); post('/api/download', { model: m.id }).then(function (r) { toast('Download running: ' + r.started.title + ' (PID ' + r.started.pid + '). Progress shows on Now and here.'); route(); }, function (e) { toast('Download did not start: ' + e.message, true); route(); }); } });
       }
       var rows = ms.map(function (m) {
         var st = m.installed ? chip('st-done', 'Installed') : m.download ? chip('st-running', pct(m.download.done, m.download.total) + '% downloaded') : chip('st-missing', 'Not installed');
@@ -613,7 +654,10 @@
           : !m.prep ? h('span', { class: 'hint', text: 'no prep step' })
           : dlRunning.length ? h('span', { class: 'hint', text: 'wait for the running download' })
           : h('button', { type: 'button', class: 'btn btn-primary btn-sm', onclick: function () { download(m); }, text: (m.download ? 'Resume download (~' : 'Download (~') + m.download_gb + ' GB)…' });
-        return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: m.name }), h('span', { class: 'hint', text: m.format }))), td(st),
+        var ld = m.last_download;
+        var ldNode = ld && ld.status === 'failed' ? h('details', { class: 'x' }, h('summary', { style: 'color:var(--bad)', text: 'Last download failed (' + ld.started + ', exit ' + ld.exit + ')' }), h('pre', { class: 'log', text: (ld.tail || []).join('\n') }))
+          : ld && ld.status === 'running' ? h('span', { class: 'hint', text: 'Downloading since ' + ld.started }) : null;
+        return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: m.name }), h('span', { class: 'hint', text: m.format }), ldNode)), td(st),
           td(m.download_gb ? '~' + m.download_gb + ' GB' : '—', 'n'), td(m.size_gb + ' GB', 'n'), td((m.unlocks || []).join(', ') || '—', 'wrap'), td(act));
       });
       var sel = ms.filter(function (m) { return !m.installed && m.download_gb; }).reduce(function (a, m) { return a + m.download_gb - (m.download ? m.download.done : 0); }, 0);

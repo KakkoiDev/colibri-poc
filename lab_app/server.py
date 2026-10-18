@@ -339,24 +339,45 @@ def installed(m):
     return (p / m['ready_marker']).exists() if m.get('ready_marker') else True
 
 
-def coverage(m, runs, running_benches):
+def suite_runs(runs, bench, mid):
+    return [r for r in runs if r['run'].startswith(f'suite-{bench}-{mid}-')]
+
+
+def bench_folders_for(m):
+    names = list(m.get('bench_names', []))
+    for d in sorted(glob.glob(str(ROOT / 'results' / f"glm-bench-{m['id']}*"))):
+        n = Path(d).name[len('glm-bench-'):]
+        if n not in names:
+            names.append(n)
+    return names
+
+
+def coverage(m, runs, running):
+    """Standard-suite status per bench for one model. `running` maps model id -> {bench id: detail}."""
     cells = {}
     rid = {r['run']: r for r in runs}
+    ok = lambda rs: [r for r in rs if r['status'] == 'ok']
+    fmt = lambda rs: ' / '.join(f"{num(r['tok_s']):.2f}" for r in rs if num(r['tok_s'])) + ' tok/s'
     # speed reference
-    sr = [rid.get(r) for r in m.get('speed_runs', [])]
-    if sr and all(r and r['status'] == 'ok' for r in sr):
-        cells['speed'] = dict(status='done', detail=' / '.join(f"{num(r['tok_s']):.2f}" for r in sr) + ' tok/s')
+    own = [rid.get(r) for r in m.get('speed_runs', [])]
+    sr = ok(suite_runs(runs, 'speed', m['id']))
+    if own and all(r and r['status'] == 'ok' for r in own):
+        cells['speed'] = dict(status='done', detail=fmt(own))
+    elif sr:
+        latest = sorted(sr, key=lambda r: r['run'])[-4:]
+        cells['speed'] = dict(status='done', detail=fmt([r for r in latest if r['run'].endswith(('sky-exact', 'sky-skip050'))]))
     # quality bench
-    names = m.get('bench_names', [])
-    run_names = [n for n in names if n in running_benches]
-    if run_names:
-        p = running_benches[run_names[0]]
-        cells['quality'] = dict(status='running', detail=f"{p['done']}/{p['total']}")
-    elif any(bench_records(n) for n in names):
-        n = names[0]
-        recs = bench_records(n)
-        cells['quality'] = dict(status='done', detail=f"bench {n} · {len(recs)} answers")
-    # quiet comparison, RAM sweep and thread sweep exist only for the owner's model so far
+    names = bench_folders_for(m)
+    if any(bench_records(n) for n in names):
+        n = next(n for n in names if bench_records(n))
+        cells['quality'] = dict(status='done', detail=f"bench {n} · {len(bench_records(n))} answers")
+    # threads
+    tr = [r for r in runs if r['run'].startswith('t-') and r['status'] == 'ok'] if m.get('owner_model') else []
+    tr += ok(suite_runs(runs, 'threads', m['id']))
+    if tr:
+        best = max(tr, key=lambda r: num(r['tok_s']) or 0)
+        cells['threads'] = dict(status='done', detail=f"{len(tr)} runs · best {num(best['tok_s']):.2f} tok/s")
+    # quiet comparison and RAM sweep
     if m.get('owner_model'):
         quiet = sorted(glob.glob(str(ROOT / 'results' / 'glm-quiet-*' / 'comparison.json')))
         if quiet:
@@ -364,14 +385,50 @@ def coverage(m, runs, running_benches):
             cells['quiet'] = dict(status='done', detail=Path(quiet[-1]).parent.name)
             if cj.get('ram_sweep'):
                 cells['ram'] = dict(status='done', detail=f"{len(cj['ram_sweep'])} budgets")
-        t = [r for r in runs if r['run'].startswith('t-') and r['status'] == 'ok']
-        if t:
-            best = max(t, key=lambda r: num(r['tok_s']) or 0)
-            cells['threads'] = dict(status='done', detail=f"{len(t)} runs · best {num(best['tok_s']):.2f} tok/s")
+    rr = ok(suite_runs(runs, 'ram', m['id']))
+    if rr and 'ram' not in cells:
+        cells['ram'] = dict(status='done', detail=f"{len(rr)} budgets")
+    for b, detail in running.get(m['id'], {}).items():
+        cells[b] = dict(status='running', detail=detail)
     inst = installed(m)
     for b in suite()['benches']:
-        cells.setdefault(b['id'], dict(status='missing', detail='never run' if inst else 'not installed'))
+        if b['id'] not in cells:
+            if not m.get('suite'):
+                cells[b['id']] = dict(status='missing', detail='not supported yet')
+            else:
+                cells[b['id']] = dict(status='missing', detail='never run' if inst else 'not installed')
     return cells
+
+
+def running_coverage():
+    """Benches running right now, per model id, from the process list."""
+    out = {}
+    cat = catalog()
+    for j in jobs()[0]:
+        cmd = j.get('command', '')
+        if j.get('kind') == 'Quality bench':
+            mid = next((m['id'] for m in cat if '--model ~/' + m['path'] + ' ' in cmd + ' '), 'glm-5.3-int4')
+            p = j.get('progress') or {}
+            out.setdefault(mid, {})['quality'] = f"{p.get('done')}/{p.get('total')}"
+        elif 'glm_suite.py run' in cmd:
+            parts = cmd.split()
+            bench, mid = parts[parts.index('run') + 1], parts[parts.index('--model') + 1]
+            out.setdefault(mid, {})[bench] = 'running'
+        elif j.get('kind') == 'Quiet run':
+            out.setdefault('glm-5.3-int4', {})['quiet'] = 'running'
+    return out
+
+
+def last_downloads():
+    """Most recent download attempt started by the app, per model id."""
+    res = {}
+    for j in actions.refresh_jobs()['jobs']:
+        if j['kind'] == 'prep':
+            mid = j['args'].get('model')
+            if mid not in res:
+                tail = job_log(j['id'])['tail'][-4:] if j['status'] == 'failed' else []
+                res[mid] = dict(status=j['status'], exit=j.get('exit'), started=j['started'], ended=j.get('ended'), id=j['id'], tail=tail)
+    return res
 
 
 def external():
@@ -381,10 +438,8 @@ def external():
 def models():
     ext = {r['model']: r for r in external().get('aa_index', {}).get('rows', [])}
     runs = runs_table()
-    running = {}
-    for j in jobs()[0]:
-        if j.get('kind') == 'Quality bench':
-            running[j['progress']['name']] = j['progress']
+    running = running_coverage()
+    downloads = last_downloads()
     exps = read_json(ROOT / 'site' / 'data' / 'experiments.json', {})
     out = []
     for m in catalog():
@@ -399,7 +454,7 @@ def models():
         if m.get('owner_model'):
             sb = exps.get('scoreboard', {})
             best = {k: sb[k] for k in ('best_exact', 'best_usable_lossy', 'everyday') if k in sb}
-        out.append(dict(m, installed=inst, download=dl, coverage=cov, aa=ext.get(m.get('external_model')),
+        out.append(dict(m, installed=inst, download=dl, coverage=cov, aa=ext.get(m.get('external_model')), last_download=downloads.get(m['id']),
                         covered=sum(1 for c in cov.values() if c['status'] == 'done'), best=best))
     return dict(models=out, suite=suite())
 
@@ -595,7 +650,14 @@ def act(path, body):
         js, _ = jobs()
         if any(j.get('kind') == 'Download' for j in js):
             raise actions.ActionError('a download is already running; wait for it to finish')
-        return dict(started=actions.launch('prep', {'model': body.get('model')}))
+        started = actions.launch('prep', {'model': body.get('model')})
+        for _ in range(12):   # a download that cannot start (missing tool, bad repo) dies within seconds
+            time.sleep(0.5)
+            j = next((x for x in actions.refresh_jobs()['jobs'] if x['id'] == started['id']), None)
+            if j and j['status'] != 'running':
+                tail = job_log(j['id'])['tail'][-6:]
+                raise actions.ActionError('the download stopped right away (exit %s): %s' % (j.get('exit'), ' | '.join(tail)))
+        return dict(started=started, note='still running after 6 s; progress shows on Now and Install')
     return None
 
 

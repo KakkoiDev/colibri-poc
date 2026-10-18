@@ -26,6 +26,11 @@ class ActionTests(unittest.TestCase):
                            ('planned', {'id': 'no-such-experiment'}), ('shell', {'cmd': 'ls'})]:
             with self.assertRaises(a.ActionError, msg=kind):
                 a.build_command(kind, args)
+        argv, _ = a.build_command('suite', {'bench': 'speed', 'model': 'glm-5.3-int4'})
+        self.assertEqual(argv[1:], ['glm_suite.py', 'run', 'speed', '--model', 'glm-5.3-int4'])
+        for bad in [{'bench': 'speed', 'model': 'glm-5.3-flash-iq3xxs'}, {'bench': 'rm', 'model': 'glm-5.3-int4'}, {'bench': 'speed', 'model': 'nope'}]:
+            with self.assertRaises(a.ActionError):
+                a.build_command('suite', bad)
         argv, _ = a.build_command('prep', {'model': 'glm-5.3-iq2m'})
         self.assertEqual(argv, ['make', 'glm-prep-iq2m'])
 

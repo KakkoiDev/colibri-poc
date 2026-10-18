@@ -13,7 +13,7 @@ Safety rules (enforced here, not just in the UI):
   never a model that is downloading or in use by a running engine.
 State lives in results/lab-app/ (git-ignored): queue.json, jobs.json and one log per job.
 """
-import json, os, re, signal, subprocess, sys, threading, time
+import json, os, re, signal, subprocess, sys, threading, time, uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -21,7 +21,8 @@ STATE = ROOT / 'results' / 'lab-app'
 LOGS = STATE / 'logs'
 PY = str(ROOT / '.venv' / 'bin' / 'python')
 SAFE = re.compile(r'^[A-Za-z0-9._-]{1,80}$')
-GPU_KINDS = {'planned', 'bench', 'quiet'}
+GPU_KINDS = {'planned', 'bench', 'quiet', 'suite'}
+SUITE_BENCHES = {'speed', 'threads', 'ram'}
 QUIET_FLAGS = {'ram-sweep', 'skip-original', 'experiments-only', 'skip-experiments'}
 _lock = threading.RLock()
 _procs = {}   # pid -> Popen for jobs started by this server process
@@ -71,6 +72,21 @@ def _planned_ids():
     return {e['id']: e for e in glm_lab.planned_entries(glm_lab.load_registry()) if e.get('plan')}
 
 
+def _catalog():
+    return {m['id']: m for m in json.loads((ROOT / 'models' / 'catalog.json').read_text())['models']}
+
+
+def _runnable_model(mid):
+    m = _catalog().get(mid)
+    if not m:
+        raise ActionError(f'unknown model: {mid}')
+    if not m.get('suite'):
+        raise ActionError(f"{m['name']}: {m.get('suite_note', 'benches cannot run on it yet')}")
+    if not (Path.home() / m['path']).exists():
+        raise ActionError(f"{m['name']} is not installed")
+    return m
+
+
 def build_command(kind, args):
     """Validated argv for a lab job, plus a human title."""
     args = args or {}
@@ -89,13 +105,24 @@ def build_command(kind, args):
         bad = [c for c in configs if c not in _configs()] + [s for s in styles if s not in _styles()]
         if not configs or not styles or bad:
             raise ActionError(f'unknown or missing configs/styles: {bad or "none given"}')
-        return ([PY, 'glm_bench.py', 'run', '--name', name, '--configs', ','.join(configs), '--styles', ','.join(styles)],
-                f"Quality bench {name}: {', '.join(configs)} · {', '.join(styles)}")
+        argv = [PY, 'glm_bench.py', 'run', '--name', name, '--configs', ','.join(configs), '--styles', ','.join(styles)]
+        label = ''
+        if args.get('model') and args['model'] != 'glm-5.3-int4':
+            m = _runnable_model(args['model'])
+            argv += ['--model', '~/' + m['path'], '--coli-dir', m['coli_dir']]
+            label = f" on {m['name']}"
+        return argv, f"Quality bench {name}{label}: {', '.join(configs)} · {', '.join(styles)}"
     if kind == 'quiet':
         flags = args.get('flags') or []
         if any(f not in QUIET_FLAGS for f in flags):
             raise ActionError(f'unknown quiet-run flags: {flags}')
         return [PY, 'glm_quiet.py', 'run'] + ['--' + f for f in flags], 'Quiet run' + (f" ({', '.join(flags)})" if flags else '')
+    if kind == 'suite':
+        bench, mid = args.get('bench'), args.get('model', '')
+        if bench not in SUITE_BENCHES:
+            raise ActionError(f'unknown suite bench: {bench}')
+        m = _runnable_model(mid)
+        return [PY, 'glm_suite.py', 'run', bench, '--model', mid], f"{bench.capitalize()} bench on {m['name']}"
     if kind == 'prep':
         mid = args.get('model', '')
         cat = {m['id']: m for m in json.loads((ROOT / 'models' / 'catalog.json').read_text())['models']}
@@ -168,7 +195,7 @@ def queue_add(kind, args, front=False, only_when_quiet=False):
     if kind not in GPU_KINDS:
         raise ActionError('only GPU jobs (experiments, benches, quiet runs) go through the queue')
     _, title = build_command(kind, args)   # validate now, not when it reaches the head
-    item = dict(qid=time.strftime('%Y%m%dT%H%M%S') + f'-{int(time.time() * 1000) % 1000:03d}', kind=kind, args=args,
+    item = dict(qid=time.strftime('%Y%m%dT%H%M%S') + '-' + uuid.uuid4().hex[:8], kind=kind, args=args,
                 title=title, only_when_quiet=bool(only_when_quiet), added=time.strftime('%Y-%m-%d %H:%M:%S'))
     with _lock:
         q = queue_state()

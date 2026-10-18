@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "note": "Every model the lab can run, installed or not. `path` is relative to ~ . The lab app marks a model installed when its path exists (and `ready_marker`, if set). `bench_names` lists glm_bench.py result folders for this model; `speed_runs` lists runs.csv ids that make up its speed reference. `remove_paths` are the folders the lab app moves to the Trash when a model is removed (never for the owner's model).",
+ "note": "Every model the lab can run, installed or not. `path` is relative to ~ . The lab app marks a model installed when its path exists (and `ready_marker`, if set). `bench_names` lists glm_bench.py result folders for this model; `speed_runs` lists runs.csv ids that make up its speed reference. `remove_paths` are the folders the lab app moves to the Trash when a model is removed (never for the owner's model). `coli_dir` is the engine checkout the lab runs this model with; `suite: false` means the standard benches cannot run on it yet (`suite_note` says why).",
  "models": [
   {
    "id": "glm-5.3-int4",
@@ -22,7 +22,9 @@
    ],
    "source": "huggingface.co/Justvugg/GLM-5.3-colibri-int4-g64",
    "external_model": "GLM-5.3 (Max)",
-   "remove_paths": []
+   "remove_paths": [],
+   "coli_dir": "~/Code/colibri",
+   "suite": true
   },
   {
    "id": "glm-5.3-mtp",
@@ -48,7 +50,9 @@
    "remove_paths": [
     "colibri-models/glm-5.3-mtp",
     "colibri-models/glm-5.3-mtp-head"
-   ]
+   ],
+   "coli_dir": "~/Code/colibri",
+   "suite": true
   },
   {
    "id": "glm-5.3-iq3xxs",
@@ -74,7 +78,9 @@
    "remove_paths": [
     "colibri-models/glm-5.3-iq3xxs",
     "colibri-models/gguf/glm-5.3-iq3xxs"
-   ]
+   ],
+   "coli_dir": "engines/colibri-16239caa",
+   "suite": true
   },
   {
    "id": "glm-5.3-iq2m",
@@ -100,7 +106,9 @@
    "remove_paths": [
     "colibri-models/glm-5.3-iq2m",
     "colibri-models/gguf/glm-5.3-iq2m"
-   ]
+   ],
+   "coli_dir": "engines/colibri-16239caa",
+   "suite": true
   },
   {
    "id": "glm-5.3-flash-iq3xxs",
@@ -125,7 +133,10 @@
    "remove_paths": [
     "colibri-models/glm-5.3-flash-iq3xxs",
     "colibri-models/gguf/glm-5.3-flash-iq3xxs"
-   ]
+   ],
+   "coli_dir": "engines/colibri-16239caa",
+   "suite": false,
+   "suite_note": "GLM-5.3-Flash runs on Colibri's separate glm53 engine, whose speed output the lab tools cannot read yet"
   }
  ]
 }
