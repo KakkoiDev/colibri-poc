@@ -96,6 +96,12 @@ COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 OMP_NUM_THREA
   ~/Code/colibri/c/coli chat --model ~/colibri-models/glm-5.3 --ram 18 --ctx 1024
 ```
 
+**Prompt style: terse (owner decision, 2026-10-18).** End every prompt with " Answer as
+briefly as possible. For code, reply with only the code." Quality bench v1: exact answers in
+~64 s instead of ~281 s, 24/24 correct in every config. Generation speed is unchanged; the
+answers are just much shorter. Colibri's `chat` has no system-prompt option, so add the
+sentence to the prompt itself. Future quality benches should always include the terse style.
+
 Fastest usable lossy run: add `DEGRADE_ZERO=1 DEGRADE_TAU=0.5`. It changes output; at
 0.7 grammar breaks, at 1.0 it loops. `OMP_NUM_THREADS=12` works around Colibri using
 only the M6's 2 "Super" cores ([colibri#2194](https://github.com/JustVugg/colibri/issues/2194));
