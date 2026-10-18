@@ -10,7 +10,7 @@
  "caveats": [
   "Busy machine: measured on the owner's everyday Mac with many other processes running (ChatGPT/Codex, Claude, Steam, browsers). Free RAM swung between about 10 and 17.5 GB of 32 GB and macOS swapped during tests. Actual performance on a quieter machine may be better; not measured.",
   "Single runs unless noted; differences under ~10% are noise.",
-  "OS page cache uncontrolled; other apps were open; free RAM varied 10-17.5 GB.",
+  "OS page cache uncontrolled: some expert reads may have been served from memory rather than the SSD.",
   "Lossy settings change the model's computation; small prompt sets are smoke tests, not quality benchmarks.",
   "0.10 tok/s starting point is user-reported; the installed engine later refused to start at all for lack of free RAM."
  ],
