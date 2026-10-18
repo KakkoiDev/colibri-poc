@@ -8,6 +8,7 @@
   "engine": "Colibri v2.0.0 @ bf244291"
  },
  "caveats": [
+  "Busy machine: measured on the owner's everyday Mac with many other processes running (ChatGPT/Codex, Claude, Steam, browsers). Free RAM swung between about 10 and 17.5 GB of 32 GB and macOS swapped during tests. Actual performance on a quieter machine may be better; not measured.",
   "Single runs unless noted; differences under ~10% are noise.",
   "OS page cache uncontrolled; other apps were open; free RAM varied 10-17.5 GB.",
   "Lossy settings change the model's computation; small prompt sets are smoke tests, not quality benchmarks.",
@@ -1125,5 +1126,21 @@
  },
  "pending": {
   "quality_speed_bench": "published-results/glm-bench-v1/summary.json (24 graded prompts × exact/0.3/0.5 × normal/terse); running"
+ },
+ "test_conditions": {
+  "busy_machine": true,
+  "other_processes": [
+   "ChatGPT/Codex",
+   "Claude",
+   "Steam",
+   "web browsers",
+   "other apps"
+  ],
+  "free_ram_gb_range": [
+   10,
+   17.5
+  ],
+  "swap_observed": true,
+  "implication": "results are conservative; a quieter machine may be faster (unmeasured)"
  }
 }

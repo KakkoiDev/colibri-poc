@@ -86,6 +86,14 @@ Chart rules:
   instruction-following regression).
 - **Negative results**: what was tried, result, one-line why.
 
+## Test-conditions callout (required)
+
+The numbers come from the owner's everyday Mac with many other processes running
+(see `test_conditions` and the first `caveats` entry). Show a visible callout near
+the hero, not only in the footer: "Measured on a busy everyday machine: many other
+apps were running and free RAM was 10-17.5 GB of 32 GB. Real performance may be
+better." Do not quantify "better"; it was not measured.
+
 ## Tone and wording
 
 - Plain language. Define "expert", "token/s" and "skip threshold" once, in a
@@ -111,4 +119,5 @@ Chart rules:
 - [ ] The ceiling arithmetic (12.7 GB/token, 6.5 GB/s, 64 GB/s needed) is visible.
 - [ ] The negative-results section exists and includes Vulkan, mmap, PILOT and CACHE_ROUTE.
 - [ ] The caveats are on the page, not only in a linked doc.
+- [ ] The busy-machine callout is visible near the hero and says performance may be better.
 - [ ] Works at 375 px and in dark mode; passes an accessibility contrast check.

@@ -4,6 +4,14 @@ Live findings from 2026-10-18 while testing the user's real GLM-5.3 setup
 (Colibri `bf244291`, model `~/colibri-models/glm-5.3`, int4 g64, 419 GB, Apple M6,
 32 GB). This page grows as tests finish.
 
+> **Busy test machine.** All GLM numbers here were measured on the owner's everyday
+> Mac with many other processes running: ChatGPT/Codex, Claude, Steam, web browsers
+> and other apps. They held roughly 14-22 GB of the 32 GB, so free RAM swung between
+> about 10 and 17.5 GB, and macOS swapped some memory during tests. Less free RAM
+> means a smaller expert cache, and other processes compete for CPU, GPU and SSD time.
+> **Actual performance on a quieter machine may be better.** We have not measured how
+> much better, so treat these results as conservative for this hardware.
+
 ## Finding 1: the installed engine was built without OpenMP (single-threaded)
 
 The installed engine `~/Code/colibri/c/colibri` links only `libSystem`. It has
