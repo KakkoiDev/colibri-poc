@@ -1,6 +1,29 @@
 {
  "schema": 1,
  "generated": "2026-10-18",
+ "scoreboard": {
+  "target_tok_s": 5.0,
+  "best_exact": {
+   "id": "threads-metal-exact-6",
+   "title": "Metal exact: 6 threads instead of 2",
+   "tok_s": 0.46,
+   "runs": [
+    "t-metal-exact-t6"
+   ],
+   "gap_x": 10.9,
+   "pct_of_target": 9
+  },
+  "best_usable_lossy": {
+   "id": "threads-metal-skip050-12",
+   "title": "Metal skip < 0.5: 12 threads instead of 2",
+   "tok_s": 1.91,
+   "runs": [
+    "t-metal-skip050-t12"
+   ],
+   "gap_x": 2.6,
+   "pct_of_target": 38
+  }
+ },
  "entries": [
   {
    "id": "cpu-libomp",
@@ -647,6 +670,7 @@
    "sources": [
     "https://github.com/JustVugg/colibri/issues/2194"
    ],
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -685,6 +709,7 @@
    "sources": [
     "https://github.com/JustVugg/colibri/issues/2194"
    ],
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -720,6 +745,7 @@
    "date": "2026-10-18",
    "conclusion": "Skipped almost nothing; identical text.",
    "tradeoffs": "Changes output; needs quality checks.",
+   "usable": false,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -753,6 +779,7 @@
    "date": "2026-10-18",
    "conclusion": "Skipped almost nothing; identical text.",
    "tradeoffs": "Changes output; needs quality checks.",
+   "usable": false,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -786,6 +813,7 @@
    "date": "2026-10-18",
    "conclusion": "Skipped <1% of loads; identical text.",
    "tradeoffs": "Changes output; needs quality checks.",
+   "usable": false,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -819,6 +847,7 @@
    "date": "2026-10-18",
    "conclusion": "~25% of loads skipped; reworded, still correct.",
    "tradeoffs": "Changes output; needs quality checks.",
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -855,6 +884,7 @@
    "date": "2026-10-18",
    "conclusion": "~60% skipped; reworded, still correct.",
    "tradeoffs": "Changes output; needs quality checks.",
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -891,6 +921,7 @@
    "date": "2026-10-18",
    "conclusion": "~77% skipped; reworded, still correct.",
    "tradeoffs": "Changes output; needs quality checks.",
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -927,6 +958,7 @@
    "date": "2026-10-18",
    "conclusion": "~84% skipped; facts held in a 5-question quiz, instruction following slipped.",
    "tradeoffs": "Changes output; needs quality checks.",
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -963,6 +995,7 @@
    "date": "2026-10-18",
    "conclusion": "Grammar errors appeared.",
    "tradeoffs": "Changes output; needs quality checks.",
+   "usable": false,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -999,6 +1032,7 @@
    "date": "2026-10-18",
    "conclusion": "Output loops (\"and the air, and the air\"). Breaking point.",
    "tradeoffs": "Changes output; needs quality checks.",
+   "usable": false,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1035,6 +1069,7 @@
    "date": "2026-10-18",
    "conclusion": "Same function structure through 0.30; reworded at 0.50.",
    "tradeoffs": "Changes output.",
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1070,6 +1105,7 @@
    "date": "2026-10-18",
    "conclusion": "Same function structure through 0.30; reworded at 0.50.",
    "tradeoffs": "Changes output.",
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1106,6 +1142,7 @@
    "date": "2026-10-18",
    "conclusion": "Same function structure through 0.30; reworded at 0.50.",
    "tradeoffs": "Changes output.",
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1142,6 +1179,7 @@
    "date": "2026-10-18",
    "conclusion": "0% swapped: with ~1 slot per layer there is nothing in RAM to swap to.",
    "tradeoffs": "",
+   "usable": false,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1175,6 +1213,7 @@
    "date": "2026-10-18",
    "conclusion": "Same as default: nothing to swap to.",
    "tradeoffs": "",
+   "usable": false,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1208,6 +1247,7 @@
    "date": "2026-10-18",
    "conclusion": "Same as skip < 0.10 alone.",
    "tradeoffs": "",
+   "usable": false,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1315,6 +1355,7 @@
    "date": "2026-10-18",
    "conclusion": "Slower than Metal at the same threshold.",
    "tradeoffs": "",
+   "usable": false,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1352,6 +1393,7 @@
    "date": "2026-10-18",
    "conclusion": "Chain attention took 78% of time; prompt reading 154 s.",
    "tradeoffs": "",
+   "usable": false,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1457,6 +1499,7 @@
    "date": "2026-10-18",
    "conclusion": "No change: at 0.30 the run is still mostly waiting on the SSD.",
    "tradeoffs": "",
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1490,6 +1533,7 @@
    "date": "2026-10-18",
    "conclusion": "Small gain within noise.",
    "tradeoffs": "",
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,
@@ -1523,6 +1567,7 @@
    "date": "2026-10-18",
    "conclusion": "Faster: with most reads skipped, CPU-side work is the bottleneck that threads remove.",
    "tradeoffs": "",
+   "usable": true,
    "metrics": {
     "measured": true,
     "n_runs": 1,

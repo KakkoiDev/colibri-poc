@@ -1,16 +1,21 @@
 # colibri-poc
 
-A small lab for learning how to make local MoE inference faster on this Mac.
+A long-running lab with one goal: run **GLM-5.x (744B MoE) on a 32 GB Apple M6 at
+5 tokens per second or more**, with usable answers.
 
-Start with **OLMoE-1B-7B-0125-Instruct, MLX 4-bit: about 3.89 GB**. It has about
-7B total parameters and uses about 1B per token. MLX executes it on Apple's GPU
-through Metal. This is deliberately much smaller than Qwen 35B.
+- **Read first:** [the lab guide](docs/00-lab-guide.md): mission, bottleneck model,
+  how to try ideas, how to follow research.
+- **Current scoreboard and every experiment:** [experiment log](docs/12-experiment-log.md).
+- **Results website:** https://kakkoidev.github.io/colibri-poc/
+- **Research reviewed so far:** [research/watchlist.md](research/watchlist.md).
 
-Your reported GLM-5.3 baseline is **0.1 token/s**. It is context, not a measurement
-made by this lab and not a comparable score for OLMoE.
+The GLM work started from a user-reported 0.1 token/s. The lab's earlier rounds used
+a small stand-in model, **OLMoE-1B-7B-0125-Instruct, MLX 4-bit (~3.89 GB)**, to learn
+expert streaming safely; those results do not transfer directly to GLM.
 
-## Start here
+## All docs
 
+0. [Lab guide: mission, method and how to continue](docs/00-lab-guide.md)
 1. [How the pieces fit](docs/01-how-it-works.md)
 2. [Can I convert a model to Metal?](docs/02-conversion.md)
 3. [How we measure a win](docs/03-benchmarks.md)

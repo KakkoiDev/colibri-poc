@@ -1,4 +1,10 @@
-## LIVE UPDATE 6 (newest)
+## START HERE (2026-10-18)
+
+Long-term mission and method: docs/00-lab-guide.md. Scoreboard and every experiment:
+docs/12-experiment-log.md. Research reviewed: research/watchlist.md. The notes below
+are a dated history of the work.
+
+## LIVE UPDATE 6
 
 - Every GLM experiment now goes in experiments/glm-experiments.json; `glm_lab.py try`
   runs one (best exact settings + overrides, 12 threads), compares with a reference
