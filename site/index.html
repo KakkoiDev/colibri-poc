@@ -5,82 +5,94 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GLM-5.3 on a 32 GB Apple M6</title>
 <meta name="description" content="How GLM-5.3 (744B MoE) got about 4× faster on a 32 GB Apple M6 with Colibri, and what going further costs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root{
-  --bg:#fafafa;--surface:#ffffff;--ink:#1a1a1a;--muted:#5b5b5b;--line:#dcdcdc;--soft:#f0f0f0;
-  --exact:#2b5c9e;--lossy:#b45309;--ghost:#9a9a9a;--warn-bg:#fff7e6;--warn-line:#e7b45a;
-  --s1:#2b5c9e;--s2:#e0913a;--s3:#7a5cb0;--s4:#9a9a9a;
-  --b1:#e8f0fa;--b2:#fff3df;--b3:#fbe3d6;--b4:#f6d6d6;
-  --code:#f3f3f3;
+  /* "Technical report" theme from the design canvas (project/Main.dc.html): ink on paper.
+     Exact = solid ink, lossy = grey ink and hatching; greys differ in lightness. */
+  --bg:#FFFFFF;--surface:#FFFFFF;--ink:#111111;--muted:#555555;--line:#D6D4CF;--soft:#F4F3EF;
+  --exact:#111111;--lossy:#6F6D68;--ghost:#9A9893;--warn-bg:transparent;--warn-line:#111111;
+  --s1:#111111;--s2:#4A4946;--s3:#7A7873;--s4:#B4B1AA;
+  --b1:#FFFFFF;--b2:#F4F3EF;--b3:#E7E5DF;--b4:#D6D4CF;
+  --code:#F4F3EF;--link:#1F4E99;
 }
 @media (prefers-color-scheme:dark){:root{
-  --bg:#141414;--surface:#1d1d1d;--ink:#ececec;--muted:#a8a8a8;--line:#3a3a3a;--soft:#262626;
-  --exact:#7aa7e0;--lossy:#f0a35b;--ghost:#777;--warn-bg:#2a2214;--warn-line:#8a6a2e;
-  --s1:#7aa7e0;--s2:#f0a35b;--s3:#b49ae0;--s4:#8a8a8a;
-  --b1:#1e2a3a;--b2:#33291a;--b3:#3a2420;--b4:#3d1f1f;
-  --code:#242424;
+  --bg:#141414;--surface:#141414;--ink:#ECEAE4;--muted:#A9A69F;--line:#3A3936;--soft:#1D1C1A;
+  --exact:#ECEAE4;--lossy:#A9A69F;--ghost:#6E6C67;--warn-bg:transparent;--warn-line:#ECEAE4;
+  --s1:#ECEAE4;--s2:#BDBAB3;--s3:#8E8B85;--s4:#5E5C58;
+  --b1:#141414;--b2:#1D1C1A;--b3:#272623;--b4:#33322F;
+  --code:#1D1C1A;--link:#9DB8E8;
 }}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
-a{color:var(--exact)}
-code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
-.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
-header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Source Serif 4','Iowan Old Style',Georgia,serif;font-size:17px;line-height:28px;-webkit-font-smoothing:antialiased;font-variant-numeric:lining-nums}
+a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:2px}
+code,pre{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:.82em}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header.top{background:var(--bg);border-bottom:1px solid var(--line);font-size:13px;line-height:20px;color:var(--muted)}
+header.top strong{font-variant:small-caps;letter-spacing:.04em;font-weight:400}
 header.top .wrap{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
 header.top strong{font-size:15px}
 nav{display:flex;gap:14px;flex-wrap:wrap;font-size:14px}
 nav a{color:var(--muted);text-decoration:none}nav a:hover{color:var(--ink);text-decoration:underline}
-section{padding:48px 0;border-bottom:1px solid var(--line)}
-h1{font-size:clamp(28px,4.5vw,42px);line-height:1.15;margin:12px 0}
-h2{font-size:26px;margin:0 0 6px;display:flex;gap:12px;align-items:baseline}
-h2 .n{font:600 14px ui-monospace,monospace;color:var(--muted)}
+section{padding:40px 0;border-bottom:0}
+h1{font-size:clamp(28px,4.4vw,38px);line-height:1.2;margin:16px 0;font-weight:600;text-align:center;letter-spacing:-0.005em}
+h2{font-size:22px;line-height:30px;font-weight:600;margin:0 0 8px;display:flex;gap:12px;align-items:baseline}
+h2 .n{font:600 22px/30px 'Source Serif 4',Georgia,serif;color:var(--ink);font-variant-numeric:lining-nums}
 h3{font-size:18px;margin:28px 0 8px}
-.lede{font-size:18px;color:var(--muted);max-width:720px}
+.lede{font-size:16px;line-height:26px;color:var(--ink);text-align:justify;padding:0 clamp(0px,4vw,40px)}
+@media (max-width:640px){.lede{text-align:left}}
 .notice{font-weight:600;margin:16px 0 4px}
-.badge{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);vertical-align:middle}
-.badge.lossy{border-color:var(--lossy);color:var(--lossy)}
-.badge.exact{border-color:var(--exact);color:var(--exact)}
-.badge.miss{border-color:var(--ink);color:var(--ink)}
+.badge{display:inline-block;font-size:13px;font-style:italic;font-weight:400;padding:0 2px;border:0;color:var(--muted);vertical-align:baseline}
+.badge.lossy{color:var(--ink)}
+.badge.lossy::before{content:"";display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px;background:repeating-linear-gradient(135deg,var(--ink) 0 1.5px,transparent 1.5px 4px);box-shadow:inset 0 0 0 1px var(--ink)}
+.badge.exact{color:var(--ink)}
+.badge.exact::before{content:"";display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px;background:var(--ink)}
+.badge.miss{color:var(--ink);font-weight:600;font-style:normal}
 .hero-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:24px 0}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
-.card.lossy{border-style:dashed;border-color:var(--lossy)}
+.card{background:var(--surface);border:0;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);border-radius:0;padding:16px 12px}
+.card.lossy{border-color:var(--ink)}
 .big{font-size:38px;font-weight:700;letter-spacing:-.5px;margin:6px 0}
 .big small{font-size:16px;font-weight:500;color:var(--muted)}
 .muted{color:var(--muted)}.small{font-size:14px}
-.callout{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;padding:14px 16px;margin:16px 0}
+.callout{background:transparent;border:1px solid var(--ink);border-radius:0;padding:14px 18px;margin:16px 0;font-size:15px;line-height:24px}
+.callout strong{font-variant:small-caps;letter-spacing:.04em}
 .callout strong{display:block;margin-bottom:2px}
 .gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px}
 .gloss dt{font-weight:600}.gloss dd{margin:2px 0 0;color:var(--muted);font-size:14px}
 .cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px}
 .fix{margin-top:10px;font-size:14px;font-weight:600}
-.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;margin:18px 0}
-.chart .cap{font-weight:600;margin:0 0 10px}
-.chart .foot{font-size:13px;color:var(--muted);margin:10px 0 0}
+.chart{background:var(--surface);border:0;border-radius:0;padding:8px 0;margin:18px 0}
+.chart .cap{font-weight:400;font-size:14px;line-height:21px;margin:10px 0 0;order:3}
+.chart{display:flex;flex-direction:column}
+.chart .plot{order:2}.chart .legend{order:1}.chart .foot{order:4}
+.chart .foot{font-size:13px;line-height:19px;color:var(--muted);margin:4px 0 0}
 .chart svg{display:block;width:100%;height:auto;overflow:visible}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:0 0 10px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
-table{border-collapse:collapse;width:100%;font-size:14px}
-th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl{overflow-x:auto;margin:14px 0;border:0;border-radius:0;background:transparent}
+table{border-collapse:collapse;width:100%;font-size:14px;line-height:20px;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+th,td{text-align:left;padding:6px 10px;border-bottom:0;white-space:nowrap}
+tbody tr + tr td{border-top:1px solid var(--line)}
 td.wrap{white-space:normal;min-width:220px}
-th{font-weight:600;color:var(--muted);background:var(--soft)}
+th{font-weight:600;font-size:13px;color:var(--ink);background:transparent;border-bottom:1px solid var(--ink)}
 tr:last-child td{border-bottom:0}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 tr.lossy td:first-child{box-shadow:inset 3px 0 0 var(--lossy)}
 .ok{color:var(--exact);font-weight:700}.bad{color:var(--lossy);font-weight:700}
-.math{font:600 18px ui-monospace,monospace;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:16px 0;overflow-x:auto}
-pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:6px 0 14px}
+.math{font:italic 20px/30px 'Source Serif 4',Georgia,serif;text-align:center;padding:14px 16px;background:transparent;border:0;margin:16px 0;overflow-x:auto}
+pre{background:transparent;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0;padding:12px 0;overflow-x:auto;margin:6px 0 14px;font-size:13px;line-height:21px}
 ul.links{display:flex;flex-wrap:wrap;gap:8px 18px;padding:0;list-style:none}
 footer{padding:28px 0 48px;font-size:14px;color:var(--muted)}
 .filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.filters button{font:inherit;font-size:13px;padding:6px 12px;min-height:36px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
-.filters button[aria-pressed="true"]{border-color:var(--exact);color:var(--exact);font-weight:600}
-.v{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid var(--line)}
+.filters button{font:inherit;font-size:13px;padding:4px 10px;min-height:32px;border-radius:0;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.filters button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg);font-weight:600}
+.v{display:inline-block;font-size:13px;font-style:italic;font-weight:400;padding:0;border:0}
 .v-improves{border-color:var(--exact);color:var(--exact)}.v-worse,.v-failed{border-color:var(--lossy);color:var(--lossy)}
 details.exp summary{cursor:pointer}
 .pending{display:flex;align-items:center;justify-content:center;min-height:180px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);text-align:center;padding:16px}
-svg text{fill:var(--muted);font:12px -apple-system,system-ui,sans-serif}
+svg text{fill:var(--muted);font:12px 'Source Serif 4',Georgia,serif}
 svg .axis{stroke:var(--line)}
 svg .lbl{fill:var(--ink);font-weight:600}
 @media (max-width:600px){section{padding:36px 0}.big{font-size:32px}header.top{position:static}
@@ -110,6 +122,7 @@ svg .lbl{fill:var(--ink);font-weight:600}
 <section id="top"><div class="wrap">
   <span class="badge miss" id="target-badge">Target 5 tok/s: not reached</span>
   <h1 id="title">GLM-5.3 on a 32 GB Apple M6: what we changed and what it cost</h1>
+  <p style="text-align:center;font-size:16px;line-height:24px;margin:0 0 16px"><a href="https://kakkoi.dev" style="color:var(--ink);text-decoration:none">Cyril Antoni</a> <span style="color:var(--muted)">· KakkoiDev</span></p>
   <p class="lede">Exact tuning made GLM about 4× faster on this Mac. Going further means trading answer quality, and 5 tok/s was not reachable here.</p>
   <div class="hero-grid">
     <div class="card">
@@ -136,7 +149,7 @@ svg .lbl{fill:var(--ink);font-weight:600}
 </div></section>
 
 <section id="why"><div class="wrap">
-  <h2><span class="n">01</span>Why it was slow</h2>
+  <h2><span class="n">1</span>Why it was slow</h2>
   <div class="cards3">
     <div class="card"><h3 style="margin-top:0">Too few CPU threads</h3><p class="muted small">The original build had no OpenMP (libomp was not installed), so it ran on one core. Even with libomp, Colibri uses only the M6's 2 "Super" cores out of 12.</p><div class="fix">Fix: install libomp, rebuild, set <code>OMP_NUM_THREADS=12</code></div></div>
     <div class="card"><h3 style="margin-top:0">CPU-only build</h3><p class="muted small">The engine was built without the Apple GPU backend, so the GPU sat idle while the CPU did everything.</p><div class="fix">Fix: rebuild with <code>METAL=1</code></div></div>
@@ -145,7 +158,7 @@ svg .lbl{fill:var(--ink);font-weight:600}
 </div></section>
 
 <section id="exact"><div class="wrap">
-  <h2><span class="n">02</span>Exact speed-ups, step by step</h2>
+  <h2><span class="n">2</span>Exact speed-ups, step by step</h2>
   <p class="muted">Each step keeps the model's math unchanged. Every run produced the same text as the baseline.</p>
   <figure class="chart" id="chart-a"><figcaption class="cap" id="cap-a"></figcaption><div class="plot"></div>
     <p class="foot">tok/s, axis starts at 0. Single run each; differences under ~10% are noise. Hover a bar for its run; click to read its output.</p></figure>
@@ -157,16 +170,16 @@ svg .lbl{fill:var(--ink);font-weight:600}
 </div></section>
 
 <section id="time"><div class="wrap">
-  <h2><span class="n">03</span>Where the time goes</h2>
+  <h2><span class="n">3</span>Where the time goes</h2>
   <p class="muted">Share of generation time per token. Fix one bottleneck and the next one shows up.</p>
   <figure class="chart" id="chart-b"><figcaption class="cap">The bottleneck moves from compute (CPU), to SSD reads (best exact), to attention and overhead (lossy).</figcaption>
     <div class="legend"><span><i style="background:var(--s1)"></i>SSD wait</span><span><i style="background:var(--s2)"></i>Expert math</span><span><i style="background:var(--s3)"></i>Attention</span><span><i style="background:var(--s4)"></i>Other</span></div>
     <div class="plot"></div>
-    <p class="foot">Single run each, profiler on. The lossy row is marked with an orange edge and a "changes output" label.</p></figure>
+    <p class="foot">Single run each, profiler on. The lossy row is marked with a grey edge and a "changes output" label.</p></figure>
 </div></section>
 
 <section id="ceiling"><div class="wrap">
-  <h2><span class="n">04</span>The hard ceiling: the SSD</h2>
+  <h2><span class="n">4</span>The hard ceiling: the SSD</h2>
   <p class="muted">Exact output needs every chosen expert, and almost none fit in RAM, so each token waits on the disk.</p>
   <div class="math" id="ceil-math"></div>
   <p id="ceil-text"></p>
@@ -177,7 +190,7 @@ svg .lbl{fill:var(--ink);font-weight:600}
 </div></section>
 
 <section id="tradeoff"><div class="wrap">
-  <h2><span class="n">05</span>Trading quality for speed</h2>
+  <h2><span class="n">5</span>Trading quality for speed</h2>
   <p class="muted">Skipping experts that are not in RAM avoids the SSD wait, but the model then computes something different. Every point above 0 <span class="badge lossy">changes output</span></p>
   <figure class="chart" id="chart-e"><figcaption class="cap">Speed only rises once the threshold passes 0.10, and the answer drifts with it.</figcaption>
     <div class="legend"><span><i style="background:var(--exact)"></i>exact</span><span><i style="background:var(--lossy)"></i>lossy, sky prompt</span><span><i style="background:transparent;border:2px dashed var(--lossy)"></i>code prompt</span>
@@ -191,21 +204,21 @@ svg .lbl{fill:var(--ink);font-weight:600}
 </div></section>
 
 <section id="bench"><div class="wrap">
-  <h2><span class="n">06</span>Quality vs speed bench</h2>
+  <h2><span class="n">6</span>Quality vs speed bench</h2>
   <p class="muted">Accuracy and total answer time per configuration and prompt style (normal vs "answer as briefly as possible"), on 24 graded prompts. <a href="bench.html"><strong>Open the full bench: every question and answer, with the manual review →</strong></a></p>
   <figure class="chart" id="chart-f"><figcaption class="cap">Does a terse prompt claw back speed without losing accuracy?</figcaption><div class="plot"></div><p class="foot" id="foot-f"></p></figure>
   <div class="tbl" id="tbl-bench-wrap" hidden><table id="tbl-bench"><thead><tr><th>Style</th><th>Config</th><th class="num">Correct</th><th class="num">Same text as exact</th><th class="num">Mean answer s</th><th class="num">Mean prefill s</th><th class="num">Mean output tokens</th><th class="num">Mean decode tok/s</th></tr></thead><tbody></tbody></table></div>
 </div></section>
 
 <section id="failed"><div class="wrap">
-  <h2><span class="n">07</span>What didn't work</h2>
+  <h2><span class="n">7</span>What didn't work</h2>
   <p class="muted" id="failed-intro"></p>
   <div class="tbl"><table id="tbl-neg"><thead><tr><th>What was tried</th><th>Kind</th><th class="num">tok/s</th><th>Why it didn't help</th><th>Run</th></tr></thead><tbody></tbody></table></div>
   <p class="muted small">Single run each. Vulkan needed a <a href="https://github.com/KakkoiDev/colibri-poc/blob/main/patches/colibri-moltenvk-portability.diff">2-line MoltenVK opt-in patch</a> in a test clone.</p>
 </div></section>
 
 <section id="log"><div class="wrap">
-  <h2><span class="n">08</span>Experiment log</h2>
+  <h2><span class="n">8</span>Experiment log</h2>
   <p class="muted">Every GLM experiment: what changed, what it was compared with, and what it did. Changes under ~10% are noise (single runs).</p>
   <div class="filters" role="group" aria-label="Filter by verdict" id="log-filters"></div>
   <div class="tbl"><table id="tbl-log"><thead><tr><th>Experiment</th><th>Category</th><th>Verdict</th><th class="num">tok/s (ref → new)</th><th class="num">Change</th><th class="num">Prompt reading s</th><th>Output</th><th>Details</th></tr></thead><tbody></tbody></table></div>
@@ -213,7 +226,7 @@ svg .lbl{fill:var(--ink);font-weight:600}
 </div></section>
 
 <section id="run"><div class="wrap">
-  <h2><span class="n">09</span>How to run it</h2>
+  <h2><span class="n">9</span>How to run it</h2>
   <p class="muted">Build Colibri with libomp and Metal first. Replace <code>&lt;colibri&gt;</code> and <code>&lt;models&gt;</code> with your own folders.</p>
   <h3>1 · Build</h3>
   <pre><code>brew install libomp
@@ -426,7 +439,7 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
       sh.forEach(function (v, k) {
         var w = v / sum * (BW - BL - 4);
         Bs.appendChild(tip(s('rect', { x: cx, y: y, width: w, height: bh, fill: cols[k] }), names[k] + ': ' + v + '% (run ' + r.run + ')'));
-        if (v / sum >= 0.08) Bs.appendChild(s('text', { x: cx + w / 2, y: y + 19, 'text-anchor': 'middle', style: 'fill:#fff;font-weight:600' }, v + '%'));
+        if (v / sum >= 0.08) Bs.appendChild(s('text', { x: cx + w / 2, y: y + 19, 'text-anchor': 'middle', style: 'fill:' + (k < 2 ? 'var(--bg)' : 'var(--ink)') + ';font-weight:600' }, v + '%'));
         cx += w;
       });
     });

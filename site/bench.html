@@ -4,82 +4,173 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GLM-5.3 quality bench</title>
-<meta name="description" content="24 graded questions answered by GLM-5.3 on a 32 GB Apple M6: correctness, answer time and every answer, exact vs faster lossy settings, normal vs terse prompts.">
+<meta name="description" content="Technical note: 24 graded questions answered by GLM-5.3 on a 32 GB Apple M6. Correctness and answer time for exact and faster lossy settings, normal and terse prompts, with every answer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
+/* "Technical report" theme from the design canvas (project/Main.dc.html): serif, ink on paper,
+   ruled tables, numbered figures and tables. Exact = solid ink, lossy = hatched ink. */
 :root{
-  --bg:#fafafa;--surface:#ffffff;--ink:#1a1a1a;--muted:#5b5b5b;--line:#dcdcdc;--soft:#f0f0f0;
-  --exact:#2b5c9e;--lossy:#b45309;--ok:#1e6b3a;--bad:#a12a2a;--warn-bg:#fff7e6;--warn-line:#e7b45a;--code:#f3f3f3;
+  --bg:#FFFFFF; --fg:#111111; --fg-2:#555555; --rule:#111111; --hair:#D6D4CF; --tint:#F4F3EF; --link:#1F4E99;
+  --hatch:repeating-linear-gradient(135deg,#111111 0 1.5px,transparent 1.5px 5px);
 }
-@media (prefers-color-scheme:dark){:root{
-  --bg:#141414;--surface:#1d1d1d;--ink:#ececec;--muted:#a8a8a8;--line:#3a3a3a;--soft:#262626;
-  --exact:#7aa7e0;--lossy:#f0a35b;--ok:#8fc79c;--bad:#ee9a90;--warn-bg:#2a2214;--warn-line:#8a6a2e;--code:#242424;
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141414; --fg:#ECEAE4; --fg-2:#A9A69F; --rule:#ECEAE4; --hair:#3A3936; --tint:#1D1C1A; --link:#9DB8E8;
+  --hatch:repeating-linear-gradient(135deg,#ECEAE4 0 1.5px,transparent 1.5px 5px);
 }}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
-a{color:var(--exact)}
-.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
-header.top{border-bottom:1px solid var(--line)}
-header.top .wrap{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;font-size:14px}
-section{padding:36px 0;border-bottom:1px solid var(--line)}
-h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:8px 0 12px}
-h2{font-size:22px;margin:0 0 8px}
-.lede{font-size:18px;color:var(--muted);max-width:760px}
-.muted{color:var(--muted)}.small{font-size:14px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:20px 0}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
-.big{font-size:30px;font-weight:700;margin:4px 0}
-.callout{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;padding:12px 16px;margin:16px 0;font-size:14px}
-.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
-table{border-collapse:collapse;width:100%;font-size:14px}
-th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-weight:600;color:var(--muted);background:var(--soft);white-space:nowrap}
-tr:last-child td{border-bottom:0}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Source Serif 4','Iowan Old Style',Georgia,serif;font-size:17px;line-height:28px;-webkit-font-smoothing:antialiased;font-variant-numeric:lining-nums}
+a{color:var(--link);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+a:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+p{hyphens:auto}
+.page{max-width:760px;margin:0 auto;padding:32px 20px 96px;display:flex;flex-direction:column;gap:40px}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.sc{font-variant:small-caps;letter-spacing:.04em}
+.note{font-size:13px;line-height:19px;color:var(--fg-2)}
+.cap{font-size:14px;line-height:21px}
+.cap b{font-weight:700}
+code,.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:.82em}
+.hatch{background:var(--hatch);box-shadow:inset 0 0 0 1px var(--fg)}
+.solid{background:var(--fg)}
+section{display:flex;flex-direction:column;gap:14px}
+h2.sec{font-size:22px;line-height:30px;font-weight:600}
+h2.sec .n{margin-right:12px}
+h2.small{font-size:15px;line-height:20px;font-weight:700}
+/* booktabs tables */
+.tblwrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;line-height:20px;border-top:2px solid var(--rule);border-bottom:2px solid var(--rule)}
+th{font-size:13px;font-weight:600;text-align:left;padding:6px 10px;border-bottom:1px solid var(--rule);white-space:nowrap}
+td{padding:6px 10px;vertical-align:top}
 td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-tr.lossy td:first-child{box-shadow:inset 3px 0 0 var(--lossy)}
-.badge{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
-.badge.lossy{border-color:var(--lossy);color:var(--lossy)}
-.ok{color:var(--ok);font-weight:600}.bad{color:var(--bad);font-weight:600}.cut{color:var(--muted);font-weight:600}
-.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
-select,input{font:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
-.ans{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:10px 0;padding:12px 14px}
-.ans header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
-.ans pre{white-space:pre-wrap;background:var(--code);border-radius:6px;padding:10px 12px;margin:8px 0 0;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;max-height:340px;overflow:auto}
-.q{font-size:14px;margin:6px 0 0}
-.review{font-size:13px;margin-top:6px}
-footer{padding:28px 0 48px;font-size:14px;color:var(--muted)}
+tbody tr.gap td{border-top:1px solid var(--hair)}
+figure{margin:0;display:flex;flex-direction:column;gap:10px}
+/* key results */
+.keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));border-top:2px solid var(--rule);border-bottom:2px solid var(--rule)}
+.keys > div{padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+.keys > div + div{border-left:1px solid var(--hair)}
+.keys .big{font-size:34px;line-height:42px;font-weight:600}
+.keys .big small{font-size:16px;font-weight:400}
+@media (max-width:640px){.keys > div + div{border-left:0;border-top:1px solid var(--hair)}}
+aside.cond{border:1px solid var(--rule);padding:14px 18px;font-size:15px;line-height:24px;display:flex;flex-direction:column;gap:4px}
+dl.defs{margin:0;display:grid;grid-template-columns:minmax(110px,max-content) 1fr;gap:6px 20px;font-size:15px;line-height:24px}
+dl.defs dt{font-style:italic} dl.defs dd{margin:0}
+/* figure 1 bars */
+.bars{display:flex;flex-direction:column;gap:8px;padding:8px 0}
+.bar{display:grid;grid-template-columns:190px 1fr 140px;gap:12px;align-items:center;font-size:14px;line-height:20px}
+.bar .track{height:14px;background:var(--tint);position:relative}
+.bar .fill{position:absolute;inset:0 auto 0 0}
+@media (max-width:640px){.bar{grid-template-columns:1fr;gap:4px}}
+/* answers appendix */
+.filters{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:14px;line-height:20px;padding:8px 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+select{font:inherit;font-size:14px;padding:3px 6px;border:1px solid var(--fg);border-radius:0;background:var(--bg);color:var(--fg)}
+.ans{border-bottom:1px solid var(--hair);padding:14px 0;display:flex;flex-direction:column;gap:6px}
+.ans .meta{font-size:14px;line-height:20px;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.ans pre{margin:0;white-space:pre-wrap;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:13px;line-height:21px;background:var(--tint);padding:10px 12px;max-height:340px;overflow:auto}
+.tag{font-size:13px;font-style:italic;color:var(--fg-2);display:inline-flex;align-items:center;gap:5px}
+.tag::before{content:"";width:10px;height:10px;display:inline-block}
+.tag.exact::before{background:var(--fg)}
+.tag.lossy::before{background:var(--hatch);box-shadow:inset 0 0 0 1px var(--fg)}
+.ok{font-weight:600}.bad{font-weight:700;text-decoration:underline;text-decoration-style:wavy;text-decoration-thickness:1px;text-underline-offset:3px}
+header.run{display:flex;flex-wrap:wrap;gap:4px 16px;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--hair);font-size:13px;line-height:20px;color:var(--fg-2)}
+header.run nav{display:flex;gap:16px;flex-wrap:wrap}
+footer{font-size:14px;line-height:22px;color:var(--fg-2);border-top:1px solid var(--hair);padding-top:12px}
+ol.refs{margin:0;padding-left:24px;font-size:15px;line-height:24px}
+@media (max-width:640px){#abstract{text-align:left!important;hyphens:auto}}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap"><strong>GLM-5.3 quality bench</strong><span><a href="index.html">← GLM performance report</a> · <a href="#answers">Every answer</a></span></div></header>
-<main>
-<section><div class="wrap">
-  <h1>Does GLM-5.3 stay correct when we make it faster?</h1>
-  <p class="lede">24 graded questions (facts, maths, logic, code checked by running tests, and explanations), answered by GLM-5.3 on a 32 GB Apple M6 with each speed setting and two prompt styles. Every answer is below.</p>
-  <div class="cards" id="headline"></div>
-  <div class="callout"><strong>Test conditions.</strong> Measured on the owner's busy everyday Mac (other apps open, sometimes a large download). Answer times may be better on a quiet machine. "Skip" settings change the model's output; "exact" gives the model's own answer. Single run per question and setting.</div>
-</div></section>
+<div class="page">
+<header class="run">
+  <span class="sc">Colibri lab · Technical note</span>
+  <nav aria-label="Note links"><a href="index.html">Performance report</a><a href="#answers">Every answer</a><a href="#data">Data</a><a href="https://github.com/KakkoiDev/colibri-poc">Repository</a></nav>
+</header>
 
-<section><div class="wrap">
-  <h2>Results by setting</h2>
-  <p class="muted small">Settings: <strong>exact</strong> = the model's own computation; <strong>skip X</strong> = experts that are not in RAM and weigh less than X are skipped instead of read from the SSD (faster, changes output). <strong>Terse</strong> prompts end with "Answer as briefly as possible. For code, reply with only the code." Normal answers were capped at 128 tokens.</p>
-  <div class="tbl"><table id="summary"><thead><tr><th>Style</th><th>Setting</th><th class="n">Automatic grade</th><th>Reviewed by hand</th><th class="n">Mean answer time</th><th class="n">Output tokens</th><th class="n">Generation tok/s</th></tr></thead><tbody></tbody></table></div>
-  <p class="muted small">The automatic grader takes the last number for maths and logic and runs the first code block's tests, so it under-counts long answers. Every answer it marked incorrect was read by hand: "cut off" means the 128-token limit stopped a correct answer.</p>
-  <ul class="small" id="notes"></ul>
-</div></section>
+<section aria-labelledby="title" style="gap:16px;text-align:center;padding-top:16px">
+  <h1 id="title" style="font-size:clamp(28px,4.4vw,38px);line-height:1.2;font-weight:600;letter-spacing:-0.005em">Does GLM-5.3 stay correct<br>when we make it faster?</h1>
+  <p style="font-size:16px;line-height:24px"><a href="https://kakkoi.dev" style="color:var(--fg);text-decoration:none">Cyril Antoni</a> <span style="color:var(--fg-2)">· KakkoiDev</span></p>
+  <p class="note num">October 2026 · Apple M6, 32 GB · GLM-5.3 int4 on the Colibri engine</p>
+</section>
 
-<section id="answers"><div class="wrap">
-  <h2>Every answer</h2>
+<section aria-labelledby="abs" style="gap:10px;padding:0 clamp(0px,4vw,40px)">
+  <h2 id="abs" class="sc small" style="text-align:center">Abstract</h2>
+  <p id="abstract" style="font-size:16px;line-height:26px;text-align:justify">Loading…</p>
+</section>
+
+<section aria-label="Key results" class="keys" id="keys"></section>
+
+<aside class="cond" aria-label="Test conditions">
+  <strong class="sc" style="font-size:14px">Note on test conditions</strong>
+  <span>Measured on the owner's busy everyday Mac: other apps were open and, for some runs, a large download was running. Answer times may be better on a quiet machine. Correctness is unaffected. One run per question and setting.</span>
+</aside>
+
+<section aria-labelledby="defs">
+  <h2 id="defs" class="sc small">Definitions</h2>
+  <dl class="defs">
+    <dt>Exact</dt><dd>The model's own computation: every expert the router picks is read and used.</dd>
+    <dt>Skip X</dt><dd>An expert that is not in memory and weighs less than X is skipped instead of read from the SSD. Faster, but <em>changes output</em>.</dd>
+    <dt>Terse</dt><dd>The prompt ends with “Answer as briefly as possible. For code, reply with only the code.”</dd>
+    <dt>Answer time</dt><dd>Reading the prompt plus generating the answer, in seconds.</dd>
+  </dl>
+</section>
+
+<section aria-labelledby="s1">
+  <h2 id="s1" class="sec"><span class="n num">1</span>Method</h2>
+  <p>Twenty-four questions in five kinds: eight facts, five sums, four logic puzzles, five small Python functions and two explanations. Each was asked in two styles, normal and terse, under each setting. Normal answers were capped at 128 tokens and decoded greedily.</p>
+  <p>Grading is automatic. Facts and logic are matched against expected answers, sums by the final number in the answer, and code by running the first code block against unit tests. Because the grader takes the <em>last</em> number and the 128-token cap can cut an answer short, it under-counts long answers. Every answer it marked incorrect was therefore read by hand (Section 3).</p>
+</section>
+
+<section aria-labelledby="s2">
+  <h2 id="s2" class="sec"><span class="n num">2</span>Results</h2>
+  <p>Terse prompts answer every question correctly in every setting and cut the waiting time to about a quarter (Table 1, Figure 1). Generation speed per token is unchanged; the answers are simply shorter. With terse prompts the faster settings save little more time, because reading the prompt now takes most of an answer.</p>
+  <figure>
+    <div class="tblwrap"><table id="t1"><thead><tr><th>Style</th><th>Setting</th><th class="n">Auto</th><th>Reviewed by hand</th><th class="n">Answer s</th><th class="n">Tokens</th><th class="n">tok/s</th></tr></thead><tbody></tbody></table></div>
+    <figcaption class="cap"><b>Table 1.</b> Correctness and mean answer time by prompt style and setting. “Auto” is the automatic grade; “reviewed” corrects grader errors (“cut off” means the 128-token cap stopped a correct answer). Hatched settings change the model's output. Single run per question.</figcaption>
+  </figure>
+  <figure>
+    <div class="bars" id="f1" role="img" aria-label="Figure 1: mean answer time per setting, normal and terse prompts"></div>
+    <figcaption class="cap"><b>Figure 1.</b> Mean answer time per setting, shorter is better. Solid bars are exact; hatched bars change output. Labels give the reviewed correct count out of the answers run.</figcaption>
+  </figure>
+  <ul id="notes" class="note" style="margin:0;padding-left:18px"></ul>
+</section>
+
+<section aria-labelledby="s3">
+  <h2 id="s3" class="sec"><span class="n num">3</span>Manual review</h2>
+  <p>Exact and skip 0.3 made no real mistakes: their automatic failures were cut-offs and grader errors. Skip 0.5 produced two genuinely wrong long answers, one degenerating into repetition and one rambling without settling, and it wrote longer answers overall. Skip 0.4 has made no real mistakes in the answers run so far.</p>
+  <figure>
+    <div class="tblwrap"><table id="t2"><thead><tr><th>Question</th><th>Style</th><th>Setting</th><th>Reviewed</th><th>Why</th></tr></thead><tbody></tbody></table></div>
+    <figcaption class="cap"><b>Table 2.</b> Every answer the automatic grader marked incorrect, read by hand.</figcaption>
+  </figure>
+</section>
+
+<section aria-labelledby="s4">
+  <h2 id="s4" class="sec"><span class="n num">4</span>Discussion</h2>
+  <p>For everyday use, terse prompts with exact settings give correct answers in about a minute, and skip 0.3 with 12 threads makes that slightly faster with no wrong answers in this bench. Skip 0.5 is fast but risky for long, free-form answers. Twenty-four questions are a smoke test rather than a benchmark: the conclusions hold for this question set and this machine.</p>
+</section>
+
+<section id="answers" aria-labelledby="sa">
+  <h2 id="sa" class="sec"><span class="n">A</span>Appendix: every answer</h2>
   <div class="filters" role="group" aria-label="Filters">
     <label>Style <select id="f-style"></select></label>
     <label>Setting <select id="f-config"></select></label>
     <label>Question <select id="f-q"></select></label>
     <label>Grade <select id="f-grade"><option value="all">all</option><option value="correct">correct (auto)</option><option value="incorrect">incorrect (auto)</option><option value="reviewed">reviewed by hand</option></select></label>
-    <span class="muted small" id="count"></span>
+    <span class="note" id="count"></span>
   </div>
   <div id="list"></div>
-</div></section>
-</main>
-<footer><div class="wrap">Data: <a href="https://github.com/KakkoiDev/colibri-poc/tree/main/published-results/glm-bench-v1">published-results/glm-bench-v1</a> (summary, report, review, every answer). Engine: <a href="https://github.com/JustVugg/colibri">Colibri</a>. Static page, no tracking.</div></footer>
+</section>
+
+<section id="data" aria-labelledby="sd">
+  <h2 id="sd" class="sc small">Data and references</h2>
+  <ol class="refs">
+    <li>Bench data, report, manual review and every answer: <a href="https://github.com/KakkoiDev/colibri-poc/tree/main/published-results/glm-bench-v1">published-results/glm-bench-v1</a>.</li>
+    <li>Questions and grading rules: <a href="https://github.com/KakkoiDev/colibri-poc/blob/main/glm-prompts.json">glm-prompts.json</a>, <a href="https://github.com/KakkoiDev/colibri-poc/blob/main/glm_bench.py">glm_bench.py</a>.</li>
+    <li>Speed results and method: <a href="index.html">GLM-5.3 on a 32 GB Apple M6: what we changed and what it cost</a>.</li>
+    <li>Engine: <a href="https://github.com/JustVugg/colibri">Colibri</a> by JustVugg.</li>
+  </ol>
+</section>
+<footer>Static page · no tracking or analytics.</footer>
+</div>
 <script>
 (function () {
   'use strict';
@@ -91,43 +182,67 @@ footer{padding:28px 0 48px;font-size:14px;color:var(--muted)}
   }
   var f1 = function (v) { return v == null ? '—' : Number(v).toFixed(1); };
   var ORDER = ['exact', 'd030', 'd030t12', 'd040t12', 'd050'];
+  function tag(cfg, label) { return h('span', { class: 'tag ' + (cfg === 'exact' ? 'exact' : 'lossy'), text: label }); }
   fetch('data/bench-v1.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
     var L = function (c) { return d.labels[c] || c; };
     var rev = d.review || {};
     var ok = d.answers.filter(function (a) { return a.exit === 0; });
-    // reviewed counts per style/config
     var groups = {};
     ok.forEach(function (a) {
-      var g = groups[a.style + '|' + a.config] = groups[a.style + '|' + a.config] || { style: a.style, config: a.config, n: 0, auto: 0, correct: 0, cut: 0, wrong: 0, t: 0, tok: 0, tps: 0 };
+      var k = a.style + '|' + a.config;
+      var g = groups[k] = groups[k] || { style: a.style, config: a.config, n: 0, auto: 0, correct: 0, cut: 0, wrong: 0, t: 0, tok: 0, tps: 0 };
       g.n++; g.t += a.answer_s || 0; g.tok += a.output_tokens || 0; g.tps += a.decode_tok_s || 0;
       if (a.correct) { g.auto++; g.correct++; }
-      else { var r = rev[a.key]; var s = r ? r.reviewed : 'wrong'; if (/^correct/.test(s)) g.correct++; else if (s === 'cut off') g.cut++; else g.wrong++; }
+      else { var r = rev[a.key], s = r ? r.reviewed : 'wrong'; if (/^correct/.test(s)) g.correct++; else if (s === 'cut off') g.cut++; else g.wrong++; }
     });
     var rows = Object.keys(groups).map(function (k) { return groups[k]; }).sort(function (a, b) {
       return a.style === b.style ? ORDER.indexOf(a.config) - ORDER.indexOf(b.config) : (a.style === 'terse' ? -1 : 1);
     });
-    var tb = document.querySelector('#summary tbody');
+    var G = function (s, c) { return groups[s + '|' + c]; }, mean = function (g, k) { return g[k] / g.n; };
+    var ne = G('normal', 'exact'), te = G('terse', 'exact'), t3 = G('terse', 'd030t12') || G('terse', 'd030'), n5 = G('normal', 'd050');
+
+    // abstract and key results, from the data
+    document.getElementById('abstract').textContent =
+      'We asked GLM-5.3, a 744B mixture-of-experts model running from an SSD on a 32 GB Apple M6, ' + 24 + ' graded questions under several speed settings and two prompt styles, ' +
+      ok.length + ' answers in all. A terse prompt cut the mean exact answer time from ' + f1(mean(ne, 't')) + ' s to ' + f1(mean(te, 't')) + ' s (' + (mean(ne, 't') / mean(te, 't')).toFixed(1) + '×) with ' +
+      te.correct + ' of ' + te.n + ' correct. Skipping experts that are not in memory speeds generation but changes output: at threshold 0.3 no answer was wrong after manual review, while threshold 0.5 produced ' +
+      n5.wrong + ' wrong long answers. Terse prompts kept every setting at 24 of 24.';
+    var keys = document.getElementById('keys');
+    [[true, 'Terse prompts', (mean(ne, 't') / mean(te, 't')).toFixed(1) + '×', ' faster', f1(mean(te, 't')) + ' s vs ' + f1(mean(ne, 't')) + ' s · ' + te.correct + '/' + te.n + ' correct'],
+     [false, 'Everyday setting', f1(mean(t3, 't')), ' s', 'terse + skip 0.3 · ' + t3.correct + '/' + t3.n + ' correct · changes output'],
+     [false, 'Skip 0.5, normal style', String(n5.wrong), ' wrong', 'of ' + n5.n + ' long answers, after review']].forEach(function (k) {
+      keys.appendChild(h('div', {}, h('span', { class: 'sc note', style: 'display:inline-flex;gap:8px;align-items:center' }, h('span', { 'aria-hidden': 'true', class: k[0] ? 'solid' : 'hatch', style: 'width:12px;height:12px;display:inline-block' }), k[1]),
+        h('span', { class: 'big num' }, k[2], h('small', { text: k[3] })), h('span', { class: 'note num', text: k[4] })));
+    });
+
+    // Table 1
+    var tb = document.querySelector('#t1 tbody'), prev = null;
     rows.forEach(function (g) {
-      var lossy = g.config !== 'exact';
-      tb.appendChild(h('tr', { class: lossy ? 'lossy' : null }, h('td', { text: g.style }),
-        h('td', {}, L(g.config) + ' ', lossy ? h('span', { class: 'badge lossy', text: 'changes output' }) : null),
-        h('td', { class: 'n', text: g.auto + '/' + g.n }),
-        h('td', {}, h('span', { class: 'ok', text: g.correct + ' correct' }), g.cut ? h('span', { class: 'cut', text: ' · ' + g.cut + ' cut off' }) : null, g.wrong ? h('span', { class: 'bad', text: ' · ' + g.wrong + ' wrong' }) : null,
-          g.n < 24 ? h('span', { class: 'muted', text: ' (' + g.n + ' of 24 so far)' }) : null),
-        h('td', { class: 'n', text: f1(g.t / g.n) + ' s' }), h('td', { class: 'n', text: f1(g.tok / g.n) }), h('td', { class: 'n', text: (g.tps / g.n).toFixed(2) })));
+      var verdict = h('span', {}, h('span', { class: 'ok', text: g.correct + ' correct' }), g.cut ? ' · ' + g.cut + ' cut off' : null, g.wrong ? h('span', {}, ' · ', h('span', { class: 'bad', text: g.wrong + ' wrong' })) : null,
+        g.n < 24 ? h('span', { class: 'note', text: ' (' + g.n + ' of 24 so far)' }) : null);
+      tb.appendChild(h('tr', { class: prev && prev !== g.style ? 'gap' : null }, h('td', { text: prev === g.style ? '' : g.style }), h('td', {}, tag(g.config, L(g.config))),
+        h('td', { class: 'n', text: g.auto + '/' + g.n }), h('td', {}, verdict), h('td', { class: 'n', text: f1(mean(g, 't')) }), h('td', { class: 'n', text: f1(mean(g, 'tok')) }), h('td', { class: 'n', text: (mean(g, 'tps')).toFixed(2) })));
+      prev = g.style;
+    });
+    // Figure 1
+    var f = document.getElementById('f1'), maxT = Math.max.apply(null, rows.map(function (g) { return mean(g, 't'); }));
+    ['normal', 'terse'].forEach(function (style) {
+      f.appendChild(h('div', { class: 'sc note', style: 'margin-top:6px', text: style + ' prompts' }));
+      rows.filter(function (g) { return g.style === style; }).forEach(function (g) {
+        f.appendChild(h('div', { class: 'bar' }, h('span', { text: L(g.config) }),
+          h('span', { class: 'track' }, h('span', { class: 'fill ' + (g.config === 'exact' ? 'solid' : 'hatch'), style: 'width:' + (mean(g, 't') / maxT * 100).toFixed(1) + '%' })),
+          h('span', { class: 'num', text: f1(mean(g, 't')) + ' s · ' + g.correct + '/' + g.n })));
+      });
     });
     (d.review_notes || []).forEach(function (n) { document.getElementById('notes').appendChild(h('li', { text: n })); });
-    // headline cards from the data
-    var G = function (s, c) { return groups[s + '|' + c]; };
-    var ne = G('normal', 'exact'), te = G('terse', 'exact'), t3 = G('terse', 'd030t12') || G('terse', 'd030');
-    var cards = [];
-    if (ne && te) cards.push(['Terse prompts', (ne.t / ne.n / (te.t / te.n)).toFixed(1) + '× faster answers', f1(te.t / te.n) + ' s vs ' + f1(ne.t / ne.n) + ' s per exact answer, ' + te.correct + '/' + te.n + ' correct']);
-    if (t3) cards.push(['Everyday setting', f1(t3.t / t3.n) + ' s per answer', 'Terse + skip 0.3 (12 threads): ' + t3.correct + '/' + t3.n + ' correct, no wrong answers']);
-    var n5 = G('normal', 'd050');
-    if (n5) cards.push(['Skip 0.5, long answers', n5.wrong + ' wrong of ' + n5.n, 'Repetition and rambling in long answers; terse answers stayed ' + G('terse', 'd050').correct + '/24']);
-    var hd = document.getElementById('headline');
-    cards.forEach(function (c) { hd.appendChild(h('div', { class: 'card' }, h('div', { class: 'muted small', text: c[0] }), h('div', { class: 'big', text: c[1] }), h('div', { class: 'small', text: c[2] }))); });
-    // answer browser
+    // Table 2
+    var t2 = document.querySelector('#t2 tbody');
+    Object.keys(rev).sort().forEach(function (k) {
+      var p = k.split('__'), r = rev[k];
+      t2.appendChild(h('tr', {}, h('td', {}, h('span', { class: 'mono', text: p[0] })), h('td', { text: p[1] }), h('td', {}, tag(p[2], L(p[2]))),
+        h('td', {}, h('span', { class: r.reviewed === 'wrong' ? 'bad' : 'ok', text: r.reviewed })), h('td', { text: r.why })));
+    });
+    // Appendix: every answer
     function opts(sel, vals, label) { sel.appendChild(h('option', { value: 'all', text: 'all' })); vals.forEach(function (v) { sel.appendChild(h('option', { value: v, text: label ? label(v) : v })); }); }
     var uniq = function (k) { return d.answers.map(function (a) { return a[k]; }).filter(function (v, i, x) { return x.indexOf(v) === i; }); };
     opts(document.getElementById('f-style'), uniq('style'));
@@ -141,20 +256,20 @@ footer{padding:28px 0 48px;font-size:14px;color:var(--muted)}
           (fg === 'all' || (fg === 'correct' && a.correct) || (fg === 'incorrect' && a.correct === false) || (fg === 'reviewed' && rev[a.key]));
       });
       document.getElementById('count').textContent = shown.length + ' answers';
-      shown.slice(0, 300).forEach(function (a) {
-        var r = rev[a.key], lossy = a.config !== 'exact';
-        var grade = a.correct === true ? h('span', { class: 'ok', text: '✓ correct' }) : a.correct === false ? h('span', { class: 'bad', text: '✗ incorrect (auto)' }) : h('span', { class: 'muted', text: 'not graded' });
+      shown.forEach(function (a, i) {
+        var r = rev[a.key];
+        var grade = a.correct === true ? h('span', { class: 'ok', text: '✓ correct' }) : a.correct === false ? h('span', { class: 'bad', text: '✗ incorrect (auto)' }) : h('span', { class: 'note', text: 'not graded' });
         list.appendChild(h('article', { class: 'ans' },
-          h('header', {}, h('strong', { text: a.id }), h('span', {}, h('span', { class: 'badge', text: a.style }), ' ', h('span', { class: 'badge' + (lossy ? ' lossy' : ''), text: L(a.config) }), ' ', grade,
-            h('span', { class: 'muted small', text: ' · ' + f1(a.answer_s) + ' s · ' + a.output_tokens + ' tokens' }))),
-          h('p', { class: 'q muted', text: 'Q: ' + (a.prompt || '') + (a.style === 'terse' ? ' ' + d.prompt_styles.terse.trim() : '') }),
+          h('div', { class: 'meta' }, h('strong', { class: 'mono', text: 'A.' + (i + 1) + ' ' + a.id }), h('span', { class: 'note', text: a.style }), tag(a.config, L(a.config)), grade,
+            h('span', { class: 'note num', text: f1(a.answer_s) + ' s · ' + a.output_tokens + ' tokens' })),
+          h('p', { style: 'font-size:15px;line-height:24px' }, h('em', { text: 'Q. ' }), (a.prompt || '') + (a.style === 'terse' ? ' ' + d.prompt_styles.terse.trim() : '')),
           h('pre', { text: a.text || '' }),
-          r ? h('div', { class: 'review' }, h('strong', { text: 'Reviewed by hand: ' + r.reviewed + '.' }), ' ' + r.why) : null));
+          r ? h('p', { class: 'note' }, h('strong', { text: 'Reviewed by hand: ' + r.reviewed + '. ' }), r.why) : null));
       });
     }
     ['f-style', 'f-config', 'f-q', 'f-grade'].forEach(function (id) { document.getElementById(id).addEventListener('change', draw); });
     draw();
-  }).catch(function (e) { document.getElementById('list').textContent = 'Could not load the bench data: ' + e.message; });
+  }).catch(function (e) { document.getElementById('abstract').textContent = 'Could not load the bench data: ' + e.message; });
 })();
 </script>
 </body>
