@@ -576,7 +576,10 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
         return { x: r.answer_s, y: pct, color: color[r.config] || 'var(--muted)', shape: r.style === 'terse' ? 'tri' : 'dot', r: 6,
           tip: r.style + ' · ' + (name[r.config] || r.config) + ': ' + r.correct + '/' + r.graded + ' correct, ' + r.answer_s.toFixed(1) + ' s mean answer' };
       }) }] }));
-    $('#foot-f').textContent = 'Graded automatically: facts and logic by expected answer, maths by final number, code by running tests. Skip settings change output.';
+    var ff = $('#foot-f');
+    ff.textContent = 'Automatic grades: facts and logic by expected answer, maths by final number, code by running tests; normal answers were capped at 128 tokens. Read by hand, normal exact and skip 0.3 made no real mistakes (their misses were cut-offs and grader errors); skip 0.5 had 2 genuinely bad long answers. ';
+    ff.appendChild(el('a', { href: 'https://github.com/KakkoiDev/colibri-poc/blob/main/published-results/glm-bench-v1/review.md' }, 'Manual review'));
+    ff.appendChild(document.createTextNode('. Skip settings change output.'));
     $('#tbl-bench-wrap').hidden = false;
     var tb = $('#tbl-bench tbody');
     rows.forEach(function (r) {
