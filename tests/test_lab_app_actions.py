@@ -34,6 +34,20 @@ class ActionTests(unittest.TestCase):
         argv, _ = a.build_command('prep', {'model': 'glm-5.3-iq2m'})
         self.assertEqual(argv, ['make', 'glm-prep-iq2m'])
 
+    def test_ollama_bench_needs_installed_model_and_exact(self):
+        old = a.ollama_models
+        a.ollama_models = lambda: {'qwen3.8:27b-mlx'}
+        try:
+            argv, title = a.build_command('bench', {'name': 'qwen38-27b-ollama', 'configs': ['exact'], 'styles': ['normal', 'terse'],
+                                                    'ollama_model': 'qwen3.8:27b-mlx'})
+            self.assertEqual(argv[-4:], ['--backend', 'ollama', '--ollama-model', 'qwen3.8:27b-mlx'])
+            self.assertIn('Ollama', title)
+            for bad in [{'ollama_model': 'evil; rm'}, {'ollama_model': 'qwen3.8:27b-mlx', 'configs': ['d030']}]:
+                with self.assertRaises(a.ActionError):
+                    a.build_command('bench', {'name': 'x', 'configs': ['exact'], 'styles': ['terse'], **bad})
+        finally:
+            a.ollama_models = old
+
     def test_queue_add_move_remove_pause_and_gpu_rule(self):
         x = a.queue_add('quiet', {'flags': ['ram-sweep']}, only_when_quiet=True)
         y = a.queue_add('bench', {'name': 'v9', 'configs': ['exact'], 'styles': ['terse']})

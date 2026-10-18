@@ -11,7 +11,7 @@ Target: **5.0 tok/s**. Best exact: **0.46 tok/s** (Metal exact: 6 threads instea
 
 Memory is not judged: peak RSS varied 6.2-9.3 GB between two runs with identical settings, so it reflects what macOS kept resident rather than the setting.
 
-Verdicts: failed 1, improves 20, inconclusive 1, no clear change 17, not run 23, reference 1, worse 5.
+Verdicts: confirmed 1, failed 1, improves 20, inconclusive 1, no clear change 17, not run 22, reference 1, worse 5.
 
 ```mermaid
 flowchart LR
@@ -198,7 +198,7 @@ flowchart LR
 
 | Experiment | Verdict | tok/s (ref → new) | Change | Prompt reading s (ref → new) | Output | Effects | Runs |
 |---|---|---|---:|---|---|---|---|
-| **Check the Qwen models' architecture (dense vs MoE)** | not run | — → — | — | — → — | — | — | — |
+| **Check the Qwen models' architecture (dense vs MoE)** | confirmed | — → — | — | — → — | — | — | — |
 | **Qwen3.8-27B (dense) through the installed Ollama MLX model** | not run | — → — | — | — → — | — | — | — |
 | **Qwen3.6-35B-A3B (MoE, ~3B active) with every expert in RAM** | not run | — → — | — | — → — | — | — | — |
 | **Qwen3.6-35B-A3B at simulated 8 / 16 / 24 GB machines** | not run | — → — | — | — → — | — | — | — |
@@ -206,8 +206,8 @@ flowchart LR
 | **Dense Qwen3.8-27B on Colibri at 16 / 24 GB profiles** | not run | — → — | — | — → — | — | — | — |
 | **Correct answers per minute vs published intelligence, per model and machine profile** | not run | — → — | — | — → — | — | — | — |
 
-- **Check the Qwen models' architecture (dense vs MoE)** (`sm-arch-check`): change `read config.json of Qwen3.8-27B and Qwen3.6-35B-A3B`. Why: Artificial Analysis lists Qwen3.8-27B as 3B active, Colibri says dense; expert streaming only helps a MoE. Result: Planned: no download needed beyond the config files.
-- **Qwen3.8-27B (dense) through the installed Ollama MLX model** (`sm-qwen38-27b-ollama`): change `Ollama qwen3.8:27b-mlx, sky/code speed + quality bench (terse, normal)`. Why: Published intelligence 34 vs GLM-5.3 45, but it fits in RAM: likely tens of tok/s, so far more correct answers per minute. Result: Planned: needs an Ollama backend for glm_bench.py. No download (already installed).
+- **Check the Qwen models' architecture (dense vs MoE)** (`sm-arch-check`): change `read config.json of Qwen3.8-27B and Qwen3.6-35B-A3B`. Why: Artificial Analysis lists Qwen3.8-27B as 3B active, Colibri says dense; expert streaming only helps a MoE. Result: Read from the official config.json files. Qwen3.8-27B is dense: Qwen3_5ForConditionalGeneration, 64 layers, hidden 5120, one MLP per layer (intermediate 17408), no experts, so all ~27.8B weights are used for every token (Ollama: 27.8B, NVFP4). Artificial Analysis's "3B active" for it is wrong. Qwen3.6-35B-A3B is a MoE: Qwen3_5MoeForConditionalGeneration, 40 layers, hidden 2048, 256 experts with 8 routed plus 1 shared per token (expert width 512). Routed experts per token are ~1.0B parameters (~0.55 GB at int4 gs64), so expert streaming applies to it and not to the 27B. Tradeoffs: Config files only; nothing measured.
+- **Qwen3.8-27B (dense) through the installed Ollama MLX model** (`sm-qwen38-27b-ollama`): change `Ollama qwen3.8:27b-mlx, sky/code speed + quality bench (terse, normal)`. Why: Published intelligence 34 vs GLM-5.3 45, but it fits in RAM: likely tens of tok/s, so far more correct answers per minute. Result: Ready: glm_bench.py has an Ollama backend (--backend ollama, thinking off, temperature 0, same 128-token limit and grading; checked on the loaded gemma4:26b-mlx with 3 prompts). Queued in the lab app as bench qwen38-27b-ollama (exact; normal and terse), to start when the machine is quiet, after the skip-0.4 re-run. Speed comes from the same answers (generation tok/s, prompt reading).
 - **Qwen3.6-35B-A3B (MoE, ~3B active) with every expert in RAM** (`sm-qwen36-a3b-resident`): change `Colibri qwen36 engine, int4 gs64, --ram 24`. Why: Upper bound for the small MoE on this Mac; Colibri reports 6.0 tok/s CPU and 9.9 tok/s integrated-GPU Vulkan elsewhere. Result: Planned: needs ~23 GB download (make glm-prep-qwen36) and a qwen36 adapter for the bench tools.
 - **Qwen3.6-35B-A3B at simulated 8 / 16 / 24 GB machines** (`sm-qwen36-a3b-ram-sweep`): change `RAM budgets 5 / 11 / 17 / 24 GB, threads 4 / 6 / 8 / 12`. Why: A MoE reads only ~1.5 GB of experts per token, so it should stay usable on 8-16 GB machines where a dense model cannot. Result: Planned: after sm-qwen36-a3b-resident. Simulated: a RAM cap does not reproduce a slower SSD (~3 GB/s on base Macs).
 - **Qwen3.6-35B-A3B: Vulkan expert tier (MoltenVK) vs CPU** (`sm-qwen36-a3b-vulkan`): change `COLI_VULKAN=1 with the MoltenVK portability patch, engines/ clone`. Why: The qwen36 engine has no Metal backend; Colibri's Vulkan tier helped an integrated GPU (9.9 vs 6.0 tok/s). Result: Planned: after sm-qwen36-a3b-resident.

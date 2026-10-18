@@ -87,6 +87,15 @@ def _runnable_model(mid):
     return m
 
 
+def ollama_models():
+    """Names from `ollama list` (empty when Ollama is not installed or not running)."""
+    try:
+        out = subprocess.run(['ollama', 'list'], capture_output=True, text=True, timeout=10).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return set()
+    return {l.split()[0] for l in out.splitlines()[1:] if l.strip()}
+
+
 def build_command(kind, args):
     """Validated argv for a lab job, plus a human title."""
     args = args or {}
@@ -107,7 +116,15 @@ def build_command(kind, args):
             raise ActionError(f'unknown or missing configs/styles: {bad or "none given"}')
         argv = [PY, 'glm_bench.py', 'run', '--name', name, '--configs', ','.join(configs), '--styles', ','.join(styles)]
         label = ''
-        if args.get('model') and args['model'] != 'glm-5.3-int4':
+        if args.get('ollama_model'):
+            om = args['ollama_model']
+            if om not in ollama_models():
+                raise ActionError(f'not an installed Ollama model: {om}')
+            if configs != ['exact']:
+                raise ActionError('Ollama benches run the exact config only (skip settings are Colibri-only)')
+            argv += ['--backend', 'ollama', '--ollama-model', om]
+            label = f' on Ollama {om}'
+        elif args.get('model') and args['model'] != 'glm-5.3-int4':
             m = _runnable_model(args['model'])
             argv += ['--model', '~/' + m['path'], '--coli-dir', m['coli_dir']]
             label = f" on {m['name']}"

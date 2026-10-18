@@ -1144,12 +1144,14 @@
   "runs": [],
   "lossy": false,
   "date": "2026-10-18",
-  "conclusion": "Planned: no download needed beyond the config files.",
-  "tradeoffs": "",
-  "verdict": "not run",
+  "conclusion": "Read from the official config.json files. Qwen3.8-27B is dense: Qwen3_5ForConditionalGeneration, 64 layers, hidden 5120, one MLP per layer (intermediate 17408), no experts, so all ~27.8B weights are used for every token (Ollama: 27.8B, NVFP4). Artificial Analysis's \"3B active\" for it is wrong. Qwen3.6-35B-A3B is a MoE: Qwen3_5MoeForConditionalGeneration, 40 layers, hidden 2048, 256 experts with 8 routed plus 1 shared per token (expert width 512). Routed experts per token are ~1.0B parameters (~0.55 GB at int4 gs64), so expert streaming applies to it and not to the 27B.",
+  "tradeoffs": "Config files only; nothing measured.",
+  "verdict": "confirmed",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
-   "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
+   "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b",
+   "https://huggingface.co/Qwen/Qwen3.8-27B/blob/main/config.json",
+   "https://huggingface.co/Qwen/Qwen3.6-35B-A3B/blob/main/config.json"
   ]
  },
  {
@@ -1162,7 +1164,7 @@
   "runs": [],
   "lossy": false,
   "date": "2026-10-18",
-  "conclusion": "Planned: needs an Ollama backend for glm_bench.py. No download (already installed).",
+  "conclusion": "Ready: glm_bench.py has an Ollama backend (--backend ollama, thinking off, temperature 0, same 128-token limit and grading; checked on the loaded gemma4:26b-mlx with 3 prompts). Queued in the lab app as bench qwen38-27b-ollama (exact; normal and terse), to start when the machine is quiet, after the skip-0.4 re-run. Speed comes from the same answers (generation tok/s, prompt reading).",
   "tradeoffs": "",
   "verdict": "not run",
   "sources": [

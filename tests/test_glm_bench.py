@@ -1,4 +1,5 @@
-import unittest
+import json, shutil, tempfile, types, unittest
+from pathlib import Path
 
 import glm_bench as gb
 
@@ -16,6 +17,43 @@ DEGRADE_ZERO tau=0.300 (zeroed 120 miss slots; top layers: L57:15)
 
 
 class GlmBenchTests(unittest.TestCase):
+    def test_ollama_record_maps_nanosecond_timings(self):
+        r = gb.ollama_record({'response': ' Canberra. ', 'prompt_eval_count': 20, 'prompt_eval_duration': 500_000_000,
+                              'eval_count': 40, 'eval_duration': 2_000_000_000, 'load_duration': 10_000_000})
+        self.assertEqual((r['prompt_tokens'], r['output_tokens'], r['text']), (20, 40, 'Canberra.'))
+        self.assertAlmostEqual(r['prefill_s'], 0.5)
+        self.assertAlmostEqual(r['decode_s'], 2.0)
+        self.assertAlmostEqual(r['decode_tok_s'], 20.0)
+
+    def test_ollama_backend_runs_grades_and_refuses_skip_configs(self):
+        with tempfile.TemporaryDirectory() as d:
+            old_root, old_gen = gb.ROOT, gb.ollama_generate
+            gb.ROOT = Path(d)
+            shutil.copy(Path(old_root, 'glm-prompts.json'), d)
+            calls = []
+            def fake(url, model, prompt, ngen, timeout):
+                calls.append((model, ngen))
+                return {'response': 'Canberra.', 'prompt_eval_count': 9, 'prompt_eval_duration': 10**8,
+                        'eval_count': 4, 'eval_duration': 2 * 10**8}
+            gb.ollama_generate = fake
+            try:
+                spec = json.loads(Path(d, 'glm-prompts.json').read_text())
+                pid = next(p['id'] for p in spec['prompts'] if 'canberra' in p.get('accept', []))
+                args = types.SimpleNamespace(name='t', configs='exact', styles='terse', only=pid, ngen=64, ram='18',
+                                             ctx='1024', timeout=5, model='m', coli_dir='~/x', backend='ollama',
+                                             ollama_model='qwen3.8:27b-mlx', ollama_url='http://127.0.0.1:1')
+                gb.run(args)
+                rec = json.loads(Path(d, 'results', 'glm-bench-t', f'{pid}__terse__exact.json').read_text())
+                self.assertEqual(calls, [('qwen3.8:27b-mlx', 64)])
+                self.assertTrue(rec['correct'])
+                self.assertAlmostEqual(rec['answer_s'], 0.3)
+                self.assertEqual(json.loads(Path(d, 'results', 'glm-bench-t', 'meta.json').read_text())['backend'], 'ollama')
+                args.configs, args.name = 'exact,d030', 'u'
+                with self.assertRaises(SystemExit):
+                    gb.run(args)
+            finally:
+                gb.ROOT, gb.ollama_generate = old_root, old_gen
+
     def test_parse_log_extracts_timing_text_and_skips(self):
         r = gb.parse_log(LOG)
         self.assertEqual(r['prompt_tokens'], 17)

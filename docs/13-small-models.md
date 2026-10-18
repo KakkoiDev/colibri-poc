@@ -3,7 +3,8 @@
 **Question:** can a smaller model, run the way we run GLM, give more useful intelligence
 per minute of waiting on this Mac and on lower-end Macs (8-24 GB)?
 
-Status: **planned, nothing run yet** (2026-10-18). Each experiment below is also an entry
+Status (2026-10-18): `sm-arch-check` **done**; `sm-qwen38-27b-ollama` **queued** (runs when
+the machine is quiet); the rest planned. Each experiment below is also an entry
 in the [experiment log](12-experiment-log.md) (category `small-models`).
 
 ## The candidates
@@ -18,9 +19,15 @@ in the [experiment log](12-experiment-log.md) (category `small-models`).
 Published intelligence = Artificial Analysis Intelligence Index v4.3.2 (reported by others,
 not measured here; frontier reference: Claude Opus 5.5 = 58). Sources:
 [GLM-5.3](https://artificialanalysis.ai/models), [Qwen comparison](https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b).
-Artificial Analysis lists Qwen3.8-27B as "3B active", but Colibri's architecture table
-says it is dense ("one MLP per layer"); experiment `sm-arch-check` settles this from the
-model's own config before anything depends on it.
+Artificial Analysis lists Qwen3.8-27B as "3B active"; the model's own config says otherwise
+(`sm-arch-check`, from the official `config.json` files):
+
+| | Qwen3.8-27B | Qwen3.6-35B-A3B |
+|---|---|---|
+| Architecture | `Qwen3_5ForConditionalGeneration` | `Qwen3_5MoeForConditionalGeneration` |
+| Layers / hidden size | 64 / 5120 | 40 / 2048 |
+| Feed-forward | one MLP per layer (17408 wide) | 256 experts, 8 routed + 1 shared (512 wide) |
+| Used per token | all ~27.8B | ~3B, of which routed experts ~1.0B (~0.55 GB at int4) |
 
 The owner's "27B with 3B active" combines the two Qwen models. They behave very
 differently on a small machine:
@@ -29,7 +36,7 @@ differently on a small machine:
 flowchart LR
     D[Dense 27B<br/>every weight, every token] --> D1[~13.5 GB read per token<br/>if it does not fit in RAM]
     D1 --> D2[fits a 32 GB Mac;<br/>on 16 GB it is SSD-bound]
-    M[MoE 35B, ~3B active] --> M1[~1.5 GB of experts per token]
+    M[MoE 35B, ~3B active] --> M1[~0.55 GB of routed experts per token]
     M1 --> M2[streams experts like GLM:<br/>runs on 8-16 GB, faster]
 ```
 
@@ -38,7 +45,7 @@ flowchart LR
   streaming tricks here; on a 16 GB machine it would have to read most of its weights from
   the SSD for every token.
 - **Qwen3.6-35B-A3B (MoE)** is the one that can use the GLM approach: only ~3B
-  parameters (~1.5 GB at int4) are used per token, so expert streaming keeps it usable
+  parameters are used per token, ~1B of them routed experts (~0.55 GB at int4), so expert streaming keeps it usable
   on 8-16 GB machines. Colibri reports 6.0 tok/s on a CPU and 9.9 tok/s on an integrated
   GPU (Vulkan), with 10-20 GB of RAM.
 
@@ -94,10 +101,11 @@ flowchart TD
 
 ## What is needed before running
 
-1. **Bench tools for other engines.** `glm_bench.py`, `glm_lab.py` and the run parser
-   read Colibri's GLM engine output. The Qwen engine (`qwen36`) and Ollama print speed
-   differently, so each needs a small adapter (parse its tok/s and prompt time, keep the
-   same answer grading).
+1. **Bench tools for other engines.** Ollama: **done**. `glm_bench.py run --backend ollama
+   --ollama-model NAME --configs exact` sends the same prompts to the local Ollama server
+   (thinking off, temperature 0, same 128-token limit), reads its prompt and generation
+   timings and grades the answers the same way; the lab app's bench jobs accept an
+   installed Ollama model. Still to do: an adapter for Colibri's Qwen engine (`qwen36`).
 2. **A download, with your OK:** Qwen3.6-35B-A3B in Colibri format,
    `Kreuzzelg/qwen36-35b-a3b-colibri-i4-gs64` (~23 GB), prepared with
    `make glm-prep-qwen36` and shown in the lab app's Install screen.

@@ -5,14 +5,16 @@ prompt styles, one engine process at a time, and records total time, prompt
 processing, generation, output text and a pass/fail grade.
 
     .venv/bin/python glm_bench.py run --name NAME [--configs exact,d030,d050] [--styles normal,terse]
+    .venv/bin/python glm_bench.py run --name NAME --backend ollama --ollama-model qwen3.8:27b-mlx --configs exact
     .venv/bin/python glm_bench.py report --name NAME
 
 Runs are resumable: a finished (prompt, style, config) is skipped. Every run uses
 USAGE_SAVE=0, KVSAVE=0 and --no-tune-profile so the user's Colibri state is not
-changed. Code answers are executed locally in a temporary directory with a
+changed. The Ollama backend sends the same prompts to a local Ollama server (thinking
+off, temperature 0, same token limit) and reads its timings; only 'exact' applies. Code answers are executed locally in a temporary directory with a
 timeout to grade them.
 """
-import argparse, fcntl, json, os, re, subprocess, sys, tempfile, time
+import argparse, fcntl, json, os, re, subprocess, sys, tempfile, time, urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -47,6 +49,24 @@ def parse_log(text):
         lines = [l for l in raw.splitlines() if not ENGINE_LINE.match(l)]
         out['text'] = '\n'.join(lines).strip()
     return out
+
+
+def ollama_record(resp):
+    """Map an Ollama /api/generate reply (durations in ns) to the bench's fields."""
+    ns = 1e9
+    rec = dict(prompt_tokens=resp.get('prompt_eval_count'), prefill_s=round(resp.get('prompt_eval_duration', 0) / ns, 3),
+               output_tokens=resp.get('eval_count'), decode_s=round(resp.get('eval_duration', 0) / ns, 3),
+               load_s=round(resp.get('load_duration', 0) / ns, 3), text=(resp.get('response') or '').strip())
+    rec['decode_tok_s'] = round(rec['output_tokens'] / rec['decode_s'], 2) if rec['output_tokens'] and rec['decode_s'] else None
+    return rec
+
+
+def ollama_generate(url, model, prompt, ngen, timeout):
+    body = json.dumps({'model': model, 'prompt': prompt, 'stream': False, 'think': False,
+                       'options': {'temperature': 0, 'num_predict': ngen}}).encode()
+    req = urllib.request.Request(url.rstrip('/') + '/api/generate', data=body, headers={'Content-Type': 'application/json'})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read())
 
 
 def first_code_block(text):
@@ -97,16 +117,22 @@ def run(args):
         raise SystemExit('Another benchmark is running (.bench.lock held)')
     coli = Path(args.coli_dir).expanduser() / 'c' / 'coli'
     configs = args.configs.split(',')
+    ollama = args.backend == 'ollama'
+    if ollama and (configs != ['exact'] or not args.ollama_model):
+        raise SystemExit('the ollama backend needs --ollama-model and --configs exact (skip settings are Colibri-only)')
     styles = args.styles.split(',')
     items = [p for p in spec['prompts'] if not args.only or p['id'] in args.only.split(',')]
     meta = out_dir / 'meta.json'
     if not meta.exists():
+        engine = ({'backend': 'ollama', 'ollama_model': args.ollama_model, 'ollama_url': args.ollama_url,
+                   'ollama_version': subprocess.run(['ollama', '--version'], capture_output=True, text=True).stdout.strip(),
+                   'options': {'temperature': 0, 'think': False}} if ollama else
+                  {'backend': 'colibri', 'colibri_commit': subprocess.run(['git', '-C', str(coli.parent.parent), 'rev-parse', 'HEAD'],
+                                                                          capture_output=True, text=True).stdout.strip()})
         meta.write_text(json.dumps({'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-                                    'base_env': BASE_ENV, 'configs': {c: CONFIGS[c] for c in configs},
+                                    **engine, 'base_env': {} if ollama else BASE_ENV, 'configs': {c: CONFIGS[c] for c in configs},
                                     'styles': {s: spec['styles'][s] for s in styles},
-                                    'ram': args.ram, 'ctx': args.ctx, 'ngen': args.ngen,
-                                    'colibri_commit': subprocess.run(['git', '-C', str(coli.parent.parent), 'rev-parse', 'HEAD'],
-                                                                     capture_output=True, text=True).stdout.strip()}, indent=1))
+                                    'ram': args.ram, 'ctx': args.ctx, 'ngen': args.ngen}, indent=1))
     total = len(items) * len(styles) * len(configs)
     done = 0
     for style in styles:          # finish one style across all prompts before the next
@@ -118,6 +144,22 @@ def run(args):
                 if res_path.exists():
                     continue
                 prompt = item['prompt'] + spec['styles'][style]
+                if ollama:
+                    t0 = time.time()
+                    try:
+                        resp, code = ollama_generate(args.ollama_url, args.ollama_model, prompt, args.ngen, args.timeout), 0
+                    except Exception as e:  # server down, timeout: recorded as a failed run, like a crashed engine
+                        resp, code = {'error': str(e)}, 1
+                    wall = time.time() - t0
+                    (out_dir / f'{key}.log').write_text(json.dumps(resp, ensure_ascii=False, indent=1))
+                    rec = dict(id=item['id'], kind=item['kind'], style=style, config=cfg, exit=code,
+                               wall_s=round(wall, 2), **(ollama_record(resp) if code == 0 else {}))
+                    rec['answer_s'] = round(rec['prefill_s'] + rec['decode_s'], 2) if code == 0 else None
+                    rec['correct'] = grade(item, rec.get('text'))
+                    res_path.write_text(json.dumps(rec, ensure_ascii=False, indent=1))
+                    print(f"[{done}/{total}] {key}: exit={code} answer={rec.get('answer_s')}s "
+                          f"tokens={rec.get('output_tokens')} correct={rec['correct']}", flush=True)
+                    continue
                 env = dict(os.environ, **BASE_ENV, **CONFIGS[cfg], RAM_GB=str(args.ram))
                 cmd = [str(coli), 'run', '--model', str(Path(args.model).expanduser()), '--no-tune-profile', '--no-think',
                        '--ngen', str(args.ngen), '--ram', str(args.ram), '--ctx', str(args.ctx), prompt]
@@ -179,6 +221,9 @@ def main():
     r.add_argument('--timeout', type=int, default=1200)
     r.add_argument('--model', default='~/colibri-models/glm-5.3')
     r.add_argument('--coli-dir', default='~/Code/colibri')
+    r.add_argument('--backend', choices=['colibri', 'ollama'], default='colibri')
+    r.add_argument('--ollama-model', default='')
+    r.add_argument('--ollama-url', default='http://127.0.0.1:11434')
     p = sub.add_parser('report')
     p.add_argument('--name', required=True)
     a = ap.parse_args()

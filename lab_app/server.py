@@ -209,7 +209,8 @@ def estimate_item(item):
         for st in args.get('styles', []):
             for c in args.get('configs', []):
                 have = len(glob.glob(str(folder / f'*__{st}__{c}.json')))
-                total += max(0, n_prompts - have) * mean_answer_s(st, c, 90 if st == 'terse' else 180)
+                per = 20 if args.get('ollama_model') else mean_answer_s(st, c, 90 if st == 'terse' else 180)  # Ollama answers in seconds
+                total += max(0, n_prompts - have) * per
         return round(total)
     if kind == 'quiet':
         flags = args.get('flags', [])

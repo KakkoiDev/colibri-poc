@@ -176,7 +176,9 @@
    "path": "colibri-models/qwen3.8-27b",
    "engine": "Colibri qwen36 engine, or Ollama (MLX)",
    "mtp": false,
-   "bench_names": [],
+   "bench_names": [
+    "qwen38-27b-ollama"
+   ],
    "speed_runs": [],
    "source": "huggingface.co/Qwen/Qwen3.8-27B (convert with tools/convert_qwen36.py)",
    "unlocks": [
@@ -188,7 +190,7 @@
    ],
    "coli_dir": "~/Code/colibri",
    "suite": false,
-   "suite_note": "needs an adapter; the Ollama copy needs an Ollama backend for the bench (docs/13-small-models.md)"
+   "suite_note": "Colibri copy needs an adapter; the Ollama copy runs through glm_bench.py --backend ollama (Run a bench in the lab app)"
   }
  ]
 }
