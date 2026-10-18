@@ -67,3 +67,8 @@ glm-prep-iq3xxs:
 
 glm-prep-flash:
 	sh scripts/prep_gguf.sh unsloth/GLM-5.3-Flash-GGUF UD-IQ3_XXS glm-5.3-flash-iq3xxs
+
+# Lab control app (read-only, local): http://127.0.0.1:8766
+.PHONY: lab-app
+lab-app:
+	$(PYTHON) lab_app/server.py

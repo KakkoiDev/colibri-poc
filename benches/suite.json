@@ -1,0 +1,12 @@
+{
+ "schema": 1,
+ "version": "v1",
+ "note": "The standard benches every model gets, so models are comparable. Adding or retiring a bench applies to future runs only.",
+ "benches": [
+  {"id": "speed", "name": "Speed reference", "what": "Sky and code prompts, exact and skip 0.5, 12 threads", "duration": "~10 min", "runs_with": "glm_lab.py try (reference set)"},
+  {"id": "quality", "name": "Quality bench", "what": "24 graded prompts (facts, maths, logic, code with tests, explanations) x configs x normal/terse styles", "duration": "~2-6 h", "runs_with": "glm_bench.py run"},
+  {"id": "quiet", "name": "Quiet comparison", "what": "Key speed cases repeated on a quiet machine", "duration": "~45 min", "runs_with": "glm_quiet.py run"},
+  {"id": "ram", "name": "RAM sweep", "what": "Exact runs at larger RAM budgets", "duration": "~10 min", "runs_with": "glm_quiet.py run --ram-sweep"},
+  {"id": "threads", "name": "Thread sweep", "what": "2 / 6 / 12 threads, CPU and Metal", "duration": "~15 min", "runs_with": "glm_lab.py try (threads)"}
+ ]
+}

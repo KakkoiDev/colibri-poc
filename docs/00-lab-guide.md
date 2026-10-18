@@ -265,6 +265,9 @@ change); GPU prompt attention did not help because prompt reading is also SSD-bo
 
 | What | Where |
 |---|---|
+| Lab control app (read-only, local) | `make lab-app` → http://127.0.0.1:8766 (`lab_app/`, design: `design/briefs/lab-control-app.md`) |
+| Model catalog, bench suite | `models/catalog.json`, `benches/suite.json` |
+| Published intelligence benchmarks (others' numbers) | `models/external-benchmarks.json` |
 | Experiment registry (source of truth) | `experiments/glm-experiments.json` |
 | Experiment log (generated) | `docs/12-experiment-log.md`, `site/data/experiments.json` |
 | Try an idea | `glm_lab.py try` / `glm_lab.py log` |

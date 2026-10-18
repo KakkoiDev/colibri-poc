@@ -8,6 +8,7 @@ A long-running lab with one goal: run **GLM-5.x (744B MoE) on a 32 GB Apple M6 a
 - **Current scoreboard and every experiment:** [experiment log](docs/12-experiment-log.md).
 - **Results website:** https://kakkoidev.github.io/colibri-poc/
 - **Research reviewed so far:** [research/watchlist.md](research/watchlist.md).
+- **Lab control app (local, read-only):** `make lab-app`, then open http://127.0.0.1:8766: what is running, models, benches, runs, experiments, research, and how GLM compares with frontier models.
 
 The GLM work started from a user-reported 0.1 token/s. The lab's earlier rounds used
 a small stand-in model, **OLMoE-1B-7B-0125-Instruct, MLX 4-bit (~3.89 GB)**, to learn
