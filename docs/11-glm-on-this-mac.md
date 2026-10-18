@@ -359,3 +359,22 @@ flowchart LR
 Each case reuses a busy run's exact prompt, length and settings (`c9-best-combo`,
 `l8-degrade-030`, `l10-degrade-050`, `q0-code-exact`, `q3-code-degrade-050`). Your
 Colibri state is not changed. The tool never closes apps or stops processes for you.
+
+## Round 2: GPU prompt reading and the 12-thread lossy curve
+
+| Test | Before | After | Verdict |
+|---|---:|---:|---|
+| `COLI_METAL_PREFILL=1`, sky prompt reading | 23.5 s | 23.2 s | no change |
+| `COLI_METAL_PREFILL=1`, code prompt reading | 32.3 s | 32.2 s | no change |
+| Skip < 0.30, 2 → 12 threads | 0.91 tok/s | 0.92 | no change |
+| Skip < 0.40, 2 → 12 threads | 1.30 | 1.34 | no clear change |
+| Skip < 0.50, 2 → 12 threads | 1.57 | 1.87 | +19% |
+| Code prompt, skip < 0.50, 2 → 12 threads | 1.46 | 1.70 | +16% |
+
+Prompt reading is bound by expert reads, so moving its attention to the GPU does
+nothing. More threads only help once most expert reads are skipped. Output text at
+12 threads was identical to the 2-thread runs.
+
+All experiments, with their reference runs and verdicts, are in the
+[experiment log](12-experiment-log.md). Add one with
+`.venv/bin/python glm_lab.py try ID "Title" --env KEY=VALUE --category C`.

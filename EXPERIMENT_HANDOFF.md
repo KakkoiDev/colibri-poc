@@ -1,4 +1,15 @@
-## LIVE UPDATE 5 (newest, takes precedence over everything below)
+## LIVE UPDATE 6 (newest)
+
+- Every GLM experiment now goes in experiments/glm-experiments.json; `glm_lab.py try`
+  runs one (best exact settings + overrides, 12 threads), compares with a reference
+  run and appends an entry; `glm_lab.py log` rebuilds docs/12-experiment-log.md and
+  site/data/experiments.json (website section 08). Fill in `conclusion` after a run.
+- Round 2: COLI_METAL_PREFILL no change; 12 threads +19% only at skip 0.5.
+- Quality bench v1 resumed after round 2 (2 threads, unchanged settings).
+
+---
+
+## LIVE UPDATE 5
 
 GLM-5.3 testing on the user's real Colibri setup is documented in
 docs/11-glm-on-this-mac.md, with raw numbers in published-results/glm-20261018/.

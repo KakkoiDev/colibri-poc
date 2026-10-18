@@ -73,6 +73,12 @@ tr.lossy td:first-child{box-shadow:inset 3px 0 0 var(--lossy)}
 pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:6px 0 14px}
 ul.links{display:flex;flex-wrap:wrap;gap:8px 18px;padding:0;list-style:none}
 footer{padding:28px 0 48px;font-size:14px;color:var(--muted)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.filters button{font:inherit;font-size:13px;padding:6px 12px;min-height:36px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.filters button[aria-pressed="true"]{border-color:var(--exact);color:var(--exact);font-weight:600}
+.v{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid var(--line)}
+.v-improves{border-color:var(--exact);color:var(--exact)}.v-worse,.v-failed{border-color:var(--lossy);color:var(--lossy)}
+details.exp summary{cursor:pointer}
 .pending{display:flex;align-items:center;justify-content:center;min-height:180px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);text-align:center;padding:16px}
 svg text{fill:var(--muted);font:12px -apple-system,system-ui,sans-serif}
 svg .axis{stroke:var(--line)}
@@ -96,7 +102,7 @@ svg .lbl{fill:var(--ink);font-weight:600}
   <strong>GLM-5.3 on an Apple M6</strong>
   <nav aria-label="Sections">
     <a href="#exact">Exact</a><a href="#time">Time</a><a href="#ceiling">Ceiling</a><a href="#tradeoff">Trade-off</a>
-    <a href="#bench">Bench</a><a href="#failed">Didn't work</a><a href="#run">Run it</a><a href="#caveats">Caveats</a>
+    <a href="#bench">Bench</a><a href="#failed">Didn't work</a><a href="#log">Log</a><a href="#run">Run it</a><a href="#caveats">Caveats</a>
   </nav>
 </div></header>
 
@@ -198,8 +204,16 @@ svg .lbl{fill:var(--ink);font-weight:600}
   <p class="muted small">Single run each. Vulkan needed a <a href="https://github.com/KakkoiDev/colibri-poc/blob/main/patches/colibri-moltenvk-portability.diff">2-line MoltenVK opt-in patch</a> in a test clone.</p>
 </div></section>
 
+<section id="log"><div class="wrap">
+  <h2><span class="n">08</span>Experiment log</h2>
+  <p class="muted">Every GLM experiment: what changed, what it was compared with, and what it did. Changes under ~10% are noise (single runs).</p>
+  <div class="filters" role="group" aria-label="Filter by verdict" id="log-filters"></div>
+  <div class="tbl"><table id="tbl-log"><thead><tr><th>Experiment</th><th>Category</th><th>Verdict</th><th class="num">tok/s (ref → new)</th><th class="num">Change</th><th class="num">Prompt reading s</th><th>Output</th><th>Details</th></tr></thead><tbody></tbody></table></div>
+  <p class="muted small">Generated from <a href="https://github.com/KakkoiDev/colibri-poc/blob/main/experiments/glm-experiments.json">experiments/glm-experiments.json</a> by <code>glm_lab.py</code>; full text in <a href="https://github.com/KakkoiDev/colibri-poc/blob/main/docs/12-experiment-log.md">the experiment log</a>.</p>
+</div></section>
+
 <section id="run"><div class="wrap">
-  <h2><span class="n">08</span>How to run it</h2>
+  <h2><span class="n">09</span>How to run it</h2>
   <p class="muted">Build Colibri with libomp and Metal first. Replace <code>&lt;colibri&gt;</code> and <code>&lt;models&gt;</code> with your own folders.</p>
   <h3>1 · Build</h3>
   <pre><code>brew install libomp
@@ -221,7 +235,7 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
 </div></section>
 
 <section id="caveats"><div class="wrap">
-  <h2><span class="n">09</span>Caveats and method</h2>
+  <h2><span class="n">10</span>Caveats and method</h2>
   <ul id="caveat-list"></ul>
   <p class="muted small" id="method"></p>
   <ul class="links small">
@@ -504,6 +518,41 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
     renderBench(bench);
   }
 
+  function renderLog(data) {
+    if (!data || !data.entries) return;
+    var entries = data.entries, tb = $('#tbl-log tbody'), filters = $('#log-filters');
+    var verdicts = ['all'].concat(entries.map(function (e) { return e.verdict; }).filter(function (v, i, a) { return a.indexOf(v) === i; }));
+    var sg = function (v) { return v == null ? '\u2014' : (v > 0 ? '+' : '') + Math.round(v) + '%'; };
+    function draw(which) {
+      tb.innerHTML = '';
+      entries.filter(function (e) { return which === 'all' || e.verdict === which; }).forEach(function (e) {
+        var m = e.metrics || {}, t = el('span', {}, e.title + ' ');
+        if (e.lossy) t.appendChild(el('span', { class: 'badge lossy' }, 'changes output'));
+        var det = el('details', { class: 'exp' });
+        det.appendChild(el('summary', {}, 'Why and result'));
+        det.appendChild(el('p', { class: 'small' }, 'Change: ' + (e.change || '\u2014')));
+        det.appendChild(el('p', { class: 'small' }, 'Why: ' + (e.hypothesis || '\u2014')));
+        det.appendChild(el('p', { class: 'small' }, 'Result: ' + (e.conclusion || (e.effects || []).join('; ') || '\u2014')));
+        if (e.tradeoffs) det.appendChild(el('p', { class: 'small' }, 'Tradeoffs: ' + e.tradeoffs));
+        (e.runs || []).forEach(function (r) { var p = el('p', { class: 'small' }); p.appendChild(runLink(r)); det.appendChild(p); });
+        row(tb, [{ node: t, cls: 'wrap' }, { t: e.category }, { node: el('span', { class: 'v v-' + e.verdict.replace(/ /g, '-') }, e.verdict) },
+          { t: m.measured ? f2(m.ref_tok_s) + ' \u2192 ' + f2(m.tok_s) : '\u2014', cls: 'num' }, { t: sg(m.speed_change_pct), cls: 'num' },
+          { t: m.measured && m.prefill_s != null ? (m.ref_prefill_s != null ? m.ref_prefill_s.toFixed(1) + ' \u2192 ' : '') + m.prefill_s.toFixed(1) : '\u2014', cls: 'num' },
+          { t: m.measured ? m.output : '\u2014' }, { node: det, cls: 'wrap' }], e.lossy ? 'lossy' : '');
+      });
+    }
+    verdicts.forEach(function (v) {
+      var n = v === 'all' ? entries.length : entries.filter(function (e) { return e.verdict === v; }).length;
+      var b = el('button', { type: 'button', 'aria-pressed': v === 'all' ? 'true' : 'false' }, v + ' (' + n + ')');
+      b.addEventListener('click', function () {
+        filters.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+        b.setAttribute('aria-pressed', 'true'); draw(v);
+      });
+      filters.appendChild(b);
+    });
+    draw('all');
+  }
+
   function renderBench(rows) {
     var plot = $('#chart-f .plot');
     if (!rows || !rows.length) {
@@ -538,8 +587,9 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
   }
 
   var getJSON = function (url) { return fetch(url, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(url + ': ' + r.status); return r.json(); }); };
-  Promise.all([getJSON('data/glm-performance.json'), getJSON('data/bench-summary.json').catch(function () { return null; })])
-    .then(function (res) { render(res[0], res[1]); })
+  Promise.all([getJSON('data/glm-performance.json'), getJSON('data/bench-summary.json').catch(function () { return null; }),
+               getJSON('data/experiments.json').catch(function () { return null; })])
+    .then(function (res) { render(res[0], res[1]); renderLog(res[2]); })
     .catch(function (e) {
       var m = el('div', { class: 'callout', role: 'alert' });
       m.appendChild(el('strong', {}, 'Could not load the page data.'));

@@ -26,6 +26,7 @@ def parse(text):
     row = dict(backend=backend, omp_threads=th and th[1], prompt_tokens=pf and pf[1], prefill_s=pf and pf[2],
                decode_tokens=m and m[1], decode_s=m and m[2], tok_s=m and m[3],
                hit_pct=(g(r'expert hit rate ([\d.]+)%') or [None, None])[1],
+               rss_gb=(g(r'expert hit rate [^\n]*\| RSS ([\d.]+) GB') or [None, None])[1],
                zeroed_slots=(g(r'zeroed (\d+) miss slots') or [None, None])[1],
                io_pct=sh and sh[1], matmul_pct=sh and sh[2], attn_pct=sh and sh[3], other_pct=sh and sh[4],
                config=cfg[1] if cfg else '', env=env[1].replace(HOME, '~') if env else '', status=status)

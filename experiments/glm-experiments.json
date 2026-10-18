@@ -1,0 +1,763 @@
+[
+ {
+  "id": "cpu-libomp",
+  "title": "CPU engine with libomp (2 threads)",
+  "category": "build",
+  "change": "make glm (libomp installed)",
+  "hypothesis": "The installed engine was single-threaded; libomp should let it use more cores.",
+  "ref": null,
+  "runs": [
+   "c1-omp-cpu-r18-c1k"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Measured 0.10 tok/s, but Colibri only used 2 threads on the M6 (see threads). Reference point for the GPU steps.",
+  "tradeoffs": "",
+  "verdict": "reference"
+ },
+ {
+  "id": "metal",
+  "title": "Metal GPU backend",
+  "category": "build",
+  "change": "make glm METAL=1, COLI_METAL=1",
+  "hypothesis": "Expert math and attention were on the CPU; the GPU was idle.",
+  "ref": "c1-omp-cpu-r18-c1k",
+  "runs": [
+   "c2-metal-r18-c1k"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Expert math and attention moved to the GPU; the SSD became the largest cost.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "pipe",
+  "title": "Overlap SSD reads with GPU work",
+  "category": "io",
+  "change": "PIPE=1",
+  "hypothesis": "Reads and math happen one after the other; overlapping should hide some read time.",
+  "ref": "c2-metal-r18-c1k",
+  "runs": [
+   "c3-pipe"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Small gain within noise on its own; kept because it combines with DIRECT.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "direct",
+  "title": "Uncached SSD reads",
+  "category": "io",
+  "change": "PIPE=1 DIRECT=1",
+  "hypothesis": "Reading around the page cache avoids a copy and enables zero-copy GPU buffers.",
+  "ref": "c3-pipe",
+  "runs": [
+   "c4-pipe-direct"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Faster; Colibri reports DIRECT can be drive-dependent.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "resset",
+  "title": "Metal residency set",
+  "category": "gpu",
+  "change": "+ COLI_METAL_RESSET=1",
+  "hypothesis": "Registering resident buffers once should cut per-dispatch GPU scheduling overhead.",
+  "ref": "c4-pipe-direct",
+  "runs": [
+   "c5-pipe-direct-resset"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Attention time fell sharply; GPU scheduling overhead mostly gone.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "spin",
+  "title": "GPU keep-alive spin",
+  "category": "gpu",
+  "change": "+ COLI_METAL_SPIN=1",
+  "hypothesis": "A spinning GPU keep-alive should reduce dispatch latency.",
+  "ref": "c4-pipe-direct",
+  "runs": [
+   "c6-pipe-direct-spin"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Faster.",
+  "tradeoffs": "Uses more power; drop on battery."
+ },
+ {
+  "id": "best-exact",
+  "title": "Best exact combination",
+  "category": "gpu",
+  "change": "PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1",
+  "hypothesis": "The residency set and the spin target different overheads, so they should add up.",
+  "ref": "c4-pipe-direct",
+  "runs": [
+   "c9-best-combo",
+   "c15-combo-repeat"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "0.43-0.44 tok/s, identical text, about 76% of time now waiting on the SSD.",
+  "tradeoffs": "Spin power use."
+ },
+ {
+  "id": "readers-4",
+  "title": "4 SSD readers instead of 8",
+  "category": "io",
+  "change": "PIPE_WORKERS=4",
+  "hypothesis": "Fewer readers might reduce contention.",
+  "ref": "c4-pipe-direct",
+  "runs": [
+   "c7-pipe4-direct"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Within noise of 8 readers; the SSD is the limit, not the reader count.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "readers-2",
+  "title": "2 SSD readers",
+  "category": "io",
+  "change": "PIPE_WORKERS=2",
+  "hypothesis": "iobench saturates at 2 readers.",
+  "ref": "c9-best-combo",
+  "runs": [
+   "c10-combo-w2"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "No change.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "readers-16",
+  "title": "16 SSD readers",
+  "category": "io",
+  "change": "PIPE_WORKERS=16",
+  "hypothesis": "More queue depth might help the SSD.",
+  "ref": "c9-best-combo",
+  "runs": [
+   "c11-combo-w16"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "No change.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "pilot",
+  "title": "Cross-layer expert prefetch",
+  "category": "io",
+  "change": "PILOT=1 PILOT_REAL=1",
+  "hypothesis": "Loading the next layer's likely experts early should hide read time.",
+  "ref": "c4-pipe-direct",
+  "runs": [
+   "c8-pipe-direct-pilot"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Hit rate rose to 10% but speed did not; most prefetched loads were discarded.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "mmap",
+  "title": "Page cache as the expert cache",
+  "category": "memory",
+  "change": "COLI_MMAP=1 DIRECT=0",
+  "hypothesis": "Letting macOS cache experts might use free RAM better than slabs.",
+  "ref": "c9-best-combo",
+  "runs": [
+   "c13-combo-mmap"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "GPU out-of-memory errors on every block; stopped.",
+  "tradeoffs": "",
+  "verdict": "failed"
+ },
+ {
+  "id": "nomlock",
+  "title": "Expert cache not wired into RAM",
+  "category": "memory",
+  "change": "MLOCK=0",
+  "hypothesis": "Wiring may not matter with a tiny cache.",
+  "ref": "c9-best-combo",
+  "runs": [
+   "c14-combo-nomlock"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Refused to start: free RAM had dropped to 12.2 GB right after the mmap failure. Inconclusive; retry on a quiet machine.",
+  "tradeoffs": "",
+  "verdict": "inconclusive"
+ },
+ {
+  "id": "cache-2-slots",
+  "title": "2 cache slots per layer (RAM 20 GB)",
+  "category": "cache",
+  "change": "--ram 20, CAP=2",
+  "hypothesis": "Doubling the expert cache should raise the hit rate.",
+  "ref": "c9-best-combo",
+  "runs": [
+   "c12-combo-cap2-r20"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Hit rate 2% to 4%; too small to matter. A useful cache needs tens of GB.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "threads-cpu-exact-6",
+  "title": "CPU-only: 6 threads instead of 2",
+  "category": "threads",
+  "change": "OMP_NUM_THREADS=6",
+  "hypothesis": "Colibri uses only the M6's 2 \"Super\" cores (colibri#2194).",
+  "ref": "t-cpu-exact-t2",
+  "runs": [
+   "t-cpu-exact-t6"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "CPU math and prompt reading scale with cores.",
+  "tradeoffs": "",
+  "sources": [
+   "https://github.com/JustVugg/colibri/issues/2194"
+  ]
+ },
+ {
+  "id": "threads-cpu-exact-12",
+  "title": "CPU-only: 12 threads instead of 2",
+  "category": "threads",
+  "change": "OMP_NUM_THREADS=12",
+  "hypothesis": "Colibri uses only the M6's 2 \"Super\" cores (colibri#2194).",
+  "ref": "t-cpu-exact-t2",
+  "runs": [
+   "t-cpu-exact-t12"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "CPU math and prompt reading scale with cores.",
+  "tradeoffs": "Efficiency cores add heat; 6 vs 12 differences are small.",
+  "sources": [
+   "https://github.com/JustVugg/colibri/issues/2194"
+  ]
+ },
+ {
+  "id": "threads-metal-exact-6",
+  "title": "Metal exact: 6 threads instead of 2",
+  "category": "threads",
+  "change": "OMP_NUM_THREADS=6",
+  "hypothesis": "Colibri uses only the M6's 2 \"Super\" cores (colibri#2194).",
+  "ref": "t-metal-exact-t2",
+  "runs": [
+   "t-metal-exact-t6"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "No change: exact Metal runs wait on the SSD.",
+  "tradeoffs": "",
+  "sources": [
+   "https://github.com/JustVugg/colibri/issues/2194"
+  ]
+ },
+ {
+  "id": "threads-metal-exact-12",
+  "title": "Metal exact: 12 threads instead of 2",
+  "category": "threads",
+  "change": "OMP_NUM_THREADS=12",
+  "hypothesis": "Colibri uses only the M6's 2 \"Super\" cores (colibri#2194).",
+  "ref": "t-metal-exact-t2",
+  "runs": [
+   "t-metal-exact-t12"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "No change: exact Metal runs wait on the SSD.",
+  "tradeoffs": "Efficiency cores add heat; 6 vs 12 differences are small.",
+  "sources": [
+   "https://github.com/JustVugg/colibri/issues/2194"
+  ]
+ },
+ {
+  "id": "threads-metal-skip050-6",
+  "title": "Metal skip < 0.5: 6 threads instead of 2",
+  "category": "threads",
+  "change": "OMP_NUM_THREADS=6",
+  "hypothesis": "Colibri uses only the M6's 2 \"Super\" cores (colibri#2194).",
+  "ref": "t-metal-skip050-t2",
+  "runs": [
+   "t-metal-skip050-t6"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "CPU-side overhead fell from 26% to ~9-12% of each token.",
+  "tradeoffs": "",
+  "sources": [
+   "https://github.com/JustVugg/colibri/issues/2194"
+  ]
+ },
+ {
+  "id": "threads-metal-skip050-12",
+  "title": "Metal skip < 0.5: 12 threads instead of 2",
+  "category": "threads",
+  "change": "OMP_NUM_THREADS=12",
+  "hypothesis": "Colibri uses only the M6's 2 \"Super\" cores (colibri#2194).",
+  "ref": "t-metal-skip050-t2",
+  "runs": [
+   "t-metal-skip050-t12"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "CPU-side overhead fell from 26% to ~9-12% of each token.",
+  "tradeoffs": "Efficiency cores add heat; 6 vs 12 differences are small.",
+  "sources": [
+   "https://github.com/JustVugg/colibri/issues/2194"
+  ]
+ },
+ {
+  "id": "skip-0.03",
+  "title": "Skip missed experts below weight 0.03",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.03",
+  "hypothesis": "Skipping low-weight experts that are not in RAM avoids SSD reads.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l1-degrade-003"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Skipped almost nothing; identical text.",
+  "tradeoffs": "Changes output; needs quality checks."
+ },
+ {
+  "id": "skip-0.05",
+  "title": "Skip missed experts below weight 0.05",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.05",
+  "hypothesis": "Skipping low-weight experts that are not in RAM avoids SSD reads.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l2-degrade-005"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Skipped almost nothing; identical text.",
+  "tradeoffs": "Changes output; needs quality checks."
+ },
+ {
+  "id": "skip-0.10",
+  "title": "Skip missed experts below weight 0.10",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.10",
+  "hypothesis": "Skipping low-weight experts that are not in RAM avoids SSD reads.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l3-degrade-010"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Skipped <1% of loads; identical text.",
+  "tradeoffs": "Changes output; needs quality checks."
+ },
+ {
+  "id": "skip-0.20",
+  "title": "Skip missed experts below weight 0.20",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.20",
+  "hypothesis": "Skipping low-weight experts that are not in RAM avoids SSD reads.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l7-degrade-020"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "~25% of loads skipped; reworded, still correct.",
+  "tradeoffs": "Changes output; needs quality checks."
+ },
+ {
+  "id": "skip-0.30",
+  "title": "Skip missed experts below weight 0.30",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.30",
+  "hypothesis": "Skipping low-weight experts that are not in RAM avoids SSD reads.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l8-degrade-030"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "~60% skipped; reworded, still correct.",
+  "tradeoffs": "Changes output; needs quality checks."
+ },
+ {
+  "id": "skip-0.40",
+  "title": "Skip missed experts below weight 0.40",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.40",
+  "hypothesis": "Skipping low-weight experts that are not in RAM avoids SSD reads.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l9-degrade-040"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "~77% skipped; reworded, still correct.",
+  "tradeoffs": "Changes output; needs quality checks."
+ },
+ {
+  "id": "skip-0.50",
+  "title": "Skip missed experts below weight 0.50",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.50",
+  "hypothesis": "Skipping low-weight experts that are not in RAM avoids SSD reads.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l10-degrade-050"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "~84% skipped; facts held in a 5-question quiz, instruction following slipped.",
+  "tradeoffs": "Changes output; needs quality checks."
+ },
+ {
+  "id": "skip-0.70",
+  "title": "Skip missed experts below weight 0.70",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.70",
+  "hypothesis": "Skipping low-weight experts that are not in RAM avoids SSD reads.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l11-degrade-070"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Grammar errors appeared.",
+  "tradeoffs": "Changes output; needs quality checks."
+ },
+ {
+  "id": "skip-1.0",
+  "title": "Skip missed experts below weight 1.0",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=1.0",
+  "hypothesis": "Skipping low-weight experts that are not in RAM avoids SSD reads.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l12-degrade-100"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Output loops (\"and the air, and the air\"). Breaking point.",
+  "tradeoffs": "Changes output; needs quality checks."
+ },
+ {
+  "id": "skip-code-0.20",
+  "title": "Code prompt: skip below 0.20",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.20",
+  "hypothesis": "Check the skip trade-off on a code answer.",
+  "ref": "q0-code-exact",
+  "runs": [
+   "q1-code-degrade-020"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Same function structure through 0.30; reworded at 0.50.",
+  "tradeoffs": "Changes output."
+ },
+ {
+  "id": "skip-code-0.30",
+  "title": "Code prompt: skip below 0.30",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.30",
+  "hypothesis": "Check the skip trade-off on a code answer.",
+  "ref": "q0-code-exact",
+  "runs": [
+   "q2-code-degrade-030"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Same function structure through 0.30; reworded at 0.50.",
+  "tradeoffs": "Changes output."
+ },
+ {
+  "id": "skip-code-0.50",
+  "title": "Code prompt: skip below 0.50",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.50",
+  "hypothesis": "Check the skip trade-off on a code answer.",
+  "ref": "q0-code-exact",
+  "runs": [
+   "q3-code-degrade-050"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Same function structure through 0.30; reworded at 0.50.",
+  "tradeoffs": "Changes output."
+ },
+ {
+  "id": "cache-route",
+  "title": "Cache-aware routing",
+  "category": "lossy-routing",
+  "change": "CACHE_ROUTE=1",
+  "hypothesis": "Swap low-ranked experts for ones already in RAM.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l4-cacheroute"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "0% swapped: with ~1 slot per layer there is nothing in RAM to swap to.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "cache-route-wide",
+  "title": "Cache-aware routing, wider window",
+  "category": "lossy-routing",
+  "change": "CACHE_ROUTE=1 ROUTE_J=1 ROUTE_M=24",
+  "hypothesis": "A wider window might find more cached experts.",
+  "ref": "l0-exact-48",
+  "runs": [
+   "l5-cacheroute-j1-m24"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Same as default: nothing to swap to.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "skip-0.10-cache-route",
+  "title": "Skip < 0.10 plus cache-aware routing",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.10 CACHE_ROUTE=1",
+  "hypothesis": "Combine both lossy levers.",
+  "ref": "l3-degrade-010",
+  "runs": [
+   "l6-degrade-010-cacheroute"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Same as skip < 0.10 alone.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "vulkan-chain",
+  "title": "Vulkan dense chain, experts on CPU",
+  "category": "backend",
+  "change": "VK=1 build, COLI_VULKAN=1 COLI_VK_CHAIN=1 (+ MoltenVK patch)",
+  "hypothesis": "Keeping whole layers on the GPU avoids per-layer CPU round trips.",
+  "ref": "c9-best-combo",
+  "runs": [
+   "v2-vk-chain"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Expert math stayed on the CPU (71% of time); prompt reading 3x slower.",
+  "tradeoffs": "Needs MoltenVK and a portability patch."
+ },
+ {
+  "id": "vulkan-tier",
+  "title": "Vulkan chain + 3 GB GPU expert tier",
+  "category": "backend",
+  "change": "+ COLI_VK_TIER_GB=3",
+  "hypothesis": "Put routed experts on the GPU too.",
+  "ref": "c9-best-combo",
+  "runs": [
+   "v3-vk-tier3"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Only ~3% of experts reached the GPU tier.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "vulkan-tier-skip",
+  "title": "Vulkan chain + tier, skip < 0.5",
+  "category": "backend",
+  "change": "+ DEGRADE_ZERO=1 DEGRADE_TAU=0.5",
+  "hypothesis": "Lossy mode is attention-bound, where the chain should help most.",
+  "ref": "l10-degrade-050",
+  "runs": [
+   "v4-vk-tier3-d050"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Slower than Metal at the same threshold.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "vulkan-metal",
+  "title": "Vulkan chain + Metal experts, skip < 0.5",
+  "category": "backend",
+  "change": "VK=1 METAL=1 build, both backends",
+  "hypothesis": "Chain for dense work, Metal for experts.",
+  "ref": "l10-degrade-050",
+  "runs": [
+   "v5-vkchain-metalexp-d050"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Chain attention took 78% of time; prompt reading 154 s.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "gpu-prefill",
+  "title": "GPU prompt reading",
+  "category": "prompt",
+  "change": "COLI_METAL_PREFILL=1",
+  "hypothesis": "Prompt reading runs attention on the CPU; the GPU should be faster. Not bit-exact by design.",
+  "ref": "r2-p0-sky-exact",
+  "runs": [
+   "r2-p1-sky-exact-gpuprefill"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Prompt reading time unchanged (23.5 s vs 23.2 s): it is bound by expert reads, not attention. Generation was 16% slower in this single run, but the code-prompt run saw no change, so treat that as noise or as an effect on draft-verify steps. Not worth using.",
+  "tradeoffs": "Not bit-exact by design."
+ },
+ {
+  "id": "gpu-prefill-code",
+  "title": "GPU prompt reading, code prompt",
+  "category": "prompt",
+  "change": "COLI_METAL_PREFILL=1",
+  "hypothesis": "Same, with a longer prompt.",
+  "ref": "r2-p0-code-exact",
+  "runs": [
+   "r2-p1-code-exact-gpuprefill"
+  ],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "No change (32.3 s vs 32.2 s).",
+  "tradeoffs": ""
+ },
+ {
+  "id": "skip-0.30-t12",
+  "title": "Skip below 0.30 with 12 threads",
+  "category": "threads",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.30 OMP_NUM_THREADS=12",
+  "hypothesis": "Lossy runs spend more time on CPU-side work, which more threads should cut.",
+  "ref": "l8-degrade-030",
+  "runs": [
+   "r2-k-sky-skip030-t12"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "No change: at 0.30 the run is still mostly waiting on the SSD.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "skip-0.40-t12",
+  "title": "Skip below 0.40 with 12 threads",
+  "category": "threads",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.40 OMP_NUM_THREADS=12",
+  "hypothesis": "Lossy runs spend more time on CPU-side work, which more threads should cut.",
+  "ref": "l9-degrade-040",
+  "runs": [
+   "r2-k-sky-skip040-t12"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Small gain within noise.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "skip-0.50-t12",
+  "title": "Skip below 0.50 with 12 threads",
+  "category": "threads",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.50 OMP_NUM_THREADS=12",
+  "hypothesis": "Lossy runs spend more time on CPU-side work, which more threads should cut.",
+  "ref": "l10-degrade-050",
+  "runs": [
+   "r2-k-sky-skip050-t12"
+  ],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Faster: with most reads skipped, CPU-side work is the bottleneck that threads remove.",
+  "tradeoffs": ""
+ },
+ {
+  "id": "ssd-mirror",
+  "title": "Second SSD for expert reads",
+  "category": "io",
+  "change": "COLI_MODEL_MIRROR / COLI_MODEL_DIRS",
+  "hypothesis": "Exact runs are SSD-bound; splitting reads across two drives could nearly double read speed.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Not run: needs an external NVMe drive.",
+  "tradeoffs": "",
+  "verdict": "not run"
+ },
+ {
+  "id": "rans",
+  "title": "Lossless compressed experts (int4-rans256-g0)",
+  "category": "model-format",
+  "change": "repack_rans.py container",
+  "hypothesis": "~24% fewer bytes to read with byte-exact output.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Not run: Colibri has the codec but no engine loader yet; CPU decoding would likely cost what it saves.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/JustVugg/colibri/pull/671"
+  ]
+ },
+ {
+  "id": "reap",
+  "title": "REAP expert pruning",
+  "category": "model-format",
+  "change": "25-34% of experts removed",
+  "hypothesis": "A smaller model raises the cache hit rate.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Not run: still 8 experts per token, so bytes per token stay the same; community GLM cards report quality loss at 34%.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://arxiv.org/html/2510.13999"
+  ]
+ },
+ {
+  "id": "int3-experts",
+  "title": "3-bit or mixed-precision experts",
+  "category": "model-format",
+  "change": "re-quantize experts",
+  "hypothesis": "int3 cuts expert bytes ~25%.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Not run: lossy and needs re-converting 409 GB; papers report large losses at 2-bit.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://arxiv.org/pdf/2605.23078"
+  ]
+ },
+ {
+  "id": "terse-prompt",
+  "title": "Terse prompting (\"answer as briefly as possible\")",
+  "category": "prompt",
+  "change": "prompt suffix",
+  "hypothesis": "Shorter answers finish sooner even at the same tok/s, if accuracy holds.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Running in the quality bench (glm_bench.py v1).",
+  "tradeoffs": "",
+  "verdict": "in progress"
+ }
+]
