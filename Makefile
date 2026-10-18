@@ -39,7 +39,7 @@ bench-matrix:
 	$(MAKE) bench-streaming ROUNDS=$(ROUNDS) TOKENS=$(TOKENS)
 
 # GLM on the user's Colibri install (see docs/11-glm-on-this-mac.md)
-.PHONY: glm-bench glm-quiet-check glm-quiet glm-quiet-full glm-planned glm-prep-mtp glm-prep-iq2m
+.PHONY: glm-bench glm-quiet-check glm-quiet glm-quiet-full glm-planned glm-prep-mtp glm-prep-iq2m glm-prep-iq3xxs glm-prep-flash
 glm-bench:
 	$(PYTHON) glm_bench.py run --name $(or $(NAME),v1)
 
@@ -60,4 +60,10 @@ glm-prep-mtp:
 	sh scripts/prep_mtp_head.sh
 
 glm-prep-iq2m:
-	sh scripts/prep_gguf_iq2m.sh
+	sh scripts/prep_gguf.sh unsloth/GLM-5.3-GGUF UD-IQ2_M glm-5.3-iq2m
+
+glm-prep-iq3xxs:
+	sh scripts/prep_gguf.sh unsloth/GLM-5.3-GGUF UD-IQ3_XXS glm-5.3-iq3xxs
+
+glm-prep-flash:
+	sh scripts/prep_gguf.sh unsloth/GLM-5.3-Flash-GGUF UD-IQ3_XXS glm-5.3-flash-iq3xxs

@@ -1916,7 +1916,7 @@
    "runs": [],
    "lossy": true,
    "date": "2026-10-18",
-   "conclusion": "Planned: needs `make glm-prep-iq2m` first (~239 GB download). Lossy: needs the quality bench before any use.",
+   "conclusion": "Planned: needs `make glm-prep-iq2m` first (~239 GB download, imported to ~/colibri-models/glm-5.3-iq2m). Lossy: needs the quality bench before any use.",
    "tradeoffs": "Lossy (2-bit experts); CPU-only expert math for GGUF blocks; a second 239 GB model on disk.",
    "verdict": "not run",
    "sources": [
@@ -1982,6 +1982,83 @@
    "effects": []
   },
   {
+   "category": "model-format",
+   "runs": [],
+   "lossy": true,
+   "date": "2026-10-18",
+   "verdict": "not run",
+   "sources": [
+    "https://huggingface.co/unsloth/GLM-5.3-GGUF",
+    "https://unsloth.ai/docs/models/glm-5.3"
+   ],
+   "id": "gguf-iq3xxs",
+   "title": "GLM-5.3 as a 3-bit GGUF (Unsloth UD-IQ3_XXS, 282 GB)",
+   "change": "Colibri dev 16239caa + unsloth GLM-5.3 UD-IQ3_XXS GGUF (imported)",
+   "hypothesis": "The quality-safer middle ground: 282 GB vs 419 GB int4 (~33% fewer expert bytes), top-1 agreement 84.2% and KLD 0.27 per Unsloth (2-bit: 78.5%, 0.45). Same CPU-only caveat for GGUF blocks; the GGUF carries the MTP layer.",
+   "ref": "r2-p0-sky-exact",
+   "conclusion": "Planned: needs `make glm-prep-iq3xxs` first (~282 GB download). Lossy: quality bench required.",
+   "tradeoffs": "Lossy (3-bit experts); CPU-only expert math for GGUF blocks.",
+   "plan": {
+    "prompt": "sky",
+    "ngen": 24,
+    "env": {},
+    "ref": "r2-p0-sky-exact",
+    "coli_dir": "engines/colibri-16239caa",
+    "build": {
+     "ref": "16239caa"
+    },
+    "model": "~/colibri-models/glm-5.3-iq3xxs",
+    "needs": [
+     "~/colibri-models/glm-5.3-iq3xxs/config.json"
+    ],
+    "prep": "make glm-prep-iq3xxs"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "category": "lossy-routing",
+   "runs": [],
+   "lossy": true,
+   "date": "2026-10-18",
+   "verdict": "not run",
+   "sources": [
+    "https://huggingface.co/unsloth/GLM-5.3-GGUF",
+    "https://unsloth.ai/docs/models/glm-5.3"
+   ],
+   "id": "gguf-iq3xxs-skip050",
+   "title": "Stack: 3-bit GGUF + skip < 0.5 + 12 threads",
+   "change": "UD-IQ3_XXS GGUF + DEGRADE_ZERO=1 DEGRADE_TAU=0.50",
+   "hypothesis": "The best-quality low-bit file with the best lossy stack on top.",
+   "ref": "r2-k-sky-skip050-t12",
+   "conclusion": "Planned: needs `make glm-prep-iq3xxs` first. Lossy twice over: quality bench required.",
+   "tradeoffs": "",
+   "plan": {
+    "prompt": "sky",
+    "ngen": 48,
+    "env": {
+     "DEGRADE_ZERO": "1",
+     "DEGRADE_TAU": "0.50"
+    },
+    "ref": "r2-k-sky-skip050-t12",
+    "coli_dir": "engines/colibri-16239caa",
+    "build": {
+     "ref": "16239caa"
+    },
+    "model": "~/colibri-models/glm-5.3-iq3xxs",
+    "needs": [
+     "~/colibri-models/glm-5.3-iq3xxs/config.json"
+    ],
+    "prep": "make glm-prep-iq3xxs"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
    "id": "glm53-flash",
    "title": "GLM-5.3-Flash (321B) on the glm53 engine",
    "category": "model-format",
@@ -1991,7 +2068,7 @@
    "runs": [],
    "lossy": false,
    "date": "2026-10-18",
-   "conclusion": "Planned: needs a ~328 GB streamed download and conversion (peak disk ~200 GB, ~25 h) and the owner's decision on whether a 321B GLM-5.x counts. New reference runs needed; numbers do not compare with GLM-5.3. Once converted, apply the stack that wins on GLM-5.3 (best exact settings, 12 threads, skip < 0.5, drafts setting, MTP) with new reference runs.",
+   "conclusion": "Planned, manual: the glm53 engine has none of our speed settings (no PIPE, DIRECT, DEGRADE_ZERO, OMP sizing; it has GLM53_EXPERT_GB, COLI_METAL, COLI_MODEL_MIRROR) and prints speed as \"decode N token in X s = Y tok/s\", which the lab parser does not read yet. Fast route instead of the 25 h conversion: `make glm-prep-flash` (Unsloth UD-IQ3_XXS GGUF, ~120 GB, read in place by Colibri dev), then a manual timed run. The GLM-5.3 stack does not carry over as is; it needs Flash-specific settings.",
    "tradeoffs": "Smaller model, likely weaker answers than the 744B GLM-5.3.",
    "verdict": "not run",
    "sources": [
