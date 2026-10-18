@@ -123,3 +123,35 @@ verifier will need. OLMoE has no MTP layer, so this cannot be tested here.
 - [vLLM incremental expert offloading RFC](https://github.com/vllm-project/vllm/issues/38256)
 - [DeepSeek V4-Flash MLX SSD offload](https://github.com/ssd-moe/deepseek-v4-flash-mlx)
 - [GLM-5 technical report](https://arxiv.org/pdf/2602.15763), [GLM-5 architecture notes](https://glennklockwood.com/garden/GLM-5)
+
+## GLM round 2 (2026-10-18): what the newest work means for this Mac
+
+Measured facts this builds on: exact Metal runs are SSD-bound (~12 GB of experts per
+token, ~6.5 GB/s, ~2% cache hits). With skip 0.5, attention and CPU overhead dominate.
+Colibri used 2 of 12 cores until `OMP_NUM_THREADS=12`
+([colibri#2194](https://github.com/JustVugg/colibri/issues/2194)).
+
+```mermaid
+flowchart TD
+    Q{What limits this run?} -->|exact: SSD bytes per token| A[Fewer bytes or faster storage]
+    Q -->|lossy: compute and overhead| B[GPU prefill, more threads, attention]
+    A --> A1[Second SSD: COLI_MODEL_MIRROR]
+    A --> A2[Lossless rANS experts: no engine loader yet]
+    A --> A3[3-bit / mixed-precision experts: lossy, re-conversion]
+    A -.->|does not cut bytes per token| A4[REAP expert pruning: only raises hit rate]
+```
+
+| Idea | Source | Fits here? | Expected effect | Status |
+|---|---|---|---|---|
+| Spread expert reads over a second fast SSD | Colibri `COLI_MODEL_MIRROR` / `COLI_MODEL_DIRS` | Needs an external NVMe (Thunderbolt) | Exact path is SSD-bound, so up to ~2× if the second drive is as fast | Needs hardware; not tested |
+| GPU prompt reading (`COLI_METAL_PREFILL=1`) | Colibri | Yes | Prompt reading took 23-50 s per answer; not bit-exact | Ready to test |
+| Threshold curve at 12 threads | this lab | Yes | Lossy runs gained 22% at 0.5; 0.3 likely gains too | Ready to test |
+| Lossless rANS expert container (~24% fewer bytes) | Colibri `int4-rans256-g0` | Codec and tools only; no engine loader | CPU decode of ~10 GB/token likely costs what it saves (Flash-MoE: LZ4 13% slower) | Engine work; low priority |
+| REAP expert pruning (25-34% of experts removed) | [REAP](https://arxiv.org/html/2510.13999), community GLM-5.x REAP models | Would need Colibri conversion | Still 8 experts per token, so bytes per token stay the same; only the hit rate rises slightly. Community GLM cards report +2.3% perplexity at 25%, and a doubled loop rate at 34% | Not worth it here |
+| 3-bit or mixed-precision experts | [GEMQ](https://arxiv.org/pdf/2605.23078), [MODE](https://arxiv.org/html/2606.17118v1), HOBBIT | Needs re-quantizing 409 GB of experts | int3 cuts bytes ~25%; reported 2-bit losses are large (>20% accuracy) | Lossy; heavy conversion |
+| Speculative prefetch with draft models | [SpecPrefetch](https://arxiv.org/html/2607.24787v2), [SPICE](https://arxiv.org/pdf/2608.21240), [MoE-SpeQ](https://arxiv.org/abs/2511.14102) | Our `PILOT` prefetch gave nothing; Flash-MoE saw prefetch hurt on Apple unified memory | Mobile/NVIDIA results only | Low priority |
+| CPU/GPU expert split | [KTransformers](https://github.com/kvcache-ai/ktransformers), HybriMoE | Unified memory removes the PCIe gap these target; CPU and GPU share bandwidth | Unclear on Apple Silicon | Not planned |
+| ML cache replacement | FlashMoE (arXiv 2601.17063) | Hit rate is ~2% because the cache is tiny, not because of policy | Small | Not planned |
+
+Takeaway: with exact output, only faster storage moves the needle on this Mac. Everything
+else either changes output or attacks costs that are not the bottleneck.
