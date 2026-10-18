@@ -138,7 +138,8 @@ def scoreboard(rows):
     usable = [r for r in ok if r.get('lossy') and r.get('usable')]
     pick = lambda xs: max(xs, key=lambda r: r['metrics']['tok_s']) if xs else None
     out = dict(target_tok_s=TARGET_TOK_S)
-    for name, r in (('best_exact', pick(exact)), ('best_usable_lossy', pick(usable))):
+    everyday = [r for r in ok if r.get('everyday')]
+    for name, r in (('best_exact', pick(exact)), ('best_usable_lossy', pick(usable)), ('everyday', pick(everyday))):
         if r:
             t = r['metrics']['tok_s']
             out[name] = dict(id=r['id'], title=r['title'], tok_s=round(t, 2), runs=r['runs'],
@@ -167,7 +168,8 @@ def build(_args=None):
              '', '## Scoreboard', '',
              f"Target: **{board['target_tok_s']} tok/s**. " + ' '.join(
                  f"{lab}: **{board[k]['tok_s']} tok/s** ({board[k]['title']}, {board[k]['pct_of_target']}% of target, {board[k]['gap_x']}x to go)."
-                 for k, lab in (('best_exact', 'Best exact'), ('best_usable_lossy', 'Best usable lossy')) if k in board),
+                 for k, lab in (('best_exact', 'Best exact'), ('best_usable_lossy', 'Best usable lossy'),
+                                ('everyday', 'Everyday setting')) if k in board),
              '', 'Memory is not judged: peak RSS varied 6.2-9.3 GB between two runs with identical settings, so it reflects what macOS kept resident rather than the setting.',
              '', 'Verdicts: ' + ', '.join(f'{k} {v}' for k, v in sorted(counts.items())) + '.', '',
              '```mermaid', 'flowchart LR', '    T[glm_lab.py try] --> R[run + log] --> P[published runs] --> L[glm_lab.py log] --> D[this page + website]', '```', '']

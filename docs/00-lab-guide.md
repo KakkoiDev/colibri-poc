@@ -96,6 +96,19 @@ COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 OMP_NUM_THREA
   ~/Code/colibri/c/coli chat --model ~/colibri-models/glm-5.3 --ram 18 --ctx 1024
 ```
 
+**Everyday setting (owner decision, 2026-10-18): skip 0.3 with 12 threads, terse prompts.**
+About 2× exact generation speed (~0.9 tok/s) with no real mistakes in quality bench v1, and
+~52 s per terse answer:
+
+```sh
+COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 OMP_NUM_THREADS=12 \
+  DEGRADE_ZERO=1 DEGRADE_TAU=0.3 \
+  ~/Code/colibri/c/coli chat --model ~/colibri-models/glm-5.3 --ram 18 --ctx 1024
+```
+
+It changes output (answers are reworded), so use the exact command above when
+identical-to-the-model output matters.
+
 **Prompt style: terse (owner decision, 2026-10-18).** End every prompt with " Answer as
 briefly as possible. For code, reply with only the code." Quality bench v1: exact answers in
 ~64 s instead of ~281 s, 24/24 correct in every config. Generation speed is unchanged; the

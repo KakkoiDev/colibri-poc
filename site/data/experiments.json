@@ -22,6 +22,16 @@
    ],
    "gap_x": 2.6,
    "pct_of_target": 38
+  },
+  "everyday": {
+   "id": "skip-0.30-t12",
+   "title": "Skip below 0.30 with 12 threads",
+   "tok_s": 0.92,
+   "runs": [
+    "r2-k-sky-skip030-t12"
+   ],
+   "gap_x": 5.4,
+   "pct_of_target": 18
   }
  },
  "entries": [
@@ -1497,9 +1507,13 @@
    ],
    "lossy": true,
    "date": "2026-10-18",
-   "conclusion": "No change: at 0.30 the run is still mostly waiting on the SSD.",
-   "tradeoffs": "",
+   "conclusion": "Same speed as 2 threads (the run is still SSD-bound). Marked the usable everyday setting by the owner on 2026-10-18: quality bench v1 found no real mistakes at skip 0.3 (normal style: 23 correct, 1 cut off by the token cap; terse: 24/24), about 2x exact generation speed, and with terse prompts ~52 s per answer vs ~64 s exact.",
+   "tradeoffs": "Changes output (reworded answers). Validated on 24 graded prompts only.",
    "usable": true,
+   "everyday": true,
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/published-results/glm-bench-v1/review.md"
+   ],
    "metrics": {
     "measured": true,
     "n_runs": 1,
