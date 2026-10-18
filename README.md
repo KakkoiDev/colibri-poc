@@ -22,6 +22,7 @@ made by this lab and not a comparable score for OLMoE.
 9. [Resident versus streaming experiments](docs/09-two-track-experiments.md)
 10. [Candidate next experiments](docs/10-next-experiments.md)
 11. [GLM-5.3 on this Mac: what limits it](docs/11-glm-on-this-mac.md)
+    Results page: `site/index.html` (GitHub Pages via `.github/workflows/pages.yml`; preview with `python3 -m http.server --directory site`).
 12. [AI takeover instructions and live state](EXPERIMENT_HANDOFF.md)
 
 ```mermaid

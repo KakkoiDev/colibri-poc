@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLM-5.3 on a 32 GB Apple M6</title>
+<meta name="description" content="How GLM-5.3 (744B MoE) got about 4× faster on a 32 GB Apple M6 with Colibri, and what going further costs.">
+<style>
+:root{
+  --bg:#fafafa;--surface:#ffffff;--ink:#1a1a1a;--muted:#5b5b5b;--line:#dcdcdc;--soft:#f0f0f0;
+  --exact:#2b5c9e;--lossy:#b45309;--ghost:#9a9a9a;--warn-bg:#fff7e6;--warn-line:#e7b45a;
+  --s1:#2b5c9e;--s2:#e0913a;--s3:#7a5cb0;--s4:#9a9a9a;
+  --b1:#e8f0fa;--b2:#fff3df;--b3:#fbe3d6;--b4:#f6d6d6;
+  --code:#f3f3f3;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141414;--surface:#1d1d1d;--ink:#ececec;--muted:#a8a8a8;--line:#3a3a3a;--soft:#262626;
+  --exact:#7aa7e0;--lossy:#f0a35b;--ghost:#777;--warn-bg:#2a2214;--warn-line:#8a6a2e;
+  --s1:#7aa7e0;--s2:#f0a35b;--s3:#b49ae0;--s4:#8a8a8a;
+  --b1:#1e2a3a;--b2:#33291a;--b3:#3a2420;--b4:#3d1f1f;
+  --code:#242424;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+a{color:var(--exact)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+header.top strong{font-size:15px}
+nav{display:flex;gap:14px;flex-wrap:wrap;font-size:14px}
+nav a{color:var(--muted);text-decoration:none}nav a:hover{color:var(--ink);text-decoration:underline}
+section{padding:48px 0;border-bottom:1px solid var(--line)}
+h1{font-size:clamp(28px,4.5vw,42px);line-height:1.15;margin:12px 0}
+h2{font-size:26px;margin:0 0 6px;display:flex;gap:12px;align-items:baseline}
+h2 .n{font:600 14px ui-monospace,monospace;color:var(--muted)}
+h3{font-size:18px;margin:28px 0 8px}
+.lede{font-size:18px;color:var(--muted);max-width:720px}
+.notice{font-weight:600;margin:16px 0 4px}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);vertical-align:middle}
+.badge.lossy{border-color:var(--lossy);color:var(--lossy)}
+.badge.exact{border-color:var(--exact);color:var(--exact)}
+.badge.miss{border-color:var(--ink);color:var(--ink)}
+.hero-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:24px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card.lossy{border-style:dashed;border-color:var(--lossy)}
+.big{font-size:38px;font-weight:700;letter-spacing:-.5px;margin:6px 0}
+.big small{font-size:16px;font-weight:500;color:var(--muted)}
+.muted{color:var(--muted)}.small{font-size:14px}
+.callout{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;padding:14px 16px;margin:16px 0}
+.callout strong{display:block;margin-bottom:2px}
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px}
+.gloss dt{font-weight:600}.gloss dd{margin:2px 0 0;color:var(--muted);font-size:14px}
+.cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px}
+.fix{margin-top:10px;font-size:14px;font-weight:600}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;margin:18px 0}
+.chart .cap{font-weight:600;margin:0 0 10px}
+.chart .foot{font-size:13px;color:var(--muted);margin:10px 0 0}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:0 0 10px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.wrap{white-space:normal;min-width:220px}
+th{font-weight:600;color:var(--muted);background:var(--soft)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.lossy td:first-child{box-shadow:inset 3px 0 0 var(--lossy)}
+.ok{color:var(--exact);font-weight:700}.bad{color:var(--lossy);font-weight:700}
+.math{font:600 18px ui-monospace,monospace;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:16px 0;overflow-x:auto}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:6px 0 14px}
+ul.links{display:flex;flex-wrap:wrap;gap:8px 18px;padding:0;list-style:none}
+footer{padding:28px 0 48px;font-size:14px;color:var(--muted)}
+.pending{display:flex;align-items:center;justify-content:center;min-height:180px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);text-align:center;padding:16px}
+svg text{fill:var(--muted);font:12px -apple-system,system-ui,sans-serif}
+svg .axis{stroke:var(--line)}
+svg .lbl{fill:var(--ink);font-weight:600}
+@media (max-width:600px){section{padding:36px 0}.big{font-size:32px}header.top{position:static}
+  .chart .plot{overflow-x:auto;-webkit-overflow-scrolling:touch}.chart .plot svg{min-width:520px}
+  .chart .plot::after{content:"Scroll sideways to see the whole chart";display:block;font-size:12px;color:var(--muted);margin-top:6px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="6" height="6" fill="var(--lossy)" opacity=".35"></rect>
+      <line x1="0" y1="0" x2="0" y2="6" stroke="var(--lossy)" stroke-width="3"></line>
+    </pattern>
+  </defs>
+</svg>
+
+<header class="top"><div class="wrap">
+  <strong>GLM-5.3 on an Apple M6</strong>
+  <nav aria-label="Sections">
+    <a href="#exact">Exact</a><a href="#time">Time</a><a href="#ceiling">Ceiling</a><a href="#tradeoff">Trade-off</a>
+    <a href="#bench">Bench</a><a href="#failed">Didn't work</a><a href="#run">Run it</a><a href="#caveats">Caveats</a>
+  </nav>
+</div></header>
+
+<main>
+<section id="top"><div class="wrap">
+  <span class="badge miss" id="target-badge">Target 5 tok/s: not reached</span>
+  <h1 id="title">GLM-5.3 on a 32 GB Apple M6: what we changed and what it cost</h1>
+  <p class="lede">Exact tuning made GLM about 4× faster on this Mac. Going further means trading answer quality, and 5 tok/s was not reachable here.</p>
+  <div class="hero-grid">
+    <div class="card">
+      <span class="badge exact">Exact · same output</span>
+      <div class="big" id="hero-exact">…</div>
+      <div class="muted small" id="hero-exact-note"></div>
+    </div>
+    <div class="card lossy">
+      <span class="badge lossy">Lossy · skip threshold 0.5 · changes output</span>
+      <div class="big" id="hero-lossy">…</div>
+      <div class="muted small" id="hero-lossy-note"></div>
+    </div>
+  </div>
+  <p class="muted small" id="machine"></p>
+  <div class="callout" role="note">
+    <strong>Measured on a busy everyday machine</strong>
+    <span id="busy"></span>
+  </div>
+  <dl class="gloss">
+    <div><dt>Tokens per second (tok/s)</dt><dd>How many word-pieces the model writes per second. Generation only; reading the prompt is timed separately.</dd></div>
+    <div><dt>Expert</dt><dd>GLM is a mixture-of-experts model: each layer sends every token to 8 of 256 small sub-networks. Most experts live on the SSD and must be read in.</dd></div>
+    <div><dt>Skip threshold</dt><dd>If a needed expert is not in RAM and its weight is below the threshold, skip it instead of reading it. 0 is exact; anything above 0 changes output.</dd></div>
+  </dl>
+</div></section>
+
+<section id="why"><div class="wrap">
+  <h2><span class="n">01</span>Why it was slow</h2>
+  <div class="cards3">
+    <div class="card"><h3 style="margin-top:0">Single-threaded build</h3><p class="muted small">Apple's compiler ships without OpenMP. Without libomp, Colibri's build only warns, and all expert math runs on one CPU core.</p><div class="fix">Fix: install libomp and rebuild</div></div>
+    <div class="card"><h3 style="margin-top:0">CPU-only build</h3><p class="muted small">The engine was built without the Apple GPU backend, so the GPU sat idle while the CPU did everything.</p><div class="fix">Fix: rebuild with <code>METAL=1</code></div></div>
+    <div class="card"><h3 style="margin-top:0">No RAM left for an expert cache</h3><p class="muted small" id="why-ram"></p><div class="fix">Fix: explicit <code>--ram 18 --ctx 1024</code></div></div>
+  </div>
+</div></section>
+
+<section id="exact"><div class="wrap">
+  <h2><span class="n">02</span>Exact speed-ups, step by step</h2>
+  <p class="muted">Each step keeps the model's math unchanged. Every run produced the same text as the baseline.</p>
+  <figure class="chart" id="chart-a"><figcaption class="cap" id="cap-a"></figcaption><div class="plot"></div>
+    <p class="foot">tok/s, axis starts at 0. Single run each; differences under ~10% are noise. Hover a bar for its run; click to read its output.</p></figure>
+  <div class="tbl"><table id="tbl-exact"><thead><tr><th>Setting</th><th class="num">tok/s</th><th class="num">× vs 0.10</th><th class="num">SSD share</th><th>Same output</th><th>Run (raw output)</th></tr></thead><tbody></tbody></table></div>
+</div></section>
+
+<section id="time"><div class="wrap">
+  <h2><span class="n">03</span>Where the time goes</h2>
+  <p class="muted">Share of generation time per token. Fix one bottleneck and the next one shows up.</p>
+  <figure class="chart" id="chart-b"><figcaption class="cap">The bottleneck moves from compute (CPU), to SSD reads (best exact), to attention and overhead (lossy).</figcaption>
+    <div class="legend"><span><i style="background:var(--s1)"></i>SSD wait</span><span><i style="background:var(--s2)"></i>Expert math</span><span><i style="background:var(--s3)"></i>Attention</span><span><i style="background:var(--s4)"></i>Other</span></div>
+    <div class="plot"></div>
+    <p class="foot">Single run each, profiler on. The lossy row is marked with an orange edge and a "changes output" label.</p></figure>
+</div></section>
+
+<section id="ceiling"><div class="wrap">
+  <h2><span class="n">04</span>The hard ceiling: the SSD</h2>
+  <p class="muted">Exact output needs every chosen expert, and almost none fit in RAM, so each token waits on the disk.</p>
+  <div class="math" id="ceil-math"></div>
+  <p id="ceil-text"></p>
+  <div class="two">
+    <figure class="chart" id="chart-c"><figcaption class="cap">More SSD readers don't help past 2.</figcaption><div class="plot"></div><p class="foot" id="foot-c"></p></figure>
+    <figure class="chart" id="chart-d"><figcaption class="cap">A cache this Mac can afford serves under a fifth of expert reads.</figcaption><div class="plot"></div><p class="foot" id="foot-d"></p></figure>
+  </div>
+</div></section>
+
+<section id="tradeoff"><div class="wrap">
+  <h2><span class="n">05</span>Trading quality for speed</h2>
+  <p class="muted">Skipping experts that are not in RAM avoids the SSD wait, but the model then computes something different. Every point above 0 <span class="badge lossy">changes output</span></p>
+  <figure class="chart" id="chart-e"><figcaption class="cap">Speed only rises once the threshold passes 0.10, and the answer drifts with it.</figcaption>
+    <div class="legend"><span><i style="background:var(--exact)"></i>exact</span><span><i style="background:var(--lossy)"></i>lossy, sky prompt</span><span><i style="background:transparent;border:2px dashed var(--lossy)"></i>code prompt</span>
+      <span><i style="background:var(--b1)"></i>identical text</span><span><i style="background:var(--b2)"></i>reworded, correct</span><span><i style="background:var(--b3)"></i>grammar errors</span><span><i style="background:var(--b4)"></i>breaks</span></div>
+    <div class="plot"></div><p class="foot" id="foot-e"></p></figure>
+  <div class="tbl"><table id="tbl-lossy"><thead><tr><th class="num">Skip threshold</th><th class="num">tok/s</th><th class="num">Expert loads skipped</th><th>Output vs exact</th><th>Run (raw output)</th></tr></thead><tbody></tbody></table></div>
+  <p class="muted small">Percent skipped is out of ~27,600 routed expert loads per 48-token run. Two prompts and a few dozen tokens: a smoke test, not a quality benchmark.</p>
+  <h3>Factual quiz: facts held, instructions slipped</h3>
+  <div class="tbl"><table id="tbl-quiz"><thead></thead><tbody></tbody></table></div>
+  <p class="muted small">✓ = same answer as exact, ✗ = differs. Five questions, 16 tokens max, greedy, single run each. With skipping, the Japanese answer used a less fitting past tense and ignored "Japanese only".</p>
+</div></section>
+
+<section id="bench"><div class="wrap">
+  <h2><span class="n">06</span>Quality vs speed bench</h2>
+  <p class="muted">Accuracy and total answer time per configuration and prompt style (normal vs "answer as briefly as possible"), on 24 graded prompts.</p>
+  <figure class="chart" id="chart-f"><figcaption class="cap">Does a terse prompt claw back speed without losing accuracy?</figcaption><div class="plot"></div><p class="foot" id="foot-f"></p></figure>
+  <div class="tbl" id="tbl-bench-wrap" hidden><table id="tbl-bench"><thead><tr><th>Style</th><th>Config</th><th class="num">Correct</th><th class="num">Same text as exact</th><th class="num">Mean answer s</th><th class="num">Mean prefill s</th><th class="num">Mean output tokens</th><th class="num">Mean decode tok/s</th></tr></thead><tbody></tbody></table></div>
+</div></section>
+
+<section id="failed"><div class="wrap">
+  <h2><span class="n">07</span>What didn't work</h2>
+  <p class="muted" id="failed-intro"></p>
+  <div class="tbl"><table id="tbl-neg"><thead><tr><th>What was tried</th><th>Kind</th><th class="num">tok/s</th><th>Why it didn't help</th><th>Run</th></tr></thead><tbody></tbody></table></div>
+  <p class="muted small">Single run each. Vulkan needed a <a href="https://github.com/KakkoiDev/colibri-poc/blob/main/patches/colibri-moltenvk-portability.diff">2-line MoltenVK opt-in patch</a> in a test clone.</p>
+</div></section>
+
+<section id="run"><div class="wrap">
+  <h2><span class="n">08</span>How to run it</h2>
+  <p class="muted">Build Colibri with libomp and Metal first. Replace <code>&lt;colibri&gt;</code> and <code>&lt;models&gt;</code> with your own folders.</p>
+  <h3>1 · Build</h3>
+  <pre><code>brew install libomp
+make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
+  <h3>2a · Exact <span class="badge exact">same output</span></h3>
+  <pre><code>COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 \
+  &lt;colibri&gt;/c/coli chat --model &lt;models&gt;/glm-5.3 --ram 18 --ctx 1024</code></pre>
+  <h3>2b · Lossy <span class="badge lossy">changes output</span></h3>
+  <pre><code>COLI_METAL=1 PIPE=1 DIRECT=1 COLI_METAL_RESSET=1 COLI_METAL_SPIN=1 \
+  DEGRADE_ZERO=1 DEGRADE_TAU=0.5 \
+  &lt;colibri&gt;/c/coli chat --model &lt;models&gt;/glm-5.3 --ram 18 --ctx 1024</code></pre>
+  <ul class="small">
+    <li><strong>Power use.</strong> <code>COLI_METAL_SPIN=1</code> keeps a GPU keep-alive running the whole time; drop it on battery (about 10-15% slower).</li>
+    <li><strong>Short conversations.</strong> <code>--ctx 1024</code> caps conversation length; it was needed to fit beside other apps.</li>
+    <li><strong>May refuse to start.</strong> The engine stops if its projected memory peak exceeds free RAM. Close apps or lower <code>--ram</code>.</li>
+    <li><strong>Don't go above 0.5.</strong> At 0.7 answers had grammar errors; at 1.0 the model repeated itself.</li>
+  </ul>
+</div></section>
+
+<section id="caveats"><div class="wrap">
+  <h2><span class="n">09</span>Caveats and method</h2>
+  <ul id="caveat-list"></ul>
+  <p class="muted small" id="method"></p>
+  <ul class="links small">
+    <li><a href="https://github.com/KakkoiDev/colibri-poc/blob/main/published-results/glm-20261018/runs.csv">Raw runs (runs.csv)</a></li>
+    <li><a href="https://github.com/KakkoiDev/colibri-poc/tree/main/published-results/glm-20261018">All generated text</a></li>
+    <li><a href="data/glm-performance.json">Page data (JSON)</a></li>
+    <li><a href="https://github.com/KakkoiDev/colibri-poc/blob/main/docs/11-glm-on-this-mac.md">GLM on this Mac</a></li>
+    <li><a href="https://github.com/KakkoiDev/colibri-poc/blob/main/docs/09-two-track-experiments.md">Two-track experiments</a></li>
+    <li><a href="https://github.com/KakkoiDev/colibri-poc/blob/main/docs/10-next-experiments.md">Next experiments</a></li>
+  </ul>
+</div></section>
+</main>
+
+<footer><div class="wrap">Engine: <a href="https://github.com/JustVugg/colibri">Colibri</a> by JustVugg; thanks to its authors. Static page, no tracking or analytics. Source: <a href="https://github.com/KakkoiDev/colibri-poc">KakkoiDev/colibri-poc</a>.</div></footer>
+
+<script>
+(function () {
+  'use strict';
+  var RAW = 'https://github.com/KakkoiDev/colibri-poc/blob/main/published-results/glm-20261018/';
+  var NS = 'http://www.w3.org/2000/svg';
+  var WHY = {
+    'c7-pipe4-direct': 'Same as 8 readers within noise; the SSD, not the reader count, is the limit.',
+    'c8-pipe-direct-pilot': 'Prefetch raised cache hits to 10% but not speed.',
+    'c10-combo-w2': 'No change; more readers don’t help past 2.',
+    'c11-combo-w16': 'No change; more readers don’t help past 2.',
+    'c12-combo-cap2-r20': 'One more cache slot per layer raised hits to 4.4%; too few reads served to matter.',
+    'l4-cacheroute': 'Can only swap in experts already in RAM; with almost no cache, 0% were swapped.',
+    'l5-cacheroute-j1-m24': 'Same as default: nothing in RAM to swap to.',
+    'l6-degrade-010-cacheroute': 'Same output and speed as skip < 0.10 alone.',
+    'v2-vk-chain': 'Expert math stayed on the CPU: 71% of time.',
+    'v3-vk-tier3': 'Only ~3% of experts reached the GPU tier.',
+    'v4-vk-tier3-d050': 'Slower than Metal at the same threshold; prompt reading 3–6× slower.',
+    'v5-vkchain-metalexp-d050': 'Chain attention took 78% of time; prompt reading took 154 s.'
+  };
+  var TOTAL_LOADS = 27600;
+
+  var $ = function (s) { return document.querySelector(s); };
+  var f2 = function (n) { return n == null ? '—' : Number(n).toFixed(2); };
+  var href = function (id) { return RAW + id + '.output.txt'; };
+  function el(tag, attrs, text) {
+    var e = document.createElement(tag);
+    for (var k in attrs || {}) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function s(tag, attrs, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs || {}) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function svgRoot(w, h, label) {
+    var r = s('svg', { viewBox: '0 0 ' + w + ' ' + h, role: 'img', 'aria-label': label });
+    r.appendChild(s('title', {}, label));
+    return r;
+  }
+  function tip(node, text) { node.appendChild(s('title', {}, text)); return node; }
+  function runLink(id) { var a = el('a', { href: href(id) }, id); return a; }
+  function row(tbody, cells, cls) {
+    var tr = el('tr', cls ? { class: cls } : {});
+    cells.forEach(function (c) {
+      var td = el('td', c.cls ? { class: c.cls } : {});
+      if (c.node) td.appendChild(c.node); else td.textContent = c.t;
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+  function shares(r) { var t = r.time_share_pct || {}; return [t.ssd_io, t.expert_math, t.attention, t.other]; }
+
+  // ---- generic line/scatter chart
+  function lineChart(opt) {
+    var W = 560, H = opt.h || 300, L = 48, R = 16, T = 16, B = 40;
+    var pw = W - L - R, ph = H - T - B;
+    var xs = opt.xlog ? function (v) { return L + (Math.log(v) - Math.log(opt.x0)) / (Math.log(opt.x1) - Math.log(opt.x0)) * pw; }
+                      : function (v) { return L + (v - opt.x0) / (opt.x1 - opt.x0) * pw; };
+    var ys = function (v) { return T + ph - (v - opt.y0) / (opt.y1 - opt.y0) * ph; };
+    var svg = svgRoot(W, H, opt.label);
+    (opt.bands || []).forEach(function (b) {
+      svg.appendChild(tip(s('rect', { x: xs(b.from), y: T, width: xs(b.to) - xs(b.from), height: ph, fill: b.fill }), b.name));
+    });
+    opt.yt.forEach(function (t) {
+      svg.appendChild(s('line', { class: 'axis', x1: L, x2: W - R, y1: ys(t), y2: ys(t) }));
+      svg.appendChild(s('text', { x: L - 6, y: ys(t) + 4, 'text-anchor': 'end' }, opt.yfmt ? opt.yfmt(t) : t));
+    });
+    opt.xt.forEach(function (t) {
+      svg.appendChild(s('text', { x: xs(t), y: H - B + 18, 'text-anchor': 'middle' }, t));
+    });
+    svg.appendChild(s('text', { x: L + pw / 2, y: H - 4, 'text-anchor': 'middle' }, opt.xlabel));
+    svg.appendChild(s('text', { x: 12, y: T + ph / 2, 'text-anchor': 'middle', transform: 'rotate(-90 12 ' + (T + ph / 2) + ')' }, opt.ylabel));
+    (opt.hlines || []).forEach(function (h) {
+      svg.appendChild(s('line', { x1: L, x2: W - R, y1: ys(h.y), y2: ys(h.y), stroke: h.color, 'stroke-dasharray': '4 4' }));
+      svg.appendChild(s('text', { x: W - R, y: T + 2, 'text-anchor': 'end', class: 'lbl' }, h.label));
+    });
+    (opt.vlines || []).forEach(function (v) {
+      svg.appendChild(s('line', { x1: xs(v.x), x2: xs(v.x), y1: T, y2: T + ph, stroke: 'var(--muted)', 'stroke-dasharray': '3 3' }));
+      svg.appendChild(s('text', { x: xs(v.x) + (v.anchor === 'end' ? -4 : 4), y: T + 12 + (v.dy || 0), 'text-anchor': v.anchor || 'start', class: 'lbl' }, v.label));
+    });
+    opt.series.forEach(function (se) {
+      if (se.line !== false) {
+        svg.appendChild(s('polyline', { points: se.pts.map(function (p) { return xs(p.x) + ',' + ys(p.y); }).join(' '),
+          fill: 'none', stroke: se.color, 'stroke-width': 2, 'stroke-dasharray': se.dash || '' }));
+      }
+      se.pts.forEach(function (p) {
+        var c = p.shape === 'tri'
+          ? s('polygon', { points: [xs(p.x), ys(p.y) - 6, xs(p.x) - 6, ys(p.y) + 5, xs(p.x) + 6, ys(p.y) + 5].join(' '), fill: p.color || se.color })
+          : s('circle', { cx: xs(p.x), cy: ys(p.y), r: p.r || 4.5, fill: p.color || se.color, stroke: 'var(--surface)', 'stroke-width': 1.5 });
+        tip(c, p.tip);
+        if (p.href) { var a = s('a', { href: p.href }); a.appendChild(c); svg.appendChild(a); } else svg.appendChild(c);
+        if (p.lab) svg.appendChild(s('text', { x: xs(p.x), y: ys(p.y) - 9, 'text-anchor': 'middle', class: 'lbl' }, p.lab));
+      });
+    });
+    return svg;
+  }
+
+  function render(D, bench) {
+    var base = D.starting_point.user_reported_tok_s, H = D.headline, C = D.ceiling;
+    var lossyNote = '';
+
+    // hero
+    $('#hero-exact').innerHTML = '';
+    $('#hero-exact').append(f2(base) + ' → ' + f2(H.exact_tok_s) + ' ', el('small', {}, 'tok/s'));
+    $('#hero-exact-note').textContent = '~' + H.exact_speedup_vs_user_reported.toFixed(1) + '× faster than the user-reported start. Identical text on every tested prompt.';
+    $('#hero-lossy').innerHTML = '';
+    $('#hero-lossy').append('→ ' + f2(H.lossy_tok_s_at_0_5) + ' ', el('small', {}, 'tok/s'));
+    $('#hero-lossy-note').textContent = '~' + H.lossy_speedup + '× faster. Facts held in a 5-question smoke test; instruction following got worse.';
+    $('#target-badge').textContent = 'Target ' + C.target_tok_s + ' tok/s: not reached';
+    $('#machine').textContent = [D.machine.chip, D.machine.ram_gb + ' GB RAM', D.machine.model, D.machine.engine].join(' · ');
+    var tc = D.test_conditions;
+    $('#busy').textContent = 'Many other apps were running (' + tc.other_processes.join(', ') + ') and free RAM was ' +
+      tc.free_ram_gb_range[0] + '–' + tc.free_ram_gb_range[1] + ' GB of ' + D.machine.ram_gb + ' GB; macOS swapped during tests. Real performance may be better.';
+    $('#why-ram').textContent = 'With everyday apps open, the automatic budget left nothing for experts. The installed engine: ' + D.starting_point.installed_engine + '.';
+
+    // chart A: exact progression
+    var prog = D.exact_progression.slice(0, 6);
+    $('#cap-a').textContent = 'Metal plus four I/O settings took generation from ' + f2(base) + ' to ' + f2(H.exact_tok_s) + ' tok/s.';
+    var bars = [{ label: 'User-reported start', tok_s: base, ghost: true }].concat(prog);
+    var W = 640, LW = 230, rowH = 34, Hh = bars.length * rowH + 30, max = 0.5;
+    var A = svgRoot(W, Hh, 'Bar chart of tok/s for each exact step');
+    [0, 0.1, 0.2, 0.3, 0.4, 0.5].forEach(function (t) {
+      var x = LW + t / max * (W - LW - 70);
+      A.appendChild(s('line', { class: 'axis', x1: x, x2: x, y1: 0, y2: Hh - 24 }));
+      A.appendChild(s('text', { x: x, y: Hh - 8, 'text-anchor': 'middle' }, t.toFixed(1)));
+    });
+    bars.forEach(function (b, i) {
+      var y = i * rowH + 6, w = b.tok_s / max * (W - LW - 70);
+      A.appendChild(s('text', { x: LW - 8, y: y + 17, 'text-anchor': 'end', class: b.ghost ? '' : 'lbl' }, b.label));
+      var rect = s('rect', { x: LW, y: y, width: w, height: 22, rx: 3,
+        fill: b.ghost ? 'none' : 'var(--exact)', stroke: b.ghost ? 'var(--ghost)' : 'none', 'stroke-dasharray': b.ghost ? '4 3' : '' });
+      tip(rect, b.ghost ? 'User-reported, not a run' : 'Run ' + b.run + ': ' + f2(b.tok_s) + ' tok/s');
+      if (b.run) { var a = s('a', { href: href(b.run) }); a.appendChild(rect); A.appendChild(a); } else A.appendChild(rect);
+      A.appendChild(s('text', { x: LW + w + 6, y: y + 16, class: 'lbl' }, f2(b.tok_s) + ' · ' + (b.tok_s / base).toFixed(1) + '×'));
+    });
+    $('#chart-a .plot').appendChild(A);
+    var tb = $('#tbl-exact tbody');
+    D.exact_progression.forEach(function (r) {
+      row(tb, [{ t: r.label }, { t: f2(r.tok_s), cls: 'num' }, { t: (r.tok_s / base).toFixed(1) + '×', cls: 'num' },
+        { t: r.time_share_pct.ssd_io + '%', cls: 'num' }, { node: el('span', { class: 'ok' }, '✓ same') }, { node: runLink(r.run) }]);
+    });
+
+    // chart B: time shares
+    var find = function (arr, id) { return arr.filter(function (r) { return r.run === id; })[0]; };
+    var bRows = [[find(D.exact_progression, 'c1-omp-cpu-r18-c1k'), 'CPU + libomp', false], [find(D.exact_progression, 'c2-metal-r18-c1k'), 'Metal GPU', false],
+                 [find(D.exact_progression, 'c9-best-combo'), 'Best exact', false], [find(D.lossy_threshold_curve, 'l10-degrade-050'), 'Skip < 0.50', true]];
+    var cols = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)'], names = ['SSD wait', 'Expert math', 'Attention', 'Other'];
+    var BW = 640, BL = 150, bh = 30, BH = bRows.length * 44 + 4;
+    var Bs = svgRoot(BW, BH, '100% stacked bars of generation time shares');
+    bRows.forEach(function (x, i) {
+      var r = x[0], sh = shares(r), sum = sh.reduce(function (a, b) { return a + b; }, 0), y = i * 44 + 4, cx = BL;
+      Bs.appendChild(s('text', { x: BL - 8, y: y + 13, 'text-anchor': 'end', class: 'lbl' }, x[1]));
+      Bs.appendChild(s('text', { x: BL - 8, y: y + 27, 'text-anchor': 'end' }, f2(r.tok_s) + ' tok/s' + (x[2] ? ' · lossy' : '')));
+      if (x[2]) Bs.appendChild(s('rect', { x: BL - 4, y: y, width: 3, height: bh, fill: 'var(--lossy)' }));
+      sh.forEach(function (v, k) {
+        var w = v / sum * (BW - BL - 4);
+        Bs.appendChild(tip(s('rect', { x: cx, y: y, width: w, height: bh, fill: cols[k] }), names[k] + ': ' + v + '% (run ' + r.run + ')'));
+        if (v / sum >= 0.08) Bs.appendChild(s('text', { x: cx + w / 2, y: y + 19, 'text-anchor': 'middle', style: 'fill:#fff;font-weight:600' }, v + '%'));
+        cx += w;
+      });
+    });
+    $('#chart-b .plot').appendChild(Bs);
+
+    // ceiling
+    $('#ceil-math').textContent = C.expert_bytes_per_token_gb + ' GB/token × ' + C.target_tok_s + ' tok/s = ' + C.needed_gbs_at_5_tok_s + ' GB/s needed';
+    $('#ceil-text').textContent = 'This SSD delivers about ' + C.ssd_max_gbs + ' GB/s, roughly ' + Math.round(C.needed_gbs_at_5_tok_s / C.ssd_max_gbs) +
+      '× too little. Exact ceiling on this Mac: ' + C.exact_ceiling_tok_s + ' tok/s. Best exact reached ' + f2(H.exact_tok_s) + '.';
+    var cp = D.ssd_readers_gbs.points;
+    $('#chart-c .plot').appendChild(lineChart({ label: 'SSD read speed by number of parallel readers', x0: 1, x1: 16, xlog: true, y0: 0, y1: 8,
+      xt: [1, 2, 4, 8, 16], yt: [0, 2, 4, 6, 8], xlabel: 'parallel readers', ylabel: 'GB/s',
+      hlines: [{ y: C.ssd_max_gbs, color: 'var(--muted)', label: 'SSD max ≈ ' + C.ssd_max_gbs + ' GB/s' }],
+      series: [{ color: 'var(--exact)', pts: cp.map(function (p) { return { x: p.readers, y: p.gbs, lab: p.gbs.toFixed(2), tip: p.readers + ' readers: ' + p.gbs + ' GB/s' }; }) }] }));
+    $('#foot-c').textContent = 'GB/s, axis starts at 0. ' + D.ssd_readers_gbs.note + '. Single benchmark pass.';
+    var dp = D.cache_projection.points;
+    $('#chart-d .plot').appendChild(lineChart({ label: 'Share of expert reads served by cache size', x0: 1, x1: 256, xlog: true, y0: 0, y1: 100,
+      xt: [1, 2, 5, 10, 20, 50, 100, 200], yt: [0, 25, 50, 75, 100], yfmt: function (t) { return t + '%'; }, xlabel: 'expert cache, GB (log scale)', ylabel: '% served',
+      vlines: [{ x: 5, label: '~5 GB: what this Mac can spare' }, { x: 100, label: '~100 GB: ~82%', anchor: 'end', dy: 30 }],
+      series: [{ color: 'var(--exact)', pts: dp.map(function (p) { return { x: p.cache_gb, y: p.served_pct, r: 3.5, tip: p.cache_gb + ' GB: ' + p.served_pct + '% served' }; }) }] }));
+    $('#foot-d').textContent = 'Projection, not a run: ' + D.cache_projection.note + '.';
+
+    // chart E: threshold curve
+    var sky = D.lossy_threshold_curve, code = D.code_prompt;
+    var grp = function (q) { return (q === 'reference' || q.indexOf('identical') === 0) ? 0 : q.indexOf('reworded') === 0 ? 1 : q.indexOf('grammar') === 0 ? 2 : 3; };
+    var gmin = [9, 9, 9, 9], gmax = [-1, -1, -1, -1];
+    sky.forEach(function (p) { var g = grp(p.quality); gmin[g] = Math.min(gmin[g], p.tau); gmax[g] = Math.max(gmax[g], p.tau); });
+    var bandFill = ['var(--b1)', 'var(--b2)', 'var(--b3)', 'var(--b4)'], bandName = ['Identical text', 'Reworded, correct', 'Grammar errors', 'Breaks'];
+    var bands = [0, 1, 2, 3].map(function (g) {
+      return { from: g === 0 ? 0 : (gmax[g - 1] + gmin[g]) / 2, to: g === 3 ? 1 : (gmax[g] + gmin[g + 1]) / 2, fill: bandFill[g], name: bandName[g] };
+    });
+    $('#chart-e .plot').appendChild(lineChart({ label: 'Generation speed by skip threshold', h: 320, x0: 0, x1: 1, y0: 0, y1: 2.5, bands: bands,
+      xt: [0, 0.2, 0.4, 0.6, 0.8, 1], yt: [0, 0.5, 1, 1.5, 2, 2.5], xlabel: 'skip threshold (0 = exact)', ylabel: 'tok/s',
+      series: [
+        { color: 'var(--lossy)', pts: sky.map(function (p) { return { x: p.tau, y: p.tok_s, color: p.tau === 0 ? 'var(--exact)' : 'var(--lossy)', r: p.tau === 0 ? 6 : 4.5,
+          lab: p.tau >= 0.2 ? f2(p.tok_s) : '', href: href(p.run), tip: 'Run ' + p.run + ' · skip < ' + p.tau + ' · ' + f2(p.tok_s) + ' tok/s · ' + p.quality }; }) },
+        { color: 'var(--lossy)', dash: '5 4', pts: code.map(function (p) { return { x: p.tau, y: p.tok_s, shape: 'tri', href: href(p.run), tip: 'Code prompt · run ' + p.run + ' · ' + f2(p.tok_s) + ' tok/s' }; }) }
+      ] }));
+    $('#foot-e').textContent = 'tok/s, axis starts at 0. The 5 tok/s target is twice the top of this axis. Max seen ' + f2(H.max_seen_tok_s) + ' tok/s: ' +
+      H.max_seen_note + '. Quality bands judged on one prompt; single run each.';
+    var tl = $('#tbl-lossy tbody');
+    sky.forEach(function (r) {
+      var z = r.zeroed_slots;
+      row(tl, [{ t: r.tau === 0 ? '0 (exact)' : r.tau.toFixed(2), cls: 'num' }, { t: f2(r.tok_s), cls: 'num' },
+        { t: z == null ? '—' : Math.round(z).toLocaleString('en-US') + ' (~' + Math.round(z / TOTAL_LOADS * 100) + '%)', cls: 'num' },
+        { t: r.quality }, { node: runLink(r.run) }], r.tau > 0 ? 'lossy' : '');
+    });
+
+    // quiz
+    var q = D.quiz, qh = $('#tbl-quiz thead'), qb = $('#tbl-quiz tbody'), tr = el('tr');
+    tr.appendChild(el('th', {}, 'Question'));
+    var cfgKeys = ['exact', 'd050', 'd070'];
+    q.columns.forEach(function (c, i) {
+      var speeds = Object.keys(q.runs).map(function (k) { return q.runs[k][cfgKeys[i]].tok_s; });
+      var th = el('th', {}, c + ' (' + f2(Math.min.apply(null, speeds)) + '–' + f2(Math.max.apply(null, speeds)) + ' tok/s)');
+      tr.appendChild(th);
+    });
+    qh.appendChild(tr);
+    q.rows.forEach(function (r) {
+      var cells = [{ t: r[0] }];
+      r.slice(1).forEach(function (v) {
+        var same = v === r[1], span = el('span');
+        span.appendChild(el('span', { class: same ? 'ok' : 'bad', 'aria-label': same ? 'same as exact' : 'differs from exact' }, same ? '✓ ' : '✗ '));
+        span.appendChild(document.createTextNode(v));
+        cells.push({ node: span, cls: 'wrap' });
+      });
+      row(qb, cells);
+    });
+
+    // negative results
+    $('#failed-intro').textContent = 'Compared with best exact at ' + f2(H.exact_tok_s) + ' tok/s, or lossy at ' + f2(H.lossy_tok_s_at_0_5) + ' tok/s for skipping runs.';
+    var tn = $('#tbl-neg tbody');
+    var neg = [];
+    D.exact_negative.forEach(function (r) { neg.push([r, 'Exact', false, r.note || WHY[r.run]]); });
+    D.lossy_cache_route.forEach(function (r) { neg.push([r, 'Lossy (CACHE_ROUTE)', true, WHY[r.run]]); });
+    D.vulkan.forEach(function (r) { neg.push([r, 'Vulkan backend', r.tau > 0, WHY[r.run]]); });
+    neg.forEach(function (x) {
+      var r = x[0], kind = el('span', {}, x[1] + ' ');
+      if (x[2]) kind.appendChild(el('span', { class: 'badge lossy' }, 'changes output'));
+      row(tn, [{ t: r.label }, { node: kind }, { t: r.tok_s == null ? 'failed' : f2(r.tok_s), cls: 'num' }, { t: x[3] || '', cls: 'wrap' }, { node: runLink(r.run) }], x[2] ? 'lossy' : '');
+    });
+
+    // caveats
+    var cl = $('#caveat-list');
+    D.caveats.forEach(function (c) { cl.appendChild(el('li', {}, c)); });
+    $('#method').textContent = 'Method: greedy decoding; main prompt "Explain in two sentences why the sky is blue.", plus a code prompt and a 5-question quiz; RAM budget 18 GB, context 1,024, profiler on. Test engines were built from ' +
+      D.machine.engine + ' in separate clones. Results are for this Mac only and may not transfer to other machines.';
+
+    renderBench(bench);
+  }
+
+  function renderBench(rows) {
+    var plot = $('#chart-f .plot');
+    if (!rows || !rows.length) {
+      plot.appendChild(el('div', { class: 'pending' }, 'Bench still running: the chart appears once its summary is published.'));
+      $('#foot-f').textContent = 'The rest of the page does not depend on this data.';
+      return;
+    }
+    var color = { exact: 'var(--exact)', d030: 'var(--s3)', d050: 'var(--lossy)' };
+    var name = { exact: 'exact', d030: 'skip 0.3', d050: 'skip 0.5' };
+    var maxT = Math.max.apply(null, rows.map(function (r) { return r.answer_s; }));
+    var x1 = Math.ceil(maxT / 50) * 50;
+    var xt = []; for (var t = 0; t <= x1; t += x1 / 5) xt.push(Math.round(t));
+    var legend = el('div', { class: 'legend' });
+    Object.keys(name).forEach(function (k) { var sp = el('span'); sp.appendChild(el('i', { style: 'background:' + color[k] })); sp.appendChild(document.createTextNode(name[k])); legend.appendChild(sp); });
+    legend.appendChild(el('span', {}, '● normal · ▲ terse'));
+    plot.appendChild(legend);
+    plot.appendChild(lineChart({ label: 'Accuracy vs mean answer time per configuration and style', x0: 0, x1: x1, y0: 0, y1: 100,
+      xt: xt, yt: [0, 25, 50, 75, 100], yfmt: function (t) { return t + '%'; }, xlabel: 'mean answer time, s (prompt reading + generation)', ylabel: '% correct',
+      series: [{ line: false, color: 'var(--exact)', pts: rows.map(function (r) {
+        var pct = r.graded ? r.correct / r.graded * 100 : 0;
+        return { x: r.answer_s, y: pct, color: color[r.config] || 'var(--muted)', shape: r.style === 'terse' ? 'tri' : 'dot', r: 6,
+          tip: r.style + ' · ' + (name[r.config] || r.config) + ': ' + r.correct + '/' + r.graded + ' correct, ' + r.answer_s.toFixed(1) + ' s mean answer' };
+      }) }] }));
+    $('#foot-f').textContent = 'Graded automatically: facts and logic by expected answer, maths by final number, code by running tests. Skip settings change output.';
+    $('#tbl-bench-wrap').hidden = false;
+    var tb = $('#tbl-bench tbody');
+    rows.forEach(function (r) {
+      row(tb, [{ t: r.style }, { t: name[r.config] || r.config }, { t: r.correct + '/' + r.graded, cls: 'num' }, { t: r.same_as_exact + '/' + r.ok, cls: 'num' },
+        { t: r.answer_s.toFixed(1), cls: 'num' }, { t: r.prefill_s.toFixed(1), cls: 'num' }, { t: r.output_tokens.toFixed(1), cls: 'num' }, { t: r.decode_tok_s.toFixed(2), cls: 'num' }],
+        r.config !== 'exact' ? 'lossy' : '');
+    });
+  }
+
+  var getJSON = function (url) { return fetch(url, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(url + ': ' + r.status); return r.json(); }); };
+  Promise.all([getJSON('data/glm-performance.json'), getJSON('data/bench-summary.json').catch(function () { return null; })])
+    .then(function (res) { render(res[0], res[1]); })
+    .catch(function (e) {
+      var m = el('div', { class: 'callout', role: 'alert' });
+      m.appendChild(el('strong', {}, 'Could not load the page data.'));
+      m.appendChild(document.createTextNode(String(e.message || e) + ' Open the page through a web server, not as a local file.'));
+      $('main').prepend(m);
+    });
+})();
+</script>
+</body>
+</html>

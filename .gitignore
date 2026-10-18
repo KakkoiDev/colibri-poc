@@ -7,3 +7,4 @@ __pycache__/
 .DS_Store
 .bench.lock
 qwen-download-cancelled.json
+site/data/bench-summary.json
