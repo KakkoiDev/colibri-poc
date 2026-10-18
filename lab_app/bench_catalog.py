@@ -31,9 +31,9 @@ def ollama_bench_name(model):
     return re.sub(r'-mlx$', '', slug) + '-ollama'   # qwen3.8:27b-mlx -> qwen38-27b-ollama
 
 
-def _item(id, group, title, what, job, quiet, available=True, why='', done=None, total=None, lossy=False):
+def _item(id, group, title, what, job, quiet, available=True, why='', done=None, total=None, lossy=False, setting=None, style=None):
     return dict(id=id, group=group, title=title, what=what, kind=job['kind'], job=job, only_when_quiet=quiet,
-                available=available, why_not=why or None, done=done, total=total, lossy=lossy)
+                available=available, why_not=why or None, done=done, total=total, lossy=lossy, setting=setting, style=style)
 
 
 def items():
@@ -53,7 +53,8 @@ def items():
         if installed and not m.get('suite'):
             why = m.get('suite_note', 'the bench tools cannot run this model yet')
         gid = f"model:{m['id']}"
-        groups.append(dict(id=gid, title=m['name'], engine='Colibri', note=why or None))
+        groups.append(dict(id=gid, title=m['name'], engine='Colibri', note=why or None, kind='model', main=bool(m.get('owner_model')),
+                           install=not installed, settings=[[c, labels.get(c, c), c != 'exact'] for c in glm_bench.CONFIGS]))
         for b in ('speed', 'threads', 'ram'):
             out.append(_item(f"suite:{b}:{m['id']}", gid, suite[b]['name'], suite[b]['what'],
                              dict(kind='suite', args=dict(bench=b, model=m['id'])), quiet=b == 'ram', available=not why, why=why))
@@ -68,12 +69,13 @@ def items():
                 out.append(_item(f"quality:{m['id']}:{c}:{st}", gid, f"Quality · {labels.get(c, c)} · {st}",
                                  f'{N_PROMPTS} graded prompts, results in glm-bench-{name}', dict(kind='bench', args=args),
                                  quiet=True, available=not why and not full, why=why or ('complete' if full else ''),
-                                 done=d, total=N_PROMPTS, lossy=c != 'exact'))
+                                 done=d, total=N_PROMPTS, lossy=c != 'exact', setting=c, style=st))
 
     # 2. Ollama models installed on this Mac: the quality bench, exact and as normally run
     for om in sorted(actions.ollama_models()):
         gid = f'ollama:{om}'
-        groups.append(dict(id=gid, title=om, engine='Ollama', note=None))
+        groups.append(dict(id=gid, title=om, engine='Ollama', note=None, kind='model', main=False, install=False,
+                           settings=[[c, labels.get(c, c), False] for c in glm_bench.OLLAMA_CONFIGS]))
         name = ollama_bench_name(om)
         for st in styles:
             for c in glm_bench.OLLAMA_CONFIGS:
@@ -82,10 +84,11 @@ def items():
                 out.append(_item(f'ollama:{om}:{c}:{st}', gid, f"Quality · {labels.get(c, c)} · {st}",
                                  f'{N_PROMPTS} graded prompts through Ollama, results in glm-bench-{name}',
                                  dict(kind='bench', args=dict(name=name, configs=[c], styles=[st], ollama_model=om)),
-                                 quiet=True, available=not full, why='complete' if full else '', done=d, total=N_PROMPTS))
+                                 quiet=True, available=not full, why='complete' if full else '', done=d, total=N_PROMPTS,
+                                 setting=c, style=st))
 
     # 3. Quiet runs on the main model
-    groups.append(dict(id='quiet', title='Quiet runs (main model)', engine='Colibri', note='need ≥ 20 GB free for 2 min'))
+    groups.append(dict(id='quiet', title='Quiet runs (main model)', engine='Colibri', note='need ≥ 20 GB free for 2 min', kind='flat'))
     for flags, title, what in [([], 'Full quiet run', 'original engine + key cases + planned experiments'),
                                (['skip-original'], 'Quiet comparison', suite['quiet']['what']),
                                (['ram-sweep', 'skip-original'], 'Quiet comparison + RAM sweep', suite['ram']['what']),
@@ -94,7 +97,7 @@ def items():
                          dict(kind='quiet', args=dict(flags=flags)), quiet=True))
 
     # 4. Ready planned experiments, one by one
-    groups.append(dict(id='planned', title='Planned experiments', engine='Colibri', note=None))
+    groups.append(dict(id='planned', title='Planned experiments', engine='Colibri', note=None, kind='flat'))
     for eid, e in actions._planned_ids().items():
         import glm_lab
         why = glm_lab.readiness(e)

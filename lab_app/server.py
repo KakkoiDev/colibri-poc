@@ -571,9 +571,26 @@ QUIET_HOLD_S = 120   # a model swap in Ollama frees RAM for a moment; wait until
 def bench_catalog_view():
     """Every startable bench, grouped, with an estimate, how far it got, and presets."""
     groups, items = bench_catalog.items()
+    # what is running or queued already: picking it again would only add a duplicate job
+    busy = {}
+    for q in actions.queue_state()['items']:
+        a = q['args']
+        for st in a.get('styles', [None]) if q['kind'] == 'bench' else [None]:
+            for c in a.get('configs', [None]) if q['kind'] == 'bench' else [None]:
+                busy[('bench', a.get('name'), st, c) if q['kind'] == 'bench' else (q['kind'], json.dumps(a, sort_keys=True))] = 'already queued'
+    for j in jobs()[0]:
+        pr = j.get('progress') or {}
+        if j.get('kind') == 'Quality bench':
+            for st in pr.get('styles', []):
+                for c in pr.get('configs', []):
+                    busy[('bench', pr.get('name'), st, c)] = 'running now'
     for i in items:
+        a = i['job']['args']
+        key = ('bench', a.get('name'), i['style'], i['setting']) if i['kind'] == 'bench' else (i['kind'], json.dumps(a, sort_keys=True))
+        if i['available'] and key in busy:
+            i.update(available=False, why_not=busy[key])
         i['est_s'] = estimate_item(dict(kind=i['kind'], args=i['job']['args']))
-    return dict(groups=groups, items=items, presets=bench_catalog.presets(items),
+    return dict(groups=groups, items=items, presets=bench_catalog.presets(items), styles=list(json.loads((ROOT / 'glm-prompts.json').read_text())['styles']),
                 quiet_threshold_gb=machine()['quiet_threshold_gb'], quiet_hold_s=QUIET_HOLD_S)
 
 

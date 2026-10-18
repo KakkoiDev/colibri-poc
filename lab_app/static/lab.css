@@ -201,3 +201,33 @@ details.x[open] summary{margin-bottom:6px}
   main{padding:16px 16px 40px}
   .grid2,.grid3{grid-template-columns:1fr}
 }
+
+/* start benches (picker) */
+.picker{display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start}
+.pk-main{flex:999 1 340px; min-width:0}
+.pk-sumbox{flex:1 1 300px; min-width:0; position:sticky; top:16px; z-index:2}
+.pk-sum{display:flex; flex-direction:column; background:var(--surface); border-color:var(--fg)}
+.pk-head{display:flex; flex-wrap:wrap; gap:6px 12px; align-items:center; padding:10px 14px}
+.pk-toggle{flex:1 1 260px; min-width:0; display:flex; gap:10px; align-items:center}
+.pk-toggle svg{flex:none; fill:none; stroke:currentColor; stroke-width:2px}
+.pk-fs{margin:0; padding:0; border:0; display:flex; flex-direction:column; gap:6px}
+.pk-fs legend{margin-bottom:6px}
+.pk-check{display:inline-flex; gap:8px; align-items:center; min-height:32px; font-size:14px; color:var(--fg)}
+.pk-check.off{color:var(--fg-2)}
+.pk-flat{margin:0; padding:0; list-style:none; display:flex; flex-direction:column}
+.pk-flat li{border-top:1px solid var(--line)}
+.pk-flat .pk-check{display:flex; align-items:flex-start; gap:10px; padding:8px 0}
+.pk-flat input{margin-top:4px}
+.pk-link{all:unset; cursor:pointer; text-decoration:underline; font-size:12px; color:var(--fg-2)}
+.pk-link:focus-visible{outline:2px solid var(--fg)}
+.pk-list{margin:0; padding:4px 16px; list-style:none; max-height:420px; overflow-y:auto}
+.pk-list li{display:flex; gap:8px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--line)}
+.pk-toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); z-index:30; width:min(560px, calc(100% - 32px));
+  background:var(--fg); color:var(--bg); padding:12px 16px; display:flex; gap:12px; align-items:flex-start; font-size:14px; line-height:20px}
+.pk-toast a, .pk-toast .pk-link{color:var(--bg); white-space:nowrap; font-size:14px}
+@media (max-width: 720px){
+  .pk-sumbox{flex-basis:100%; position:sticky; top:auto; bottom:0}
+  .pk-list{max-height:180px}
+}
+.pk-list .icon-btn svg{fill:none; stroke:currentColor; stroke-width:2.5px; stroke-linecap:round}
+.pk-main .btn-sm{white-space:normal; text-align:left; height:auto; min-height:28px; max-width:100%}

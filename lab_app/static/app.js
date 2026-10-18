@@ -249,7 +249,7 @@
         h('span', { class: 'num hint', style: 'white-space:nowrap', text: '~' + dur(q.est_s) + (q.starts_in_s != null ? ' · starts ~' + at(q.starts_in_s) : '') })));
     });
     var ready = tl.ready_not_queued || [];
-    return card([h('div', { class: 'row between' }, h('h2', { class: 'eyebrow', text: 'Up next · timeline' }), h('a', { href: '#queue', text: 'Queue · ' + tl.queue.length + ' waiting' + (tl.paused ? ' · paused' : '') })),
+    return card([h('div', { class: 'row between' }, h('h2', { class: 'eyebrow', text: 'Up next · timeline' }), h('span', { class: 'row', style: 'gap:12px' }, h('a', { href: '#start', text: 'Start benches' }), h('a', { href: '#queue', text: 'Queue · ' + tl.queue.length + ' waiting' + (tl.paused ? ' · paused' : '') }))),
       rows.length ? h('ol', { class: 'stack', style: 'margin:0;padding:0;list-style:none;gap:6px;font-size:13px' }, rows) : h('p', { class: 'muted', text: 'Nothing running and nothing queued.' }),
       tl.queue.length ? h('span', { class: 'hint', text: tl.total_s != null ? 'Everything queued done ~' + at(tl.total_s) + ' (estimates from past answer and run times).' : 'Times appear once the current job reports progress.' })
         : h('span', { class: 'hint', text: 'Nothing queued after the current job.' }),
@@ -297,28 +297,6 @@
             return td(covCell(c, can ? function () { queueBench(b.id, m); } : null));
           }));
       }));
-      var runnable = d.models.filter(function (m) { return m.installed && m.suite; });
-      var mSel = h('select', { class: 'input', 'aria-label': 'Model' }, runnable.map(function (m) { return h('option', { value: m.id, text: m.name }); }));
-      var bSel = h('select', { class: 'input', 'aria-label': 'Bench' }, suite.map(function (b) { return h('option', { value: b.id, text: b.name + ' · ' + b.duration }); }));
-      var cbx = function (v, on, label) { return h('label', { class: 'row', style: 'gap:4px;font-size:13px' }, h('input', { type: 'checkbox', value: v, checked: on ? '' : null }), label); };
-      var qCfg = h('div', { class: 'row' }, ['exact', 'd030', 'd030t12', 'd040t12', 'd050'].map(function (c) { return cbx(c, c === 'exact' || c === 'd030t12', CFG[c] || c); }));
-      var qSty = h('div', { class: 'row' }, ['normal', 'terse'].map(function (x) { return cbx(x, x === 'terse', x); }));
-      var qName = h('input', { class: 'input', style: 'width:160px', 'aria-label': 'Results name' });
-      var qOpts = h('div', { class: 'stack', style: 'gap:6px' }, h('span', { class: 'hint', text: 'Quality bench options' }), qCfg, qSty,
-        h('label', { class: 'hint row', style: 'gap:6px' }, 'Results name', qName, h('span', { text: '(blank = model id; reuse a name to resume)' })));
-      var checked = function (box) { return Array.prototype.filter.call(box.querySelectorAll('input'), function (i) { return i.checked; }).map(function (i) { return i.value; }); };
-      function syncOpts() { qOpts.style.display = bSel.value === 'quality' ? '' : 'none'; }
-      bSel.addEventListener('change', syncOpts); syncOpts();
-      function chosen() {
-        var m = runnable.filter(function (x) { return x.id === mSel.value; })[0];
-        return [bSel.value, m, bSel.value === 'quality' ? { name: qName.value.trim() || null, configs: checked(qCfg), styles: checked(qSty) } : null];
-      }
-      var runCard = runnable.length ? card([h('h3', { style: 'font-size:15px', text: 'Run a bench' }),
-        h('div', { class: 'row' }, h('label', { class: 'hint row', style: 'gap:6px' }, 'Model', mSel), h('label', { class: 'hint row', style: 'gap:6px' }, 'Bench', bSel)), qOpts,
-        h('p', { class: 'hint', text: 'Quiet comparison and RAM sweep wait for a quiet machine (≥ 20 GB free). Quiet comparison runs on your main model only. GLM-5.3-Flash is not supported by the bench tools yet.' }),
-        h('div', { class: 'row' },
-          h('button', { type: 'button', class: 'btn btn-primary', text: 'Add to queue', onclick: function () { var c = chosen(); queueBench(c[0], c[1], c[2], false); } }),
-          h('button', { type: 'button', class: 'btn', text: 'Run now (if the GPU is free)', onclick: function () { var c = chosen(); queueBench(c[0], c[1], c[2], true); } }))]) : null;
       var suiteTbl = table(['Bench', 'What it measures', 'Duration (int4, busy)', 'Runs with'], suite.map(function (b) {
         return h('tr', {}, td(h('strong', { text: b.name })), td(b.what), td(b.duration, 'n'), td(h('span', { class: 'mono', text: b.runs_with })));
       }));
@@ -336,8 +314,8 @@
             h('p', { class: 'hint', text: 'Automatic grades: facts/logic by expected answer, maths by final number, code by running tests; normal answers capped at 128 tokens, so long answers can be under-counted. Single runs.' }),
             r.notes.length ? h('p', { class: 'hint', text: 'Notes in the results folder: ' + r.notes.join(', ') + ' (e.g. downloads that ran during the bench).' }) : null));
       });
-      put(main, header('Benches', 'The standard suite every model gets, so models are comparable. Suite ' + d.suite.version + '.'),
-        runCard,
+      put(main, header('Benches', 'The standard suite every model gets, so models are comparable. Suite ' + d.suite.version + '.',
+          h('a', { class: 'btn btn-primary', href: '#start', text: 'Start benches…' })),
         section('Coverage · models × benches', h('div', { class: 'row' }, chip('st-done', 'Done'), chip('st-running', 'Running'), chip('st-missing', 'Missing')), cov),
         section('Standard suite ' + d.suite.version, null, suiteTbl), results);
     });
@@ -682,15 +660,181 @@
     });
   }
 
+  // ---------- start benches (picker) ----------
+  // Canvas: Lab-Bench-Picker.dc.html. The server's /api/bench-catalog is the only list; the page sends ids only.
+  var pick = { sel: [], open: {}, q: '', kind: 'all', allQuiet: false };
+  function screenStart(main) {
+    return api('/api/bench-catalog').then(function (C) {
+      var byId = {}; C.items.forEach(function (i) { byId[i.id] = i; });
+      pick.sel = pick.sel.filter(function (id) { return byId[id] && byId[id].available; });   // drop what ran meanwhile
+      var gTitle = {}; C.groups.forEach(function (g) { gTitle[g.id] = g.title; });
+      var body = h('div', { class: 'picker' });
+      put(main, h('nav', { 'aria-label': 'Breadcrumb', class: 'hint' }, h('a', { href: '#benches', text: 'Benches' }), ' / Start benches'),
+        header('Start benches', 'Tick any benches, on any models, and queue them in one go. They run one after another; nothing starts at once and nothing downloads from here.'),
+        body);
+      function has(id) { return pick.sel.indexOf(id) >= 0; }
+      function addIds(ids) { ids.forEach(function (id) { if (byId[id] && byId[id].available && !has(id)) pick.sel.push(id); }); draw(); }
+      function removeIds(ids) { pick.sel = pick.sel.filter(function (id) { return ids.indexOf(id) < 0; }); draw(); }
+      function toggleAll(ids) { var av = ids.filter(function (id) { return byId[id].available; }); if (av.length && av.every(has)) removeIds(av); else addIds(av); }
+      function kindOk(i) { var k = pick.kind; return k === 'all' || (k === 'standard' && i.kind === 'suite') || (k === 'quality' && i.kind === 'bench') || (k === 'quiet' && i.kind === 'quiet') || (k === 'planned' && i.kind === 'planned'); }
+      function check(i, label, extra) {
+        var cb = h('input', { type: 'checkbox', checked: has(i.id) ? '' : null, disabled: i.available ? null : '', 'aria-label': label || null,
+          onchange: function () { has(i.id) ? removeIds([i.id]) : addIds([i.id]); } });
+        return h('label', { title: i.available ? (i.what || i.title) : 'Unavailable: ' + i.why_not, class: 'pk-check' + (i.available ? '' : ' off') }, cb, extra);
+      }
+      function quietMark(on) { return on ? h('span', { class: 'hint', style: 'font-style:italic', text: 'waits for quiet' }) : null; }
+      function groupCard(g, gi) {
+        var avail = gi.filter(function (i) { return i.available; });
+        var nSel = gi.filter(function (i) { return has(i.id); }).length;
+        var unavailable = !avail.length && !!g.note;
+        var expanded = pick.open[g.id] != null ? pick.open[g.id] : (pick.q ? true : !unavailable);
+        var ids = gi.map(function (i) { return i.id; });
+        var allOn = avail.length && avail.every(function (i) { return has(i.id); });
+        var chev = svgIcon('M9 6l6 6-6 6'); chev.setAttribute('width', '14'); chev.setAttribute('height', '14'); chev.style.transform = expanded ? 'rotate(90deg)' : '';
+        var head = h('div', { class: 'pk-head', style: expanded ? 'border-bottom:1px solid var(--line)' : null },
+          h('button', { type: 'button', class: 'th-btn pk-toggle', 'aria-expanded': expanded ? 'true' : 'false', onclick: function () { pick.open[g.id] = !expanded; draw(); } },
+            chev, h('span', { class: 'stack', style: 'gap:1px;min-width:0' },
+              h('span', { class: 'row', style: 'gap:8px;align-items:baseline' }, h('strong', { style: 'font-size:16px', text: g.title }), h('span', { class: 'hint', style: 'font-style:italic', text: g.engine }), g.main ? h('span', { class: 'hint', text: '· main model' }) : null),
+              g.note ? h('span', { class: 'hint', style: 'color:' + (unavailable ? 'var(--warn)' : 'var(--fg-2)'), text: g.note }) : null)),
+          h('span', { class: 'num hint', text: avail.length ? nSel + ' of ' + avail.length + ' selected' : 'nothing to run' }),
+          avail.length ? h('button', { type: 'button', class: 'btn btn-sm btn-ghost', text: allOn ? 'Select none' : 'Select all available', onclick: function () { toggleAll(ids); } }) : null,
+          g.install ? h('a', { class: 'btn btn-sm', href: '#install', text: 'Install…' }) : null);
+        var inner = null;
+        if (expanded) {
+          inner = h('div', { class: 'stack', style: 'padding:12px 14px 14px;gap:14px' });
+          if (g.kind === 'model') {
+            var suite = gi.filter(function (i) { return i.kind === 'suite'; });
+            if (suite.length) put(inner, h('fieldset', { class: 'pk-fs' }, h('legend', { class: 'eyebrow', text: 'standard benches' }),
+              h('div', { class: 'row', style: 'gap:6px 20px' }, suite.map(function (i) {
+                return check(i, null, [h('span', { text: i.title }), i.available ? h('span', { class: 'num hint', text: dur(i.est_s) }) : null, i.only_when_quiet ? h('span', { class: 'hint', style: 'font-style:italic', text: '· waits for quiet' }) : null]);
+              }))));
+            var qi = gi.filter(function (i) { return i.kind === 'bench'; });
+            if (qi.length) {
+              var cols = 'grid-template-columns:minmax(150px,1.6fr) repeat(' + C.styles.length + ',minmax(110px,1fr))';
+              var linkBtn = function (txt, aria, ids2) { return h('button', { type: 'button', class: 'pk-link', 'aria-label': aria, text: txt, onclick: function () { toggleAll(ids2); } }); };
+              var rows = [h('div', { role: 'row', class: 'tr', style: cols }, h('span', { role: 'columnheader', class: 'th', text: 'Setting' }),
+                C.styles.map(function (st) {
+                  return h('span', { role: 'columnheader', class: 'th row', style: 'gap:6px' }, st,
+                    linkBtn('all', 'Select all available ' + st + ' cells for ' + g.title, qi.filter(function (i) { return i.style === st; }).map(function (i) { return i.id; })));
+                }))];
+              g.settings.forEach(function (s) {
+                var rid = qi.filter(function (i) { return i.setting === s[0]; });
+                if (!rid.length) return;
+                rows.push(h('div', { role: 'row', class: 'tr', style: cols },
+                  h('span', { role: 'rowheader', class: 'td stack', style: 'gap:2px' },
+                    h('span', { class: 'row', style: 'gap:8px' }, s[1], linkBtn('row', 'Select all available ' + s[1] + ' cells', rid.map(function (i) { return i.id; }))),
+                    s[2] ? lossyTag() : null),
+                  C.styles.map(function (st) {
+                    var i = rid.filter(function (x) { return x.style === st; })[0];
+                    if (!i) return h('span', { role: 'cell', class: 'td', text: '—' });
+                    var text = i.available ? i.done + '/' + i.total : /^(complete|running now|already queued|not installed)$/.test(i.why_not) ? i.why_not : 'unavailable';
+                    return h('span', { role: 'cell', class: 'td' }, check(i, g.title + ', ' + s[1] + ', ' + st + ': ' + text,
+                      h('span', { class: 'num', style: 'font-size:13px;font-style:' + (i.available ? 'normal' : 'italic'), text: text })));
+                  })));
+              });
+              put(inner, h('div', { class: 'stack', style: 'gap:6px' },
+                h('div', { class: 'row between', style: 'gap:4px 12px;align-items:baseline' }, h('span', { class: 'eyebrow', text: 'quality bench · setting × style' }),
+                  h('span', { class: 'hint' }, (qi[0].total || 24) + ' graded prompts per cell · ', h('span', { style: 'font-style:italic', text: 'waits for quiet' }))),
+                h('div', { style: 'overflow-x:auto' }, h('div', { role: 'table', 'aria-label': 'Quality bench for ' + g.title, class: 'tbl', style: 'min-width:340px' }, rows))));
+            }
+          } else {
+            put(inner, h('ul', { class: 'pk-flat' }, gi.map(function (i) {
+              return h('li', {}, check(i, null, [h('span', { class: 'stack', style: 'flex:1;min-width:0;gap:2px' },
+                h('span', { class: 'row', style: 'gap:8px' }, h('span', { style: 'font-size:14px;font-weight:600', text: i.title }), i.lossy ? lossyTag() : null, quietMark(i.only_when_quiet)),
+                i.what ? h('span', { class: 'hint', text: i.what }) : null,
+                i.available ? null : h('span', { class: 'hint', style: 'color:var(--warn)', text: i.why_not })),
+                h('span', { class: 'num hint', style: 'white-space:nowrap', text: i.available ? dur(i.est_s) : '' })]));
+            })));
+          }
+          if (g.install) put(inner, h('p', { class: 'hint' }, 'Not installed, so these stay disabled. Downloads start only from ', h('a', { href: '#install', text: 'Install' }), ', after a confirmation.'));
+        }
+        return h('section', { class: 'card', 'aria-label': g.title }, head, inner);
+      }
+      function summary() {
+        var chosen = C.items.filter(function (i) { return has(i.id); });
+        var keys = {}, jobs = 0;
+        chosen.forEach(function (i) { if (i.kind === 'bench') { var k = i.group + '|' + i.style; if (!keys[k]) { keys[k] = 1; jobs++; } } else jobs++; });
+        var total = chosen.reduce(function (a, i) { return a + (i.est_s || 0); }, 0);
+        var nQuiet = pick.allQuiet ? chosen.length : chosen.filter(function (i) { return i.only_when_quiet; }).length;
+        var empty = !chosen.length;
+        function queue(front, btn) {
+          btn.disabled = true;
+          post('/api/queue/add-selection', { ids: chosen.map(function (i) { return i.id; }), front: front, only_when_quiet: pick.allQuiet }).then(function (r) {
+            pick.sel = [];
+            var t = h('div', { role: 'status', class: 'pk-toast' }, h('span', { style: 'flex:1' }, h('strong', { text: 'Queued ' + r.queued.length + (r.queued.length === 1 ? ' job' : ' jobs') + (front ? ' at the front.' : '.') }),
+              ' ' + chosen.length + ' benches, ~' + dur(total) + ', ' + (nQuiet ? nQuiet + ' wait for a quiet machine.' : 'none wait for quiet.')),
+              h('a', { href: '#queue', text: 'View queue' }), h('button', { type: 'button', class: 'pk-link', 'aria-label': 'Dismiss', text: '×', onclick: function () { t.remove(); } }));
+            document.body.appendChild(t); setTimeout(function () { t.remove(); }, 10000);
+            route();
+          }, function (e) { btn.disabled = false; toast(e.message, true); });
+        }
+        var addBack = h('button', { type: 'button', class: 'btn btn-primary btn-touch', disabled: empty ? '' : null, text: 'Add to queue', onclick: function (e) { queue(false, e.target); } });
+        var addFront = h('button', { type: 'button', class: 'btn btn-sm', disabled: empty ? '' : null, text: 'Add to the front of the queue', onclick: function (e) { queue(true, e.target); } });
+        return h('aside', { class: 'pk-aside', 'aria-label': 'Selection' }, h('div', { class: 'card pk-sum' },
+          h('div', { class: 'stack', style: 'padding:14px 16px;gap:4px;border-bottom:1px solid var(--line)' }, h('span', { class: 'eyebrow', text: 'selection' }),
+            h('div', { class: 'num row', style: 'gap:4px 14px;align-items:baseline' }, h('strong', { style: 'font-size:22px;line-height:28px' }, chosen.length + ' ', h('span', { style: 'font-size:15px;font-weight:400', text: chosen.length === 1 ? 'bench' : 'benches' })),
+              empty ? null : h('span', { style: 'font-size:15px', text: '~' + dur(total) })),
+            h('span', { class: 'hint', text: jobs + (jobs === 1 ? ' queue job' : ' queue jobs') + (jobs < chosen.length ? ' (quality cells merged per model and style)' : '') + ' · runs one after another · ' + (nQuiet ? nQuiet + ' wait for a quiet machine' : 'none wait for quiet') })),
+          empty ? h('p', { class: 'muted', style: 'padding:14px 16px;font-size:14px', text: 'Nothing selected. Tick benches on the left, or start from a preset.' })
+            : h('ol', { class: 'pk-list' }, chosen.map(function (i) {
+              var x = svgIcon('M6 6l12 12M18 6L6 18'); x.setAttribute('width', '12'); x.setAttribute('height', '12');
+              return h('li', {}, h('span', { class: 'stack', style: 'flex:1;min-width:0;gap:2px;font-size:13px;line-height:18px' },
+                h('span', {}, h('strong', { text: gTitle[i.group] }), ' · ' + i.title),
+                h('span', { class: 'row', style: 'gap:8px' }, h('span', { class: 'num hint', text: dur(i.est_s) }), i.lossy ? lossyTag() : null, quietMark(pick.allQuiet || i.only_when_quiet))),
+                h('button', { type: 'button', class: 'icon-btn', style: 'width:28px;height:28px', 'aria-label': 'Remove ' + gTitle[i.group] + ' ' + i.title, onclick: function () { removeIds([i.id]); } }, x));
+            })),
+          h('div', { class: 'stack', style: 'padding:12px 16px 14px;gap:10px;border-top:1px solid var(--line)' },
+            h('label', { class: 'row', style: 'gap:8px;align-items:flex-start;font-size:13px;line-height:18px;flex-wrap:nowrap' },
+              h('input', { type: 'checkbox', checked: pick.allQuiet ? '' : null, style: 'margin-top:2px', onchange: function () { pick.allQuiet = !pick.allQuiet; draw(); } }), 'Only start when the machine is quiet (all of them)'),
+            addBack, h('div', { class: 'row between', style: 'gap:8px' }, addFront,
+              h('button', { type: 'button', class: 'btn btn-sm btn-ghost', disabled: empty ? '' : null, text: 'Clear', onclick: function () { pick.sel = []; draw(); } })))));
+      }
+      var search = h('input', { class: 'input', type: 'search', placeholder: 'Filter by model, bench or setting', 'aria-label': 'Filter by model, bench or setting', value: pick.q,
+        oninput: function () { pick.q = search.value; drawList(); } });
+      var listBox = h('div', { class: 'stack', style: 'gap:10px' }), sumBox = h('div', { class: 'pk-sumbox' }), kindBox = h('div', { role: 'group', 'aria-label': 'Kind', class: 'row', style: 'gap:4px' });
+      function drawList() {
+        listBox.textContent = '';
+        var q = pick.q.toLowerCase(), n = 0;
+        C.groups.forEach(function (g) {
+          var gi = C.items.filter(function (i) { return i.group === g.id && kindOk(i); });
+          if (q && (g.title + ' ' + g.engine).toLowerCase().indexOf(q) < 0) gi = gi.filter(function (i) { return (i.title + ' ' + (i.what || '')).toLowerCase().indexOf(q) >= 0; });
+          if (gi.length) { n++; listBox.appendChild(groupCard(g, gi)); }
+        });
+        if (!n) put(listBox, h('p', { class: 'muted', style: 'padding:16px 0', text: 'Nothing matches “' + pick.q + '”. Clear the filter to see all ' + C.items.length + ' benches.' }));
+      }
+      function draw() {
+        var y = window.scrollY;
+        kindBox.textContent = '';
+        [['all', 'All'], ['standard', 'Standard'], ['quality', 'Quality'], ['quiet', 'Quiet runs'], ['planned', 'Planned']].forEach(function (k) {
+          var on = pick.kind === k[0];
+          kindBox.appendChild(h('button', { type: 'button', class: 'btn btn-sm', 'aria-pressed': on ? 'true' : 'false', style: on ? 'background:var(--fg);color:var(--bg)' : null, text: k[1], onclick: function () { pick.kind = k[0]; draw(); } }));
+        });
+        drawList();
+        sumBox.textContent = ''; sumBox.appendChild(summary());
+        window.scrollTo(0, y);
+      }
+      put(body, h('div', { class: 'pk-main stack', style: 'gap:18px' },
+        h('section', { 'aria-label': 'Presets and filter', class: 'stack', style: 'gap:10px' },
+          h('div', { class: 'row', style: 'gap:6px 8px' }, h('span', { class: 'eyebrow', style: 'margin-right:4px', text: 'presets' }),
+            C.presets.map(function (p) {
+              return h('button', { type: 'button', class: 'btn btn-sm', title: 'Adds ' + p.ids.length + ' available items to the selection', onclick: function () { addIds(p.ids); } },
+                '+ ' + p.title + ' ', h('span', { class: 'num muted', style: 'font-weight:400', text: String(p.ids.length) }));
+            })),
+          h('div', { class: 'row', style: 'gap:8px' }, h('span', { style: 'flex:1 1 220px;display:flex' }, search), kindBox)),
+        listBox), sumBox);
+      draw();
+    });
+  }
+
   // ---------- router ----------
   var ROUTES = { now: screenNow, queue: screenQueue, install: screenInstall, settings: screenSettings, benches: screenBenches, runs: screenRuns,
-                 experiments: screenExperiments, models: screenModels, leaderboard: screenLeaderboard, research: screenResearch };
+                 experiments: screenExperiments, models: screenModels, leaderboard: screenLeaderboard, research: screenResearch, start: screenStart };
   function route() {
     clearInterval(timer);
     var hash = (location.hash || '#now').slice(1), parts = hash.split('/'), name = parts[0];
     var main = document.getElementById('main');
     var fn = name === 'bench' ? function (m) { return screenBench(m, parts[1]); } : ROUTES[name] || screenNow;
-    renderNav(name === 'bench' ? 'benches' : (ROUTES[name] ? name : 'now'));
+    renderNav(name === 'bench' || name === 'start' ? 'benches' : (ROUTES[name] ? name : 'now'));
     function load(keepScroll) {
       var y = window.scrollY, fresh = h('main', { id: 'main', tabindex: '-1' });
       return fn(fresh).then(function () {
