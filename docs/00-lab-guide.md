@@ -172,8 +172,10 @@ A speed win that changes output is not a win until quality is checked:
 
 ## 6. Follow the research
 
-Cadence: a light scan monthly, a deep scan each quarter or when a new Colibri release,
-GLM release or Apple chip lands. Record every item reviewed in
+Cadence: a scheduled task (`glm-research-scan`, Claude desktop app, 1st of each month
+at 10:00) does the monthly scan, updates the watch list and reports what is worth
+testing. Do a deeper scan each quarter or when a new Colibri release, GLM release or
+Apple chip lands. Record every item reviewed in
 [research/watchlist.md](../research/watchlist.md), including the ones rejected.
 
 Where to look:

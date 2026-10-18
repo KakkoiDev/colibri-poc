@@ -16,8 +16,10 @@ bottleneck here).
 | 2026-10-18 | MoE offloading, expert caching and prefetch, speculative prefetch, Apple Silicon SSD streaming (round 1, OLMoE lab) | Claude |
 | 2026-10-18 | GLM round 2: pruning, mixed-precision experts, CPU/GPU hybrid, Colibri formats | Claude |
 
-Next scan due: 2026-11 (light), 2027-01 (deep), or on any new Colibri release, GLM
-release or Mac.
+Next scan due: 2026-11-01. A monthly scheduled task (`glm-research-scan`, 1st of each
+month at 10:00 on the owner's Mac) appends new items here, adds candidates to the
+experiment log, pushes, and reports anything worth testing. Do a deeper manual scan
+quarterly or on any new Colibri release, GLM release or Mac.
 
 ## Items
 
