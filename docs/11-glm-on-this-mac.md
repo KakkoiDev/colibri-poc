@@ -70,8 +70,8 @@ every thread count, and identical to the earlier runs.
 Exact Metal runs are limited by the SSD, so threads do not matter there. With
 skipping, the CPU-side share of each token fell from 26% to 9%, giving +22%.
 Use `OMP_NUM_THREADS=12`. Whether the Efficiency cores help or just add heat was not
-measured separately beyond 6 vs 12. This looks like a Colibri bug worth reporting
-upstream (the `coli_physical_cores` heuristic in `omp_tune.h`).
+measured separately beyond 6 vs 12. Reported upstream as
+[JustVugg/colibri#2194](https://github.com/JustVugg/colibri/issues/2194).
 
 ## Finding 2: the installed engine is CPU-only
 
