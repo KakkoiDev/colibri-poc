@@ -37,8 +37,9 @@ make -C ~/Code/colibri/c clean glm          # CPU, multithreaded
 make -C ~/Code/colibri/c clean glm METAL=1  # adds the Apple GPU backend
 ```
 
-Test builds live in separate clones so the user's binary is untouched until they
-choose to rebuild it.
+Test builds lived in separate clones. On 2026-10-18, at the user's request, the
+installed engine was rebuilt with `METAL=1` and libomp (previous binary backed up to
+`~/Code/colibri-engine-backup-20261018/`). Smoke test: 0.44 tok/s, same text.
 
 ## Finding 2: the installed engine is CPU-only
 
