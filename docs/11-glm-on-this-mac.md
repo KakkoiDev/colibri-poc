@@ -390,7 +390,7 @@ cap. Published: [report](../published-results/glm-bench-v1/report.md),
 
 | Style | Config | Automatic grade | Reviewed | Mean answer time | Output tokens |
 |---|---|---:|---|---:|---:|
-| normal | exact | 21/23 (+1 refused, re-run) | all correct, 1 cut off | 283 s | 99 |
+| normal | exact | 21/24 (1 re-run after a refusal) | all correct, 1 cut off | 281 s | 99 |
 | normal | skip 0.3 | 21/24 | 23 correct, 1 cut off | 163 s | 104 |
 | normal | skip 0.5 | 17/24 | 19 correct, 3 cut off, **2 wrong** | 120 s | 120 |
 | terse | exact | 24/24 | — | 64 s | 10 |
@@ -399,7 +399,7 @@ cap. Published: [report](../published-results/glm-bench-v1/report.md),
 
 ```mermaid
 flowchart LR
-    N[Normal exact<br/>283 s per answer] --> T[Terse exact<br/>64 s] --> L[Terse + skip 0.5<br/>51 s]
+    N[Normal exact<br/>281 s per answer] --> T[Terse exact<br/>64 s] --> L[Terse + skip 0.5<br/>51 s]
     T -.-> P[Prompt reading ~40 s<br/>is now the biggest part]
 ```
 

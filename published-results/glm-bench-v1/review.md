@@ -25,7 +25,7 @@ Reviewed totals (correct / cut off / wrong):
 
 | Style | Config | Automatic | Reviewed |
 |---|---|---:|---|
-| normal | exact | 21/23 (+1 refused) | 23 correct, 1 cut off, 0 wrong |
+| normal | exact | 21/24 (1 re-run after a refusal) | 23 correct, 1 cut off, 0 wrong |
 | normal | skip 0.3 | 21/24 | 23 correct, 1 cut off, 0 wrong |
 | normal | skip 0.5 | 17/24 | 19 correct (1 with an error), 3 cut off, 2 wrong |
 | terse | all three | 24/24 each | not needed |
