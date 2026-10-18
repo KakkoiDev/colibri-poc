@@ -30,6 +30,13 @@ CONFIGS = {
     'd030t12': {'DEGRADE_ZERO': '1', 'DEGRADE_TAU': '0.30', 'OMP_NUM_THREADS': '12'},
     'd040t12': {'DEGRADE_ZERO': '1', 'DEGRADE_TAU': '0.40', 'OMP_NUM_THREADS': '12'},
 }
+# Ollama settings. exact: comparable with the Colibri runs (thinking off, temperature 0, --ngen).
+# native: how the model normally runs in Ollama (its default thinking level and sampling), with
+# room to finish thinking; one sample per prompt, so its grades vary a little between runs.
+OLLAMA_CONFIGS = {
+    'exact': {'think': False, 'options': {'temperature': 0}},
+    'native': {'options': {}, 'num_predict': 4096},
+}
 ENGINE_LINE = re.compile(r'^(\[[A-Z][A-Z0-9_ -]*\]|PROFIL|PROFILE:|ATTENTION:|P0-EXEC:|METAL|PILOT|DEGRADE_ZERO )')
 
 
@@ -56,14 +63,19 @@ def ollama_record(resp):
     ns = 1e9
     rec = dict(prompt_tokens=resp.get('prompt_eval_count'), prefill_s=round(resp.get('prompt_eval_duration', 0) / ns, 3),
                output_tokens=resp.get('eval_count'), decode_s=round(resp.get('eval_duration', 0) / ns, 3),
-               load_s=round(resp.get('load_duration', 0) / ns, 3), text=(resp.get('response') or '').strip())
+               load_s=round(resp.get('load_duration', 0) / ns, 3), text=(resp.get('response') or '').strip(),
+               thinking_chars=len(resp.get('thinking') or ''), truncated=resp.get('done_reason') == 'length')
     rec['decode_tok_s'] = round(rec['output_tokens'] / rec['decode_s'], 2) if rec['output_tokens'] and rec['decode_s'] else None
     return rec
 
 
-def ollama_generate(url, model, prompt, ngen, timeout):
-    body = json.dumps({'model': model, 'prompt': prompt, 'stream': False, 'think': False,
-                       'options': {'temperature': 0, 'num_predict': ngen}}).encode()
+def ollama_generate(url, model, prompt, ngen, timeout, cfg='exact'):
+    c = OLLAMA_CONFIGS[cfg]
+    req = {'model': model, 'prompt': prompt, 'stream': False,
+           'options': dict(c['options'], num_predict=c.get('num_predict', ngen))}
+    if 'think' in c:
+        req['think'] = c['think']
+    body = json.dumps(req).encode()
     req = urllib.request.Request(url.rstrip('/') + '/api/generate', data=body, headers={'Content-Type': 'application/json'})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read())
@@ -118,19 +130,20 @@ def run(args):
     coli = Path(args.coli_dir).expanduser() / 'c' / 'coli'
     configs = args.configs.split(',')
     ollama = args.backend == 'ollama'
-    if ollama and (configs != ['exact'] or not args.ollama_model):
-        raise SystemExit('the ollama backend needs --ollama-model and --configs exact (skip settings are Colibri-only)')
+    if ollama and (not set(configs) <= set(OLLAMA_CONFIGS) or not args.ollama_model):
+        raise SystemExit(f'the ollama backend needs --ollama-model and configs from {sorted(OLLAMA_CONFIGS)} (skip settings are Colibri-only)')
     styles = args.styles.split(',')
     items = [p for p in spec['prompts'] if not args.only or p['id'] in args.only.split(',')]
     meta = out_dir / 'meta.json'
     if not meta.exists():
         engine = ({'backend': 'ollama', 'ollama_model': args.ollama_model, 'ollama_url': args.ollama_url,
                    'ollama_version': subprocess.run(['ollama', '--version'], capture_output=True, text=True).stdout.strip(),
-                   'options': {'temperature': 0, 'think': False}} if ollama else
+                   'ollama_configs': {c: OLLAMA_CONFIGS[c] for c in configs},
+                   'ollama_ps': subprocess.run(['ollama', 'ps'], capture_output=True, text=True).stdout.strip()} if ollama else
                   {'backend': 'colibri', 'colibri_commit': subprocess.run(['git', '-C', str(coli.parent.parent), 'rev-parse', 'HEAD'],
                                                                           capture_output=True, text=True).stdout.strip()})
         meta.write_text(json.dumps({'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-                                    **engine, 'base_env': {} if ollama else BASE_ENV, 'configs': {c: CONFIGS[c] for c in configs},
+                                    **engine, 'base_env': {} if ollama else BASE_ENV, 'configs': {} if ollama else {c: CONFIGS[c] for c in configs},
                                     'styles': {s: spec['styles'][s] for s in styles},
                                     'ram': args.ram, 'ctx': args.ctx, 'ngen': args.ngen}, indent=1))
     total = len(items) * len(styles) * len(configs)
@@ -147,7 +160,7 @@ def run(args):
                 if ollama:
                     t0 = time.time()
                     try:
-                        resp, code = ollama_generate(args.ollama_url, args.ollama_model, prompt, args.ngen, args.timeout), 0
+                        resp, code = ollama_generate(args.ollama_url, args.ollama_model, prompt, args.ngen, args.timeout, cfg), 0
                     except Exception as e:  # server down, timeout: recorded as a failed run, like a crashed engine
                         resp, code = {'error': str(e)}, 1
                     wall = time.time() - t0
@@ -167,6 +180,10 @@ def run(args):
                 p = subprocess.run(cmd, env=env, capture_output=True, text=True, errors='replace', timeout=args.timeout)
                 wall = time.time() - t0
                 log = p.stdout + '\n' + p.stderr
+                if p.returncode != 0 and '[RAM] refusing to start' in log:
+                    # not an answer: the machine lacks free RAM. Record nothing so a later run redoes it.
+                    (out_dir / f'{key}.refused.log').write_text(log)
+                    raise SystemExit(f'{key}: engine refused to start (not enough free RAM); stopping, nothing recorded')
                 (out_dir / f'{key}.log').write_text(log)
                 rec = dict(id=item['id'], kind=item['kind'], style=style, config=cfg, exit=p.returncode,
                            wall_s=round(wall, 2), **parse_log(log))
@@ -207,6 +224,46 @@ def report(args):
     print(text)
 
 
+def compare(args):
+    """One table across benches (e.g. GLM on Colibri vs Qwen on Ollama): quality, wait, correct answers per minute."""
+    lines = ['| Model | Engine | Style | Config | Correct | Median answer s | Mean answer s | Median prompt reading s | Mean generation tok/s | Correct per minute |',
+             '|---|---|---|---|---:|---:|---:|---:|---:|---:|']
+    rows = []
+    med = lambda xs: sorted(xs)[len(xs) // 2] if xs else None
+    for name in args.names.split(','):
+        out_dir = ROOT / 'results' / f'glm-bench-{name}'
+        meta = json.loads((out_dir / 'meta.json').read_text()) if (out_dir / 'meta.json').exists() else {}
+        engine = f"Ollama {meta['ollama_model']}" if meta.get('backend') == 'ollama' else 'Colibri'
+        model = meta.get('ollama_model') or args.colibri_label
+        groups = {}
+        for f in sorted(out_dir.glob('*__*.json')):
+            r = json.loads(f.read_text())
+            if r.get('answer_s') is not None:
+                groups.setdefault((r['style'], r['config']), []).append(r)
+        for (style, cfg), rs in sorted(groups.items()):
+            graded = [r for r in rs if r.get('correct') is not None]
+            corr = sum(1 for r in graded if r['correct'])
+            total_min = sum(r['answer_s'] for r in rs) / 60
+            tok = [r['decode_tok_s'] for r in rs if r.get('decode_tok_s')]
+            row = dict(bench=name, model=model, engine=engine, style=style, config=cfg, correct=corr, graded=len(graded),
+                       median_answer_s=med([r['answer_s'] for r in rs]), mean_answer_s=total_min * 60 / len(rs),
+                       median_prefill_s=med([r['prefill_s'] for r in rs if r.get('prefill_s') is not None]),
+                       mean_tok_s=sum(tok) / len(tok) if tok else None,
+                       correct_per_min=corr / total_min if total_min else None,
+                       truncated=sum(1 for r in rs if r.get('truncated')))
+            rows.append(row)
+            f1 = lambda v, d=1: '—' if v is None else f'{v:.{d}f}'
+            lines.append(f"| {model} | {engine} | {style} | {cfg} | {corr}/{len(graded)} | {f1(row['median_answer_s'])} | "
+                         f"{f1(row['mean_answer_s'])} | {f1(row['median_prefill_s'])} | {f1(row['mean_tok_s'], 2)} | {f1(row['correct_per_min'], 2)} |")
+    text = '\n'.join(lines) + '\n'
+    out = ROOT / 'results' / f'compare-{args.out}'
+    out.mkdir(parents=True, exist_ok=True)
+    (out / 'report.md').write_text(text)
+    (out / 'summary.json').write_text(json.dumps(rows, indent=1))
+    print(text)
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest='cmd', required=True)
@@ -226,8 +283,12 @@ def main():
     r.add_argument('--ollama-url', default='http://127.0.0.1:11434')
     p = sub.add_parser('report')
     p.add_argument('--name', required=True)
+    c = sub.add_parser('compare')
+    c.add_argument('--names', required=True, help='bench names, comma-separated')
+    c.add_argument('--out', required=True)
+    c.add_argument('--colibri-label', default='GLM-5.3 int4')
     a = ap.parse_args()
-    run(a) if a.cmd == 'run' else report(a)
+    {'run': run, 'report': report, 'compare': compare}[a.cmd](a)
 
 
 if __name__ == '__main__':

@@ -42,7 +42,9 @@ class ActionTests(unittest.TestCase):
                                                     'ollama_model': 'qwen3.8:27b-mlx'})
             self.assertEqual(argv[-4:], ['--backend', 'ollama', '--ollama-model', 'qwen3.8:27b-mlx'])
             self.assertIn('Ollama', title)
-            for bad in [{'ollama_model': 'evil; rm'}, {'ollama_model': 'qwen3.8:27b-mlx', 'configs': ['d030']}]:
+            argv, _ = a.build_command('bench', {'name': 'q', 'configs': ['exact', 'native'], 'styles': ['terse'], 'ollama_model': 'qwen3.8:27b-mlx'})
+            self.assertIn('exact,native', argv)
+            for bad in [{'ollama_model': 'evil; rm'}, {'ollama_model': 'qwen3.8:27b-mlx', 'configs': ['d030']}, {'configs': ['native']}]:
                 with self.assertRaises(a.ActionError):
                     a.build_command('bench', {'name': 'x', 'configs': ['exact'], 'styles': ['terse'], **bad})
         finally:

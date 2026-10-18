@@ -1,0 +1,12 @@
+{
+ "benches": [
+  {
+   "name": "v1",
+   "file": "bench-v1.json",
+   "answers": 206,
+   "engine": "Colibri",
+   "model": "GLM-5.3 int4",
+   "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850"
+  }
+ ]
+}

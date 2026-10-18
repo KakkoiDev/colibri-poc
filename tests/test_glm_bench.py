@@ -17,6 +17,42 @@ DEGRADE_ZERO tau=0.300 (zeroed 120 miss slots; top layers: L57:15)
 
 
 class GlmBenchTests(unittest.TestCase):
+    def test_ram_refusal_stops_the_run_and_records_nothing(self):
+        with tempfile.TemporaryDirectory() as d:
+            old_root, old_run = gb.ROOT, gb.subprocess.run
+            gb.ROOT = Path(d)
+            shutil.copy(Path(old_root, 'glm-prompts.json'), d)
+            gb.subprocess.run = lambda *a, **k: types.SimpleNamespace(
+                returncode=2, stdout='', stderr='[RAM] refusing to start: that peak also exceeds the 6.9 GB')
+            try:
+                args = types.SimpleNamespace(name='r', configs='exact', styles='terse', only='fact-capital,fact-gold', ngen=8,
+                                             ram='18', ctx='1024', timeout=5, model='m', coli_dir='~/x', backend='colibri',
+                                             ollama_model='', ollama_url='')
+                with self.assertRaises(SystemExit):
+                    gb.run(args)
+                out = Path(d, 'results', 'glm-bench-r')
+                self.assertEqual(list(out.glob('*__*.json')), [])
+                self.assertTrue(Path(out, 'fact-capital__terse__exact.refused.log').exists())
+            finally:
+                gb.ROOT, gb.subprocess.run = old_root, old_run
+
+    def test_ollama_request_per_config(self):
+        sent = []
+        class R:
+            def __enter__(self): return self
+            def __exit__(self, *a): pass
+            def read(self): return b'{}'
+        old = gb.urllib.request.urlopen
+        gb.urllib.request.urlopen = lambda req, timeout: (sent.append(json.loads(req.data)), R())[1]
+        try:
+            gb.ollama_generate('http://x', 'm', 'p', 128, 5, 'exact')
+            gb.ollama_generate('http://x', 'm', 'p', 128, 5, 'native')
+        finally:
+            gb.urllib.request.urlopen = old
+        self.assertEqual((sent[0]['think'], sent[0]['options']), (False, {'temperature': 0, 'num_predict': 128}))
+        self.assertNotIn('think', sent[1])
+        self.assertEqual(sent[1]['options'], {'num_predict': 4096})
+
     def test_ollama_record_maps_nanosecond_timings(self):
         r = gb.ollama_record({'response': ' Canberra. ', 'prompt_eval_count': 20, 'prompt_eval_duration': 500_000_000,
                               'eval_count': 40, 'eval_duration': 2_000_000_000, 'load_duration': 10_000_000})
@@ -31,8 +67,8 @@ class GlmBenchTests(unittest.TestCase):
             gb.ROOT = Path(d)
             shutil.copy(Path(old_root, 'glm-prompts.json'), d)
             calls = []
-            def fake(url, model, prompt, ngen, timeout):
-                calls.append((model, ngen))
+            def fake(url, model, prompt, ngen, timeout, cfg='exact'):
+                calls.append((model, ngen, cfg))
                 return {'response': 'Canberra.', 'prompt_eval_count': 9, 'prompt_eval_duration': 10**8,
                         'eval_count': 4, 'eval_duration': 2 * 10**8}
             gb.ollama_generate = fake
@@ -44,13 +80,20 @@ class GlmBenchTests(unittest.TestCase):
                                              ollama_model='qwen3.8:27b-mlx', ollama_url='http://127.0.0.1:1')
                 gb.run(args)
                 rec = json.loads(Path(d, 'results', 'glm-bench-t', f'{pid}__terse__exact.json').read_text())
-                self.assertEqual(calls, [('qwen3.8:27b-mlx', 64)])
+                self.assertEqual(calls, [('qwen3.8:27b-mlx', 64, 'exact')])
                 self.assertTrue(rec['correct'])
                 self.assertAlmostEqual(rec['answer_s'], 0.3)
                 self.assertEqual(json.loads(Path(d, 'results', 'glm-bench-t', 'meta.json').read_text())['backend'], 'ollama')
                 args.configs, args.name = 'exact,d030', 'u'
                 with self.assertRaises(SystemExit):
                     gb.run(args)
+                args.configs, args.name = 'exact,native', 't'
+                gb.run(args)
+                self.assertEqual(calls[-1][2], 'native')
+                rows = gb.compare(types.SimpleNamespace(names='t', out='t', colibri_label='GLM'))
+                self.assertEqual([(r['config'], r['correct'], r['model']) for r in rows],
+                                 [('exact', 1, 'qwen3.8:27b-mlx'), ('native', 1, 'qwen3.8:27b-mlx')])
+                self.assertAlmostEqual(rows[0]['correct_per_min'], 200.0)
             finally:
                 gb.ROOT, gb.ollama_generate = old_root, old_gen
 

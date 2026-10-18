@@ -62,6 +62,12 @@ def _configs():
     return set(glm_bench.CONFIGS)
 
 
+def _ollama_configs():
+    sys.path.insert(0, str(ROOT))
+    import glm_bench
+    return set(glm_bench.OLLAMA_CONFIGS)
+
+
 def _styles():
     return set(json.loads((ROOT / 'glm-prompts.json').read_text())['styles'])
 
@@ -111,7 +117,8 @@ def build_command(kind, args):
         styles = args.get('styles') or []
         if not SAFE.match(name):
             raise ActionError('bench name must be letters, digits, dot, dash or underscore')
-        bad = [c for c in configs if c not in _configs()] + [s for s in styles if s not in _styles()]
+        known = _ollama_configs() if args.get('ollama_model') else _configs()
+        bad = [c for c in configs if c not in known] + [s for s in styles if s not in _styles()]
         if not configs or not styles or bad:
             raise ActionError(f'unknown or missing configs/styles: {bad or "none given"}')
         argv = [PY, 'glm_bench.py', 'run', '--name', name, '--configs', ','.join(configs), '--styles', ','.join(styles)]
@@ -120,8 +127,6 @@ def build_command(kind, args):
             om = args['ollama_model']
             if om not in ollama_models():
                 raise ActionError(f'not an installed Ollama model: {om}')
-            if configs != ['exact']:
-                raise ActionError('Ollama benches run the exact config only (skip settings are Colibri-only)')
             argv += ['--backend', 'ollama', '--ollama-model', om]
             label = f' on Ollama {om}'
         elif args.get('model') and args['model'] != 'glm-5.3-int4':
@@ -261,7 +266,7 @@ def queue_tick(gpu_busy, quiet):
             return 'GPU busy'
         head = q['items'][0]
         if head.get('only_when_quiet') and not quiet:
-            return 'waiting for a quiet machine (≥ 20 GB free)'
+            return 'waiting for a quiet machine (≥ 20 GB free for 2 min)'
         q['items'] = q['items'][1:]
         _write('queue.json', q)
     try:

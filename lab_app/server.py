@@ -209,7 +209,7 @@ def estimate_item(item):
         for st in args.get('styles', []):
             for c in args.get('configs', []):
                 have = len(glob.glob(str(folder / f'*__{st}__{c}.json')))
-                per = 20 if args.get('ollama_model') else mean_answer_s(st, c, 90 if st == 'terse' else 180)  # Ollama answers in seconds
+                per = (60 if c == 'native' else 20) if args.get('ollama_model') else mean_answer_s(st, c, 90 if st == 'terse' else 180)  # Ollama answers in seconds
                 total += max(0, n_prompts - have) * per
         return round(total)
     if kind == 'quiet':
@@ -235,7 +235,11 @@ def machine():
              quiet=c['free_gb'] >= glm_quiet.QUIET_FREE_GB, quiet_threshold_gb=glm_quiet.QUIET_FREE_GB)
     st = os.statvfs(str(HOME))
     v['disk_free_gb'] = round(st.f_bavail * st.f_frsize / 1e9)
-    _machine_cache.update(t=time.time(), v=v)
+    now = time.time()
+    if not v['quiet']:
+        _machine_cache.pop('quiet_since', None)
+    v['quiet_for_s'] = round(now - _machine_cache.setdefault('quiet_since', now)) if v['quiet'] else 0
+    _machine_cache.update(t=now, v=v)
     return v
 
 
@@ -560,10 +564,14 @@ def storage():
     return dict(models=out, other=other, disk_free_gb=round(st.f_bavail * st.f_frsize / 1e9))
 
 
+QUIET_HOLD_S = 120   # a model swap in Ollama frees RAM for a moment; wait until it stays free
+
+
 def gpu_status():
     js, holders = jobs()
     busy = bool(holders) or any(j.get('gpu') for j in js)
-    return busy, machine()['quiet']
+    m = machine()
+    return busy, m['quiet'] and m['quiet_for_s'] >= QUIET_HOLD_S
 
 
 def timeline(js, planned_ready):

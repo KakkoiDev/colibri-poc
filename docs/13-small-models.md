@@ -105,7 +105,12 @@ flowchart TD
    --ollama-model NAME --configs exact` sends the same prompts to the local Ollama server
    (thinking off, temperature 0, same 128-token limit), reads its prompt and generation
    timings and grades the answers the same way; the lab app's bench jobs accept an
-   installed Ollama model. Still to do: an adapter for Colibri's Qwen engine (`qwen36`).
+   installed Ollama model. Two Ollama settings: `exact` (as above, comparable with the
+   GLM runs) and `native` (how the model normally runs: its default thinking level and
+   sampling, up to 4096 tokens), to show what thinking adds in quality and costs in time.
+   `glm_bench.py compare --names v1,qwen38-27b-ollama --out NAME` puts benches side by
+   side (correct answers, median wait, correct answers per minute); `publish_bench.py`
+   writes the same table to `site/data/bench-compare.json` for the bench page. Still to do: an adapter for Colibri's Qwen engine (`qwen36`).
 2. **A download, with your OK:** Qwen3.6-35B-A3B in Colibri format,
    `Kreuzzelg/qwen36-35b-a3b-colibri-i4-gs64` (~23 GB), prepared with
    `make glm-prep-qwen36` and shown in the lab app's Install screen.
