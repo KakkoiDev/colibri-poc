@@ -11,7 +11,7 @@ Target: **5.0 tok/s**. Best exact: **0.46 tok/s** (Metal exact: 6 threads instea
 
 Memory is not judged: peak RSS varied 6.2-9.3 GB between two runs with identical settings, so it reflects what macOS kept resident rather than the setting.
 
-Verdicts: failed 1, improves 19, in progress 1, inconclusive 1, no clear change 17, not run 4, reference 1, worse 5.
+Verdicts: failed 1, improves 19, in progress 1, inconclusive 1, no clear change 17, not run 9, reference 1, worse 5.
 
 ```mermaid
 flowchart LR
@@ -24,9 +24,11 @@ flowchart LR
 |---|---|---|---:|---|---|---|---|
 | **CPU engine with libomp (2 threads)** | reference | — → 0.10 | — | — → 146.2 | n/a | — | c1-omp-cpu-r18-c1k |
 | **Metal GPU backend** | improves | 0.10 → 0.23 | +130% | 146.2 → 25.9 | identical | generation +130%; prompt reading -82% time | c2-metal-r18-c1k |
+| **Baseline Colibri dev 16239caa (GGUF for GLM, 412 commits after v2.0.0)** | not run | — → — | — | — → — | — | — | — |
 
 - **CPU engine with libomp (2 threads)** (`cpu-libomp`): change `make glm (libomp installed)`. Why: The installed engine was single-threaded; libomp should let it use more cores. Result: Measured 0.10 tok/s, but Colibri only used 2 threads on the M6 (see threads). Reference point for the GPU steps.
 - **Metal GPU backend** (`metal`): change `make glm METAL=1, COLI_METAL=1`. Why: Expert math and attention were on the CPU; the GPU was idle. Result: Expert math and attention moved to the GPU; the SSD became the largest cost. Reference: `c1-omp-cpu-r18-c1k`.
+- **Baseline Colibri dev 16239caa (GGUF for GLM, 412 commits after v2.0.0)** (`baseline-16239caa`): change `build dev 16239caa in engines/colibri-16239caa with METAL=1; same best exact settings`. Why: The dev branch is 412 commits past the installed v2.0.0 (bf244291) and touches colibri.c (GGUF reader, QT_GGML/QT_KVB, MTP from a GGUF). Check it does not regress the int4 Metal path before using it for the GGUF experiment below. Result: Planned: machine busy at scan time. Needs no download: `git clone -q --local ~/Code/colibri engines/colibri-16239caa && git -C engines/colibri-16239caa fetch -q https://github.com/JustVugg/colibri 16239caa && git -C engines/colibri-16239caa checkout -q FETCH_HEAD && make -C engines/colibri-16239caa/c -j8 glm METAL=1`, then `glm_lab.py try baseline-16239caa "Baseline Colibri 16239caa" --coli-dir engines/colibri-16239caa --category build`.
 
 ## gpu
 
@@ -171,7 +173,21 @@ flowchart LR
 | **Lossless compressed experts (int4-rans256-g0)** | not run | — → — | — | — → — | — | — | — |
 | **REAP expert pruning** | not run | — → — | — | — → — | — | — | — |
 | **3-bit or mixed-precision experts** | not run | — → — | — | — → — | — | — | — |
+| **GLM-5.3 as a 2-bit GGUF (Unsloth UD-IQ2_M, 239 GB)** *(changes output)* | not run | — → — | — | — → — | — | — | — |
+| **GLM-5.3-Flash (321B) on the glm53 engine** | not run | — → — | — | — → — | — | — | — |
 
 - **Lossless compressed experts (int4-rans256-g0)** (`rans`): change `repack_rans.py container`. Why: ~24% fewer bytes to read with byte-exact output. Result: Not run: Colibri has the codec but no engine loader yet; CPU decoding would likely cost what it saves.
 - **REAP expert pruning** (`reap`): change `25-34% of experts removed`. Why: A smaller model raises the cache hit rate. Result: Not run: still 8 experts per token, so bytes per token stay the same; community GLM cards report quality loss at 34%.
 - **3-bit or mixed-precision experts** (`int3-experts`): change `re-quantize experts`. Why: int3 cuts expert bytes ~25%. Result: Not run: lossy and needs re-converting 409 GB; papers report large losses at 2-bit.
+- **GLM-5.3 as a 2-bit GGUF (Unsloth UD-IQ2_M, 239 GB)** (`gguf-iq2m`): change `coli import unsloth/GLM-5.3-GGUF UD-IQ2_M, run on Colibri dev (GGUF read in place, #2140)`. Why: The 2-bit GGUF is ~239 GB against ~419 GB for the int4 container, so roughly 40% fewer expert bytes per token (~7 GB instead of 12.7 GB): exact-mode SSD ceiling ~0.9 tok/s instead of ~0.5, and lossy skip runs read less too. Risk: Colibri computes GGUF blocks (QT_GGML) on the CPU only, with no Metal copy, so the math may eat the I/O saving; NEON kernels exist. Result: Planned: needs a ~239 GB download (1.1 TB free) and the dev build above; lossy, so it also needs the quality bench and the owner. First step: `hf download unsloth/GLM-5.3-GGUF --include "UD-IQ2_M/*" --local-dir ~/colibri-models/glm-5.3-iq2m-gguf`, then `engines/colibri-16239caa/c/coli import` (see docs/gguf.md). Tradeoffs: Lossy (2-bit experts); CPU-only expert math for GGUF blocks; a second 239 GB model on disk.
+- **GLM-5.3-Flash (321B) on the glm53 engine** (`glm53-flash`): change `convert zai-org/GLM-5.3-Flash with tools/convert_glm53.py (int4-g64, ~195 GB out, ~25 h), run with coli chat`. Why: Same expert shape as GLM-5.3 but 45 layers (42 MoE) and hidden size 4096: ~4.8 GB of int4 expert weights per token instead of ~12.7 GB (-62%). Exact SSD ceiling ~1.3 tok/s, and lossy skip runs could approach the 5 tok/s target. It is a different, smaller model, so the owner decides whether it counts toward the mission. Result: Planned: needs a ~328 GB streamed download and conversion (peak disk ~200 GB, ~25 h) and the owner's decision on whether a 321B GLM-5.x counts. New reference runs needed; numbers do not compare with GLM-5.3. Tradeoffs: Smaller model, likely weaker answers than the 744B GLM-5.3.
+
+## other
+
+| Experiment | Verdict | tok/s (ref → new) | Change | Prompt reading s (ref → new) | Output | Effects | Runs |
+|---|---|---|---:|---|---|---|---|
+| **Prompt-lookup drafts off (COLI_LOOKUP=0)** | not run | — → — | — | — → — | — | — | — |
+| **int8 MTP draft head for GLM-5.3** | not run | — → — | — | — → — | — | — | — |
+
+- **Prompt-lookup drafts off (COLI_LOOKUP=0)** (`lookup-off`): change `COLI_LOOKUP=0 (exact, sky and code prompts; then once with DEGRADE_ZERO=1 DEGRADE_TAU=0.5)`. Why: Colibri drafts n-grams from the prompt by default (our runs show 1.04 tokens per forward). Each verify reads experts for every drafted row, so on an SSD-bound run a rejected draft costs a full extra set of expert reads; turning it off could be faster, or show the gate already pays for itself (code prompt repeats more n-grams). Result: Planned: machine busy at scan time (quality bench holding .bench.lock, an engine running, 7 GB free). Needs only the installed engine: `.venv/bin/python glm_lab.py try lookup-off "Prompt-lookup drafts off" --env COLI_LOOKUP=0 --category other` (plus `--prompt code`), judged against the 12-thread exact reference; output must stay identical.
+- **int8 MTP draft head for GLM-5.3** (`mtp-int8`): change `add an int8 MTP head (c/tools/repair_mtp_int8.py from the zai-org checkpoint, or the nextn layer a GGUF carries)`. Why: Our glm-5.3 container has no MTP head ("MTP absent"). Colibri reports 2.2-2.8 tokens per forward when it pays. On an SSD-bound run a 3-row verify reads close to 3x the experts (2% hits), so the gain may be small for exact output; it may pay more in lossy skip mode, where attention and overhead per forward dominate. Result: Planned: needs a ~10 GB download of the MTP layer and adding files to the owner's model folder (or a copy). The head stays resident, taking ~10 GB from a 32 GB Mac's expert cache and RAM budget, which may cancel the gain. Must be int8 (int4 heads give ~0% acceptance). Tradeoffs: ~10 GB more resident memory; output identical in principle (verified tokens only).
