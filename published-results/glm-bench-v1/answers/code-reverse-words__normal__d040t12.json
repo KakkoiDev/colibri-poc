@@ -1,0 +1,18 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 144.37,
+ "prompt_tokens": 29,
+ "prefill_s": 36.72,
+ "output_tokens": 128,
+ "decode_s": 104.61,
+ "decode_tok_s": 1.22,
+ "zeroed_slots": 58841,
+ "hit_pct": 23.8,
+ "text": "Here's a clean implementation using the built-in `split` method, which handles multiple whitespace characters (spaces, tabs, newlines) as word separators and collapses them into a single space, plus strips leading/trailing whitespace:\n\n```python\ndef reverse_words(s):\n    return ' '.join(s.split()[::-1])\n```\n\n**How it works:**\n\n1. `s.split()` — splits the string into a list of words. Consecutive whitespace is treated as a single separator, and the result contains no empty strings. For example, `\"  hello   world  \".split()` produces `['hello', 'world']`.\n2",
+ "answer_s": 141.33,
+ "correct": true
+}

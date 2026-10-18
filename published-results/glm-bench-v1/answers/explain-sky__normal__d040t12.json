@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 142.74,
+ "prompt_tokens": 14,
+ "prefill_s": 32.62,
+ "output_tokens": 128,
+ "decode_s": 106.84,
+ "decode_tok_s": 1.2,
+ "zeroed_slots": 57611,
+ "hit_pct": 25.1,
+ "text": "# Why the Sky Is Blue\n\nThe sky appears blue due to a phenomenon called **Rayleigh scattering**, named after the British physicist Lord Rayleigh (John William Strutt), who first explained it scientifically in the 1870s.\n\n## The Basic Explanation\n\nSunlight is made up of all the colors of the rainbow — red, orange, yellow, green, blue, indigo, and violet (often remembered as **ROYGBIV**). When sunlight passes through Earth's atmosphere, it collides with gas molecules (mainly nitrogen and oxygen) and tiny particles like dust and water droplets.\n\nThe key insight is that **sc",
+ "answer_s": 139.46,
+ "correct": true
+}

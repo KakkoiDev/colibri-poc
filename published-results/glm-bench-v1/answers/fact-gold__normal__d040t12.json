@@ -1,0 +1,18 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 141.7,
+ "prompt_tokens": 14,
+ "prefill_s": 30.7,
+ "output_tokens": 128,
+ "decode_s": 107.88,
+ "decode_tok_s": 1.19,
+ "zeroed_slots": 58192,
+ "hit_pct": 24.3,
+ "text": "The chemical symbol for gold is **Au**, which comes from the Latin word *aurum*, meaning \"shining dawn\" or \"glow of sunrise.\" This Latin origin ties the symbol to gold's ancient, elemental nature and its enduring value across civilizations.\n\nA few key points about gold's symbol:\n\n- **Why Au and not G or Go?** The symbol Au reflects the Latin etymology rather than the English word \"gold,\" which has Germanic origins (from Old English *geolu*, meaning yellow). This is common for elements known since antiquity—symbols often derive from classical languages.\n- **Periodic table placement**:",
+ "answer_s": 138.58,
+ "correct": true
+}

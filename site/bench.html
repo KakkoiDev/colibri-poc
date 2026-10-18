@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLM-5.3 quality bench</title>
+<meta name="description" content="24 graded questions answered by GLM-5.3 on a 32 GB Apple M6: correctness, answer time and every answer, exact vs faster lossy settings, normal vs terse prompts.">
+<style>
+:root{
+  --bg:#fafafa;--surface:#ffffff;--ink:#1a1a1a;--muted:#5b5b5b;--line:#dcdcdc;--soft:#f0f0f0;
+  --exact:#2b5c9e;--lossy:#b45309;--ok:#1e6b3a;--bad:#a12a2a;--warn-bg:#fff7e6;--warn-line:#e7b45a;--code:#f3f3f3;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141414;--surface:#1d1d1d;--ink:#ececec;--muted:#a8a8a8;--line:#3a3a3a;--soft:#262626;
+  --exact:#7aa7e0;--lossy:#f0a35b;--ok:#8fc79c;--bad:#ee9a90;--warn-bg:#2a2214;--warn-line:#8a6a2e;--code:#242424;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+a{color:var(--exact)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header.top{border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;font-size:14px}
+section{padding:36px 0;border-bottom:1px solid var(--line)}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.15;margin:8px 0 12px}
+h2{font-size:22px;margin:0 0 8px}
+.lede{font-size:18px;color:var(--muted);max-width:760px}
+.muted{color:var(--muted)}.small{font-size:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:20px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.big{font-size:30px;font-weight:700;margin:4px 0}
+.callout{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;padding:12px 16px;margin:16px 0;font-size:14px}
+.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);background:var(--soft);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.lossy td:first-child{box-shadow:inset 3px 0 0 var(--lossy)}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.badge.lossy{border-color:var(--lossy);color:var(--lossy)}
+.ok{color:var(--ok);font-weight:600}.bad{color:var(--bad);font-weight:600}.cut{color:var(--muted);font-weight:600}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+select,input{font:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.ans{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:10px 0;padding:12px 14px}
+.ans header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.ans pre{white-space:pre-wrap;background:var(--code);border-radius:6px;padding:10px 12px;margin:8px 0 0;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;max-height:340px;overflow:auto}
+.q{font-size:14px;margin:6px 0 0}
+.review{font-size:13px;margin-top:6px}
+footer{padding:28px 0 48px;font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><strong>GLM-5.3 quality bench</strong><span><a href="index.html">← GLM performance report</a> · <a href="#answers">Every answer</a></span></div></header>
+<main>
+<section><div class="wrap">
+  <h1>Does GLM-5.3 stay correct when we make it faster?</h1>
+  <p class="lede">24 graded questions (facts, maths, logic, code checked by running tests, and explanations), answered by GLM-5.3 on a 32 GB Apple M6 with each speed setting and two prompt styles. Every answer is below.</p>
+  <div class="cards" id="headline"></div>
+  <div class="callout"><strong>Test conditions.</strong> Measured on the owner's busy everyday Mac (other apps open, sometimes a large download). Answer times may be better on a quiet machine. "Skip" settings change the model's output; "exact" gives the model's own answer. Single run per question and setting.</div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Results by setting</h2>
+  <p class="muted small">Settings: <strong>exact</strong> = the model's own computation; <strong>skip X</strong> = experts that are not in RAM and weigh less than X are skipped instead of read from the SSD (faster, changes output). <strong>Terse</strong> prompts end with "Answer as briefly as possible. For code, reply with only the code." Normal answers were capped at 128 tokens.</p>
+  <div class="tbl"><table id="summary"><thead><tr><th>Style</th><th>Setting</th><th class="n">Automatic grade</th><th>Reviewed by hand</th><th class="n">Mean answer time</th><th class="n">Output tokens</th><th class="n">Generation tok/s</th></tr></thead><tbody></tbody></table></div>
+  <p class="muted small">The automatic grader takes the last number for maths and logic and runs the first code block's tests, so it under-counts long answers. Every answer it marked incorrect was read by hand: "cut off" means the 128-token limit stopped a correct answer.</p>
+  <ul class="small" id="notes"></ul>
+</div></section>
+
+<section id="answers"><div class="wrap">
+  <h2>Every answer</h2>
+  <div class="filters" role="group" aria-label="Filters">
+    <label>Style <select id="f-style"></select></label>
+    <label>Setting <select id="f-config"></select></label>
+    <label>Question <select id="f-q"></select></label>
+    <label>Grade <select id="f-grade"><option value="all">all</option><option value="correct">correct (auto)</option><option value="incorrect">incorrect (auto)</option><option value="reviewed">reviewed by hand</option></select></label>
+    <span class="muted small" id="count"></span>
+  </div>
+  <div id="list"></div>
+</div></section>
+</main>
+<footer><div class="wrap">Data: <a href="https://github.com/KakkoiDev/colibri-poc/tree/main/published-results/glm-bench-v1">published-results/glm-bench-v1</a> (summary, report, review, every answer). Engine: <a href="https://github.com/JustVugg/colibri">Colibri</a>. Static page, no tracking.</div></footer>
+<script>
+(function () {
+  'use strict';
+  function h(tag, attrs) {
+    var e = document.createElement(tag);
+    for (var k in attrs || {}) { if (attrs[k] == null) continue; if (k === 'text') e.textContent = attrs[k]; else e.setAttribute(k, attrs[k]); }
+    for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c == null) continue; (Array.isArray(c) ? c : [c]).forEach(function (x) { if (x != null) e.appendChild(typeof x === 'string' ? document.createTextNode(x) : x); }); }
+    return e;
+  }
+  var f1 = function (v) { return v == null ? '—' : Number(v).toFixed(1); };
+  var ORDER = ['exact', 'd030', 'd030t12', 'd040t12', 'd050'];
+  fetch('data/bench-v1.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+    var L = function (c) { return d.labels[c] || c; };
+    var rev = d.review || {};
+    var ok = d.answers.filter(function (a) { return a.exit === 0; });
+    // reviewed counts per style/config
+    var groups = {};
+    ok.forEach(function (a) {
+      var g = groups[a.style + '|' + a.config] = groups[a.style + '|' + a.config] || { style: a.style, config: a.config, n: 0, auto: 0, correct: 0, cut: 0, wrong: 0, t: 0, tok: 0, tps: 0 };
+      g.n++; g.t += a.answer_s || 0; g.tok += a.output_tokens || 0; g.tps += a.decode_tok_s || 0;
+      if (a.correct) { g.auto++; g.correct++; }
+      else { var r = rev[a.key]; var s = r ? r.reviewed : 'wrong'; if (/^correct/.test(s)) g.correct++; else if (s === 'cut off') g.cut++; else g.wrong++; }
+    });
+    var rows = Object.keys(groups).map(function (k) { return groups[k]; }).sort(function (a, b) {
+      return a.style === b.style ? ORDER.indexOf(a.config) - ORDER.indexOf(b.config) : (a.style === 'terse' ? -1 : 1);
+    });
+    var tb = document.querySelector('#summary tbody');
+    rows.forEach(function (g) {
+      var lossy = g.config !== 'exact';
+      tb.appendChild(h('tr', { class: lossy ? 'lossy' : null }, h('td', { text: g.style }),
+        h('td', {}, L(g.config) + ' ', lossy ? h('span', { class: 'badge lossy', text: 'changes output' }) : null),
+        h('td', { class: 'n', text: g.auto + '/' + g.n }),
+        h('td', {}, h('span', { class: 'ok', text: g.correct + ' correct' }), g.cut ? h('span', { class: 'cut', text: ' · ' + g.cut + ' cut off' }) : null, g.wrong ? h('span', { class: 'bad', text: ' · ' + g.wrong + ' wrong' }) : null,
+          g.n < 24 ? h('span', { class: 'muted', text: ' (' + g.n + ' of 24 so far)' }) : null),
+        h('td', { class: 'n', text: f1(g.t / g.n) + ' s' }), h('td', { class: 'n', text: f1(g.tok / g.n) }), h('td', { class: 'n', text: (g.tps / g.n).toFixed(2) })));
+    });
+    (d.review_notes || []).forEach(function (n) { document.getElementById('notes').appendChild(h('li', { text: n })); });
+    // headline cards from the data
+    var G = function (s, c) { return groups[s + '|' + c]; };
+    var ne = G('normal', 'exact'), te = G('terse', 'exact'), t3 = G('terse', 'd030t12') || G('terse', 'd030');
+    var cards = [];
+    if (ne && te) cards.push(['Terse prompts', (ne.t / ne.n / (te.t / te.n)).toFixed(1) + '× faster answers', f1(te.t / te.n) + ' s vs ' + f1(ne.t / ne.n) + ' s per exact answer, ' + te.correct + '/' + te.n + ' correct']);
+    if (t3) cards.push(['Everyday setting', f1(t3.t / t3.n) + ' s per answer', 'Terse + skip 0.3 (12 threads): ' + t3.correct + '/' + t3.n + ' correct, no wrong answers']);
+    var n5 = G('normal', 'd050');
+    if (n5) cards.push(['Skip 0.5, long answers', n5.wrong + ' wrong of ' + n5.n, 'Repetition and rambling in long answers; terse answers stayed ' + G('terse', 'd050').correct + '/24']);
+    var hd = document.getElementById('headline');
+    cards.forEach(function (c) { hd.appendChild(h('div', { class: 'card' }, h('div', { class: 'muted small', text: c[0] }), h('div', { class: 'big', text: c[1] }), h('div', { class: 'small', text: c[2] }))); });
+    // answer browser
+    function opts(sel, vals, label) { sel.appendChild(h('option', { value: 'all', text: 'all' })); vals.forEach(function (v) { sel.appendChild(h('option', { value: v, text: label ? label(v) : v })); }); }
+    var uniq = function (k) { return d.answers.map(function (a) { return a[k]; }).filter(function (v, i, x) { return x.indexOf(v) === i; }); };
+    opts(document.getElementById('f-style'), uniq('style'));
+    opts(document.getElementById('f-config'), ORDER.filter(function (c) { return uniq('config').indexOf(c) >= 0; }), L);
+    opts(document.getElementById('f-q'), uniq('id'));
+    function draw() {
+      var fs = document.getElementById('f-style').value, fc = document.getElementById('f-config').value, fq = document.getElementById('f-q').value, fg = document.getElementById('f-grade').value;
+      var list = document.getElementById('list'); list.textContent = '';
+      var shown = ok.filter(function (a) {
+        return (fs === 'all' || a.style === fs) && (fc === 'all' || a.config === fc) && (fq === 'all' || a.id === fq) &&
+          (fg === 'all' || (fg === 'correct' && a.correct) || (fg === 'incorrect' && a.correct === false) || (fg === 'reviewed' && rev[a.key]));
+      });
+      document.getElementById('count').textContent = shown.length + ' answers';
+      shown.slice(0, 300).forEach(function (a) {
+        var r = rev[a.key], lossy = a.config !== 'exact';
+        var grade = a.correct === true ? h('span', { class: 'ok', text: '✓ correct' }) : a.correct === false ? h('span', { class: 'bad', text: '✗ incorrect (auto)' }) : h('span', { class: 'muted', text: 'not graded' });
+        list.appendChild(h('article', { class: 'ans' },
+          h('header', {}, h('strong', { text: a.id }), h('span', {}, h('span', { class: 'badge', text: a.style }), ' ', h('span', { class: 'badge' + (lossy ? ' lossy' : ''), text: L(a.config) }), ' ', grade,
+            h('span', { class: 'muted small', text: ' · ' + f1(a.answer_s) + ' s · ' + a.output_tokens + ' tokens' }))),
+          h('p', { class: 'q muted', text: 'Q: ' + (a.prompt || '') + (a.style === 'terse' ? ' ' + d.prompt_styles.terse.trim() : '') }),
+          h('pre', { text: a.text || '' }),
+          r ? h('div', { class: 'review' }, h('strong', { text: 'Reviewed by hand: ' + r.reviewed + '.' }), ' ' + r.why) : null));
+      });
+    }
+    ['f-style', 'f-config', 'f-q', 'f-grade'].forEach(function (id) { document.getElementById(id).addEventListener('change', draw); });
+    draw();
+  }).catch(function (e) { document.getElementById('list').textContent = 'Could not load the bench data: ' + e.message; });
+})();
+</script>
+</body>
+</html>

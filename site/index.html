@@ -102,7 +102,7 @@ svg .lbl{fill:var(--ink);font-weight:600}
   <strong>GLM-5.3 on an Apple M6</strong>
   <nav aria-label="Sections">
     <a href="#exact">Exact</a><a href="#time">Time</a><a href="#ceiling">Ceiling</a><a href="#tradeoff">Trade-off</a>
-    <a href="#bench">Bench</a><a href="#failed">Didn't work</a><a href="#log">Log</a><a href="#run">Run it</a><a href="#caveats">Caveats</a>
+    <a href="#bench">Bench</a><a href="bench.html">All answers</a><a href="#failed">Didn't work</a><a href="#log">Log</a><a href="#run">Run it</a><a href="#caveats">Caveats</a>
   </nav>
 </div></header>
 
@@ -192,7 +192,7 @@ svg .lbl{fill:var(--ink);font-weight:600}
 
 <section id="bench"><div class="wrap">
   <h2><span class="n">06</span>Quality vs speed bench</h2>
-  <p class="muted">Accuracy and total answer time per configuration and prompt style (normal vs "answer as briefly as possible"), on 24 graded prompts.</p>
+  <p class="muted">Accuracy and total answer time per configuration and prompt style (normal vs "answer as briefly as possible"), on 24 graded prompts. <a href="bench.html"><strong>Open the full bench: every question and answer, with the manual review →</strong></a></p>
   <figure class="chart" id="chart-f"><figcaption class="cap">Does a terse prompt claw back speed without losing accuracy?</figcaption><div class="plot"></div><p class="foot" id="foot-f"></p></figure>
   <div class="tbl" id="tbl-bench-wrap" hidden><table id="tbl-bench"><thead><tr><th>Style</th><th>Config</th><th class="num">Correct</th><th class="num">Same text as exact</th><th class="num">Mean answer s</th><th class="num">Mean prefill s</th><th class="num">Mean output tokens</th><th class="num">Mean decode tok/s</th></tr></thead><tbody></tbody></table></div>
 </div></section>
@@ -560,8 +560,8 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
       $('#foot-f').textContent = 'The rest of the page does not depend on this data.';
       return;
     }
-    var color = { exact: 'var(--exact)', d030: 'var(--s3)', d050: 'var(--lossy)' };
-    var name = { exact: 'exact', d030: 'skip 0.3', d050: 'skip 0.5' };
+    var color = { exact: 'var(--exact)', d030: 'var(--s3)', d030t12: 'var(--s3)', d040t12: 'var(--s2)', d050: 'var(--lossy)' };
+    var name = { exact: 'exact', d030: 'skip 0.3', d030t12: 'skip 0.3 · 12 thr', d040t12: 'skip 0.4 · 12 thr', d050: 'skip 0.5' };
     var maxT = Math.max.apply(null, rows.map(function (r) { return r.answer_s; }));
     var x1 = Math.ceil(maxT / 50) * 50;
     var xt = []; for (var t = 0; t <= x1; t += x1 / 5) xt.push(Math.round(t));

@@ -1,0 +1,70 @@
+{
+ "reviewed": "2026-10-18",
+ "method": "Every answer the automatic grader marked incorrect was read by hand. The grader takes the last number for maths/logic and runs the first code block's tests; normal-style answers were capped at 128 tokens, so it under-counts long answers.",
+ "answers": {
+  "code-factorial__normal__exact": {
+   "reviewed": "cut off",
+   "why": "correct start, ran out of 128 tokens before the function body finished"
+  },
+  "logic-sisters__normal__exact": {
+   "reviewed": "correct",
+   "why": "says \"Sally has 1 sister\"; a later \"2 girls\" sentence confused the grader"
+  },
+  "math-pow__normal__exact": {
+   "reviewed": "correct",
+   "why": "re-run after a RAM refusal; says 1024, ends with \"powers of 2\""
+  },
+  "code-palindrome__normal__d030": {
+   "reviewed": "cut off",
+   "why": "long docstring used all 128 tokens"
+  },
+  "math-pct__normal__d030": {
+   "reviewed": "correct",
+   "why": "says 36, then explains a second method"
+  },
+  "math-pow__normal__d030": {
+   "reviewed": "correct",
+   "why": "says 1024, then counts up by doubling"
+  },
+  "code-fib__normal__d050": {
+   "reviewed": "cut off",
+   "why": "explanation still running at 128 tokens"
+  },
+  "code-palindrome__normal__d050": {
+   "reviewed": "cut off",
+   "why": "long docstring used all 128 tokens"
+  },
+  "explain-sky__normal__d050": {
+   "reviewed": "wrong",
+   "why": "degenerates into repetition (\"the sky, and the sky colour, ...\")"
+  },
+  "logic-sisters__normal__d050": {
+   "reviewed": "wrong",
+   "why": "rambles through candidate answers without settling"
+  },
+  "math-pct__normal__d050": {
+   "reviewed": "correct",
+   "why": "says 36, cut off mid-explanation"
+  },
+  "math-pow__normal__d050": {
+   "reviewed": "correct, with an error",
+   "why": "says 1024 but also \"2 squared (2^5), cubed (2^5)\""
+  },
+  "math-train__normal__d050": {
+   "reviewed": "cut off",
+   "why": "spent all 128 tokens setting up the formula, no answer yet"
+  },
+  "code-factorial__normal__d040t12": {
+   "reviewed": "cut off",
+   "why": "argument checks only; the 128-token cap hit before the loop"
+  },
+  "code-palindrome__normal__d040t12": {
+   "reviewed": "cut off",
+   "why": "long docstring with examples used all 128 tokens"
+  }
+ },
+ "notes": [
+  "Skip 0.4 (12 threads), normal style: 14 of 24 answers so far; 10 were refused for lack of free RAM (Ollama held ~25 GB) and are queued to re-run on a quiet machine.",
+  "Runs during round 2 overlapped with the 3-bit GGUF download: quality is unaffected, answer times may be slower (see results notes)."
+ ]
+}
