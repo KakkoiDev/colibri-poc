@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GLM lab</title>
 <link rel="stylesheet" href="lab.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#141414">
+<meta name="apple-mobile-web-app-title" content="GLM lab">
 </head>
 <body class="lab" data-theme="auto">
 <div class="app">
@@ -28,5 +33,6 @@
   <main id="main" tabindex="-1"><p class="muted">Loading…</p></main>
 </div>
 <script src="app.js"></script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function () {});</script>
 </body>
 </html>
