@@ -161,7 +161,10 @@
         j.holds_lock ? h('span', { class: 'hint mono', text: 'holds .bench.lock' }) : null, j.gpu ? null : h('span', { class: 'hint', text: 'no GPU' })),
       h('h3', { class: 'num', style: 'font-size:18px;line-height:24px', text: j.title }),
       h('p', { class: 'muted', style: 'font-size:13px', text: j.detail || '' }),
-      p && p.total ? h('div', { class: 'stack', style: 'gap:6px' }, meter(p.done, p.total),
+      p && p.items ? h('p', { class: 'num', style: 'font-size:13px', text: p.done + ' of ' + p.total + ' answers · ' + (p.eta_s ? '~' + dur(p.eta_s) + ' left, done ~' + at(p.eta_s) : 'finishing') +
+        (p.per_answer_s ? ' · ' + p.per_answer_s + ' s per answer this run' : '') }) : null,
+      p && p.items ? benchStrip(p) : null,
+      p && p.total && !p.items ? h('div', { class: 'stack', style: 'gap:6px' }, meter(p.done, p.total),
         h('div', { class: 'num hint row between' }, h('span', { text: f2(p.done, unit ? 1 : 0) + ' of ' + p.total + unit + ' · ' + pct(p.done, p.total) + '%' }),
           h('span', { text: unit ? 'downloaded so far' : 'finished answers are saved as they complete' }))) : null,
       h('div', { class: 'well', style: 'padding:8px 10px;display:flex;flex-direction:column;gap:2px' },
@@ -206,11 +209,7 @@
               p.ready ? h('button', { type: 'button', class: 'btn btn-sm', onclick: function () { runOrQueue('planned', { id: p.id }, p.title, true); }, text: 'Queue' }) : null));
         }) : h('p', { class: 'muted', text: 'No planned experiments.' }),
         h('p', { class: 'hint', text: 'Queued jobs start one at a time when the GPU is free.' })]);
-      var qd = d.queue || { items: [], count: 0 };
-      var queueCard = card([h('div', { class: 'row between' }, h('h2', { class: 'eyebrow', text: 'Up next' }), h('a', { href: '#queue', text: 'Queue · ' + qd.count + ' waiting' + (qd.paused ? ' · paused' : '') })),
-        qd.items.length ? h('ol', { style: 'margin:0;padding-left:18px' }, qd.items.map(function (i) { return h('li', { text: i.title + (i.only_when_quiet ? ' · when quiet' : '') }); }))
-          : h('p', { class: 'muted', text: 'The queue is empty. Add planned experiments or benches.' }),
-        h('span', { class: 'hint', text: 'Queue runner: ' + (qd.runner || '—') })]);
+      var queueCard = timelineCard(d.timeline, true);
       var recent = card([h('div', { class: 'row between' }, h('h2', { class: 'eyebrow', text: 'Recent results' }), h('a', { href: '#experiments', text: 'All experiments' })),
         d.recent.map(function (r) {
           return h('div', { class: 'row between', style: 'border-top:1px solid var(--line);padding-top:6px;flex-wrap:nowrap' },
@@ -221,6 +220,46 @@
         h('div', { class: 'grid2' }, h('section', { class: 'stack', 'aria-label': 'Now running' }, h('h2', { class: 'eyebrow', text: 'Now running · one GPU job at a time' }), jobs), health),
         h('div', { class: 'grid2' }, score, queueCard), h('div', { class: 'grid2' }, planned, recent));
     });
+  }
+
+  function at(s) { var d = new Date(Date.now() + s * 1000); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function benchStrip(p) {
+    var strip = h('div', { role: 'img', 'aria-label': p.done + ' of ' + p.total + ' answers done', style: 'display:flex;flex-wrap:wrap;gap:3px' });
+    p.items.forEach(function (i) {
+      var st = i.status === 'done' ? (i.correct === false ? 'background:var(--bad)' : 'background:var(--fg)')
+        : i.status === 'running' ? 'background:repeating-linear-gradient(135deg,var(--fg) 0 1.5px,var(--bg) 1.5px 4px);box-shadow:inset 0 0 0 1px var(--fg)'
+        : 'box-shadow:inset 0 0 0 1px var(--fg-2)';
+      strip.appendChild(h('span', { title: i.prompt + ' · ' + i.style + ' · ' + (CFG[i.config] || i.config) + ' · ' + i.status +
+        (i.answer_s ? ' · ' + Math.round(i.answer_s) + ' s' : '') + (i.correct === false ? ' · incorrect (auto)' : i.correct ? ' · correct' : ''), style: 'width:12px;height:12px;' + st }));
+    });
+    var next = p.items.filter(function (i) { return i.status !== 'done'; }).slice(0, 5);
+    return h('div', { class: 'stack', style: 'gap:6px' }, strip,
+      h('span', { class: 'hint', text: '■ done · ▨ running · □ waiting · red = graded incorrect (auto). Hover a square for details.' }),
+      next.length ? h('div', { class: 'stack', style: 'gap:2px' }, h('span', { class: 'hint', text: 'Running and next:' }),
+        h('ol', { style: 'margin:0;padding-left:18px;font-size:13px' }, next.map(function (i) {
+          return h('li', { style: i.status === 'running' ? 'font-weight:600' : null, text: i.prompt + ' · ' + i.style + ' · ' + (CFG[i.config] || i.config) + (i.status === 'running' ? ' (running now)' : '') });
+        }))) : null);
+  }
+  function timelineCard(tl, compact) {
+    var rows = [];
+    if (tl.current) rows.push(h('li', { class: 'row between', style: 'flex-wrap:nowrap' }, h('span', {}, h('strong', { text: 'Now: ' }), tl.current.title + ' · PID ' + tl.current.pid),
+      h('span', { class: 'num hint', style: 'white-space:nowrap', text: tl.current.eta_s != null ? 'done in ~' + dur(tl.current.eta_s) + ' (' + at(tl.current.eta_s) + ')' : 'ETA unknown' })));
+    tl.queue.slice(0, compact ? 5 : 100).forEach(function (q, k) {
+      rows.push(h('li', { class: 'row between', style: 'flex-wrap:nowrap' }, h('span', {}, h('span', { class: 'num muted', text: (k + 1) + '. ' }), q.title + (q.only_when_quiet ? ' · when quiet' : '')),
+        h('span', { class: 'num hint', style: 'white-space:nowrap', text: '~' + dur(q.est_s) + (q.starts_in_s != null ? ' · starts ~' + at(q.starts_in_s) : '') })));
+    });
+    var ready = tl.ready_not_queued || [];
+    return card([h('div', { class: 'row between' }, h('h2', { class: 'eyebrow', text: 'Up next · timeline' }), h('a', { href: '#queue', text: 'Queue · ' + tl.queue.length + ' waiting' + (tl.paused ? ' · paused' : '') })),
+      rows.length ? h('ol', { class: 'stack', style: 'margin:0;padding:0;list-style:none;gap:6px;font-size:13px' }, rows) : h('p', { class: 'muted', text: 'Nothing running and nothing queued.' }),
+      tl.queue.length ? h('span', { class: 'hint', text: tl.total_s != null ? 'Everything queued done ~' + at(tl.total_s) + ' (estimates from past answer and run times).' : 'Times appear once the current job reports progress.' })
+        : h('span', { class: 'hint', text: 'Nothing queued after the current job.' }),
+      ready.length ? h('div', { class: 'stack', style: 'gap:6px;border-top:1px solid var(--line);padding-top:8px' },
+        h('span', { class: 'hint', text: ready.length + ' ready planned experiment' + (ready.length > 1 ? 's are' : ' is') + ' not queued: ' + ready.map(function (r) { return r.title; }).join(' · ') }),
+        h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn btn-sm', text: 'Queue all ready (' + ready.length + ')', onclick: function (e) {
+          e.target.disabled = true;
+          ready.reduce(function (pr, r) { return pr.then(function () { return post('/api/queue/add', { kind: 'planned', args: { id: r.id } }); }); }, Promise.resolve())
+            .then(function () { toast('Queued ' + ready.length + ' planned experiments; they start after the current job.'); route(); }, function (er) { toast(er.message, true); route(); });
+        } }))) : null]);
   }
 
   function covCell(c) {
@@ -526,6 +565,7 @@
       put(main, header('Queue', 'GPU jobs run one after another. The runner starts the first item when the GPU lock is free and no engine is running.',
           h('button', { type: 'button', class: 'btn', text: q.paused ? 'Resume queue' : 'Pause queue', onclick: function () { post('/api/queue/pause', { paused: !q.paused }).then(route); } })),
         h('div', { class: 'banner', text: 'Runner: ' + (q.runner || '—') + (q.paused ? ' · queue paused' : '') + ' · Running now: ' + (running.length ? running.map(function (j) { return j.title + ' (PID ' + j.pid + ')'; }).join(', ') : 'nothing') }),
+        timelineCard(q.timeline, false),
         section('Waiting · ' + q.items.length, null, q.items.length ? table([{ t: '#', n: 1 }, 'Job', 'Order'], items) : h('p', { class: 'muted', text: 'Nothing waiting.' })),
         h('div', { class: 'grid3' }, benchForm, quietForm, expForm),
         section('Recent jobs started by the app', null, q.jobs.length ? jobsTbl : h('p', { class: 'muted', text: 'None yet.' })));

@@ -151,19 +151,72 @@ def bench_names():
     return names
 
 
-def bench_job_progress(cmd):
-    """Progress of a running `glm_bench.py run` from its arguments and the saved answers."""
+def mean_answer_s(style, config, default=None):
+    """Mean answer time for a (style, config) across every saved bench answer."""
+    ts = []
+    for f in glob.glob(str(ROOT / 'results' / 'glm-bench-*' / f'*__{style}__{config}.json')):
+        r = read_json(f)
+        if r and r.get('answer_s'):
+            ts.append(r['answer_s'])
+    return sum(ts) / len(ts) if ts else default
+
+
+def bench_job_progress(cmd, elapsed_s=None):
+    """Progress of a running `glm_bench.py run`: every answer in run order, with ETA."""
     name = arg(cmd, '--name')
     prompts, styles = bench_prompts()
     configs = (arg(cmd, '--configs') or 'exact,d030,d050').split(',')
     styl = (arg(cmd, '--styles') or 'normal,terse').split(',')
     only = arg(cmd, '--only')
-    items = [p for p in prompts if not only or p['id'] in only.split(',')]
-    keys = [f"{p['id']}__{s}__{c}" for s in styl for p in items for c in configs]
+    chosen = [p for p in prompts if not only or p['id'] in only.split(',')]
     folder = ROOT / 'results' / f'glm-bench-{name}'
-    done = [k for k in keys if (folder / f'{k}.json').exists()]
-    nxt = next((k for k in keys if k not in done), None)
-    return dict(name=name, configs=configs, styles=styl, total=len(keys), done=len(done), current=nxt)
+    started = time.time() - elapsed_s if elapsed_s is not None else None
+    items, current_found = [], False
+    for st in styl:                     # glm_bench runs style by style, then prompt, then config
+        for p in chosen:
+            for c in configs:
+                key = f"{p['id']}__{st}__{c}"
+                f = folder / f'{key}.json'
+                it = dict(key=key, prompt=p['id'], kind=p.get('kind'), style=st, config=c)
+                if f.exists():
+                    r = read_json(f, {})
+                    it.update(status='done', correct=r.get('correct'), answer_s=r.get('answer_s'),
+                              this_run=started is not None and f.stat().st_mtime >= started)
+                elif not current_found:
+                    it['status'] = 'running'; current_found = True
+                else:
+                    it['status'] = 'waiting'
+                items.append(it)
+    done = [i for i in items if i['status'] == 'done']
+    recent = [i['answer_s'] for i in done if i.get('this_run') and i.get('answer_s')]
+    per = (sum(recent) / len(recent)) if recent else None
+    remaining = [i for i in items if i['status'] != 'done']
+    eta = 0.0
+    for i in remaining:
+        eta += per or mean_answer_s(i['style'], i['config'], 90 if i['style'] == 'terse' else 180)
+    cur = next((i['key'] for i in items if i['status'] == 'running'), None)
+    return dict(name=name, configs=configs, styles=styl, total=len(items), done=len(done), current=cur,
+                items=items, per_answer_s=round(per, 1) if per else None, eta_s=round(eta) if remaining else 0)
+
+
+def estimate_item(item):
+    """Rough duration of a queued job, in seconds."""
+    kind, args = item['kind'], item.get('args', {})
+    if kind == 'bench':
+        n_prompts = len(bench_prompts()[0])
+        folder = ROOT / 'results' / f"glm-bench-{args.get('name')}"
+        total = 0.0
+        for st in args.get('styles', []):
+            for c in args.get('configs', []):
+                have = len(glob.glob(str(folder / f'*__{st}__{c}.json')))
+                total += max(0, n_prompts - have) * mean_answer_s(st, c, 90 if st == 'terse' else 180)
+        return round(total)
+    if kind == 'quiet':
+        flags = args.get('flags', [])
+        if 'experiments-only' in flags:
+            return 30 * 60
+        return 45 * 60 + (0 if 'skip-original' in flags else 30 * 60)
+    return 4 * 60   # a planned experiment: one run, sometimes repeated
 
 
 # ---------- now ----------
@@ -217,7 +270,7 @@ def jobs():
         cmd = p['command']
         job = None
         if 'glm_bench.py run' in cmd and is_python(cmd):
-            prog = bench_job_progress(cmd)
+            prog = bench_job_progress(cmd, p['elapsed_s'])
             job = dict(kind='Quality bench', title=f"Bench {prog['name']}: {prog['done']}/{prog['total']}",
                        detail=f"configs {', '.join(prog['configs'])} · styles {', '.join(prog['styles'])}"
                               + (f" · next: {prog['current'].replace('__', ' · ')}" if prog['current'] else ''),
@@ -268,9 +321,9 @@ def now():
                 planned_ready.append(dict(id=e['id'], title=e['title'], ready=why is None, why=why or ''))
     except Exception as ex:  # readiness is informative only
         planned_ready.append(dict(id='?', title=f'could not read planned experiments: {ex}', ready=False, why=''))
-    q = actions.queue_state()
-    return dict(time=time.strftime('%Y-%m-%d %H:%M:%S'), jobs=js, lock_holders=holders, machine=machine(),
-                queue=dict(paused=q['paused'], items=q['items'][:5], count=len(q['items']), runner=RUNNER.get('last')),
+    tl = timeline(js, planned_ready)
+    return dict(time=time.strftime('%Y-%m-%d %H:%M:%S'), jobs=js, lock_holders=holders, machine=machine(), timeline=tl,
+                queue=dict(paused=tl['paused'], items=tl['queue'][:5], count=len(tl['queue']), runner=RUNNER.get('last')),
                 scoreboard=exps.get('scoreboard', {}), recent=[dict(id=e['id'], title=e['title'], verdict=e['verdict'],
                 lossy=e.get('lossy', False), tok_s=e['metrics'].get('tok_s'), ref_tok_s=e['metrics'].get('ref_tok_s'),
                 change=e['metrics'].get('speed_change_pct'), date=e.get('date')) for e in recent],
@@ -457,10 +510,37 @@ def gpu_status():
     return busy, machine()['quiet']
 
 
-def queue_view():
+def timeline(js, planned_ready):
+    """What runs now and next: the current GPU job's ETA, then each queued item with an estimate."""
     q = actions.queue_state()
+    cur = next((j for j in js if j.get('gpu')), None)
+    start = (cur.get('progress') or {}).get('eta_s') if cur else 0
+    unknown = cur is not None and start is None
+    items = []
+    for it in q['items']:
+        est = estimate_item(it)
+        items.append(dict(it, est_s=est, starts_in_s=None if unknown else start))
+        if not unknown:
+            start += est
+    queued_ids = {i['args'].get('id') for i in q['items'] if i['kind'] == 'planned'}
+    not_queued = [p for p in planned_ready if p['ready'] and p['id'] not in queued_ids]
+    return dict(paused=q['paused'], current=dict(title=cur['title'], pid=cur['pid'], eta_s=(cur.get('progress') or {}).get('eta_s')) if cur else None,
+                queue=items, total_s=None if unknown else start, ready_not_queued=not_queued)
+
+
+def queue_view():
+    js_now, _ = jobs()
+    planned = []
+    try:
+        import glm_lab
+        for e in glm_lab.planned_entries(glm_lab.load_registry()):
+            if e.get('plan'):
+                planned.append(dict(id=e['id'], title=e['title'], ready=glm_lab.readiness(e) is None))
+    except Exception:
+        pass
+    tl = timeline(js_now, planned)
     js = actions.refresh_jobs()['jobs'][:25]
-    return dict(paused=q['paused'], items=q['items'], runner=RUNNER.get('last'), jobs=js)
+    return dict(paused=tl['paused'], items=tl['queue'], timeline=tl, runner=RUNNER.get('last'), jobs=js)
 
 
 def job_log(jid):
