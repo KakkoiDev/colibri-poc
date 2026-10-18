@@ -1,0 +1,18 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 129.76,
+ "prompt_tokens": 36,
+ "prefill_s": 41.28,
+ "output_tokens": 128,
+ "decode_s": 85.83,
+ "decode_tok_s": 1.49,
+ "zeroed_slots": 63291,
+ "hit_pct": 34.3,
+ "text": "Here's a clean iterative implementation that calculates Fibonacci numbers without recursion or repeated computation. I use a simple loop approach with two variables tracking the previous two Fibonacci values, which is both time-efficient (O(n) additions, roughly O(2^n) bit operations for large n due to the exponential growth of Fibonacci numbers themselves) and space-efficient (O(1) beyond the input storage, ignoring the output size considerations for big integers as they're returned as-is in Python's arbitrary-precision integers, which is a minor implementation detail worth noting but not a dominant concern for this algorithm's asymptotic complexity analysis as the output values themselves grow exponentially and",
+ "answer_s": 127.11,
+ "correct": false
+}

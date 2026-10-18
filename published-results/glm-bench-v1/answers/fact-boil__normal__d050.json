@@ -1,0 +1,18 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 108.51,
+ "prompt_tokens": 19,
+ "prefill_s": 24.93,
+ "output_tokens": 128,
+ "decode_s": 80.91,
+ "decode_tok_s": 1.58,
+ "zeroed_slots": 62047,
+ "hit_pct": 30.8,
+ "text": "Water boils at **100°C** (212°F) at standard atmospheric pressure, which is sea level atmospheric conditions (that is, the pressure at sea level, which is the standard atmospheric pressure of 760 mmHg or 101.3 kPa, or 1 atm, or 15 psi, or 101.3 kPa, or 1 atm, or 15 psi, or 101.3 kPa, or 1 atm, or 15 psi, or 101.3 kPa, or 1 atm, or 15 psi, or 101.3 kPa, or 1",
+ "answer_s": 105.84,
+ "correct": true
+}

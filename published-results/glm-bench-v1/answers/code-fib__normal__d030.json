@@ -1,0 +1,18 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 191.51,
+ "prompt_tokens": 36,
+ "prefill_s": 41.28,
+ "output_tokens": 128,
+ "decode_s": 147.58,
+ "decode_tok_s": 0.87,
+ "zeroed_slots": 46852,
+ "hit_pct": 8.5,
+ "text": "Here's an iterative implementation of the Fibonacci function:\n\n```python\ndef fib(n):\n    \"\"\"Return the n-th Fibonacci number (fib(0)=0, fib(1)=1), computed iteratively.\"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```\n\n**How it works:**\n\n- `a` and `b` hold two consecutive Fibonacci numbers, starting with `a = fib(0) = 0",
+ "answer_s": 188.86,
+ "correct": true
+}

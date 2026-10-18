@@ -1,0 +1,18 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 107.21,
+ "prompt_tokens": 16,
+ "prefill_s": 22.08,
+ "output_tokens": 128,
+ "decode_s": 82.43,
+ "decode_tok_s": 1.55,
+ "zeroed_slots": 64056,
+ "hit_pct": 32.4,
+ "text": "Pride and Prejudice was written by Jane Austen, who published it anonymously in 1813 as \"Pride and Prejudice: A Novel of Three Volumes, by the Author of Sense and Sensibility and Pride and Prejudice, First and Second Volumes, and Mansfield Park and Northanger Abbey and Persuasion, Volume III, Volume II, Volume I, Volume IV, Volume II, Volume I, Volume III, Volume IV, Volume II, Volume I, Volume III, Volume IV, Volume II, Volume I, Volume III, Volume IV, Volume II, Volume I, Volume III,",
+ "answer_s": 104.51,
+ "correct": true
+}

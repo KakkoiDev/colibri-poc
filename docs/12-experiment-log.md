@@ -11,7 +11,7 @@ Target: **5.0 tok/s**. Best exact: **0.46 tok/s** (Metal exact: 6 threads instea
 
 Memory is not judged: peak RSS varied 6.2-9.3 GB between two runs with identical settings, so it reflects what macOS kept resident rather than the setting.
 
-Verdicts: failed 1, improves 19, in progress 1, inconclusive 1, no clear change 17, not run 16, reference 1, worse 5.
+Verdicts: failed 1, improves 20, inconclusive 1, no clear change 17, not run 16, reference 1, worse 5.
 
 ```mermaid
 flowchart LR
@@ -110,11 +110,11 @@ flowchart LR
 |---|---|---|---:|---|---|---|---|
 | **GPU prompt reading** | worse | 0.44 → 0.37 | -16% | 23.5 → 23.2 | identical | generation -16% | r2-p1-sky-exact-gpuprefill |
 | **GPU prompt reading, code prompt** | no clear change | 0.42 → 0.42 | +0% | 32.3 → 32.2 | identical | — | r2-p1-code-exact-gpuprefill |
-| **Terse prompting ("answer as briefly as possible")** | in progress | — → — | — | — → — | — | — | — |
+| **Terse prompting ("answer as briefly as possible")** | improves | — → — | — | — → — | — | — | — |
 
 - **GPU prompt reading** (`gpu-prefill`): change `COLI_METAL_PREFILL=1`. Why: Prompt reading runs attention on the CPU; the GPU should be faster. Not bit-exact by design. Result: Prompt reading time unchanged (23.5 s vs 23.2 s): it is bound by expert reads, not attention. Generation was 16% slower in this single run, but the code-prompt run saw no change, so treat that as noise or as an effect on draft-verify steps. Not worth using. Tradeoffs: Not bit-exact by design. Reference: `r2-p0-sky-exact`.
 - **GPU prompt reading, code prompt** (`gpu-prefill-code`): change `COLI_METAL_PREFILL=1`. Why: Same, with a longer prompt. Result: No change (32.3 s vs 32.2 s). Reference: `r2-p0-code-exact`.
-- **Terse prompting ("answer as briefly as possible")** (`terse-prompt`): change `prompt suffix`. Why: Shorter answers finish sooner even at the same tok/s, if accuracy holds. Result: Running in the quality bench (glm_bench.py v1).
+- **Terse prompting ("answer as briefly as possible")** (`terse-prompt`): change `prompt suffix: " Answer as briefly as possible. For code, reply with only the code."`. Why: Shorter answers finish sooner even at the same tok/s, if accuracy holds. Result: Quality bench v1 (24 graded prompts): exact answers took 64 s on average instead of 281 s (4.4x faster), with ~10 instead of ~98 output tokens. Every config scored 24/24 terse; normal style had 2 genuinely wrong answers at skip 0.5 (see review). Prompt reading (~40 s) is now most of a terse answer's time. Tradeoffs: Answers are short; ask for detail when needed. Generation speed (tok/s) is unchanged: the gain is fewer tokens.
 
 ## backend
 

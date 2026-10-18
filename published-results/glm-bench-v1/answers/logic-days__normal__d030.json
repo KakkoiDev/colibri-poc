@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 61.16,
+ "prompt_tokens": 17,
+ "prefill_s": 22.71,
+ "output_tokens": 30,
+ "decode_s": 35.79,
+ "decode_tok_s": 0.84,
+ "zeroed_slots": 10829,
+ "hit_pct": 10.5,
+ "text": "# Answer\n\n**Sunday**\n\nTwo days after Friday:\n- 1 day after Friday = Saturday\n- 2 days after Friday = **Sunday**",
+ "answer_s": 58.5,
+ "correct": true
+}

@@ -1,0 +1,18 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 123.64,
+ "prompt_tokens": 29,
+ "prefill_s": 35.16,
+ "output_tokens": 128,
+ "decode_s": 85.85,
+ "decode_tok_s": 1.49,
+ "zeroed_slots": 63870,
+ "hit_pct": 31.1,
+ "text": "Here's a simple implementation of `reverse_words` that reverses the order of words in a string (words separated by spaces, joined back by a single space):\n\n```python\ndef reverse_words(s):\n    # Split the string into a list of words\n    words = s.split()\n    # Reverse the list and join with a single space\n    return ' '.join(reversed(words))\n```\n\nOr more concisely (using slice notation):\n\n```python\ndef reverse_words(s):\n    # Split, reverse the list, and join with a single space\n    return ' '.join(s.split()[::-1])\n```\n\nBoth",
+ "answer_s": 121.01,
+ "correct": true
+}

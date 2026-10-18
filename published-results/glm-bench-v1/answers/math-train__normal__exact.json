@@ -1,0 +1,18 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 299.5,
+ "prompt_tokens": 28,
+ "prefill_s": 33.75,
+ "output_tokens": 104,
+ "decode_s": 262.98,
+ "decode_tok_s": 0.4,
+ "zeroed_slots": 0,
+ "hit_pct": 1.6,
+ "text": "# Train Distance Calculation\n\n**Given information:**\n- Speed = 60 km/h\n- Time = 2.5 hours\n\n**Formula:**\n$$\\text{Distance} = \\text{Speed} \\times \\text{Time}$$\n\n**Calculation:**\n$$\\text{Distance} = 60 \\text{ km/h} \\times 2.5 \\text{ h} = 150 \\text{ km}$$\n\n**Answer:** The train travels **150 kilometres**.",
+ "answer_s": 296.73,
+ "correct": true
+}

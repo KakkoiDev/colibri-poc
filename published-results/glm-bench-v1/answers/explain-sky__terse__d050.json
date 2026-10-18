@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 71.94,
+ "prompt_tokens": 29,
+ "prefill_s": 33.96,
+ "output_tokens": 51,
+ "decode_s": 35.36,
+ "decode_tok_s": 1.44,
+ "zeroed_slots": 25381,
+ "hit_pct": 33.0,
+ "text": "The sky is blue because molecules in the air scatter more blue light (from the sun) than the other visible colors — and the scattered blue light comes from all directions, upward, and so reaches our eyes from every direction, making the sky look blue.",
+ "answer_s": 69.32,
+ "correct": true
+}

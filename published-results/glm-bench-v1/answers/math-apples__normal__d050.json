@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 92.83,
+ "prompt_tokens": 30,
+ "prefill_s": 34.95,
+ "output_tokens": 79,
+ "decode_s": 54.97,
+ "decode_tok_s": 1.44,
+ "zeroed_slots": 41393,
+ "hit_pct": 27.1,
+ "text": "**12 - 5 = 7** ← _give away 5 apples from the 12 you have_\n\n**7 + 8 = 15** ← _buy 8 more apples, resulting in 15 total apples_\n\n**Answer: 15 apples**\n\nThe answer is straightforward arithmetic: 12 - 5 = 7, then 7 + 8 = 15.",
+ "answer_s": 89.92,
+ "correct": true
+}

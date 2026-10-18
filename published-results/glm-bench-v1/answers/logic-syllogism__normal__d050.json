@@ -1,0 +1,18 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 70.59,
+ "prompt_tokens": 36,
+ "prefill_s": 37.57,
+ "output_tokens": 46,
+ "decode_s": 30.38,
+ "decode_tok_s": 1.51,
+ "zeroed_slots": 23035,
+ "hit_pct": 31.2,
+ "text": "Yes.\n\n**Explanation:** If all bloops are razzies, and all razzies are lazzies, then bloops are a subset of lazzies. So every bloop is also a lazzie.",
+ "answer_s": 67.95,
+ "correct": true
+}

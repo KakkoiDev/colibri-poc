@@ -772,15 +772,19 @@
   "id": "terse-prompt",
   "title": "Terse prompting (\"answer as briefly as possible\")",
   "category": "prompt",
-  "change": "prompt suffix",
+  "change": "prompt suffix: \" Answer as briefly as possible. For code, reply with only the code.\"",
   "hypothesis": "Shorter answers finish sooner even at the same tok/s, if accuracy holds.",
   "ref": null,
   "runs": [],
   "lossy": false,
   "date": "2026-10-18",
-  "conclusion": "Running in the quality bench (glm_bench.py v1).",
-  "tradeoffs": "",
-  "verdict": "in progress"
+  "conclusion": "Quality bench v1 (24 graded prompts): exact answers took 64 s on average instead of 281 s (4.4x faster), with ~10 instead of ~98 output tokens. Every config scored 24/24 terse; normal style had 2 genuinely wrong answers at skip 0.5 (see review). Prompt reading (~40 s) is now most of a terse answer's time.",
+  "tradeoffs": "Answers are short; ask for detail when needed. Generation speed (tok/s) is unchanged: the gain is fewer tokens.",
+  "verdict": "improves",
+  "sources": [
+   "https://github.com/KakkoiDev/colibri-poc/blob/main/published-results/glm-bench-v1/report.md",
+   "https://github.com/KakkoiDev/colibri-poc/blob/main/published-results/glm-bench-v1/review.md"
+  ]
  },
  {
   "id": "lookup-off",

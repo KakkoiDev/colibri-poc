@@ -378,3 +378,37 @@ nothing. More threads only help once most expert reads are skipped. Output text 
 All experiments, with their reference runs and verdicts, are in the
 [experiment log](12-experiment-log.md). Add one with
 `.venv/bin/python glm_lab.py try ID "Title" --env KEY=VALUE --category C`.
+
+## Quality bench v1: terse prompts answer ~4.4x faster with no accuracy loss
+
+24 graded prompts (facts, maths, logic, code with tests, explanations), each under exact,
+skip 0.3 and skip 0.5, in normal style and terse style (" Answer as briefly as possible.
+For code, reply with only the code."). 144 runs on the busy machine, 2 threads, 128-token
+cap. Published: [report](../published-results/glm-bench-v1/report.md),
+[manual review](../published-results/glm-bench-v1/review.md), every answer in
+`published-results/glm-bench-v1/answers/`.
+
+| Style | Config | Automatic grade | Reviewed | Mean answer time | Output tokens |
+|---|---|---:|---|---:|---:|
+| normal | exact | 21/23 (+1 refused, re-run) | all correct, 1 cut off | 283 s | 99 |
+| normal | skip 0.3 | 21/24 | 23 correct, 1 cut off | 163 s | 104 |
+| normal | skip 0.5 | 17/24 | 19 correct, 3 cut off, **2 wrong** | 120 s | 120 |
+| terse | exact | 24/24 | — | 64 s | 10 |
+| terse | skip 0.3 | 24/24 | — | 52 s | 10 |
+| terse | skip 0.5 | 24/24 | — | 51 s | 16 |
+
+```mermaid
+flowchart LR
+    N[Normal exact<br/>283 s per answer] --> T[Terse exact<br/>64 s] --> L[Terse + skip 0.5<br/>51 s]
+    T -.-> P[Prompt reading ~40 s<br/>is now the biggest part]
+```
+
+- The automatic grader (last number, first code block, 128-token cap) under-counts long
+  answers; every "incorrect" answer was read by hand. Exact and skip 0.3 made no real
+  mistakes. Skip 0.5 produced two genuinely bad long answers (repetition, rambling) and
+  longer outputs overall.
+- Terse prompting is the biggest practical win so far: same generation speed, about a
+  quarter of the waiting time, and it sidesteps skip 0.5's long-answer failures.
+- **New bottleneck for short answers: prompt reading.** About 40 s of a 51-64 s terse
+  answer is reading the prompt (~1.4 s per prompt token, SSD-bound). Ideas that speed up
+  prompt reading, or reuse it (Colibri keeps a KV prefix across turns), now matter.
