@@ -11,7 +11,7 @@ Target: **5.0 tok/s**. Best exact: **0.46 tok/s** (Metal exact: 6 threads instea
 
 Memory is not judged: peak RSS varied 6.2-9.3 GB between two runs with identical settings, so it reflects what macOS kept resident rather than the setting.
 
-Verdicts: failed 1, improves 20, inconclusive 1, no clear change 17, not run 16, reference 1, worse 5.
+Verdicts: failed 1, improves 20, inconclusive 1, no clear change 17, not run 23, reference 1, worse 5.
 
 ```mermaid
 flowchart LR
@@ -193,6 +193,26 @@ flowchart LR
 - **GLM-5.3 as a 2-bit GGUF (Unsloth UD-IQ2_M, 239 GB)** (`gguf-iq2m`): change `Colibri dev 16239caa + unsloth GLM-5.3 UD-IQ2_M GGUF (imported)`. Why: The 2-bit GGUF is ~239 GB against ~419 GB for the int4 container, so roughly 40% fewer expert bytes per token (~7 GB instead of 12.7 GB): exact-mode SSD ceiling ~0.9 tok/s instead of ~0.5, and lossy skip runs read less too. Risk: Colibri computes GGUF blocks (QT_GGML) on the CPU only, with no Metal copy, so the math may eat the I/O saving; NEON kernels exist. The GGUF carries the MTP (nextn) layer, which Colibri dev turns on. Result: Planned: needs `make glm-prep-iq2m` first (~239 GB download, imported to ~/colibri-models/glm-5.3-iq2m). Lossy: needs the quality bench before any use. Tradeoffs: Lossy (2-bit experts); CPU-only expert math for GGUF blocks; a second 239 GB model on disk. Reference: `r2-p0-sky-exact`.
 - **GLM-5.3 as a 3-bit GGUF (Unsloth UD-IQ3_XXS, 282 GB)** (`gguf-iq3xxs`): change `Colibri dev 16239caa + unsloth GLM-5.3 UD-IQ3_XXS GGUF (imported)`. Why: The quality-safer middle ground: 282 GB vs 419 GB int4 (~33% fewer expert bytes), top-1 agreement 84.2% and KLD 0.27 per Unsloth (2-bit: 78.5%, 0.45). Same CPU-only caveat for GGUF blocks; the GGUF carries the MTP layer. Result: Planned: needs `make glm-prep-iq3xxs` first (~282 GB download). Lossy: quality bench required. Tradeoffs: Lossy (3-bit experts); CPU-only expert math for GGUF blocks. Reference: `r2-p0-sky-exact`.
 - **GLM-5.3-Flash (321B) on the glm53 engine** (`glm53-flash`): change `convert zai-org/GLM-5.3-Flash with tools/convert_glm53.py (int4-g64, ~195 GB out, ~25 h), run with coli chat`. Why: Same expert shape as GLM-5.3 but 45 layers (42 MoE) and hidden size 4096: ~4.8 GB of int4 expert weights per token instead of ~12.7 GB (-62%). Exact SSD ceiling ~1.3 tok/s, and lossy skip runs could approach the 5 tok/s target. It is a different, smaller model, so the owner decides whether it counts toward the mission. Result: Planned, manual: the glm53 engine has none of our speed settings (no PIPE, DIRECT, DEGRADE_ZERO, OMP sizing; it has GLM53_EXPERT_GB, COLI_METAL, COLI_MODEL_MIRROR) and prints speed as "decode N token in X s = Y tok/s", which the lab parser does not read yet. Fast route instead of the 25 h conversion: `make glm-prep-flash` (Unsloth UD-IQ3_XXS GGUF, ~120 GB, read in place by Colibri dev), then a manual timed run. The GLM-5.3 stack does not carry over as is; it needs Flash-specific settings. Tradeoffs: Smaller model, likely weaker answers than the 744B GLM-5.3.
+
+## small-models
+
+| Experiment | Verdict | tok/s (ref → new) | Change | Prompt reading s (ref → new) | Output | Effects | Runs |
+|---|---|---|---:|---|---|---|---|
+| **Check the Qwen models' architecture (dense vs MoE)** | not run | — → — | — | — → — | — | — | — |
+| **Qwen3.8-27B (dense) through the installed Ollama MLX model** | not run | — → — | — | — → — | — | — | — |
+| **Qwen3.6-35B-A3B (MoE, ~3B active) with every expert in RAM** | not run | — → — | — | — → — | — | — | — |
+| **Qwen3.6-35B-A3B at simulated 8 / 16 / 24 GB machines** | not run | — → — | — | — → — | — | — | — |
+| **Qwen3.6-35B-A3B: Vulkan expert tier (MoltenVK) vs CPU** | not run | — → — | — | — → — | — | — | — |
+| **Dense Qwen3.8-27B on Colibri at 16 / 24 GB profiles** | not run | — → — | — | — → — | — | — | — |
+| **Correct answers per minute vs published intelligence, per model and machine profile** | not run | — → — | — | — → — | — | — | — |
+
+- **Check the Qwen models' architecture (dense vs MoE)** (`sm-arch-check`): change `read config.json of Qwen3.8-27B and Qwen3.6-35B-A3B`. Why: Artificial Analysis lists Qwen3.8-27B as 3B active, Colibri says dense; expert streaming only helps a MoE. Result: Planned: no download needed beyond the config files.
+- **Qwen3.8-27B (dense) through the installed Ollama MLX model** (`sm-qwen38-27b-ollama`): change `Ollama qwen3.8:27b-mlx, sky/code speed + quality bench (terse, normal)`. Why: Published intelligence 34 vs GLM-5.3 45, but it fits in RAM: likely tens of tok/s, so far more correct answers per minute. Result: Planned: needs an Ollama backend for glm_bench.py. No download (already installed).
+- **Qwen3.6-35B-A3B (MoE, ~3B active) with every expert in RAM** (`sm-qwen36-a3b-resident`): change `Colibri qwen36 engine, int4 gs64, --ram 24`. Why: Upper bound for the small MoE on this Mac; Colibri reports 6.0 tok/s CPU and 9.9 tok/s integrated-GPU Vulkan elsewhere. Result: Planned: needs ~23 GB download (make glm-prep-qwen36) and a qwen36 adapter for the bench tools.
+- **Qwen3.6-35B-A3B at simulated 8 / 16 / 24 GB machines** (`sm-qwen36-a3b-ram-sweep`): change `RAM budgets 5 / 11 / 17 / 24 GB, threads 4 / 6 / 8 / 12`. Why: A MoE reads only ~1.5 GB of experts per token, so it should stay usable on 8-16 GB machines where a dense model cannot. Result: Planned: after sm-qwen36-a3b-resident. Simulated: a RAM cap does not reproduce a slower SSD (~3 GB/s on base Macs).
+- **Qwen3.6-35B-A3B: Vulkan expert tier (MoltenVK) vs CPU** (`sm-qwen36-a3b-vulkan`): change `COLI_VULKAN=1 with the MoltenVK portability patch, engines/ clone`. Why: The qwen36 engine has no Metal backend; Colibri's Vulkan tier helped an integrated GPU (9.9 vs 6.0 tok/s). Result: Planned: after sm-qwen36-a3b-resident.
+- **Dense Qwen3.8-27B on Colibri at 16 / 24 GB profiles** (`sm-qwen38-27b-lowram`): change `Colibri qwen3.8-27b-colibri, --ram 11 / 17`. Why: Contrast case: a dense model must read most weights from the SSD every token once it does not fit, ~13.5 GB per token. Result: Planned: needs a Colibri conversion of Qwen3.8-27B (~56 GB source download).
+- **Correct answers per minute vs published intelligence, per model and machine profile** (`sm-intelligence-per-minute`): change `analysis of the runs above + GLM-5.3 bench v1`. Why: The deciding view: which model gives the most correct answers per minute on each machine size, next to its published score. Result: Planned: after the runs above.
 
 ## other
 

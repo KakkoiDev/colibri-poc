@@ -29,8 +29,9 @@ expert streaming safely; those results do not transfer directly to GLM.
 10. [Candidate next experiments](docs/10-next-experiments.md)
 11. [GLM-5.3 on this Mac: what limits it](docs/11-glm-on-this-mac.md)
     Results page: `site/index.html` (GitHub Pages via `.github/workflows/pages.yml`; preview with `python3 -m http.server --directory site`).
-12. [GLM experiment log](docs/12-experiment-log.md) (add one: `.venv/bin/python glm_lab.py try ID "Title" --env KEY=VALUE`)
-13. [AI takeover instructions and live state](EXPERIMENT_HANDOFF.md)
+12. [Smaller models for lower-end machines (plan)](docs/13-small-models.md)
+13. [GLM experiment log](docs/12-experiment-log.md) (add one: `.venv/bin/python glm_lab.py try ID "Title" --env KEY=VALUE`)
+14. [AI takeover instructions and live state](EXPERIMENT_HANDOFF.md)
 
 ```mermaid
 flowchart LR

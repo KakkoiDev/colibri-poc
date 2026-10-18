@@ -79,3 +79,9 @@ lab-app-install:
 
 lab-app-uninstall:
 	sh scripts/lab_app_service.sh uninstall
+
+# Small-model plan (docs/13-small-models.md): Qwen3.6-35B-A3B in Colibri format (~23 GB)
+.PHONY: glm-prep-qwen36
+glm-prep-qwen36:
+	df -h ~ | tail -1
+	hf download Kreuzzelg/qwen36-35b-a3b-colibri-i4-gs64 --local-dir ~/colibri-models/qwen36-35b-a3b

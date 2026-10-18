@@ -137,6 +137,58 @@
    "coli_dir": "engines/colibri-16239caa",
    "suite": false,
    "suite_note": "GLM-5.3-Flash runs on Colibri's separate glm53 engine, whose speed output the lab tools cannot read yet"
+  },
+  {
+   "id": "qwen3.6-35b-a3b",
+   "name": "Qwen3.6-35B-A3B (MoE, ~3B active)",
+   "family": "Qwen3.6",
+   "params": "35B total / ~3B active",
+   "format": "Colibri int4 gs64",
+   "size_gb": 23,
+   "path": "colibri-models/qwen36-35b-a3b",
+   "engine": "Colibri qwen36 (CPU or Vulkan; no Metal backend)",
+   "mtp": false,
+   "bench_names": [],
+   "speed_runs": [],
+   "source": "huggingface.co/Kreuzzelg/qwen36-35b-a3b-colibri-i4-gs64",
+   "download_gb": 23,
+   "prep": "make glm-prep-qwen36",
+   "unlocks": [
+    "sm-qwen36-a3b-resident",
+    "sm-qwen36-a3b-ram-sweep",
+    "sm-qwen36-a3b-vulkan"
+   ],
+   "external_model": "Qwen3.6 35B A3B (Reasoning)",
+   "remove_paths": [
+    "colibri-models/qwen36-35b-a3b"
+   ],
+   "coli_dir": "~/Code/colibri",
+   "suite": false,
+   "suite_note": "the bench tools read the GLM engine output; the qwen36 engine needs an adapter (docs/13-small-models.md)"
+  },
+  {
+   "id": "qwen3.8-27b",
+   "name": "Qwen3.8-27B (dense)",
+   "family": "Qwen3.8",
+   "params": "27B (dense)",
+   "format": "Colibri int4 (conversion) or Ollama MLX qwen3.8:27b-mlx (installed in Ollama)",
+   "size_gb": 20,
+   "path": "colibri-models/qwen3.8-27b",
+   "engine": "Colibri qwen36 engine, or Ollama (MLX)",
+   "mtp": false,
+   "bench_names": [],
+   "speed_runs": [],
+   "source": "huggingface.co/Qwen/Qwen3.8-27B (convert with tools/convert_qwen36.py)",
+   "unlocks": [
+    "sm-qwen38-27b-lowram"
+   ],
+   "external_model": "Qwen3.8 27B (Xhigh)",
+   "remove_paths": [
+    "colibri-models/qwen3.8-27b"
+   ],
+   "coli_dir": "~/Code/colibri",
+   "suite": false,
+   "suite_note": "needs an adapter; the Ollama copy needs an Ollama backend for the bench (docs/13-small-models.md)"
   }
  ]
 }

@@ -40,7 +40,7 @@ PROMPTS = {'sky': 'Explain in two sentences why the sky is blue.',
 BEST = {'USAGE_SAVE': '0', 'KVSAVE': '0', 'COLI_TEMP': '0', 'PROF': '1', 'COLI_METAL': '1', 'PIPE': '1', 'DIRECT': '1',
         'COLI_METAL_RESSET': '1', 'COLI_METAL_SPIN': '1', 'OMP_NUM_THREADS': '12'}
 DEFAULT_REF = {'sky': 'r2-p0-sky-exact', 'code': 'r2-p0-code-exact'}
-CATEGORIES = ['build', 'gpu', 'threads', 'io', 'cache', 'memory', 'prompt', 'backend', 'lossy-routing', 'model-format']
+CATEGORIES = ['build', 'gpu', 'threads', 'io', 'cache', 'memory', 'prompt', 'backend', 'lossy-routing', 'model-format', 'small-models']
 
 
 def load_registry():

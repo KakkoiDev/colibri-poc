@@ -61,11 +61,26 @@
     "open_weights": true,
     "lab": true,
     "source": "https://artificialanalysis.ai/models/glm-5-3-low"
+   },
+   {
+    "model": "Qwen3.8 27B (Xhigh)",
+    "score": 34,
+    "open_weights": true,
+    "planned": true,
+    "source": "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
+   },
+   {
+    "model": "Qwen3.6 35B A3B (Reasoning)",
+    "score": 18,
+    "open_weights": true,
+    "planned": true,
+    "source": "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
    }
   ],
   "caveats": [
    "The models page lists only the top 5 overall and top 3 open-weights models; other frontier models (e.g. GPT, Gemini) were not shown in the fetched page.",
-   "Earlier index versions scored GLM-5.3 at 60 and Flash at 57 (v4.1); only v4.3.2 numbers are used here."
+   "Earlier index versions scored GLM-5.3 at 60 and Flash at 57 (v4.1); only v4.3.2 numbers are used here.",
+   "Qwen rows added 2026-10-18 for the small-model plan (docs/13-small-models.md); Artificial Analysis lists Qwen3.8-27B as 3B active, Colibri describes it as dense."
   ]
  },
  "aa_detail": {

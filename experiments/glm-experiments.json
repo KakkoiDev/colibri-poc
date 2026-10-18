@@ -1133,5 +1133,131 @@
    "https://huggingface.co/zai-org/GLM-5.3-Flash",
    "https://github.com/JustVugg/colibri/blob/main/docs/glm53-flash.md"
   ]
+ },
+ {
+  "id": "sm-arch-check",
+  "title": "Check the Qwen models' architecture (dense vs MoE)",
+  "category": "small-models",
+  "change": "read config.json of Qwen3.8-27B and Qwen3.6-35B-A3B",
+  "hypothesis": "Artificial Analysis lists Qwen3.8-27B as 3B active, Colibri says dense; expert streaming only helps a MoE.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Planned: no download needed beyond the config files.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
+   "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
+  ]
+ },
+ {
+  "id": "sm-qwen38-27b-ollama",
+  "title": "Qwen3.8-27B (dense) through the installed Ollama MLX model",
+  "category": "small-models",
+  "change": "Ollama qwen3.8:27b-mlx, sky/code speed + quality bench (terse, normal)",
+  "hypothesis": "Published intelligence 34 vs GLM-5.3 45, but it fits in RAM: likely tens of tok/s, so far more correct answers per minute.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Planned: needs an Ollama backend for glm_bench.py. No download (already installed).",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
+   "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
+  ]
+ },
+ {
+  "id": "sm-qwen36-a3b-resident",
+  "title": "Qwen3.6-35B-A3B (MoE, ~3B active) with every expert in RAM",
+  "category": "small-models",
+  "change": "Colibri qwen36 engine, int4 gs64, --ram 24",
+  "hypothesis": "Upper bound for the small MoE on this Mac; Colibri reports 6.0 tok/s CPU and 9.9 tok/s integrated-GPU Vulkan elsewhere.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Planned: needs ~23 GB download (make glm-prep-qwen36) and a qwen36 adapter for the bench tools.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
+   "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
+  ]
+ },
+ {
+  "id": "sm-qwen36-a3b-ram-sweep",
+  "title": "Qwen3.6-35B-A3B at simulated 8 / 16 / 24 GB machines",
+  "category": "small-models",
+  "change": "RAM budgets 5 / 11 / 17 / 24 GB, threads 4 / 6 / 8 / 12",
+  "hypothesis": "A MoE reads only ~1.5 GB of experts per token, so it should stay usable on 8-16 GB machines where a dense model cannot.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Planned: after sm-qwen36-a3b-resident. Simulated: a RAM cap does not reproduce a slower SSD (~3 GB/s on base Macs).",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
+   "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
+  ]
+ },
+ {
+  "id": "sm-qwen36-a3b-vulkan",
+  "title": "Qwen3.6-35B-A3B: Vulkan expert tier (MoltenVK) vs CPU",
+  "category": "small-models",
+  "change": "COLI_VULKAN=1 with the MoltenVK portability patch, engines/ clone",
+  "hypothesis": "The qwen36 engine has no Metal backend; Colibri's Vulkan tier helped an integrated GPU (9.9 vs 6.0 tok/s).",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Planned: after sm-qwen36-a3b-resident.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
+   "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
+  ]
+ },
+ {
+  "id": "sm-qwen38-27b-lowram",
+  "title": "Dense Qwen3.8-27B on Colibri at 16 / 24 GB profiles",
+  "category": "small-models",
+  "change": "Colibri qwen3.8-27b-colibri, --ram 11 / 17",
+  "hypothesis": "Contrast case: a dense model must read most weights from the SSD every token once it does not fit, ~13.5 GB per token.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Planned: needs a Colibri conversion of Qwen3.8-27B (~56 GB source download).",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
+   "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
+  ]
+ },
+ {
+  "id": "sm-intelligence-per-minute",
+  "title": "Correct answers per minute vs published intelligence, per model and machine profile",
+  "category": "small-models",
+  "change": "analysis of the runs above + GLM-5.3 bench v1",
+  "hypothesis": "The deciding view: which model gives the most correct answers per minute on each machine size, next to its published score.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Planned: after the runs above.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
+   "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
+  ]
  }
 ]
