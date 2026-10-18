@@ -143,6 +143,28 @@ Verdict rules: generation +10% or better → improves; −10% or worse → worse
 reading 20% faster → improves; any failed run → failed. Peak memory (RSS) is recorded
 but not judged: identical runs varied 6–9 GB.
 
+### Planned experiments and the quiet run
+
+An idea that should run later (machine busy, needs a download, needs a quiet Mac) gets a
+registry entry with `"verdict": "not run"` and a `plan` (prompt, length, env, reference,
+engine clone with `build`, model, `needs` paths and the `prep` command). Then:
+
+- `make glm-planned` lists them and says which are ready.
+- `make glm-quiet` (`glm_quiet.py run`) runs every ready one after its comparison set;
+  `glm_quiet.py run --experiments-only` runs just those. Wins (>= +10%) are repeated once
+  automatically.
+- Entries that need a download wait for `make glm-prep-mtp` (int8 MTP head) or
+  `make glm-prep-iq2m` (2-bit GGUF); nothing downloads without the owner running these.
+
+### Stack techniques, then carry the stack to new models
+
+Small gains compound. Every single-technique result is also tried **on top of the
+current best stack** (best exact settings + 12 threads, then + skip < 0.5 for lossy),
+as `stack-*` entries, because a change can matter more once other bottlenecks are gone:
+drafts off barely matters when SSD-bound but may matter when attention-bound. When a new
+model or format arrives (2-bit GGUF, GLM-5.3-Flash), run its reference first, then the
+whole winning stack, not one lever at a time.
+
 ### Quality checks for lossy ideas
 
 A speed win that changes output is not a win until quality is checked:

@@ -786,72 +786,258 @@
   "id": "lookup-off",
   "title": "Prompt-lookup drafts off (COLI_LOOKUP=0)",
   "category": "other",
-  "change": "COLI_LOOKUP=0 (exact, sky and code prompts; then once with DEGRADE_ZERO=1 DEGRADE_TAU=0.5)",
+  "change": "COLI_LOOKUP=0",
   "hypothesis": "Colibri drafts n-grams from the prompt by default (our runs show 1.04 tokens per forward). Each verify reads experts for every drafted row, so on an SSD-bound run a rejected draft costs a full extra set of expert reads; turning it off could be faster, or show the gate already pays for itself (code prompt repeats more n-grams).",
-  "ref": null,
+  "ref": "r2-p0-sky-exact",
   "runs": [],
   "lossy": false,
   "date": "2026-10-18",
-  "conclusion": "Planned: machine busy at scan time (quality bench holding .bench.lock, an engine running, 7 GB free). Needs only the installed engine: `.venv/bin/python glm_lab.py try lookup-off \"Prompt-lookup drafts off\" --env COLI_LOOKUP=0 --category other` (plus `--prompt code`), judged against the 12-thread exact reference; output must stay identical.",
+  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
   "tradeoffs": "",
   "verdict": "not run",
   "sources": [
    "https://github.com/JustVugg/colibri/blob/main/docs/speculative.md"
-  ]
+  ],
+  "plan": {
+   "prompt": "sky",
+   "ngen": 24,
+   "env": {
+    "COLI_LOOKUP": "0"
+   },
+   "ref": "r2-p0-sky-exact"
+  }
+ },
+ {
+  "id": "lookup-off-code",
+  "title": "Prompt-lookup drafts off, code prompt",
+  "category": "other",
+  "change": "COLI_LOOKUP=0 (code prompt)",
+  "hypothesis": "The code prompt repeats more n-grams than the sky prompt, so drafts may pay there even if they cost on sky.",
+  "ref": "r2-p0-code-exact",
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/JustVugg/colibri/blob/main/docs/speculative.md"
+  ],
+  "plan": {
+   "prompt": "code",
+   "ngen": 24,
+   "env": {
+    "COLI_LOOKUP": "0"
+   },
+   "ref": "r2-p0-code-exact"
+  }
+ },
+ {
+  "id": "stack-skip050-lookup-off",
+  "title": "Stack: skip < 0.5 + 12 threads + drafts off",
+  "category": "lossy-routing",
+  "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.50 COLI_LOOKUP=0",
+  "hypothesis": "Combining techniques: on the best usable lossy setting, attention and per-forward overhead dominate, so a wasted verify forward costs relatively more than in exact mode.",
+  "ref": "r2-k-sky-skip050-t12",
+  "runs": [],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/JustVugg/colibri/blob/main/docs/speculative.md"
+  ],
+  "plan": {
+   "prompt": "sky",
+   "ngen": 48,
+   "env": {
+    "DEGRADE_ZERO": "1",
+    "DEGRADE_TAU": "0.50",
+    "COLI_LOOKUP": "0"
+   },
+   "ref": "r2-k-sky-skip050-t12"
+  }
  },
  {
   "id": "baseline-16239caa",
   "title": "Baseline Colibri dev 16239caa (GGUF for GLM, 412 commits after v2.0.0)",
   "category": "build",
-  "change": "build dev 16239caa in engines/colibri-16239caa with METAL=1; same best exact settings",
+  "change": "Colibri dev 16239caa, best exact settings",
   "hypothesis": "The dev branch is 412 commits past the installed v2.0.0 (bf244291) and touches colibri.c (GGUF reader, QT_GGML/QT_KVB, MTP from a GGUF). Check it does not regress the int4 Metal path before using it for the GGUF experiment below.",
-  "ref": null,
+  "ref": "r2-p0-sky-exact",
   "runs": [],
   "lossy": false,
   "date": "2026-10-18",
-  "conclusion": "Planned: machine busy at scan time. Needs no download: `git clone -q --local ~/Code/colibri engines/colibri-16239caa && git -C engines/colibri-16239caa fetch -q https://github.com/JustVugg/colibri 16239caa && git -C engines/colibri-16239caa checkout -q FETCH_HEAD && make -C engines/colibri-16239caa/c -j8 glm METAL=1`, then `glm_lab.py try baseline-16239caa \"Baseline Colibri 16239caa\" --coli-dir engines/colibri-16239caa --category build`.",
+  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
   "tradeoffs": "",
   "verdict": "not run",
   "sources": [
    "https://github.com/JustVugg/colibri/pull/2140"
-  ]
+  ],
+  "plan": {
+   "prompt": "sky",
+   "ngen": 24,
+   "env": {},
+   "ref": "r2-p0-sky-exact",
+   "coli_dir": "engines/colibri-16239caa",
+   "build": {
+    "ref": "16239caa"
+   }
+  }
+ },
+ {
+  "id": "stack-skip050-16239caa",
+  "title": "Stack: skip < 0.5 + 12 threads on Colibri dev 16239caa",
+  "category": "lossy-routing",
+  "change": "Colibri dev 16239caa + DEGRADE_ZERO=1 DEGRADE_TAU=0.50",
+  "hypothesis": "Does the newer engine move the best usable lossy stack (attention/overhead bound)?",
+  "ref": "r2-k-sky-skip050-t12",
+  "runs": [],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [],
+  "plan": {
+   "prompt": "sky",
+   "ngen": 48,
+   "env": {
+    "DEGRADE_ZERO": "1",
+    "DEGRADE_TAU": "0.50"
+   },
+   "ref": "r2-k-sky-skip050-t12",
+   "coli_dir": "engines/colibri-16239caa",
+   "build": {
+    "ref": "16239caa"
+   }
+  }
+ },
+ {
+  "id": "mtp-int8",
+  "title": "int8 MTP draft head for GLM-5.3",
+  "category": "other",
+  "change": "glm-5.3 + int8 MTP head (symlinked copy ~/colibri-models/glm-5.3-mtp)",
+  "hypothesis": "Our glm-5.3 container has no MTP head (\"MTP absent\"). Colibri reports 2.2-2.8 tokens per forward when it pays. On an SSD-bound run a 3-row verify reads more experts (2% hits), so exact-mode gain is uncertain; output stays identical (only verified tokens are kept).",
+  "ref": "r2-p0-sky-exact",
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-18",
+  "conclusion": "Planned: needs `make glm-prep-mtp` first (downloads the FP8 shards holding layer 78 from zai-org/GLM-5.3 and converts the head to int8, ~10 GB on disk; the owner's model folder is not touched). Then the quiet run picks it up.",
+  "tradeoffs": "~10 GB more on disk; the head's dense part stays resident (its experts stream like the others), so some RAM leaves the expert cache.",
+  "verdict": "not run",
+  "sources": [
+   "https://github.com/JustVugg/colibri/blob/main/docs/tuning.md",
+   "https://github.com/JustVugg/colibri/blob/main/docs/speculative.md"
+  ],
+  "plan": {
+   "prompt": "sky",
+   "ngen": 24,
+   "env": {},
+   "ref": "r2-p0-sky-exact",
+   "model": "~/colibri-models/glm-5.3-mtp",
+   "needs": [
+    "~/colibri-models/glm-5.3-mtp/.mtp-ready"
+   ],
+   "prep": "make glm-prep-mtp"
+  }
+ },
+ {
+  "id": "mtp-int8-skip050",
+  "title": "Stack: MTP head + skip < 0.5 + 12 threads",
+  "category": "lossy-routing",
+  "change": "int8 MTP head + DEGRADE_ZERO=1 DEGRADE_TAU=0.50",
+  "hypothesis": "In lossy mode each forward is dominated by attention and overhead, not SSD, so fewer forwards per token (MTP) should compound with skipping.",
+  "ref": "r2-k-sky-skip050-t12",
+  "runs": [],
+  "lossy": true,
+  "date": "2026-10-18",
+  "conclusion": "Planned: needs `make glm-prep-mtp` first.",
+  "tradeoffs": "",
+  "verdict": "not run",
+  "sources": [],
+  "plan": {
+   "prompt": "sky",
+   "ngen": 48,
+   "env": {
+    "DEGRADE_ZERO": "1",
+    "DEGRADE_TAU": "0.50"
+   },
+   "ref": "r2-k-sky-skip050-t12",
+   "model": "~/colibri-models/glm-5.3-mtp",
+   "needs": [
+    "~/colibri-models/glm-5.3-mtp/.mtp-ready"
+   ],
+   "prep": "make glm-prep-mtp"
+  }
  },
  {
   "id": "gguf-iq2m",
   "title": "GLM-5.3 as a 2-bit GGUF (Unsloth UD-IQ2_M, 239 GB)",
   "category": "model-format",
-  "change": "coli import unsloth/GLM-5.3-GGUF UD-IQ2_M, run on Colibri dev (GGUF read in place, #2140)",
-  "hypothesis": "The 2-bit GGUF is ~239 GB against ~419 GB for the int4 container, so roughly 40% fewer expert bytes per token (~7 GB instead of 12.7 GB): exact-mode SSD ceiling ~0.9 tok/s instead of ~0.5, and lossy skip runs read less too. Risk: Colibri computes GGUF blocks (QT_GGML) on the CPU only, with no Metal copy, so the math may eat the I/O saving; NEON kernels exist.",
-  "ref": null,
+  "change": "Colibri dev 16239caa + unsloth GLM-5.3 UD-IQ2_M GGUF (imported)",
+  "hypothesis": "The 2-bit GGUF is ~239 GB against ~419 GB for the int4 container, so roughly 40% fewer expert bytes per token (~7 GB instead of 12.7 GB): exact-mode SSD ceiling ~0.9 tok/s instead of ~0.5, and lossy skip runs read less too. Risk: Colibri computes GGUF blocks (QT_GGML) on the CPU only, with no Metal copy, so the math may eat the I/O saving; NEON kernels exist. The GGUF carries the MTP (nextn) layer, which Colibri dev turns on.",
+  "ref": "r2-p0-sky-exact",
   "runs": [],
   "lossy": true,
   "date": "2026-10-18",
-  "conclusion": "Planned: needs a ~239 GB download (1.1 TB free) and the dev build above; lossy, so it also needs the quality bench and the owner. First step: `hf download unsloth/GLM-5.3-GGUF --include \"UD-IQ2_M/*\" --local-dir ~/colibri-models/glm-5.3-iq2m-gguf`, then `engines/colibri-16239caa/c/coli import` (see docs/gguf.md).",
+  "conclusion": "Planned: needs `make glm-prep-iq2m` first (~239 GB download). Lossy: needs the quality bench before any use.",
   "tradeoffs": "Lossy (2-bit experts); CPU-only expert math for GGUF blocks; a second 239 GB model on disk.",
   "verdict": "not run",
   "sources": [
    "https://github.com/JustVugg/colibri/pull/2140",
    "https://huggingface.co/unsloth/GLM-5.3-GGUF",
    "https://unsloth.ai/docs/models/glm-5.3"
-  ]
+  ],
+  "plan": {
+   "prompt": "sky",
+   "ngen": 24,
+   "env": {},
+   "ref": "r2-p0-sky-exact",
+   "coli_dir": "engines/colibri-16239caa",
+   "build": {
+    "ref": "16239caa"
+   },
+   "model": "~/colibri-models/glm-5.3-iq2m",
+   "needs": [
+    "~/colibri-models/glm-5.3-iq2m/config.json"
+   ],
+   "prep": "make glm-prep-iq2m"
+  }
  },
  {
-  "id": "mtp-int8",
-  "title": "int8 MTP draft head for GLM-5.3",
-  "category": "other",
-  "change": "add an int8 MTP head (c/tools/repair_mtp_int8.py from the zai-org checkpoint, or the nextn layer a GGUF carries)",
-  "hypothesis": "Our glm-5.3 container has no MTP head (\"MTP absent\"). Colibri reports 2.2-2.8 tokens per forward when it pays. On an SSD-bound run a 3-row verify reads close to 3x the experts (2% hits), so the gain may be small for exact output; it may pay more in lossy skip mode, where attention and overhead per forward dominate.",
-  "ref": null,
+  "id": "gguf-iq2m-skip050",
+  "title": "Stack: 2-bit GGUF + skip < 0.5 + 12 threads",
+  "category": "lossy-routing",
+  "change": "UD-IQ2_M GGUF + DEGRADE_ZERO=1 DEGRADE_TAU=0.50",
+  "hypothesis": "Fewer bytes per expert and fewer experts read should multiply; tests how far the stack goes before compute dominates.",
+  "ref": "r2-k-sky-skip050-t12",
   "runs": [],
-  "lossy": false,
+  "lossy": true,
   "date": "2026-10-18",
-  "conclusion": "Planned: needs a ~10 GB download of the MTP layer and adding files to the owner's model folder (or a copy). The head stays resident, taking ~10 GB from a 32 GB Mac's expert cache and RAM budget, which may cancel the gain. Must be int8 (int4 heads give ~0% acceptance).",
-  "tradeoffs": "~10 GB more resident memory; output identical in principle (verified tokens only).",
+  "conclusion": "Planned: needs `make glm-prep-iq2m` first. Lossy twice over (2-bit and skipping): quality bench required.",
+  "tradeoffs": "",
   "verdict": "not run",
-  "sources": [
-   "https://github.com/JustVugg/colibri/blob/main/docs/tuning.md",
-   "https://github.com/JustVugg/colibri/blob/main/docs/speculative.md"
-  ]
+  "sources": [],
+  "plan": {
+   "prompt": "sky",
+   "ngen": 48,
+   "env": {
+    "DEGRADE_ZERO": "1",
+    "DEGRADE_TAU": "0.50"
+   },
+   "ref": "r2-k-sky-skip050-t12",
+   "coli_dir": "engines/colibri-16239caa",
+   "build": {
+    "ref": "16239caa"
+   },
+   "model": "~/colibri-models/glm-5.3-iq2m",
+   "needs": [
+    "~/colibri-models/glm-5.3-iq2m/config.json"
+   ],
+   "prep": "make glm-prep-iq2m"
+  }
  },
  {
   "id": "glm53-flash",
@@ -863,7 +1049,7 @@
   "runs": [],
   "lossy": false,
   "date": "2026-10-18",
-  "conclusion": "Planned: needs a ~328 GB streamed download and conversion (peak disk ~200 GB, ~25 h) and the owner's decision on whether a 321B GLM-5.x counts. New reference runs needed; numbers do not compare with GLM-5.3.",
+  "conclusion": "Planned: needs a ~328 GB streamed download and conversion (peak disk ~200 GB, ~25 h) and the owner's decision on whether a 321B GLM-5.x counts. New reference runs needed; numbers do not compare with GLM-5.3. Once converted, apply the stack that wins on GLM-5.3 (best exact settings, 12 threads, skip < 0.5, drafts setting, MTP) with new reference runs.",
   "tradeoffs": "Smaller model, likely weaker answers than the 744B GLM-5.3.",
   "verdict": "not run",
   "sources": [

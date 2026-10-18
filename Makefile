@@ -39,7 +39,7 @@ bench-matrix:
 	$(MAKE) bench-streaming ROUNDS=$(ROUNDS) TOKENS=$(TOKENS)
 
 # GLM on the user's Colibri install (see docs/11-glm-on-this-mac.md)
-.PHONY: glm-bench glm-quiet-check glm-quiet glm-quiet-full
+.PHONY: glm-bench glm-quiet-check glm-quiet glm-quiet-full glm-planned glm-prep-mtp glm-prep-iq2m
 glm-bench:
 	$(PYTHON) glm_bench.py run --name $(or $(NAME),v1)
 
@@ -51,3 +51,13 @@ glm-quiet:
 
 glm-quiet-full:
 	$(PYTHON) glm_quiet.py run --ram-sweep --full
+
+glm-planned:
+	$(PYTHON) glm_lab.py planned
+
+# Downloads: run only when you want these experiments (see experiments/glm-experiments.json)
+glm-prep-mtp:
+	sh scripts/prep_mtp_head.sh
+
+glm-prep-iq2m:
+	sh scripts/prep_gguf_iq2m.sh

@@ -3,6 +3,8 @@
     .venv/bin/python glm_lab.py try ID "Title" --env KEY=VALUE ... [--prompt sky|code|"text"]
             [--ngen 24] [--ref RUN] [--category C] [--lossy] [--hypothesis "..."]
     .venv/bin/python glm_lab.py log        # rebuild docs/12-experiment-log.md and site/data/experiments.json
+    .venv/bin/python glm_lab.py planned    # planned experiments and whether each can run now
+    .venv/bin/python glm_lab.py run-planned [ID ...]   # run planned experiments (all ready ones by default)
 
 `try` runs Colibri once with the best exact settings plus your --env overrides, saves the
 log, republishes the run data, appends an entry to experiments/glm-experiments.json and
@@ -14,6 +16,13 @@ speed change >= +10% -> improves (peak RSS is recorded but not judged: it is too
 <= -20% -> improves (prompt reading); otherwise no clear change. Single runs: changes
 under ~10% are noise. USAGE_SAVE=0, KVSAVE=0 and --no-tune-profile keep the user's
 Colibri state unchanged.
+
+Planned experiments are registry entries with `"verdict": "not run"` and a `plan`
+object: {prompt, ngen, env, ref, coli_dir, model, build: {ref}, needs: [paths], prep}.
+`run-planned` builds the engine clone when `build` is set, skips entries whose `needs`
+paths are missing (printing the `prep` command), runs the rest in registry order, and
+runs a second time any result that looks like a win (>= +10%), so wins are repeated.
+`glm_quiet.py run` calls it after its own cases.
 """
 import argparse, csv, fcntl, json, os, subprocess, sys, time
 from pathlib import Path
@@ -186,30 +195,134 @@ def build(_args=None):
     print(f'{len(rows)} experiments -> {LOG_MD.relative_to(ROOT)}, {SITE_JSON.relative_to(ROOT)}')
 
 
-def try_(args):
-    entries = load_registry()
-    if any(e['id'] == args.id for e in entries):
-        raise SystemExit(f'experiment id {args.id} already exists')
+def acquire_lock():
     lock = (ROOT / '.bench.lock').open('w')
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
         raise SystemExit('Another benchmark is running (.bench.lock held); pause it first')
-    prompt = PROMPTS.get(args.prompt, args.prompt)
-    extra = dict(kv.split('=', 1) for kv in args.env)
-    env = dict(os.environ, **({} if args.no_base else BEST), **extra)
-    env.setdefault('RAM_GB', str(args.ram))
-    run = f'x-{args.id}'
-    coli = Path(args.coli_dir).expanduser() / 'c' / 'coli'
-    cmd = [str(coli), 'run', '--model', str(Path(args.model).expanduser()), '--no-tune-profile', '--no-think',
-           '--ngen', str(args.ngen), '--ram', str(args.ram), '--ctx', str(args.ctx), prompt]
+    return lock
+
+
+def execute(run, prompt, ngen, extra, coli_dir='~/Code/colibri', model='~/colibri-models/glm-5.3',
+            no_base=False, ram=18, ctx=1024, timeout=3600):
+    """One Colibri run with the best exact settings plus `extra`; the log goes to RAW_LOGS."""
+    prompt = PROMPTS.get(prompt, prompt)
+    env = dict(os.environ, **({} if no_base else BEST), **extra)
+    env.setdefault('RAM_GB', str(ram))
+    coli = Path(coli_dir).expanduser()
+    coli = (coli if coli.is_absolute() else ROOT / coli) / 'c' / 'coli'
+    cmd = [str(coli), 'run', '--model', str(Path(model).expanduser()), '--no-tune-profile', '--no-think',
+           '--ngen', str(ngen), '--ram', str(ram), '--ctx', str(ctx), prompt]
     print(f'Running {run} ...', flush=True)
-    p = subprocess.run(cmd, env=env, capture_output=True, text=True, errors='replace', timeout=args.timeout)
+    p = subprocess.run(cmd, env=env, capture_output=True, text=True, errors='replace', timeout=timeout)
     RAW_LOGS.mkdir(parents=True, exist_ok=True)
     shown = ' '.join(f'{k}={v}' for k, v in extra.items())
     (RAW_LOGS / f'{run}.log').write_text(f'# {run} env: {shown}\n' + p.stdout + '\n' + p.stderr)
-    sys.argv = [sys.argv[0]]
+    argv, sys.argv = sys.argv, [sys.argv[0]]
     pub.main()
+    sys.argv = argv
+    return shown
+
+
+def engine_dir(plan):
+    d = Path(plan.get('coli_dir', '~/Code/colibri')).expanduser()
+    return d if d.is_absolute() else ROOT / d
+
+
+def build_engine(plan):
+    """Clone and build plan['build']['ref'] into plan['coli_dir'] (never the installed engine)."""
+    d, ref = engine_dir(plan), plan['build']['ref']
+    if (d / 'c' / 'colibri').exists():
+        return True
+    if not str(d.resolve()).startswith(str((ROOT / 'engines').resolve())):
+        raise SystemExit(f'refusing to build outside engines/: {d}')
+    print(f'Building Colibri {ref} in {d.relative_to(ROOT)} ...', flush=True)
+    src = Path('~/Code/colibri').expanduser()
+    for cmd in (['git', 'clone', '-q', '--local', str(src), str(d)],
+                ['git', '-C', str(d), 'fetch', '-q', 'https://github.com/JustVugg/colibri', ref],
+                ['git', '-C', str(d), 'checkout', '-q', 'FETCH_HEAD'],
+                ['make', '-C', str(d / 'c'), '-j8', 'glm', 'METAL=1']):
+        if not (d.exists() and cmd[1] == 'clone'):
+            subprocess.run(cmd, check=True, capture_output=cmd[0] == 'make')
+    libs = subprocess.run(['otool', '-L', str(d / 'c' / 'colibri')], capture_output=True, text=True).stdout
+    if 'libomp' not in libs or 'Metal' not in libs:
+        print(f'  build of {ref} lacks libomp or Metal; skipping its experiments')
+        return False
+    return True
+
+
+def readiness(e):
+    """None when a planned entry can run now, else the reason it cannot."""
+    plan = e.get('plan')
+    if not plan:
+        return 'no runnable plan (needs a decision or hardware)'
+    missing = [n for n in plan.get('needs', []) if not Path(n).expanduser().exists()]
+    if missing:
+        return f"missing {', '.join(missing)}" + (f"; prepare with: {plan['prep']}" if plan.get('prep') else '')
+    return None
+
+
+def planned_entries(entries, ids=None):
+    return [e for e in entries if e.get('verdict') == 'not run' and (not ids or e['id'] in ids)]
+
+
+def planned(_args=None):
+    for e in planned_entries(load_registry()):
+        why = readiness(e)
+        print(f"{'ready  ' if why is None else 'waiting'}  {e['id']}: {e['title']}" + (f'\n           {why}' if why else ''))
+
+
+def run_planned(ids=None, hold_lock=True):
+    """Run planned experiments; returns the ids that ran. Wins (>= +10%) get a second run."""
+    lock = acquire_lock() if hold_lock else None
+    entries, ran = load_registry(), []
+    built = {}
+    for e in planned_entries(entries, ids):
+        why = readiness(e)
+        if why:
+            print(f"Skipping {e['id']}: {why}")
+            continue
+        plan = e['plan']
+        if plan.get('build'):
+            key = plan['build']['ref']
+            if key not in built:
+                built[key] = build_engine(plan)
+            if not built[key]:
+                continue
+        kw = dict(coli_dir=str(engine_dir(plan)), model=plan.get('model', '~/colibri-models/glm-5.3'))
+        run = f"x-{e['id']}"
+        execute(run, plan.get('prompt', 'sky'), plan.get('ngen', 24), plan.get('env', {}), **kw)
+        e['runs'] = [run]
+        e['ref'] = plan.get('ref', e.get('ref'))
+        e['plan']['note'] = e.get('conclusion', '')
+        e['conclusion'] = ''
+        e['date'] = time.strftime('%Y-%m-%d')
+        e.pop('verdict', None)
+        m = evaluate(e, runs_table())
+        if (m.get('speed_change_pct') or 0) >= 10:
+            print(f"  {e['id']}: {m['speed_change_pct']:+.0f}%, repeating once to confirm")
+            execute(run + '-r2', plan.get('prompt', 'sky'), plan.get('ngen', 24), plan.get('env', {}), **kw)
+            e['runs'].append(run + '-r2')
+            m = evaluate(e, runs_table())
+        save_registry(entries)
+        ran.append(e['id'])
+        print(f"  {e['id']}: {m.get('tok_s')} tok/s vs {m.get('ref_tok_s')} ({m.get('speed_change_pct')}%), output {m.get('output')}")
+    build()
+    if lock:
+        lock.close()
+    return ran
+
+
+def try_(args):
+    entries = load_registry()
+    if any(e['id'] == args.id for e in entries):
+        raise SystemExit(f'experiment id {args.id} already exists')
+    lock = acquire_lock()
+    run = f'x-{args.id}'
+    extra = dict(kv.split('=', 1) for kv in args.env)
+    shown = execute(run, args.prompt, args.ngen, extra, args.coli_dir, args.model, args.no_base, args.ram, args.ctx,
+                    args.timeout)
     ref = args.ref or DEFAULT_REF.get(args.prompt)
     entries.append(dict(id=args.id, title=args.title, category=args.category, change=shown or '(base settings)',
                         hypothesis=args.hypothesis, ref=ref, runs=[run], lossy=args.lossy,
@@ -235,8 +348,14 @@ def main():
     t.add_argument('--timeout', type=int, default=3600)
     t.add_argument('--model', default='~/colibri-models/glm-5.3'); t.add_argument('--coli-dir', default='~/Code/colibri')
     sub.add_parser('log')
+    sub.add_parser('planned')
+    rp = sub.add_parser('run-planned')
+    rp.add_argument('ids', nargs='*', help='planned experiment ids (default: every ready one)')
     a = ap.parse_args()
-    try_(a) if a.cmd == 'try' else build(a)
+    if a.cmd == 'run-planned':
+        run_planned(a.ids)
+    else:
+        {'try': try_, 'log': build, 'planned': planned}[a.cmd](a)
 
 
 if __name__ == '__main__':

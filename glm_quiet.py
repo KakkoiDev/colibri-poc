@@ -5,6 +5,8 @@
     .venv/bin/python glm_quiet.py run --skip-original  # comparison set only (~15-20 min)
     .venv/bin/python glm_quiet.py run --ram-sweep    # + exact runs at larger RAM budgets
     .venv/bin/python glm_quiet.py run --full         # + the full 144-run quality bench (hours)
+    .venv/bin/python glm_quiet.py run --experiments-only   # only the planned lab experiments
+    .venv/bin/python glm_quiet.py run --skip-experiments   # without them
     .venv/bin/python glm_quiet.py report results/glm-quiet-<stamp>
 
 Each case reuses a busy-machine run's prompt, length and settings, so the report can
@@ -12,13 +14,17 @@ compare them one to one. The original engine (CPU-only, single-threaded, backed 
 before the rebuild) is also run, to measure the user-reported 0.10 tok/s start: once
 with its default settings (automatic RAM, default context) and once at --ram 18
 --ctx 1024 in case the defaults refuse to start. Machine conditions (free RAM, swap, process count) are
-recorded before and after. Nothing is closed or killed for you: close apps yourself.
+recorded before and after. Every run also executes the planned lab experiments that are ready
+(`glm_lab.py planned` lists them; entries needing a download say which `make glm-prep-*`
+to run first), so new experiments land in the experiment log from a quiet machine.
+Nothing is closed or killed for you: close apps yourself.
 User Colibri state is not changed (USAGE_SAVE=0, KVSAVE=0, --no-tune-profile).
 """
 import argparse, csv, fcntl, json, os, re, subprocess, sys, time
 from pathlib import Path
 
 import glm_bench as gb
+import glm_lab
 
 ROOT = Path(__file__).resolve().parent
 BUSY_CSV = ROOT / 'published-results' / 'glm-20261018' / 'runs.csv'
@@ -95,6 +101,11 @@ def check(args, quiet=False):
         print(f'Note: original engine backup not found ({ORIGINAL_BIN}); use run --skip-original')
     if c['free_gb'] < QUIET_FREE_GB:
         problems.append(f"only {c['free_gb']} GB free: close more apps for a quiet run (or pass --force)")
+    print('\nPlanned lab experiments (run after the comparison set):')
+    for e in glm_lab.planned_entries(glm_lab.load_registry()):
+        if e.get('plan'):
+            why = glm_lab.readiness(e)
+            print(f"  {'ready  ' if why is None else 'waiting'}  {e['id']}" + (f'  ({why})' if why else ''))
     print('\nReady.' if not problems else '\nNot ready:\n- ' + '\n- '.join(problems))
     return c, problems
 
@@ -164,15 +175,18 @@ def run(args):
                                               capture_output=True, text=True).stdout.strip())
     (out_dir / 'meta.json').write_text(json.dumps(meta, indent=1))
     print(f'\nWriting to {out_dir}')
-    for r in range(1, args.repeats + 1):
+    for r in range(1, 0 if args.experiments_only else args.repeats + 1):
         print(f'Repeat {r}/{args.repeats}')
         for case, _busy, prompt, ngen, extra in CASES:
             run_case(out_dir, coli, model, f'{case}__r{r}', prompt, ngen, extra, 18, 1024)
-    if args.ram_sweep:
+    if args.ram_sweep and not args.experiments_only:
         print('RAM sweep (exact, sky prompt)')
         for ram in RAM_SWEEP:
             run_case(out_dir, coli, model, f'exact-sky-24-ram{ram}__r1', SKY, 24, {}, ram, 1024)
-    if not args.skip_original:
+    if not args.skip_experiments:
+        print('Planned lab experiments')
+        meta['lab_experiments'] = glm_lab.run_planned(hold_lock=False)
+    if not (args.skip_original or args.experiments_only):
         print('Original engine (CPU-only, single-threaded): the user-reported starting point. '
               'Each run can take 10-20 minutes.')
         ocoli, libs = prepare_original(args.coli_dir)
@@ -257,6 +271,8 @@ def main():
             p.add_argument('--full', action='store_true')
             p.add_argument('--force', action='store_true')
             p.add_argument('--skip-original', action='store_true')
+            p.add_argument('--skip-experiments', action='store_true', help='do not run the planned lab experiments')
+            p.add_argument('--experiments-only', action='store_true', help='only the planned lab experiments')
     r = sub.add_parser('report')
     r.add_argument('dir')
     a = ap.parse_args()
