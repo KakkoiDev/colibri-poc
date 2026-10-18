@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <title>GLM-5.3 quality bench</title>
 <meta name="description" content="Technical note: 24 graded questions answered by GLM-5.3 on a 32 GB Apple M6. Correctness and answer time for exact and faster lossy settings, normal and terse prompts, with every answer.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,6 +19,16 @@
   --bg:#141414; --fg:#ECEAE4; --fg-2:#A9A69F; --rule:#ECEAE4; --hair:#3A3936; --tint:#1D1C1A; --link:#9DB8E8;
   --hatch:repeating-linear-gradient(135deg,#ECEAE4 0 1.5px,transparent 1.5px 5px);
 }}
+:root[data-theme="dark"]{
+  --bg:#141414; --fg:#ECEAE4; --fg-2:#A9A69F; --rule:#ECEAE4; --hair:#3A3936; --tint:#1D1C1A; --link:#9DB8E8;
+  --hatch:repeating-linear-gradient(135deg,#ECEAE4 0 1.5px,transparent 1.5px 5px);
+}
+:root{color-scheme:light dark}
+:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
+.theme{display:inline-flex;gap:0;border:1px solid var(--fg-2)}
+.theme button{font:inherit;font-size:12px;line-height:18px;padding:0 7px;border:0;border-radius:0;background:transparent;color:var(--fg-2);cursor:pointer}
+.theme button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:'Source Serif 4','Iowan Old Style',Georgia,serif;font-size:17px;line-height:28px;-webkit-font-smoothing:antialiased;font-variant-numeric:lining-nums}
 a{color:var(--link);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
@@ -83,7 +94,8 @@ ol.refs{margin:0;padding-left:24px;font-size:15px;line-height:24px}
 <div class="page">
 <header class="run">
   <span class="sc">Colibri lab · Technical note</span>
-  <nav aria-label="Note links"><a href="index.html">Performance report</a><a href="#answers">Every answer</a><a href="#data">Data</a><a href="https://github.com/KakkoiDev/colibri-poc">Repository</a></nav>
+  <nav aria-label="Note links"><a href="index.html">Performance report</a><a href="#answers">Every answer</a><a href="#data">Data</a><a href="https://github.com/KakkoiDev/colibri-poc">Repository</a>
+    <span class="theme" role="group" aria-label="Colour theme"><button type="button" data-t="auto">Auto</button><button type="button" data-t="light">Light</button><button type="button" data-t="dark">Dark</button></span></nav>
 </header>
 
 <section aria-labelledby="title" style="gap:16px;text-align:center;padding-top:16px">
@@ -270,6 +282,19 @@ ol.refs{margin:0;padding-left:24px;font-size:15px;line-height:24px}
     ['f-style', 'f-config', 'f-q', 'f-grade'].forEach(function (id) { document.getElementById(id).addEventListener('change', draw); });
     draw();
   }).catch(function (e) { document.getElementById('abstract').textContent = 'Could not load the bench data: ' + e.message; });
+})();
+</script>
+<script>
+(function () {
+  var root = document.documentElement, btns = document.querySelectorAll('.theme button');
+  function show(t) { btns.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-t') === t ? 'true' : 'false'); }); }
+  function set(t) {
+    if (t === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
+    try { t === 'auto' ? localStorage.removeItem('theme') : localStorage.setItem('theme', t); } catch (e) {}
+    show(t);
+  }
+  btns.forEach(function (b) { b.addEventListener('click', function () { set(b.getAttribute('data-t')); }); });
+  show(root.getAttribute('data-theme') || 'auto');
 })();
 </script>
 </body>
