@@ -265,7 +265,7 @@ change); GPU prompt attention did not help because prompt reading is also SSD-bo
 
 | What | Where |
 |---|---|
-| Lab control app (read-only, local) | `make lab-app` → http://127.0.0.1:8766 (`lab_app/`, design: `design/briefs/lab-control-app.md`) |
+| Lab control app (local) | `make lab-app` → http://127.0.0.1:8766; `make lab-app-install` keeps it running at login (`lab_app/`, design: `design/briefs/lab-control-app.md`). Queue, start/stop lab jobs, downloads and remove-to-Trash, with the safety rules in `lab_app/actions.py` |
 | Model catalog, bench suite | `models/catalog.json`, `benches/suite.json` |
 | Published intelligence benchmarks (others' numbers) | `models/external-benchmarks.json` |
 | Experiment registry (source of truth) | `experiments/glm-experiments.json` |

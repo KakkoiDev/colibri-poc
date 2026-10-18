@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "note": "Every model the lab can run, installed or not. `path` is relative to ~ . The lab app marks a model installed when its path exists (and `ready_marker`, if set). `bench_names` lists glm_bench.py result folders for this model; `speed_runs` lists runs.csv ids that make up its speed reference.",
+ "note": "Every model the lab can run, installed or not. `path` is relative to ~ . The lab app marks a model installed when its path exists (and `ready_marker`, if set). `bench_names` lists glm_bench.py result folders for this model; `speed_runs` lists runs.csv ids that make up its speed reference. `remove_paths` are the folders the lab app moves to the Trash when a model is removed (never for the owner's model).",
  "models": [
   {
    "id": "glm-5.3-int4",
@@ -21,7 +21,8 @@
     "r2-k-sky-skip050-t12"
    ],
    "source": "huggingface.co/Justvugg/GLM-5.3-colibri-int4-g64",
-   "external_model": "GLM-5.3 (Max)"
+   "external_model": "GLM-5.3 (Max)",
+   "remove_paths": []
   },
   {
    "id": "glm-5.3-mtp",
@@ -43,7 +44,11 @@
     "mtp-int8",
     "mtp-int8-skip050"
    ],
-   "external_model": "GLM-5.3 (Max)"
+   "external_model": "GLM-5.3 (Max)",
+   "remove_paths": [
+    "colibri-models/glm-5.3-mtp",
+    "colibri-models/glm-5.3-mtp-head"
+   ]
   },
   {
    "id": "glm-5.3-iq3xxs",
@@ -65,7 +70,11 @@
     "gguf-iq3xxs",
     "gguf-iq3xxs-skip050"
    ],
-   "external_model": "GLM-5.3 (Max)"
+   "external_model": "GLM-5.3 (Max)",
+   "remove_paths": [
+    "colibri-models/glm-5.3-iq3xxs",
+    "colibri-models/gguf/glm-5.3-iq3xxs"
+   ]
   },
   {
    "id": "glm-5.3-iq2m",
@@ -87,7 +96,11 @@
     "gguf-iq2m",
     "gguf-iq2m-skip050"
    ],
-   "external_model": "GLM-5.3 (Max)"
+   "external_model": "GLM-5.3 (Max)",
+   "remove_paths": [
+    "colibri-models/glm-5.3-iq2m",
+    "colibri-models/gguf/glm-5.3-iq2m"
+   ]
   },
   {
    "id": "glm-5.3-flash-iq3xxs",
@@ -108,7 +121,11 @@
    "unlocks": [
     "manual Flash runs"
    ],
-   "external_model": "GLM-5.3-Flash"
+   "external_model": "GLM-5.3-Flash",
+   "remove_paths": [
+    "colibri-models/glm-5.3-flash-iq3xxs",
+    "colibri-models/gguf/glm-5.3-flash-iq3xxs"
+   ]
   }
  ]
 }

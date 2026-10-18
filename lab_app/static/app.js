@@ -9,10 +9,12 @@
     now: 'M3 12h4l3-8 4 16 3-8h4', models: 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8',
     leaderboard: 'M4 20V10M10 20V4M16 20v-7M2 20h20', experiments: 'M9 3h6M10 3v6L4 19a1 1 0 0 0 1 1.5h14A1 1 0 0 0 20 19l-6-10V3',
     benches: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z', runs: 'M4 17l6-5-6-5M12 19h8',
-    research: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5'
+    research: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5',
+    queue: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', install: 'M12 3v12M7 10l5 5 5-5M4 21h16',
+    settings: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M14 4v4M8 10v4M16 16v4'
   };
-  var SCREENS = [['now', 'Now'], ['models', 'Models'], ['leaderboard', 'Leaderboard'], ['experiments', 'Experiments'],
-                 ['benches', 'Benches'], ['runs', 'Runs'], ['research', 'Research']];
+  var SCREENS = [['now', 'Now'], ['queue', 'Queue'], ['models', 'Models'], ['leaderboard', 'Leaderboard'], ['experiments', 'Experiments'],
+                 ['benches', 'Benches'], ['install', 'Install'], ['runs', 'Runs'], ['research', 'Research'], ['settings', 'Settings']];
   var CFG = { exact: 'exact', d030: 'skip 0.3', d050: 'skip 0.5', d030t12: 'skip 0.3 · 12 thr', d040t12: 'skip 0.4 · 12 thr' };
   var timer = null;
 
@@ -59,6 +61,50 @@
     return fetch(path, { cache: 'no-store' }).then(function (r) {
       return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; });
     });
+  }
+  function post(path, body) {
+    return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Lab-Action': '1' }, body: JSON.stringify(body || {}) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); });
+  }
+  function toast(msg, bad) {
+    var t = h('div', { role: 'status', class: bad ? 'err' : 'banner', style: 'position:fixed;right:16px;bottom:16px;max-width:420px;z-index:20;background:var(--surface)', text: msg });
+    document.body.appendChild(t); setTimeout(function () { t.remove(); }, 6000);
+  }
+  // Confirmation dialog: names exactly what will happen. Resolves true on confirm.
+  function confirmDialog(o) {
+    return new Promise(function (resolve) {
+      var prev = document.activeElement;
+      var scrim = h('div', { class: 'scrim', style: 'position:fixed' });
+      function close(v) { scrim.remove(); document.removeEventListener('keydown', esc); if (prev) prev.focus(); resolve(v); }
+      function esc(e) { if (e.key === 'Escape') close(false); }
+      var ok = h('button', { type: 'button', class: 'btn ' + (o.danger ? 'btn-danger-solid' : 'btn-primary'), onclick: function () { close(true); }, text: o.confirm });
+      var dlg = h('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'dlg-t' },
+        h('div', { class: 'dialog-head' }, o.eyebrow ? h('span', { class: 'eyebrow', text: o.eyebrow }) : null, h('h2', { id: 'dlg-t', style: 'font-size:18px;line-height:24px', text: o.title }),
+          o.sub ? h('p', { class: 'muted', style: 'font-size:13px', text: o.sub }) : null),
+        h('div', { class: 'dialog-body' }, h('dl', { class: 'kv' }, (o.rows || []).map(function (r) { return [h('dt', { text: r[0] }), h('dd', { class: r[2] ? 'mono' : null, style: 'overflow-wrap:anywhere', text: r[1] })]; })),
+          o.note ? h('div', { class: o.warn ? 'err' : 'well', style: 'padding:10px 12px;font-size:13px', text: o.note }) : null),
+        h('div', { class: 'dialog-foot' }, h('button', { type: 'button', class: 'btn', onclick: function () { close(false); }, text: 'Cancel' }), ok));
+      scrim.addEventListener('click', function (e) { if (e.target === scrim) close(false); });
+      scrim.appendChild(dlg); document.body.appendChild(scrim); document.addEventListener('keydown', esc); ok.focus();
+    });
+  }
+  function stopJob(j) {
+    return confirmDialog({ eyebrow: 'Confirmation · stop', title: 'Stop PID ' + j.pid + '?', danger: true, confirm: 'Stop PID ' + j.pid,
+      sub: 'Only this job and the processes it started are stopped. Nothing else is touched.',
+      rows: [['Job', j.kind + ' · ' + j.title], ['Process', j.command, true], ['Running for', dur(j.elapsed_s)],
+             ['Holds', j.holds_lock ? '.bench.lock' : 'no lock'], ['Engine child', j.engine_pid ? 'PID ' + j.engine_pid : 'none']],
+      note: j.kind === 'Quality bench' ? 'Finished answers stay saved; re-queue the same bench to resume where it stopped.' :
+            j.kind === 'Download' ? 'The download is resumable: start it again from Install to continue.' : 'The current run is lost; finished results stay saved.' })
+      .then(function (ok) {
+        if (!ok) return;
+        return post('/api/stop', { pid: j.pid }).then(function (r) { toast('Stopped PID ' + r.stopped.join(', ')); route(); }, function (e) { toast(e.message, true); });
+      });
+  }
+  function runOrQueue(kind, args, label, queueOnly) {
+    return post(queueOnly ? '/api/queue/add' : '/api/run', { kind: kind, args: args }).then(function (r) {
+      toast(r.started ? 'Started: ' + r.started.title + ' (PID ' + r.started.pid + ')' : (r.note ? r.note + ': ' : 'Queued: ') + (r.queued ? r.queued.title : label));
+      route();
+    }, function (e) { toast(e.message, true); });
   }
   function table(headers, rows) {
     var t = h('table', { class: 't' });
@@ -121,7 +167,8 @@
       h('div', { class: 'well', style: 'padding:8px 10px;display:flex;flex-direction:column;gap:2px' },
         h('span', { class: 'num', style: 'font-size:13px;font-weight:600', text: 'PID ' + j.pid + (j.engine_pid ? ' · engine PID ' + j.engine_pid : '') + ' · running ' + dur(j.elapsed_s) }),
         h('span', { class: 'mono muted', style: 'overflow-wrap:anywhere', text: j.command })),
-      h('p', { class: 'hint', text: 'Read-only: stop or pause from a terminal by PID (kill ' + j.pid + '). Benches resume where they stopped.' })
+      j.stoppable ? h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn btn-danger', onclick: function () { stopJob(j); }, text: 'Stop PID ' + j.pid + '…' }))
+        : h('p', { class: 'hint', text: 'Not started by the lab (e.g. your own Colibri session): the app never stops it. Stop it yourself if needed.' })
     ]);
   }
 
@@ -155,9 +202,15 @@
         d.planned.length ? d.planned.map(function (p) {
           return h('div', { class: 'row between', style: 'border-top:1px solid var(--line);padding-top:6px' },
             h('div', { class: 'stack', style: 'gap:0;min-width:0;flex:1' }, h('span', { text: p.title }), p.why ? h('span', { class: 'hint', text: p.why }) : null),
-            chip(p.ready ? 'st-done' : 'st-blocked', p.ready ? 'Ready' : 'Blocked'));
+            h('div', { class: 'row' }, chip(p.ready ? 'st-done' : 'st-blocked', p.ready ? 'Ready' : 'Blocked'),
+              p.ready ? h('button', { type: 'button', class: 'btn btn-sm', onclick: function () { runOrQueue('planned', { id: p.id }, p.title, true); }, text: 'Queue' }) : null));
         }) : h('p', { class: 'muted', text: 'No planned experiments.' }),
-        h('p', { class: 'hint', text: 'Run ready ones with: .venv/bin/python glm_lab.py run-planned <id> (one GPU job at a time).' })]);
+        h('p', { class: 'hint', text: 'Queued jobs start one at a time when the GPU is free.' })]);
+      var qd = d.queue || { items: [], count: 0 };
+      var queueCard = card([h('div', { class: 'row between' }, h('h2', { class: 'eyebrow', text: 'Up next' }), h('a', { href: '#queue', text: 'Queue · ' + qd.count + ' waiting' + (qd.paused ? ' · paused' : '') })),
+        qd.items.length ? h('ol', { style: 'margin:0;padding-left:18px' }, qd.items.map(function (i) { return h('li', { text: i.title + (i.only_when_quiet ? ' · when quiet' : '') }); }))
+          : h('p', { class: 'muted', text: 'The queue is empty. Add planned experiments or benches.' }),
+        h('span', { class: 'hint', text: 'Queue runner: ' + (qd.runner || '—') })]);
       var recent = card([h('div', { class: 'row between' }, h('h2', { class: 'eyebrow', text: 'Recent results' }), h('a', { href: '#experiments', text: 'All experiments' })),
         d.recent.map(function (r) {
           return h('div', { class: 'row between', style: 'border-top:1px solid var(--line);padding-top:6px;flex-wrap:nowrap' },
@@ -166,7 +219,7 @@
         })]);
       put(main, header('Now', 'What the Mac is doing, what we learned, what is planned · ' + d.time + ' · updates every 5 s'),
         h('div', { class: 'grid2' }, h('section', { class: 'stack', 'aria-label': 'Now running' }, h('h2', { class: 'eyebrow', text: 'Now running · one GPU job at a time' }), jobs), health),
-        h('div', { class: 'grid2' }, score, planned), recent);
+        h('div', { class: 'grid2' }, score, queueCard), h('div', { class: 'grid2' }, planned, recent));
     });
   }
 
@@ -179,8 +232,12 @@
     return api('/api/benches').then(function (d) {
       var suite = d.suite.benches;
       var cov = table([{ t: 'Model' }].concat(suite.map(function (b) { return { t: b.name }; })), d.models.map(function (m) {
+        var quietMissing = m.owner_model && (m.coverage.quiet.status === 'missing' || m.coverage.ram.status === 'missing');
         return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: m.name }),
-          h('span', { class: 'hint', text: m.installed ? 'installed · ' + m.covered + ' of ' + suite.length + ' benches' : (m.download ? 'downloading ' + pct(m.download.done, m.download.total) + '%' : 'not installed') }))),
+          h('span', { class: 'hint', text: m.installed ? 'installed · ' + m.covered + ' of ' + suite.length + ' benches' : (m.download ? 'downloading ' + pct(m.download.done, m.download.total) + '%' : 'not installed') }),
+          quietMissing ? h('button', { type: 'button', class: 'btn btn-sm', style: 'align-self:flex-start', text: 'Queue quiet run + RAM sweep',
+            onclick: function () { post('/api/queue/add', { kind: 'quiet', args: { flags: ['ram-sweep', 'skip-original'] }, only_when_quiet: true }).then(function () { toast('Queued: quiet run (starts when ≥ 20 GB free)'); route(); }, function (e) { toast(e.message, true); }); } }) : null,
+          !m.installed && !m.download ? h('a', { class: 'btn btn-sm', style: 'align-self:flex-start', href: '#install', text: 'Install first' }) : null)),
           suite.map(function (b) { return td(covCell(m.coverage[b.id])); }));
       }));
       var suiteTbl = table(['Bench', 'What it measures', 'Duration (int4, busy)', 'Runs with'], suite.map(function (b) {
@@ -297,7 +354,10 @@
             h('dl', { class: 'kv', style: 'font-size:13px' }, [['Change', e.change], ['Why', e.hypothesis], ['Result', e.conclusion || (e.effects || []).join('; ')], ['Tradeoffs', e.tradeoffs], ['Reference', e.ref], ['Runs', (e.runs || []).join(', ')]]
               .filter(function (x) { return x[1]; }).map(function (x) { return [h('dt', { text: x[0] }), h('dd', { text: x[1] })]; })),
             (e.sources || []).map(function (s) { return h('p', { class: 'hint' }, h('a', { href: s, target: '_blank', rel: 'noopener', text: s })); }));
-          return h('tr', { class: e.lossy ? 'lossy' : null }, td(h('div', { class: 'stack', style: 'gap:2px;min-width:220px' }, h('strong', { text: e.title }), h('span', { class: 'hint mono', text: e.id }), tags)),
+          var acts = (e.verdict === 'not run' && e.plan) ? h('div', { class: 'row' },
+            h('button', { type: 'button', class: 'btn btn-sm', onclick: function () { runOrQueue('planned', { id: e.id }, e.title, false); }, text: 'Run now' }),
+            h('button', { type: 'button', class: 'btn btn-sm', onclick: function () { runOrQueue('planned', { id: e.id }, e.title, true); }, text: 'Queue' })) : null;
+          return h('tr', { class: e.lossy ? 'lossy' : null }, td(h('div', { class: 'stack', style: 'gap:2px;min-width:220px' }, h('strong', { text: e.title }), h('span', { class: 'hint mono', text: e.id }), tags, acts)),
             td(e.category), td(verdict(e.verdict)), td(m.measured ? f2(m.ref_tok_s) + ' → ' + f2(m.tok_s) : '—', 'n'),
             td(m.speed_change_pct == null ? '—' : (m.speed_change_pct > 0 ? '+' : '') + Math.round(m.speed_change_pct) + '%', 'n'), td(m.measured ? m.output : '—'), td(det, 'wrap'));
         })));
@@ -414,8 +474,133 @@
     });
   }
 
+
+  function screenQueue(main) {
+    return Promise.all([api('/api/queue'), api('/api/now'), api('/api/experiments')]).then(function (res) {
+      var q = res[0], now = res[1], exps = res[2].entries;
+      setGpu(now);
+      var running = now.jobs.filter(function (j) { return j.gpu; });
+      var items = q.items.map(function (it, i) {
+        return h('tr', {}, td(String(i + 1), 'n'), td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: it.title }),
+          h('span', { class: 'hint', text: it.kind + ' · added ' + it.added + (it.only_when_quiet ? ' · only when quiet (≥ 20 GB free)' : '') }))),
+          td(h('div', { class: 'row' },
+            h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Move up', disabled: i === 0 ? '' : null, onclick: function () { post('/api/queue/move', { qid: it.qid, dir: 'up' }).then(route); }, text: '↑' }),
+            h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Move down', disabled: i === q.items.length - 1 ? '' : null, onclick: function () { post('/api/queue/move', { qid: it.qid, dir: 'down' }).then(route); }, text: '↓' }),
+            h('button', { type: 'button', class: 'btn btn-sm btn-danger', onclick: function () { post('/api/queue/remove', { qid: it.qid }).then(function () { toast('Removed: ' + it.title); route(); }); }, text: 'Remove' }))));
+      });
+      // add forms
+      var benchName = h('input', { class: 'input', id: 'bn', value: 'v2', style: 'width:120px', 'aria-label': 'Bench name' });
+      var cfgs = ['exact', 'd030', 'd050', 'd030t12', 'd040t12'], styles = ['normal', 'terse'];
+      var cbox = function (v, checked, label) { return h('label', { class: 'row', style: 'gap:4px;font-size:13px' }, h('input', { type: 'checkbox', value: v, checked: checked ? '' : null }), label || CFG[v] || v); };
+      var cfgBox = h('div', { class: 'row' }, cfgs.map(function (c) { return cbox(c, c === 'd030t12'); }));
+      var styBox = h('div', { class: 'row' }, styles.map(function (s) { return cbox(s, s === 'terse'); }));
+      var vals = function (box) { return Array.prototype.filter.call(box.querySelectorAll('input'), function (i) { return i.checked; }).map(function (i) { return i.value; }); };
+      var benchForm = card([h('h3', { style: 'font-size:15px', text: 'Add a quality bench' }),
+        h('div', { class: 'field' }, h('label', { for: 'bn', text: 'Results name (results/glm-bench-NAME; reuse a name to resume or add configs)' }), benchName),
+        h('div', { class: 'field' }, h('span', { class: 'hint', text: 'Configs' }), cfgBox), h('div', { class: 'field' }, h('span', { class: 'hint', text: 'Prompt styles' }), styBox),
+        h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn btn-primary', text: 'Add to queue', onclick: function () {
+          post('/api/queue/add', { kind: 'bench', args: { name: benchName.value.trim(), configs: vals(cfgBox), styles: vals(styBox) } })
+            .then(function (r) { toast('Queued: ' + r.queued.title); route(); }, function (e) { toast(e.message, true); });
+        } }))]);
+      var qFlags = h('div', { class: 'row' }, [['ram-sweep', true, 'RAM sweep'], ['skip-original', true, 'skip original engine'], ['experiments-only', false, 'planned experiments only']]
+        .map(function (f) { return cbox(f[0], f[1], f[2]); }));
+      var quietForm = card([h('h3', { style: 'font-size:15px', text: 'Add a quiet run' }), qFlags,
+        h('p', { class: 'hint', text: 'Waits until at least 20 GB is free; close apps to let it start.' }),
+        h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn btn-primary', text: 'Add to queue (when quiet)', onclick: function () {
+          post('/api/queue/add', { kind: 'quiet', args: { flags: vals(qFlags) }, only_when_quiet: true }).then(function (r) { toast('Queued: ' + r.queued.title); route(); }, function (e) { toast(e.message, true); });
+        } }))]);
+      var ready = exps.filter(function (e) { return e.verdict === 'not run' && e.plan; });
+      var expSel = h('select', { class: 'input', 'aria-label': 'Planned experiment' }, ready.map(function (e) { return h('option', { value: e.id, text: e.title }); }));
+      var expForm = card([h('h3', { style: 'font-size:15px', text: 'Add a planned experiment' }), expSel,
+        h('p', { class: 'hint', text: 'Blocked experiments (missing model or engine) are skipped with the reason in their log.' }),
+        h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn btn-primary', text: 'Add to queue', onclick: function () { runOrQueue('planned', { id: expSel.value }, expSel.value, true); } }))]);
+      var jobsTbl = table(['Job', 'Started', 'Status', 'Log'], q.jobs.map(function (j) {
+        var det = h('details', { class: 'x' }, h('summary', { text: 'Show log' }));
+        det.addEventListener('toggle', function () {
+          if (det.open && !det.dataset.loaded) { det.dataset.loaded = 1; api('/api/job-log?id=' + encodeURIComponent(j.id)).then(function (l) { det.appendChild(h('pre', { class: 'log', text: l.tail.join('\n') })); }); }
+        });
+        var cls = { running: 'st-running', done: 'st-done', finished: 'st-done', failed: 'st-failed' }[j.status] || 'st-waiting';
+        return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('span', { text: j.title }), h('span', { class: 'hint mono', text: 'PID ' + j.pid + ' · ' + j.source }))),
+          td(j.started), td(chip(cls, j.status + (j.exit != null && j.status !== 'done' ? ' (' + j.exit + ')' : ''))), td(det, 'wrap'));
+      }));
+      put(main, header('Queue', 'GPU jobs run one after another. The runner starts the first item when the GPU lock is free and no engine is running.',
+          h('button', { type: 'button', class: 'btn', text: q.paused ? 'Resume queue' : 'Pause queue', onclick: function () { post('/api/queue/pause', { paused: !q.paused }).then(route); } })),
+        h('div', { class: 'banner', text: 'Runner: ' + (q.runner || '—') + (q.paused ? ' · queue paused' : '') + ' · Running now: ' + (running.length ? running.map(function (j) { return j.title + ' (PID ' + j.pid + ')'; }).join(', ') : 'nothing') }),
+        section('Waiting · ' + q.items.length, null, q.items.length ? table([{ t: '#', n: 1 }, 'Job', 'Order'], items) : h('p', { class: 'muted', text: 'Nothing waiting.' })),
+        h('div', { class: 'grid3' }, benchForm, quietForm, expForm),
+        section('Recent jobs started by the app', null, q.jobs.length ? jobsTbl : h('p', { class: 'muted', text: 'None yet.' })));
+    });
+  }
+
+  function screenInstall(main) {
+    return Promise.all([api('/api/models'), api('/api/now'), api('/api/storage')]).then(function (res) {
+      var ms = res[0].models, now = res[1], store = res[2], free = now.machine.disk_free_gb;
+      function remove(m) {
+        confirmDialog({ eyebrow: 'Confirmation · remove', title: 'Move ' + m.name + ' to the Trash?', danger: true, confirm: 'Move ' + f2(m.gb, 1) + ' GB to the Trash',
+          sub: 'Its folders move to the macOS Trash. Nothing is deleted: you can restore them until you empty the Trash, which frees the space.',
+          rows: m.folders.map(function (f) { return ['Folder', f.path + ' · ' + f2(f.gb, 1) + ' GB', true]; }).concat([['Results and logs', 'kept (they are in the lab repo, not here)']]),
+          note: 'Experiments that need this model become blocked until it is installed again.' })
+          .then(function (ok) {
+            if (ok) post('/api/remove', { model: m.id }).then(function (r) { toast('Moved to the Trash: ' + r.moved.map(function (x) { return x.src; }).join(', ')); route(); }, function (e) { toast(e.message, true); });
+          });
+      }
+      var storeRows = store.models.map(function (m) {
+        var state = m.owner_model ? h('span', { class: 'hint', text: 'your model · never removed by the app' })
+          : m.in_use ? h('span', { class: 'hint', text: 'in use (downloading or running): stop it first' })
+          : m.removable ? h('button', { type: 'button', class: 'btn btn-sm btn-danger', onclick: function () { remove(m); }, text: 'Remove…' }) : h('span', { class: 'hint', text: '—' });
+        return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: m.name }),
+          m.folders.map(function (f) { return h('span', { class: 'hint mono', text: f.path + ' · ' + f2(f.gb, 1) + ' GB' + (f.in_use ? ' · in use' : '') }); }))),
+          td(chip(m.installed ? 'st-done' : 'st-running', m.installed ? 'Installed' : 'Partial / downloading')), td(f2(m.gb, 1) + ' GB', 'n'), td(state));
+      });
+      var downloaded = section('Downloaded models · ' + store.models.length, h('span', { class: 'hint', text: 'Sizes are measured on disk now' }), h('div', { class: 'stack' },
+        table(['Model and folders', 'Status', { t: 'On disk', n: 1 }, 'Remove'], storeRows),
+        store.other.length ? h('p', { class: 'hint', text: 'Other folders in ~/colibri-models, not in the lab catalog (not managed here): ' + store.other.map(function (o) { return o.path + ' (' + f2(o.gb, 1) + ' GB)'; }).join(', ') + '.' }) : null));
+      setGpu(now);
+      var dlRunning = now.jobs.filter(function (j) { return j.kind === 'Download'; });
+      var gpuBusy = now.jobs.some(function (j) { return j.gpu; });
+      function download(m) {
+        var after = free - (m.download_gb || 0);
+        confirmDialog({ eyebrow: 'Confirmation · download', title: m.name, confirm: 'Download ~' + m.download_gb + ' GB',
+          rows: [['Source', m.source, true], ['Download size', '~' + m.download_gb + ' GB'], ['Kept on disk', '~' + m.size_gb + ' GB'],
+                 ['Free disk after', '~' + after + ' GB'], ['Saved to', '~/' + (m.download_path || m.path), true], ['Runs', m.prep, true], ['Unlocks', (m.unlocks || []).join(', ')]],
+          warn: after < 30 || gpuBusy,
+          note: after < 30 ? 'This would leave less than 30 GB free.' : gpuBusy ? 'A GPU job is running: the download will skew its timings (quality results are unaffected).' : 'Resumable: if it stops, start it again here.' })
+          .then(function (ok) { if (ok) post('/api/download', { model: m.id }).then(function (r) { toast('Started: ' + r.started.title + ' (PID ' + r.started.pid + ')'); route(); }, function (e) { toast(e.message, true); }); });
+      }
+      var rows = ms.map(function (m) {
+        var st = m.installed ? chip('st-done', 'Installed') : m.download ? chip('st-running', pct(m.download.done, m.download.total) + '% downloaded') : chip('st-missing', 'Not installed');
+        var act = m.installed ? h('span', { class: 'hint', text: m.owner_model ? 'your model (never changed)' : 'ready' })
+          : !m.prep ? h('span', { class: 'hint', text: 'no prep step' })
+          : dlRunning.length ? h('span', { class: 'hint', text: 'wait for the running download' })
+          : h('button', { type: 'button', class: 'btn btn-primary btn-sm', onclick: function () { download(m); }, text: (m.download ? 'Resume download (~' : 'Download (~') + m.download_gb + ' GB)…' });
+        return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: m.name }), h('span', { class: 'hint', text: m.format }))), td(st),
+          td(m.download_gb ? '~' + m.download_gb + ' GB' : '—', 'n'), td(m.size_gb + ' GB', 'n'), td((m.unlocks || []).join(', ') || '—', 'wrap'), td(act));
+      });
+      var sel = ms.filter(function (m) { return !m.installed && m.download_gb; }).reduce(function (a, m) { return a + m.download_gb - (m.download ? m.download.done : 0); }, 0);
+      put(main, header('Install', 'Models and engines the lab can add. Every download needs a confirmation showing source, size and disk left.'),
+        card([h('div', { class: 'row between' }, h('span', { class: 'num' }, h('strong', { text: free + ' GB' }), ' free · ', h('strong', { text: Math.round(free - sel) + ' GB' }), ' if every remaining download finished'), h('span', { class: 'hint', text: 'Warn below 30 GB' })),
+          h('div', { class: 'bar', style: 'height:14px', 'aria-hidden': 'true' }, h('span', { style: 'width:' + Math.max(0, 100 - pct(free, 2000)) + '%;background:var(--fg-2)' }), h('span', { class: 'hatch', style: 'width:' + pct(sel, 2000) + '%' })),
+          dlRunning.length ? h('p', { class: 'hint', text: 'Downloading now: ' + dlRunning.map(function (j) { return j.title + ' (PID ' + j.pid + ')'; }).join(', ') + '. Stop it from Now.' }) : null]),
+        downloaded,
+        section('Catalog · available to install', null, table(['Model', 'Status', { t: 'Download', n: 1 }, { t: 'Kept', n: 1 }, 'Unlocks', 'Action'], rows)));
+    });
+  }
+
+  function screenSettings(main) {
+    return api('/api/settings').then(function (d) {
+      put(main, header('Settings and rules', 'Read-only. Paths and rules the app follows.'),
+        card([h('dl', { class: 'kv' }, [['Lab repo', d.repo], ['Owner engine', d.engine + ' (never changed by the app)'], ['Models', d.models], ['App state', d.state_dir + ' (queue, jobs, logs; git-ignored)'],
+          ['Address', 'http://127.0.0.1:' + d.port + ' (this Mac only)'], ['Quiet threshold', d.quiet_threshold_gb + ' GB free']].map(function (r) { return [h('dt', { text: r[0] }), h('dd', { class: 'mono', text: r[1] })]; }))]),
+        section('Keep the app running', null, card([
+          h('p', { text: d.service_installed ? 'Installed as a login service: it starts when you log in and restarts if it stops.' : 'Not installed as a service: the app runs only while `make lab-app` runs.' }),
+          h('pre', { class: 'log', text: d.service_installed ? 'make lab-app-uninstall   # remove the login service' : 'make lab-app-install     # start at login, restart if it stops\nmake lab-app-uninstall   # remove it again' })])),
+        section('Rules', null, card([h('ul', { style: 'margin:0;padding-left:18px' }, d.rules.map(function (r) { return h('li', { text: r }); }))])));
+    });
+  }
+
   // ---------- router ----------
-  var ROUTES = { now: screenNow, benches: screenBenches, runs: screenRuns, experiments: screenExperiments, models: screenModels, leaderboard: screenLeaderboard, research: screenResearch };
+  var ROUTES = { now: screenNow, queue: screenQueue, install: screenInstall, settings: screenSettings, benches: screenBenches, runs: screenRuns,
+                 experiments: screenExperiments, models: screenModels, leaderboard: screenLeaderboard, research: screenResearch };
   function route() {
     clearInterval(timer);
     var hash = (location.hash || '#now').slice(1), parts = hash.split('/'), name = parts[0];
@@ -430,7 +615,7 @@
       }).catch(function (e) { main.textContent = ''; put(main, errorBox(e)); });
     }
     load(false);
-    if (fn === screenNow) timer = setInterval(function () { load(true); }, 5000);
+    if (fn === screenNow || fn === screenQueue) timer = setInterval(function () { if (!document.querySelector('.scrim') && !document.querySelector('details.x[open]') && !(document.activeElement && /INPUT|SELECT/.test(document.activeElement.tagName))) load(true); }, fn === screenNow ? 5000 : 10000);
     else api('/api/now').then(setGpu).catch(function () {});
   }
   window.addEventListener('hashchange', route);

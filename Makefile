@@ -72,3 +72,10 @@ glm-prep-flash:
 .PHONY: lab-app
 lab-app:
 	$(PYTHON) lab_app/server.py
+
+.PHONY: lab-app-install lab-app-uninstall
+lab-app-install:
+	sh scripts/lab_app_service.sh install
+
+lab-app-uninstall:
+	sh scripts/lab_app_service.sh uninstall

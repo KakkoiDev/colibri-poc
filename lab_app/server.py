@@ -1,11 +1,12 @@
-"""GLM lab control app: a read-only local web app over the lab's files and processes.
+"""GLM lab control app: a local web app over the lab's files, processes and jobs.
 
     .venv/bin/python lab_app/server.py            # http://127.0.0.1:8766
     .venv/bin/python lab_app/server.py --port N
 
-Version 1 is read-only: it shows what is running, models, benches and coverage, runs,
-experiments and research, but it never starts, stops or downloads anything. It binds to
-127.0.0.1 only. Data comes from the same files the lab tools write, so nothing is retyped.
+It shows what is running, models, benches and coverage, runs, experiments and research, and
+(v2) can queue and start the lab's own jobs, stop lab jobs by PID and start catalog downloads,
+with the safety rules in actions.py. It binds to 127.0.0.1 only; actions need the app's own
+X-Lab-Action header and origin, so other web pages cannot trigger them. Data comes from the same files the lab tools write, so nothing is retyped.
 """
 import argparse, csv, glob, json, os, re, subprocess, sys, time
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
@@ -16,6 +17,10 @@ ROOT = Path(__file__).resolve().parent.parent
 STATIC = Path(__file__).resolve().parent / 'static'
 HOME = Path.home()
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import actions  # noqa: E402
+RUNNER = {'last': 'not started'}
+PORT = 8766
 
 RUNS_CSV = ROOT / 'published-results' / 'glm-20261018' / 'runs.csv'
 OUTPUTS = ROOT / 'published-results' / 'glm-20261018'
@@ -237,7 +242,7 @@ def jobs():
             eng = engine_under(p['pid'])
             if eng:
                 claimed.add(eng['pid'])
-            job.update(pid=p['pid'], command=short(cmd), elapsed_s=p['elapsed_s'],
+            job.update(pid=p['pid'], command=short(cmd), elapsed_s=p['elapsed_s'], stoppable=True,
                        holds_lock=p['pid'] in holders, engine_pid=eng['pid'] if eng else None)
             out.append(job)
     for p in procs:   # engines no lab job started: e.g. the owner's own chat
@@ -245,7 +250,7 @@ def jobs():
             parent = by_pid.get(p['ppid'], {})
             out.append(dict(kind='Colibri engine', title='Engine not started by a lab job', gpu=True,
                             detail='parent: ' + short(parent.get('command', ''), 120), pid=p['pid'], command=short(p['command']),
-                            elapsed_s=p['elapsed_s'], holds_lock=p['pid'] in holders, engine_pid=None, foreign=True))
+                            elapsed_s=p['elapsed_s'], holds_lock=p['pid'] in holders, engine_pid=None, foreign=True, stoppable=False))
     return out, sorted(holders)
 
 
@@ -263,7 +268,9 @@ def now():
                 planned_ready.append(dict(id=e['id'], title=e['title'], ready=why is None, why=why or ''))
     except Exception as ex:  # readiness is informative only
         planned_ready.append(dict(id='?', title=f'could not read planned experiments: {ex}', ready=False, why=''))
+    q = actions.queue_state()
     return dict(time=time.strftime('%Y-%m-%d %H:%M:%S'), jobs=js, lock_holders=holders, machine=machine(),
+                queue=dict(paused=q['paused'], items=q['items'][:5], count=len(q['items']), runner=RUNNER.get('last')),
                 scoreboard=exps.get('scoreboard', {}), recent=[dict(id=e['id'], title=e['title'], verdict=e['verdict'],
                 lossy=e.get('lossy', False), tok_s=e['metrics'].get('tok_s'), ref_tok_s=e['metrics'].get('ref_tok_s'),
                 change=e['metrics'].get('speed_change_pct'), date=e.get('date')) for e in recent],
@@ -397,6 +404,121 @@ def research():
     return dict(items=items, scans=scans, next_scan=nxt.group(1) if nxt else None)
 
 
+def busy_model_paths():
+    """Model folders named on the command line of any running process (engines, downloads)."""
+    paths = set()
+    md = str(HOME / 'colibri-models')
+    for p in processes():
+        if os.path.basename(exe(p['command'])).lstrip('-') in ('zsh', 'bash', 'login', 'sudo'):
+            continue   # interactive shells and tool wrappers only mention paths
+        cmd = p['command'].replace('~/', str(HOME) + '/')
+        for m in re.finditer(re.escape(md) + r'/[^\s\'"]+', cmd):
+            parts = m.group(0)[len(md) + 1:].split('/')
+            paths.add(md + '/' + parts[0])
+            if parts[0] == 'gguf' and len(parts) > 1:
+                paths.add(md + '/gguf/' + parts[1])
+        if 'prep_gguf.sh' in cmd and os.path.basename(exe(cmd)) == 'sh':
+            name = cmd.split()[-1]
+            paths.update({md + '/' + name, md + '/gguf/' + name})
+        if 'prep_mtp_head.sh' in cmd and os.path.basename(exe(cmd)) == 'sh':
+            paths.update({md + '/glm-5.3-mtp', md + '/glm-5.3-mtp-head'})
+    return sorted(paths)
+
+
+def storage():
+    busy = busy_model_paths()
+    known, out = set(), []
+    for m in catalog():
+        rels = list(dict.fromkeys([m['path']] + ([m['download_path']] if m.get('download_path') else []) + m.get('remove_paths', [])))
+        folders = []
+        for rel in rels:
+            p = HOME / rel
+            known.add(str(p))
+            if p.exists() or p.is_symlink():
+                folders.append(dict(path='~/' + rel, gb=round(dir_gb(p), 1),
+                                    in_use=any(b == str(p) or b.startswith(str(p) + '/') for b in busy)))
+        if not folders:
+            continue
+        out.append(dict(id=m['id'], name=m['name'], installed=installed(m), owner_model=bool(m.get('owner_model')),
+                        folders=folders, gb=round(sum(f['gb'] for f in folders), 1), in_use=any(f['in_use'] for f in folders),
+                        removable=not m.get('owner_model') and bool(m.get('remove_paths'))))
+    other = []
+    md = HOME / 'colibri-models'
+    for p in sorted(list(md.iterdir()) + (list((md / 'gguf').iterdir()) if (md / 'gguf').exists() else [])):
+        if p.is_dir() and str(p) not in known and p.name != 'gguf':
+            other.append(dict(path=str(p).replace(str(HOME), '~'), gb=round(dir_gb(p), 1)))
+    st = os.statvfs(str(HOME))
+    return dict(models=out, other=other, disk_free_gb=round(st.f_bavail * st.f_frsize / 1e9))
+
+
+def gpu_status():
+    js, holders = jobs()
+    busy = bool(holders) or any(j.get('gpu') for j in js)
+    return busy, machine()['quiet']
+
+
+def queue_view():
+    q = actions.queue_state()
+    js = actions.refresh_jobs()['jobs'][:25]
+    return dict(paused=q['paused'], items=q['items'], runner=RUNNER.get('last'), jobs=js)
+
+
+def job_log(jid):
+    js = actions.jobs_state()['jobs']
+    j = next((x for x in js if x['id'] == jid), None)
+    if not j:
+        return None
+    lines = (ROOT / j['log']).read_text(errors='replace').replace('\r', '\n').splitlines()
+    return dict(id=jid, title=j['title'], status=j['status'], tail=[l.replace(str(HOME), '~') for l in lines[-60:]])
+
+
+def settings():
+    plist = HOME / 'Library' / 'LaunchAgents' / 'dev.kakkoi.glm-lab.plist'
+    import glm_quiet
+    return dict(repo=str(ROOT).replace(str(HOME), '~'), engine='~/Code/colibri', models='~/colibri-models',
+                port=PORT, quiet_threshold_gb=glm_quiet.QUIET_FREE_GB, service_installed=plist.exists(),
+                state_dir='results/lab-app', rules=[
+                    'One GPU job at a time: the queue starts the next job only when the GPU lock is free and no engine runs.',
+                    'Stop is by PID, only for jobs the lab runs; your own Colibri sessions are never stopped from here.',
+                    'Downloads start only after a confirmation showing source, size and disk left.',
+                    "The owner's engine (~/Code/colibri) and model folder (~/colibri-models/glm-5.3) are never changed.",
+                    'Lossy results are labelled "changes output"; only the owner marks a setting usable.',
+                    'Runs on a busy machine are recorded as busy; quiet runs need ≥ 20 GB free.'])
+
+
+def act(path, body):
+    if path == '/api/stop':
+        js, _ = jobs()
+        allowed = {j['pid'] for j in js if j.get('stoppable')}
+        return actions.stop(int(body.get('pid', 0)), allowed)
+    if path == '/api/run':
+        busy, _ = gpu_status()
+        if busy:
+            item = actions.queue_add(body.get('kind'), body.get('args'), front=True)
+            return dict(queued=item, note='GPU busy: added to the front of the queue')
+        return dict(started=actions.launch(body.get('kind'), body.get('args')))
+    if path == '/api/queue/add':
+        return dict(queued=actions.queue_add(body.get('kind'), body.get('args'), front=bool(body.get('front')),
+                                             only_when_quiet=bool(body.get('only_when_quiet'))))
+    if path == '/api/queue/remove':
+        actions.queue_remove(body.get('qid')); return dict(ok=True)
+    if path == '/api/queue/move':
+        actions.queue_move(body.get('qid'), body.get('dir')); return dict(ok=True)
+    if path == '/api/queue/pause':
+        actions.queue_pause(body.get('paused')); return dict(ok=True)
+    if path == '/api/remove':
+        m = next((x for x in catalog() if x['id'] == body.get('model')), None)
+        if not m:
+            raise actions.ActionError('unknown model')
+        return actions.remove_model(m, busy_model_paths())
+    if path == '/api/download':
+        js, _ = jobs()
+        if any(j.get('kind') == 'Download' for j in js):
+            raise actions.ActionError('a download is already running; wait for it to finish')
+        return dict(started=actions.launch('prep', {'model': body.get('model')}))
+    return None
+
+
 def run_output(run):
     if not SAFE_ID.match(run or ''):
         return None
@@ -416,6 +538,10 @@ API = {
     '/api/experiments': lambda q: experiments(),
     '/api/research': lambda q: research(),
     '/api/external': lambda q: external(),
+    '/api/queue': lambda q: queue_view(),
+    '/api/job-log': lambda q: job_log(q.get('id', [''])[0]),
+    '/api/settings': lambda q: settings(),
+    '/api/storage': lambda q: storage(),
 }
 TYPES = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
          '.svg': 'image/svg+xml', '.json': 'application/json'}
@@ -432,6 +558,24 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def do_POST(self):
+        u = urlparse(self.path)
+        origin = self.headers.get('Origin')
+        ok_origin = origin in (None, f'http://127.0.0.1:{PORT}', f'http://localhost:{PORT}')
+        if self.headers.get('X-Lab-Action') != '1' or not ok_origin:
+            return self.send(403, b'{"error":"actions are only accepted from the lab app page"}', 'application/json')
+        try:
+            n = int(self.headers.get('Content-Length') or 0)
+            body = json.loads(self.rfile.read(min(n, 65536)) or b'{}')
+            data = act(u.path, body)
+        except actions.ActionError as ex:
+            return self.send(400, json.dumps(dict(error=str(ex))).encode(), 'application/json')
+        except Exception as ex:
+            return self.send(500, json.dumps(dict(error=str(ex))).encode(), 'application/json')
+        if data is None:
+            return self.send(404, b'{"error":"unknown action"}', 'application/json')
+        self.send(200, json.dumps(data, ensure_ascii=False).encode(), 'application/json; charset=utf-8')
+
     def do_GET(self):
         u = urlparse(self.path)
         if u.path in API:
@@ -442,6 +586,8 @@ class Handler(BaseHTTPRequestHandler):
             if data is None:
                 return self.send(400, b'{"error":"bad request"}', 'application/json')
             return self.send(200, json.dumps(data, ensure_ascii=False).encode(), 'application/json; charset=utf-8')
+        if u.path.startswith('/api/'):
+            return self.send(404, b'{"error":"not found"}', 'application/json')
         name = 'index.html' if u.path in ('/', '') else u.path.lstrip('/')
         f = (STATIC / name).resolve()
         if not str(f).startswith(str(STATIC.resolve())) or not f.is_file():
@@ -450,11 +596,16 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
-    ap = argparse.ArgumentParser(description='GLM lab control app (read-only, local)')
+    global PORT, RUNNER
+    ap = argparse.ArgumentParser(description='GLM lab control app (local only)')
     ap.add_argument('--port', type=int, default=8766)
+    ap.add_argument('--no-runner', action='store_true', help='do not start queued jobs automatically')
     a = ap.parse_args()
+    PORT = a.port
     srv = ThreadingHTTPServer(('127.0.0.1', a.port), Handler)
-    print(f'GLM lab app: http://127.0.0.1:{a.port}  (read-only, local only; Ctrl+C to stop)', flush=True)
+    if not a.no_runner:
+        RUNNER = actions.start_runner(gpu_status)
+    print(f'GLM lab app: http://127.0.0.1:{a.port}  (local only; Ctrl+C to stop)', flush=True)
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
