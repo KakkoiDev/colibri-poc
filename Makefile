@@ -37,3 +37,17 @@ bench-streaming: prepare-layout
 bench-matrix:
 	$(MAKE) bench-resident ROUNDS=$(ROUNDS) TOKENS=$(TOKENS)
 	$(MAKE) bench-streaming ROUNDS=$(ROUNDS) TOKENS=$(TOKENS)
+
+# GLM on the user's Colibri install (see docs/11-glm-on-this-mac.md)
+.PHONY: glm-bench glm-quiet-check glm-quiet glm-quiet-full
+glm-bench:
+	$(PYTHON) glm_bench.py run --name $(or $(NAME),v1)
+
+glm-quiet-check:
+	$(PYTHON) glm_quiet.py check
+
+glm-quiet:
+	$(PYTHON) glm_quiet.py run --ram-sweep
+
+glm-quiet-full:
+	$(PYTHON) glm_quiet.py run --ram-sweep --full

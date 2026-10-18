@@ -300,3 +300,34 @@ released, which raised the expert-cache hit rate. But the chain's GPU time per
 token (~0.4 s) was no better than Metal's attention plus overhead, and prompt
 processing was 3-6× slower (77-154 s vs 23 s for 17 tokens). Metal stays the
 recommended backend on this Mac.
+
+## Quiet-machine rerun (to do by the owner)
+
+The results above come from a busy machine. `glm_quiet.py` repeats the key runs with
+other apps closed, so the report can show how much the busy machine cost.
+
+```mermaid
+flowchart LR
+    C[make glm-quiet-check] -->|Ready| R[make glm-quiet<br/>~20 min]
+    C -->|Not ready| F[close apps / stop bench] --> C
+    R --> O[results/glm-quiet-STAMP/comparison.md]
+    O --> A[Claude adds it to the bench report]
+```
+
+1. Close every app you can (ChatGPT/Codex, Steam, browsers, Claude desktop and so on).
+   Keep only a terminal.
+2. `make glm-quiet-check` changes nothing. It shows free RAM, swap, the largest
+   apps still open, and whether a benchmark or Colibri engine is already running.
+   "Ready" needs at least 20 GB free.
+3. `make glm-quiet` takes about 20 minutes. It runs five cases twice each: exact and
+   skip 0.3/0.5 on the sky prompt, exact and skip 0.5 on the code prompt. It then
+   tries exact runs at 22 and 26 GB RAM budgets; Colibri refuses a budget that does
+   not fit, and the refusal is recorded.
+   `make glm-quiet-full` also runs the full 144-run quality bench (hours).
+4. Tell Claude the printed results folder. `comparison.md` lists busy vs quiet
+   tok/s per case, whether the text matches the busy run, and conditions before
+   and after.
+
+Each case reuses a busy run's exact prompt, length and settings (`c9-best-combo`,
+`l8-degrade-030`, `l10-degrade-050`, `q0-code-exact`, `q3-code-degrade-050`). Your
+Colibri state is not changed. The tool never closes apps or stops processes for you.

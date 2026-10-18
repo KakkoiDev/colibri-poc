@@ -13,6 +13,9 @@ docs/11-glm-on-this-mac.md, with raw numbers in published-results/glm-20261018/.
   unchanged by hash. New file .coli_ssd (Metal SSD probe cache) was created.
 - All GLM numbers were measured on a busy everyday Mac (many apps running, free RAM
   10-17.5 GB); actual performance may be better. Say so in every report.
+- Quiet rerun: owner runs `make glm-quiet` (glm_quiet.py) later. When they report
+  results/glm-quiet-<stamp>, publish it (no local paths), add busy-vs-quiet to
+  docs/11, site/data/glm-performance.json (new `quiet_rerun` key) and the brief.
 - Open: rebuild the user's own engine (needs their OK), Metal attention scheduling
   work in Colibri, broader quality evaluation of DEGRADE_ZERO.
 
