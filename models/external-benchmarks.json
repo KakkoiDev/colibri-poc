@@ -1,0 +1,313 @@
+{
+ "schema": 1,
+ "fetched": "2026-10-18",
+ "note": "Published intelligence benchmarks, reported by others and NOT measured in this lab. They describe the full models as served by their makers. This lab runs GLM-5.3 as an int4 conversion (and the everyday setting skips some experts), so local quality can be lower; the lab's own quality bench is the local measure. Re-fetch from the sources when updating; index versions change scores.",
+ "aa_index": {
+  "name": "Artificial Analysis Intelligence Index",
+  "version": "v4.3.2",
+  "source": "https://artificialanalysis.ai/models",
+  "rows": [
+   {
+    "model": "Claude Opus 5.5 (Max)",
+    "score": 58,
+    "open_weights": false
+   },
+   {
+    "model": "Claude Sonnet 5.5 (Max)",
+    "score": 56,
+    "open_weights": false
+   },
+   {
+    "model": "Claude Opus 5.5 (Xhigh)",
+    "score": 56,
+    "open_weights": false
+   },
+   {
+    "model": "Muse Wonder Full (Max)",
+    "score": 56,
+    "open_weights": false
+   },
+   {
+    "model": "Claude Opus 5.5 (High)",
+    "score": 54,
+    "open_weights": false
+   },
+   {
+    "model": "MiMo-V2.6-Pro",
+    "score": 46,
+    "open_weights": true
+   },
+   {
+    "model": "GLM-5.3 (Max)",
+    "score": 45,
+    "open_weights": true,
+    "lab": true
+   },
+   {
+    "model": "Step 5 Preview",
+    "score": 44,
+    "open_weights": true
+   },
+   {
+    "model": "GLM-5.3-Flash",
+    "score": 42,
+    "open_weights": true,
+    "lab": true,
+    "source": "https://artificialanalysis.ai/models/comparisons/glm-5-3-flash-vs-glm-5-3"
+   },
+   {
+    "model": "GLM-5.3 (Low)",
+    "score": 34,
+    "open_weights": true,
+    "lab": true,
+    "source": "https://artificialanalysis.ai/models/glm-5-3-low"
+   }
+  ],
+  "caveats": [
+   "The models page lists only the top 5 overall and top 3 open-weights models; other frontier models (e.g. GPT, Gemini) were not shown in the fetched page.",
+   "Earlier index versions scored GLM-5.3 at 60 and Flash at 57 (v4.1); only v4.3.2 numbers are used here."
+  ]
+ },
+ "aa_detail": {
+  "source": "https://artificialanalysis.ai/models/comparisons/glm-5-3-flash-vs-glm-5-3",
+  "version": "v4.3.2",
+  "models": [
+   "GLM-5.3-Flash",
+   "GLM-5.3 (Max)"
+  ],
+  "rows": [
+   [
+    "AA-Briefcase v1.1 (Elo)",
+    1453,
+    1507
+   ],
+   [
+    "GDPval-AA v2.1 (Elo)",
+    1642,
+    1650
+   ],
+   [
+    "AutomationBench-AA",
+    "60%",
+    "62%"
+   ],
+   [
+    "Terminal-Bench 4.0",
+    "33%",
+    "42%"
+   ],
+   [
+    "SciCode",
+    "52%",
+    "59%"
+   ],
+   [
+    "Humanity's Last Exam",
+    "40%",
+    "42%"
+   ],
+   [
+    "GDP.pdf",
+    "15%",
+    "11%"
+   ],
+   [
+    "CritPt",
+    "15%",
+    "19%"
+   ],
+   [
+    "AA-Omniscience",
+    7,
+    14
+   ],
+   [
+    "AA-LCR v1.1",
+    "80%",
+    "80%"
+   ]
+  ]
+ },
+ "vendor_table": {
+  "source": "https://huggingface.co/zai-org/GLM-5.3",
+  "reported_by": "Z.ai (vendor)",
+  "note": "Vendor-reported, GLM-5.3 at reasoning_effort max; harnesses and settings differ per benchmark (see the model card footnotes).",
+  "models": [
+   "GLM-5.3",
+   "GLM-5.2",
+   "Kimi K3",
+   "DeepSeek-V4 Pro-0813",
+   "Qwen3.8-Max",
+   "Opus 4.8",
+   "Fable 5 (w/ fallback)",
+   "GPT-5.6 Sol"
+  ],
+  "rows": [
+   [
+    "Terminal Bench 2.1",
+    88.2,
+    81.0,
+    88.3,
+    87.9,
+    86.6,
+    85.0,
+    88.0,
+    88.8
+   ],
+   [
+    "Terminal Bench 3.0",
+    28.3,
+    4.6,
+    17.4,
+    null,
+    null,
+    21.1,
+    33.7,
+    34.6
+   ],
+   [
+    "DeepSWE (v1.1)",
+    66.9,
+    46.2,
+    67.5,
+    62.7,
+    56.6,
+    58.0,
+    69.7,
+    72.7
+   ],
+   [
+    "NL2Repo",
+    58.0,
+    48.9,
+    58.0,
+    61.1,
+    55.9,
+    69.7,
+    null,
+    null
+   ],
+   [
+    "ProgramBench (Almost Solved)",
+    19.0,
+    9.5,
+    17.5,
+    null,
+    10.5,
+    15.5,
+    33.0,
+    23.0
+   ],
+   [
+    "FrontierSWE",
+    78.1,
+    67.5,
+    null,
+    null,
+    null,
+    66.5,
+    88.2,
+    null
+   ],
+   [
+    "SWE-Marathon (v1.1)",
+    42.5,
+    19.4,
+    48.1,
+    null,
+    null,
+    48.8,
+    33.1,
+    42.5
+   ],
+   [
+    "PostTrainBench",
+    39.8,
+    31.7,
+    32.0,
+    null,
+    null,
+    32.9,
+    41.8,
+    36.2
+   ],
+   [
+    "CyberGym",
+    84.5,
+    77.2,
+    80.0,
+    83.3,
+    78.5,
+    78.1,
+    83.8,
+    83.6
+   ],
+   [
+    "ExploitBench",
+    54.4,
+    24.4,
+    32.2,
+    null,
+    28.8,
+    40.0,
+    78.0,
+    76.5
+   ],
+   [
+    "Toolathlon Verified",
+    73.0,
+    59.9,
+    76.5,
+    74.1,
+    72.5,
+    76.2,
+    74.7,
+    74.9
+   ],
+   [
+    "AutomationBench (v1.0.6)",
+    48.2,
+    26.2,
+    46.7,
+    43.2,
+    39.8,
+    41.0,
+    46.2,
+    45.8
+   ],
+   [
+    "Agents' Last Exam (ALE-CLI)",
+    28.5,
+    23.8,
+    27.6,
+    25.7,
+    27.0,
+    25.7,
+    23.8,
+    28.6
+   ],
+   [
+    "HLE w/ Tools",
+    62.5,
+    54.7,
+    59.8,
+    60.0,
+    56.2,
+    57.9,
+    63.9,
+    64.5
+   ],
+   [
+    "GDPval-AA v2 (Elo)",
+    1769,
+    1508,
+    1682,
+    1590,
+    1739,
+    1588,
+    1743,
+    1730
+   ]
+  ]
+ }
+}

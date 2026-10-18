@@ -1,5 +1,7 @@
 .venv/
-models/
+models/*
+!models/catalog.json
+!models/external-benchmarks.json
 engines/
 results/
 __pycache__/

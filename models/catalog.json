@@ -1,0 +1,114 @@
+{
+ "schema": 1,
+ "note": "Every model the lab can run, installed or not. `path` is relative to ~ . The lab app marks a model installed when its path exists (and `ready_marker`, if set). `bench_names` lists glm_bench.py result folders for this model; `speed_runs` lists runs.csv ids that make up its speed reference.",
+ "models": [
+  {
+   "id": "glm-5.3-int4",
+   "name": "GLM-5.3 int4 g64",
+   "family": "GLM-5.3",
+   "params": "744B total / 40B active",
+   "format": "Colibri int4 g64",
+   "size_gb": 419,
+   "path": "colibri-models/glm-5.3",
+   "engine": "installed Colibri (~/Code/colibri, Metal + libomp)",
+   "mtp": false,
+   "owner_model": true,
+   "bench_names": [
+    "v1"
+   ],
+   "speed_runs": [
+    "r2-p0-sky-exact",
+    "r2-k-sky-skip050-t12"
+   ],
+   "source": "huggingface.co/Justvugg/GLM-5.3-colibri-int4-g64",
+   "external_model": "GLM-5.3 (Max)"
+  },
+  {
+   "id": "glm-5.3-mtp",
+   "name": "GLM-5.3 int4 + int8 MTP head",
+   "family": "GLM-5.3",
+   "params": "744B total / 40B active",
+   "format": "Colibri int4 g64 + int8 MTP head (symlinked)",
+   "size_gb": 10,
+   "path": "colibri-models/glm-5.3-mtp",
+   "ready_marker": ".mtp-ready",
+   "engine": "installed Colibri",
+   "mtp": true,
+   "bench_names": [],
+   "speed_runs": [],
+   "source": "huggingface.co/zai-org/GLM-5.3 (3 FP8 shards, converted to int8)",
+   "download_gb": 16,
+   "prep": "make glm-prep-mtp",
+   "unlocks": [
+    "mtp-int8",
+    "mtp-int8-skip050"
+   ],
+   "external_model": "GLM-5.3 (Max)"
+  },
+  {
+   "id": "glm-5.3-iq3xxs",
+   "name": "GLM-5.3 UD-IQ3_XXS (3-bit GGUF)",
+   "family": "GLM-5.3",
+   "params": "744B total / 40B active",
+   "format": "GGUF IQ3_XXS, read in place",
+   "size_gb": 282,
+   "path": "colibri-models/glm-5.3-iq3xxs",
+   "download_path": "colibri-models/gguf/glm-5.3-iq3xxs",
+   "engine": "Colibri dev engines/colibri-16239caa (GGUF experts on CPU)",
+   "mtp": true,
+   "bench_names": [],
+   "speed_runs": [],
+   "source": "huggingface.co/unsloth/GLM-5.3-GGUF (UD-IQ3_XXS)",
+   "download_gb": 282,
+   "prep": "make glm-prep-iq3xxs",
+   "unlocks": [
+    "gguf-iq3xxs",
+    "gguf-iq3xxs-skip050"
+   ],
+   "external_model": "GLM-5.3 (Max)"
+  },
+  {
+   "id": "glm-5.3-iq2m",
+   "name": "GLM-5.3 UD-IQ2_M (2-bit GGUF)",
+   "family": "GLM-5.3",
+   "params": "744B total / 40B active",
+   "format": "GGUF IQ2_M, read in place",
+   "size_gb": 239,
+   "path": "colibri-models/glm-5.3-iq2m",
+   "download_path": "colibri-models/gguf/glm-5.3-iq2m",
+   "engine": "Colibri dev engines/colibri-16239caa (GGUF experts on CPU)",
+   "mtp": true,
+   "bench_names": [],
+   "speed_runs": [],
+   "source": "huggingface.co/unsloth/GLM-5.3-GGUF (UD-IQ2_M)",
+   "download_gb": 239,
+   "prep": "make glm-prep-iq2m",
+   "unlocks": [
+    "gguf-iq2m",
+    "gguf-iq2m-skip050"
+   ],
+   "external_model": "GLM-5.3 (Max)"
+  },
+  {
+   "id": "glm-5.3-flash-iq3xxs",
+   "name": "GLM-5.3-Flash UD-IQ3_XXS",
+   "family": "GLM-5.3-Flash",
+   "params": "321B total / 18B active",
+   "format": "GGUF IQ3_XXS",
+   "size_gb": 120,
+   "path": "colibri-models/glm-5.3-flash-iq3xxs",
+   "download_path": "colibri-models/gguf/glm-5.3-flash-iq3xxs",
+   "engine": "Colibri dev glm53 engine (none of our speed settings)",
+   "mtp": true,
+   "bench_names": [],
+   "speed_runs": [],
+   "source": "huggingface.co/unsloth/GLM-5.3-Flash-GGUF (UD-IQ3_XXS)",
+   "download_gb": 120,
+   "prep": "make glm-prep-flash",
+   "unlocks": [
+    "manual Flash runs"
+   ],
+   "external_model": "GLM-5.3-Flash"
+  }
+ ]
+}
