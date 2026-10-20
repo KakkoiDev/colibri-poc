@@ -33,6 +33,18 @@ class BenchCatalogTests(unittest.TestCase):
         self.assertTrue(all(q['only_when_quiet'] for q in queued))
         self.assertEqual([i['qid'] for i in a.queue_state()['items']], [q['qid'] for q in queued])
 
+    def test_start_condition_is_explicit_and_quiet_runs_stay_quiet(self):
+        queued = bc.queue_selection(['ollama:qwen3.8:27b-mlx:exact:terse', 'quiet:skip-original'], schedule='ready')
+        self.assertFalse(queued[0]['only_when_quiet'])
+        self.assertTrue(queued[1]['only_when_quiet'])
+        queued = bc.queue_selection(['ollama:qwen3.8:27b-mlx:native:terse'], schedule='quiet')
+        self.assertTrue(queued[0]['only_when_quiet'])
+
+    def test_invalid_start_condition_queues_nothing(self):
+        with self.assertRaises(a.ActionError):
+            bc.queue_selection(['quiet:skip-original'], schedule='surprise')
+        self.assertEqual(a.queue_state()['items'], [])
+
     def test_unknown_or_blocked_ids_queue_nothing(self):
         for ids in (['nope'], ['ollama:qwen3.8:27b-mlx:exact:terse', 'suite:speed:glm-5.3-flash-iq3xxs']):
             with self.assertRaises(a.ActionError):

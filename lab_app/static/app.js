@@ -13,8 +13,9 @@
     queue: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', install: 'M12 3v12M7 10l5 5 5-5M4 21h16',
     settings: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M14 4v4M8 10v4M16 16v4'
   };
-  var SCREENS = [['now', 'Now'], ['queue', 'Queue'], ['models', 'Models'], ['leaderboard', 'Leaderboard'], ['experiments', 'Experiments'],
-                 ['benches', 'Benches'], ['install', 'Install'], ['runs', 'Runs'], ['research', 'Research'], ['settings', 'Settings']];
+  var SCREENS = [['dashboard', 'Run benches'], ['results', 'Results'], ['models', 'Models']];
+  var ADVANCED = [['queue', 'Manage queue'], ['now', 'Machine status'], ['benches', 'Coverage'], ['runs', 'Engine runs'],
+                  ['leaderboard', 'Leaderboard'], ['experiments', 'Experiments'], ['research', 'Research'], ['settings', 'Settings']];
   var CFG = { exact: 'exact', d030: 'skip 0.3', d050: 'skip 0.5', d030t12: 'skip 0.3 · 12 thr', d040t12: 'skip 0.4 · 12 thr' };
   var timer = null;
 
@@ -131,9 +132,10 @@
   // ---------- nav / theme ----------
   function renderNav(active) {
     var nav = document.getElementById('nav'); nav.textContent = '';
-    SCREENS.forEach(function (s) {
-      nav.appendChild(h('a', { href: '#' + s[0], 'aria-current': s[0] === active ? 'page' : null }, svgIcon(ICON[s[0]]), h('span', { text: s[1] })));
-    });
+    function link(s) { return h('a', { href: '#' + s[0], 'aria-current': s[0] === active ? 'page' : null }, svgIcon(ICON[s[0]] || ICON.benches), h('span', { text: s[1] })); }
+    SCREENS.forEach(function (s) { nav.appendChild(link(s)); });
+    nav.appendChild(h('details', { class: 'advanced-nav', open: ADVANCED.some(function (s) { return s[0] === active; }) ? '' : null },
+      h('summary', { text: 'Advanced' }), ADVANCED.map(link)));
   }
   function setGpu(now) {
     var c = document.getElementById('gpu-chip'), d = document.getElementById('gpu-detail');
@@ -282,7 +284,8 @@
   }
 
   function screenBenches(main) {
-    return api('/api/benches').then(function (d) {
+    return Promise.all([api('/api/benches'),api('/api/runs')]).then(function (data) {
+      var d=data[0], measured=data[1].runs.filter(function(r){return r.status==='ok';}).slice(-15).reverse();
       var suite = d.suite.benches;
       var cov = table([{ t: 'Model' }].concat(suite.map(function (b) { return { t: b.name }; })), d.models.map(function (m) {
         var quietMissing = m.owner_model && (m.coverage.quiet.status === 'missing' || m.coverage.ram.status === 'missing');
@@ -314,10 +317,12 @@
             h('p', { class: 'hint', text: 'Automatic grades: facts/logic by expected answer, maths by final number, code by running tests; normal answers capped at 128 tokens, so long answers can be under-counted. Single runs.' }),
             r.notes.length ? h('p', { class: 'hint', text: 'Notes in the results folder: ' + r.notes.join(', ') + ' (e.g. downloads that ran during the bench).' }) : null));
       });
-      put(main, header('Benches', 'The standard suite every model gets, so models are comparable. Suite ' + d.suite.version + '.',
+      put(main, header('Results', 'Saved measurements, answer quality and model outputs. New answers appear as each bench progresses.',
           h('a', { class: 'btn btn-primary', href: '#start', text: 'Start benches…' })),
-        section('Coverage · models × benches', h('div', { class: 'row' }, chip('st-done', 'Done'), chip('st-running', 'Running'), chip('st-missing', 'Missing')), cov),
-        section('Standard suite ' + d.suite.version, null, suiteTbl), results);
+        h('div', { class: 'row' }, h('a', { class: 'btn', href: '#runs', text: 'Speed, RAM and thread measurements' }), h('a', { class: 'btn', href: '#leaderboard', text: 'Compare models' })),
+        section('Saved speed and memory measurements',null,measured.length ? table(['Run','Backend',{t:'Tokens/s',n:1},{t:'Prompt read s',n:1},{t:'Expert hit %',n:1},{t:'Process RSS GB',n:1}],measured.map(function(r){return h('tr',{},td(r.run),td(r.backend),td(r.tok_s,'n'),td(r.prefill_s,'n'),td(r.hit_pct,'n'),td(r.rss_gb,'n'));})) : h('p',{class:'muted',text:'No engine measurements saved yet.'})),
+        results.length ? results : card([h('p', { text: 'No saved quality results yet. Run a bench to see its measured values here.' })]),
+        h('details', { class: 'x' }, h('summary', { text: 'Model coverage and bench definitions' }), cov, suiteTbl));
     });
   }
 
@@ -606,7 +611,7 @@
       var storeRows = store.models.map(function (m) {
         var state = m.owner_model ? h('span', { class: 'hint', text: 'your model · never removed by the app' })
           : m.in_use ? h('span', { class: 'hint', text: 'in use (downloading or running): stop it first' })
-          : m.removable ? h('button', { type: 'button', class: 'btn btn-sm btn-danger', onclick: function () { remove(m); }, text: 'Remove…' }) : h('span', { class: 'hint', text: '—' });
+          : m.removable ? h('button', { type: 'button', class: 'btn btn-sm btn-danger', onclick: function () { remove(m); }, text: 'Move to Trash…' }) : h('span', { class: 'hint', text: '—' });
         return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: m.name }),
           m.folders.map(function (f) { return h('span', { class: 'hint mono', text: f.path + ' · ' + f2(f.gb, 1) + ' GB' + (f.in_use ? ' · in use' : '') }); }))),
           td(chip(m.installed ? 'st-done' : 'st-running', m.installed ? 'Installed' : 'Partial / downloading')), td(f2(m.gb, 1) + ' GB', 'n'), td(state));
@@ -639,7 +644,7 @@
           td(m.download_gb ? '~' + m.download_gb + ' GB' : '—', 'n'), td(m.size_gb + ' GB', 'n'), td((m.unlocks || []).join(', ') || '—', 'wrap'), td(act));
       });
       var sel = ms.filter(function (m) { return !m.installed && m.download_gb; }).reduce(function (a, m) { return a + m.download_gb - (m.download ? m.download.done : 0); }, 0);
-      put(main, header('Install', 'Models and engines the lab can add. Every download needs a confirmation showing source, size and disk left.'),
+      put(main, header('Models', 'Download models, check disk usage, or move unused models to the Trash. Saved benchmark results are kept.'),
         card([h('div', { class: 'row between' }, h('span', { class: 'num' }, h('strong', { text: free + ' GB' }), ' free · ', h('strong', { text: Math.round(free - sel) + ' GB' }), ' if every remaining download finished'), h('span', { class: 'hint', text: 'Warn below 30 GB' })),
           h('div', { class: 'bar', style: 'height:14px', 'aria-hidden': 'true' }, h('span', { style: 'width:' + Math.max(0, 100 - pct(free, 2000)) + '%;background:var(--fg-2)' }), h('span', { class: 'hatch', style: 'width:' + pct(sel, 2000) + '%' })),
           dlRunning.length ? h('p', { class: 'hint', text: 'Downloading now: ' + dlRunning.map(function (j) { return j.title + ' (PID ' + j.pid + ')'; }).join(', ') + '. Stop it from Now.' }) : null]),
@@ -662,7 +667,7 @@
 
   // ---------- start benches (picker) ----------
   // Canvas: Lab-Bench-Picker.dc.html. The server's /api/bench-catalog is the only list; the page sends ids only.
-  var pick = { sel: [], open: {}, q: '', kind: 'all', allQuiet: false };
+  var pick = { pending: false, sel: [], open: {}, q: '', kind: 'all', allQuiet: false };
   function screenStart(main) {
     return api('/api/bench-catalog').then(function (C) {
       var byId = {}; C.items.forEach(function (i) { byId[i.id] = i; });
@@ -758,15 +763,17 @@
         var nQuiet = pick.allQuiet ? chosen.length : chosen.filter(function (i) { return i.only_when_quiet; }).length;
         var empty = !chosen.length;
         function queue(front, btn) {
+          if (pick.pending) return;
+          pick.pending = true;
           btn.disabled = true;
           post('/api/queue/add-selection', { ids: chosen.map(function (i) { return i.id; }), front: front, only_when_quiet: pick.allQuiet }).then(function (r) {
-            pick.sel = [];
+            pick.pending = false; pick.sel = [];
             var t = h('div', { role: 'status', class: 'pk-toast' }, h('span', { style: 'flex:1' }, h('strong', { text: 'Queued ' + r.queued.length + (r.queued.length === 1 ? ' job' : ' jobs') + (front ? ' at the front.' : '.') }),
               ' ' + chosen.length + ' benches, ~' + dur(total) + ', ' + (nQuiet ? nQuiet + ' wait for a quiet machine.' : 'none wait for quiet.')),
               h('a', { href: '#queue', text: 'View queue' }), h('button', { type: 'button', class: 'pk-link', 'aria-label': 'Dismiss', text: '×', onclick: function () { t.remove(); } }));
             document.body.appendChild(t); setTimeout(function () { t.remove(); }, 10000);
-            route();
-          }, function (e) { btn.disabled = false; toast(e.message, true); });
+            location.hash = '#dashboard';
+          }, function (e) { pick.pending = false; btn.disabled = false; toast(e.message, true); });
         }
         var addBack = h('button', { type: 'button', class: 'btn btn-primary btn-touch', disabled: empty ? '' : null, text: 'Add to queue', onclick: function (e) { queue(false, e.target); } });
         var addFront = h('button', { type: 'button', class: 'btn btn-sm', disabled: empty ? '' : null, text: 'Add to the front of the queue', onclick: function (e) { queue(true, e.target); } });
@@ -826,21 +833,119 @@
     });
   }
 
+  // Primary workflow: choose a model + one bench, then launch with one action.
+  var launchChoice = {model: '', item: '', schedule: 'ready', pending: false};
+  function screenDashboard(main) {
+    var requestedHash=location.hash;
+    return Promise.all([api('/api/bench-catalog'), api('/api/now'), api('/api/queue')]).then(function (res) {
+      if(location.hash!==requestedHash)return;
+      var catalog = res[0], current = res[1], queue = res[2];
+      var live = h('div', {class:'stack', id:'live-jobs'});
+      var form = h('div', {class:'card launch-card'});
+      var groupSelect = h('select', {class:'input', id:'launch-model'});
+      var benchSelect = h('select', {class:'input', id:'launch-bench'});
+      var condition = h('select', {class:'input', id:'launch-condition'},
+        h('option', {value:'ready', text:'As soon as the GPU is free'}),
+        h('option', {value:'quiet', text:'When the machine is quiet (20 GB free for 2 min)'}));
+      condition.value = launchChoice.schedule;
+      var plan = h('div', {class:'run-plan', 'aria-live':'polite'});
+      var submit = h('button', {type:'button', class:'btn btn-primary launch-button'});
+      var feedback = h('div', {role:'status', 'aria-live':'polite'});
+      var groups = catalog.groups.filter(function (g) { return g.kind === 'model'; });
+      groups.forEach(function (g) { groupSelect.appendChild(h('option', {value:g.id,text:g.title + (g.note ? ' · ' + g.note : '')})); });
+      if (!groups.some(function(g){return g.id===launchChoice.model;})) {
+        launchChoice.model = (groups.filter(function(g){return catalog.items.some(function(i){return i.group===g.id && i.available;});})[0] || groups[0] || {}).id || '';
+      }
+      groupSelect.value = launchChoice.model;
+      function selected() { return catalog.items.filter(function(i){return i.id===benchSelect.value;})[0]; }
+      function drawPlan() {
+        var i=selected(), busy=current.jobs.some(function(j){return j.gpu;});
+        var quiet=condition.value==='quiet' || (i && i.kind==='quiet');
+        plan.textContent='';
+        put(plan, h('strong', {text:i ? i.title : 'Choose a bench'}),
+          h('p', {class:'muted',text:i ? i.what : 'No benches are available for this model.'}),
+          i ? h('div', {class:'row'}, chip('st-waiting',dur(i.est_s)+' estimated'), i.lossy ? lossyTag() : null,
+            h('span',{class:'hint',text:i.total ? i.done+'/'+i.total+' saved · resumes unfinished answers' : 'Runs the standard cases for this model'})) : null,
+          h('p', {text:i && i.why_not==='already queued' ? 'Already in the queue. Follow this bench under Up next below.' : quiet ? 'Starts after earlier jobs finish and the machine has been quiet for 2 minutes.' :
+            busy || queue.items.length ? 'Queue position '+(queue.items.length+1)+' · '+queue.items.length+' queued ahead'+(busy ? ' plus the active bench.' : '.')+' Starts automatically.' : 'Starts automatically when the runner picks it up.'}));
+        submit.disabled=launchChoice.pending || !i || !i.available;
+        submit.textContent=launchChoice.pending ? 'Adding bench…' : !i || !i.available ? (i && i.why_not==='already queued' ? 'Queued' : 'Unavailable') :
+          queue.paused ? 'Queue bench and resume' : busy || queue.items.length ? 'Add bench to queue' : 'Run bench';
+      }
+      function drawChoices() {
+        benchSelect.textContent='';
+        var choices=catalog.items.filter(function(i){return i.group===groupSelect.value;});
+        choices.forEach(function(i){benchSelect.appendChild(h('option',{value:i.id,disabled:!i.available ? '' : null,text:i.title+(i.available ? '' : ' · '+i.why_not)}));});
+        var saved=choices.filter(function(i){return i.id===launchChoice.item && i.available;})[0];
+        var first=saved || choices.filter(function(i){return i.available && i.kind==='suite';})[0] || choices.filter(function(i){return i.available;})[0];
+        benchSelect.value=first ? first.id : '';launchChoice.item=benchSelect.value;
+        drawPlan();
+      }
+      groupSelect.addEventListener('change',function(){launchChoice.model=groupSelect.value;launchChoice.item='';drawChoices();});
+      benchSelect.addEventListener('change',function(){launchChoice.item=benchSelect.value;drawPlan();});
+      condition.addEventListener('change',function(){launchChoice.schedule=condition.value;drawPlan();});
+      submit.addEventListener('click',function(){
+        var i=selected();if(launchChoice.pending || !i || !i.available)return;
+        launchChoice.pending=true;drawPlan();feedback.className='';feedback.textContent='Adding '+i.title+'…';
+        post('/api/queue/add-selection',{ids:[i.id],schedule:condition.value,resume:true}).then(function(r){
+          launchChoice.pending=false;
+          feedback.className='banner';feedback.textContent='Added to queue: '+r.queued.map(function(j){return j.title;}).join(', ')+'. It will start automatically. Follow its position below.';
+          i.available=false;i.why_not='already queued';if(benchSelect.selectedOptions[0])benchSelect.selectedOptions[0].textContent=i.title+' · queued';drawPlan();refreshLive();
+        },function(e){launchChoice.pending=false;feedback.className='err';feedback.textContent=e.message;drawPlan();});
+      });
+      function renderLive() {
+        setGpu(current);live.textContent='';
+        var gpu=current.jobs.filter(function(j){return j.gpu;}), active=gpu[0];
+        var running = active ? h('div',{class:'stack'},
+          h('div',{class:'row between'},chip('st-running','Running now'),h('span',{class:'hint',text:'Updated '+new Date().toLocaleTimeString()})),
+          h('h2',{text:active.title}),h('p',{class:'muted',text:active.detail || ''}),
+          active.progress && active.progress.total ? meter(active.progress.done,active.progress.total) : null,
+          active.progress ? h('p',{class:'num',text:active.progress.done+' / '+active.progress.total+' completed'+(active.progress.eta_s ? ' · about '+dur(active.progress.eta_s)+' left' : '')}) : null,
+          active.progress && active.progress.current ? h('p',{class:'current-case',text:'Current case: '+active.progress.current.replace(/__/g,' · ')}) : null,
+          active.progress && active.progress.items ? h('details',{class:'x'},h('summary',{text:'See finished and upcoming cases in this bench'}),benchStrip(active.progress)) : null,
+          active.stoppable ? h('button',{class:'btn btn-danger btn-sm',style:'align-self:flex-start',text:'Stop this bench…',onclick:function(){stopJob(active);}}) : null)
+          : h('div',{class:'stack'},chip('st-done','GPU free'),h('h2',{text:'Ready for a bench'}),h('p',{class:'muted',text:'Choose a model and a bench above. The queue runs one job at a time.'}));
+        var waiting=h('div',{class:'stack'},h('div',{class:'row between'},h('h2',{text:'Up next · '+queue.items.length}),
+          h('button',{class:'btn btn-sm',text:queue.paused ? 'Resume queue' : 'Pause queue',onclick:function(){post('/api/queue/pause',{paused:!queue.paused}).then(refreshLive).catch(function(e){toast(e.message,true);});}})),
+          h('p',{class:queue.paused ? 'err' : 'hint',text:queue.paused ? 'Paused — nothing queued will start until you resume.' : queue.runner || 'Jobs start automatically, in the order below.'}),
+          queue.items.length ? h('ol',{class:'up-next'},queue.items.slice(0,5).map(function(j,n){return h('li',{},h('div',{class:'stack'},h('strong',{text:j.title}),
+            h('span',{class:'hint',text:(n===0 ? 'Next' : 'Position '+(n+1))+' · '+(j.only_when_quiet ? 'waits for quiet' : 'when GPU is free')})),
+            h('button',{class:'btn btn-sm',text:'Remove', 'aria-label':'Remove '+j.title+' from queue',onclick:function(){post('/api/queue/remove',{qid:j.qid}).then(refreshLive).catch(function(e){toast(e.message,true);});}}));})) : h('p',{class:'muted',text:'No benches waiting.'}),
+          h('a',{href:'#queue',text:queue.items.length>5 ? 'View all '+queue.items.length+' queued jobs and reorder →' : 'Reorder queue and view logs'}));
+        var history=(queue.jobs || []).filter(function(j){return j.status!=='running';}).slice(0,5);
+        put(live,h('div',{class:'grid2'},card([running]),card([waiting])),
+          section('Recently finished',h('a',{href:'#results',text:'View measured results →'}),history.length ? table(['Bench','Started','Outcome'],history.map(function(j){return h('tr',{},td(j.title),td(j.started),td(chip(j.status==='failed' ? 'st-failed':'st-done',j.status==='finished' ? 'Finished · exit unknown' : j.status)));})) : h('p',{class:'muted',text:'Finished benches will appear here.'})));
+        drawPlan();
+      }
+      var refreshing=false;
+      function refreshLive(){
+        if(refreshing)return Promise.resolve();refreshing=true;
+        return Promise.all([api('/api/now'),api('/api/queue')]).then(function(r){current=r[0];queue=r[1];renderLive();}).catch(function(e){toast('Live status could not update: '+e.message,true);}).finally(function(){refreshing=false;});
+      }
+      put(form,h('div',{class:'row between'},h('div',{},h('span',{class:'eyebrow',text:'New run'}),h('h2',{text:'New benchmark'})),h('a',{href:'#start',text:'Select multiple benches →'})),
+        h('div',{class:'launch-fields'},h('label',{for:'launch-model'},'Model',groupSelect),h('label',{for:'launch-bench'},'Bench',benchSelect),h('label',{for:'launch-condition'},'Start condition',condition)),plan,submit,feedback);
+      put(main,header('Run benches','Start a run, see exactly what is running, and follow the queue.'),form,live);
+      drawChoices();renderLive();
+      timer=setInterval(function(){if(!document.querySelector('.scrim') && !document.querySelector('#live-jobs details[open]'))refreshLive();},5000);
+    });
+  }
+
   // ---------- router ----------
-  var ROUTES = { now: screenNow, queue: screenQueue, install: screenInstall, settings: screenSettings, benches: screenBenches, runs: screenRuns,
-                 experiments: screenExperiments, models: screenModels, leaderboard: screenLeaderboard, research: screenResearch, start: screenStart };
+  var ROUTES = { dashboard: screenDashboard, results: screenBenches, now: screenNow, queue: screenQueue, install: screenInstall, settings: screenSettings, benches: screenBenches, runs: screenRuns,
+                 experiments: screenExperiments, models: screenInstall, leaderboard: screenLeaderboard, research: screenResearch, start: screenStart };
   function route() {
     clearInterval(timer);
-    var hash = (location.hash || '#now').slice(1), parts = hash.split('/'), name = parts[0];
+    var hash = (location.hash || '#dashboard').slice(1), parts = hash.split('/'), name = parts[0];
     var main = document.getElementById('main');
-    var fn = name === 'bench' ? function (m) { return screenBench(m, parts[1]); } : ROUTES[name] || screenNow;
-    renderNav(name === 'bench' || name === 'start' ? 'benches' : (ROUTES[name] ? name : 'now'));
+    var fn = name === 'bench' ? function (m) { return screenBench(m, parts[1]); } : ROUTES[name] || screenDashboard;
+    renderNav(name === 'bench' ? 'results' : name === 'start' ? 'dashboard' : (ROUTES[name] ? name : 'dashboard'));
     function load(keepScroll) {
       var y = window.scrollY, fresh = h('main', { id: 'main', tabindex: '-1' });
       return fn(fresh).then(function () {
+        if ((location.hash || '#dashboard').slice(1) !== hash) return;
         var cur = document.getElementById('main'); cur.replaceWith(fresh);
         if (keepScroll) window.scrollTo(0, y);
-      }).catch(function (e) { main.textContent = ''; put(main, errorBox(e)); });
+      }).catch(function (e) { if ((location.hash || '#dashboard').slice(1) !== hash) return; var currentMain=document.getElementById('main'); currentMain.textContent=''; put(currentMain,errorBox(e)); });
     }
     load(false);
     if (fn === screenNow || fn === screenQueue) timer = setInterval(function () { if (!document.querySelector('.scrim') && !document.querySelector('details.x[open]') && !(document.activeElement && /INPUT|SELECT/.test(document.activeElement.tagName))) load(true); }, fn === screenNow ? 5000 : 10000);

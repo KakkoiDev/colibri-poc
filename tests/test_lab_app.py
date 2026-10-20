@@ -22,6 +22,25 @@ class LabAppTests(unittest.TestCase):
         self.assertEqual(p['total'], 2)
         self.assertLessEqual(p['done'], 2)
 
+    def test_one_action_queues_with_explicit_schedule_and_resumes(self):
+        from unittest.mock import patch
+        with patch.object(s.bench_catalog, 'queue_selection', return_value=[{'qid':'test'}]) as enqueue, \
+             patch.object(s.actions, 'queue_pause') as pause, \
+             patch.object(s.actions, 'queue_state', return_value={'paused':False}):
+            result=s.act('/api/queue/add-selection', {'ids':['test'], 'schedule':'ready', 'resume':True})
+            self.assertEqual(result['queued'],[{'qid':'test'}])
+            self.assertEqual(enqueue.call_args.kwargs['schedule'],'ready')
+            pause.assert_called_once_with(False)
+
+    def test_existing_queue_action_does_not_resume_without_request(self):
+        from unittest.mock import patch
+        with patch.object(s.bench_catalog, 'queue_selection', return_value=[]), \
+             patch.object(s.actions, 'queue_pause') as pause, \
+             patch.object(s.actions, 'queue_state', return_value={'paused':True}):
+            result=s.act('/api/queue/add-selection', {'ids':['test']})
+            self.assertTrue(result['paused'])
+            pause.assert_not_called()
+
     def test_safe_ids(self):
         self.assertIsNone(s.bench_detail('../etc'))
         self.assertIsNone(s.run_output('../../secret'))

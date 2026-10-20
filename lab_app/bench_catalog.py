@@ -147,8 +147,12 @@ def jobs_for(ids):
     return jobs
 
 
-def queue_selection(ids, front=False, all_when_quiet=False):
+def queue_selection(ids, front=False, all_when_quiet=False, schedule="default"):
+    if schedule not in ("default", "ready", "quiet"):
+        raise actions.ActionError("unknown start condition")
     jobs = jobs_for(ids)
+    if schedule != "default":
+        jobs = [dict(j, only_when_quiet=schedule == "quiet" or j["kind"] == "quiet") for j in jobs]
     if all_when_quiet:
         jobs = [dict(j, only_when_quiet=True) for j in jobs]
     for j in jobs:                                   # validate every job before queueing any

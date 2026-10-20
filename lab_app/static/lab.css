@@ -231,3 +231,29 @@ details.x[open] summary{margin-bottom:6px}
 }
 .pk-list .icon-btn svg{fill:none; stroke:currentColor; stroke-width:2.5px; stroke-linecap:round}
 .pk-main .btn-sm{white-space:normal; text-align:left; height:auto; min-height:28px; max-width:100%}
+
+/* Task-first admin workspace. */
+.lab{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.advanced-nav{margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
+.advanced-nav summary{cursor:pointer;color:var(--fg-2);font-size:12px;padding:8px 12px}
+.launch-card{padding:24px;display:flex;flex-direction:column;gap:20px;border-top:3px solid var(--fg)}
+.launch-fields{display:grid;grid-template-columns:1fr 1.3fr 1.2fr;gap:16px}
+.launch-fields label{display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:600}
+.launch-fields .input{width:100%;min-height:44px;font-weight:400}
+.run-plan{padding:16px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.run-plan p{margin:0;font-size:13px}
+.launch-button{min-height:46px;align-self:flex-start;min-width:210px}
+.up-next{list-style:decimal;padding-left:24px;margin:0}
+.up-next li{padding:12px 0;border-top:1px solid var(--line)}
+.up-next li>div{display:inline-flex;max-width:75%;gap:4px}
+.up-next li>button{float:right}
+.current-case{font-size:13px;padding:10px;background:var(--surface-2);overflow-wrap:anywhere}
+#live-jobs{gap:24px}
+@media(max-width:900px){.launch-fields{grid-template-columns:1fr}.launch-card{padding:16px}.launch-button{width:100%}}
+
+.launch-card{padding:18px 22px;gap:12px}
+.launch-card h2{font-size:18px;line-height:24px;margin:0}
+.run-plan{padding:12px;gap:6px}
+.up-next strong{font-size:13px;line-height:19px}
+.up-next li{padding:9px 0}
+.lab a{color:var(--fg);text-underline-offset:3px}

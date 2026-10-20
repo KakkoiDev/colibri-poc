@@ -675,8 +675,12 @@ def act(path, body):
         ids = body.get('ids')
         if not isinstance(ids, list) or not ids or not all(isinstance(x, str) for x in ids):
             raise actions.ActionError('ids: a non-empty list of bench ids from /api/bench-catalog')
-        return dict(queued=bench_catalog.queue_selection(ids, front=bool(body.get('front')),
-                                                         all_when_quiet=bool(body.get('only_when_quiet'))))
+        queued = bench_catalog.queue_selection(ids, front=bool(body.get('front')),
+                                                all_when_quiet=bool(body.get('only_when_quiet')),
+                                                schedule=body.get('schedule', 'default'))
+        if body.get('resume') is True:
+            actions.queue_pause(False)
+        return dict(queued=queued, paused=actions.queue_state()['paused'])
     if path == '/api/queue/remove':
         actions.queue_remove(body.get('qid')); return dict(ok=True)
     if path == '/api/queue/move':
