@@ -144,7 +144,12 @@ def build_command(kind, args):
         if bench not in SUITE_BENCHES:
             raise ActionError(f'unknown suite bench: {bench}')
         m = _runnable_model(mid)
-        return [PY, 'glm_suite.py', 'run', bench, '--model', mid], f"{bench.capitalize()} bench on {m['name']}"
+        argv = [PY, 'glm_suite.py', 'run', bench, '--model', mid]
+        if args.get('run_id'):
+            if not isinstance(args['run_id'], str) or not SAFE.fullmatch(args['run_id']):
+                raise ActionError('invalid suite run id')
+            argv += ['--run-id', args['run_id']]
+        return argv, f"{bench.capitalize()} bench on {m['name']}"
     if kind == 'prep':
         mid = args.get('model', '')
         cat = {m['id']: m for m in json.loads((ROOT / 'models' / 'catalog.json').read_text())['models']}
@@ -170,10 +175,13 @@ def _alive(pid):
         return True
 
 
-def launch(kind, args, source='app'):
+def launch(kind, args, source='app', only_when_quiet=False):
+    args = dict(args or {})
+    if kind == 'suite':
+        args.setdefault('run_id', uuid.uuid4().hex)
     argv, title = build_command(kind, args)
     LOGS.mkdir(parents=True, exist_ok=True)
-    jid = time.strftime('%Y%m%dT%H%M%S') + '-' + kind
+    jid = time.strftime('%Y%m%dT%H%M%S') + '-' + kind + '-' + uuid.uuid4().hex[:8]
     log = LOGS / f'{jid}.log'
     with open(log, 'w') as fh:
         fh.write(f"# {title}\n# {' '.join(argv)}\n")
@@ -184,7 +192,7 @@ def launch(kind, args, source='app'):
     with _lock:
         js = jobs_state()
         js['jobs'].insert(0, dict(id=jid, kind=kind, args=args, title=title, argv=argv, pid=p.pid, status='running',
-                                  started=time.strftime('%Y-%m-%d %H:%M:%S'), log=str(log.relative_to(ROOT)), source=source))
+                                  started=time.strftime('%Y-%m-%d %H:%M:%S'), log=str(log.relative_to(ROOT)), source=source, only_when_quiet=only_when_quiet or kind == 'quiet'))
         js['jobs'] = js['jobs'][:200]
         _write('jobs.json', js)
     return dict(id=jid, pid=p.pid, title=title)
@@ -270,10 +278,78 @@ def queue_tick(gpu_busy, quiet):
         q['items'] = q['items'][1:]
         _write('queue.json', q)
     try:
-        launch(head['kind'], head['args'], source='queue')
+        launch(head['kind'], head['args'], source='queue', only_when_quiet=head.get('only_when_quiet', False))
     except ActionError as ex:
         return f'skipped invalid item: {ex}'
     return 'started ' + head['title']
+
+
+def suite_identity(job):
+    args = dict(job['args'])
+    if not args.get('run_id'):
+        stamp = time.strptime(job['started'], '%Y-%m-%d %H:%M:%S')
+        args['run_id'] = time.strftime('%Y%m%dT%H%M', stamp)
+    return args
+
+
+def resume_progress(job):
+    """Count successful checkpoints, including jobs which exited zero with failed cases."""
+    if job.get('kind') not in ('bench', 'suite') or job.get('status') == 'running':
+        return None
+    args = job.get('args', {})
+    if job['kind'] == 'bench':
+        if not SAFE.fullmatch(args.get('name', '')):
+            return None
+        prompts = json.loads((ROOT / 'glm-prompts.json').read_text())['prompts']
+        folder = ROOT / 'results' / ('glm-bench-' + args['name'])
+        paths = [folder / (p['id'] + '__' + st + '__' + cfg + '.json')
+                 for p in prompts for st in args.get('styles', []) for cfg in args.get('configs', [])]
+        done = 0
+        for path in paths:
+            try:
+                done += json.loads(path.read_text()).get('exit') == 0
+            except (OSError, ValueError):
+                pass
+        total = len(paths)
+    else:
+        sys.path.insert(0, str(ROOT))
+        import glm_suite
+        args = suite_identity(job)
+        cases = glm_suite.CASES.get(args.get('bench'), [])
+        try:
+            records = glm_suite.glm_lab.runs_table()
+        except OSError:
+            records = {}
+        prefix = f"suite-{args['bench']}-{args['model']}-{args['run_id']}-"
+        done = sum(records.get(prefix + case[0], {}).get('status') == 'ok' for case in cases)
+        total = len(cases)
+    return dict(done=done, total=total, remaining=total-done) if total and done < total else None
+
+
+def resume_job(jid):
+    """Requeue a saved bench identity; never execute arbitrary saved argv."""
+    with _lock:
+        jobs = refresh_jobs()['jobs']
+        job = next((j for j in jobs if j['id'] == jid), None)
+        if not job or job.get('kind') not in ('bench', 'suite'):
+            raise ActionError('only saved quality or sweep jobs can be resumed')
+        if job.get('status') == 'running' or not resume_progress(job):
+            raise ActionError('only an ended, unfinished job can be resumed')
+        args = dict(job['args'])
+        if job['kind'] == 'suite':
+            args = suite_identity(job)
+        def same(kind, other):
+            if kind != job['kind']:
+                return False
+            if kind == 'bench':
+                return other.get('name') == args.get('name')
+            return other.get('model') == args.get('model') and other.get('bench') == args.get('bench')
+        if any(same(q['kind'], q['args']) for q in queue_state()['items']) or any(
+                j['status'] == 'running' and same(j['kind'], j['args']) for j in jobs):
+            raise ActionError('this bench is already running or queued')
+        item = queue_add(job['kind'], args, only_when_quiet=job.get('only_when_quiet', job['kind'] == 'suite' and args.get('bench') == 'ram'))
+        queue_pause(False)
+        return item
 
 
 # ---------- stop ----------

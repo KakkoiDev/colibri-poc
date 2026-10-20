@@ -179,8 +179,8 @@ def bench_job_progress(cmd, elapsed_s=None):
                 key = f"{p['id']}__{st}__{c}"
                 f = folder / f'{key}.json'
                 it = dict(key=key, prompt=p['id'], kind=p.get('kind'), style=st, config=c)
-                if f.exists():
-                    r = read_json(f, {})
+                r = read_json(f, {}) if f.exists() else {}
+                if r.get('exit') == 0:
                     it.update(status='done', correct=r.get('correct'), answer_s=r.get('answer_s'),
                               this_run=started is not None and f.stat().st_mtime >= started)
                 elif not current_found:
@@ -648,7 +648,7 @@ def queue_view():
     except Exception:
         pass
     tl = timeline(js_now, planned)
-    js = actions.refresh_jobs()['jobs'][:25]
+    js = [dict(j, resume=actions.resume_progress(j)) for j in actions.refresh_jobs()['jobs'][:25]]
     return dict(paused=tl['paused'], items=tl['queue'], timeline=tl, runner=RUNNER.get('last'), jobs=js)
 
 
@@ -699,6 +699,8 @@ def act(path, body):
         if body.get('resume') is True:
             actions.queue_pause(False)
         return dict(queued=queued, paused=actions.queue_state()['paused'])
+    if path == '/api/job/resume':
+        return dict(queued=actions.resume_job(body.get('id')))
     if path == '/api/queue/remove':
         actions.queue_remove(body.get('qid')); return dict(ok=True)
     if path == '/api/queue/move':

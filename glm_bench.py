@@ -155,7 +155,19 @@ def run(args):
                 key = f"{item['id']}__{style}__{cfg}"
                 res_path = out_dir / f'{key}.json'
                 if res_path.exists():
-                    continue
+                    try:
+                        saved = json.loads(res_path.read_text())
+                    except (OSError, ValueError):
+                        saved = {}
+                    if saved.get('exit') == 0:
+                        continue
+                if res_path.exists() or (out_dir / f'{key}.log').exists():
+                    # Preserve failed or interrupted attempts before retrying this case.
+                    archive = out_dir / 'attempts' / (key + '-' + str(time.time_ns()))
+                    archive.mkdir(parents=True)
+                    for old in (res_path, out_dir / f'{key}.log'):
+                        if old.exists():
+                            old.replace(archive / old.name)
                 prompt = item['prompt'] + spec['styles'][style]
                 if ollama:
                     t0 = time.time()

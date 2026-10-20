@@ -99,7 +99,7 @@ def main():
     s.storage = lambda: dict(real_storage(), disk_free_gb=453)
 
     # 4. Actions that would touch the Mac answer with fake results.
-    def fake_launch(kind, args, source='app'):
+    def fake_launch(kind, args, source='app', only_when_quiet=False):
         argv, title = a.build_command(kind, args)   # still validated exactly like the real app
         jid = time.strftime('%Y%m%dT%H%M%S') + '-' + kind
         with a._lock:

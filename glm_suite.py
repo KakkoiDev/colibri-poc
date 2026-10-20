@@ -10,7 +10,7 @@ published like every other run (glm_lab.execute), so the lab app's coverage grid
 website pick them up. One GPU job at a time (.bench.lock). The owner's Colibri state is
 not changed (USAGE_SAVE=0, KVSAVE=0, --no-tune-profile).
 """
-import argparse, json, sys, time
+import argparse, json, re, sys, time
 from pathlib import Path
 
 import glm_lab
@@ -36,7 +36,7 @@ def model(mid):
     raise SystemExit(f'unknown model: {mid}')
 
 
-def run(bench, mid):
+def run(bench, mid, run_id=None):
     m = model(mid)
     if not m.get('suite'):
         raise SystemExit(f"{mid}: {m.get('suite_note', 'not supported by the suite')}")
@@ -44,11 +44,28 @@ def run(bench, mid):
     if not mdir.exists():
         raise SystemExit(f'{mid} is not installed ({mdir})')
     lock = glm_lab.acquire_lock()
-    stamp = time.strftime('%Y%m%dT%H%M')
+    stamp = run_id or time.strftime('%Y%m%dT%H%M%S')
+    if not re.fullmatch(r'[A-Za-z0-9._-]{1,80}', stamp):
+        raise SystemExit('invalid run id')
     if m['coli_dir'].startswith('engines/'):
         glm_lab.build_engine({'coli_dir': m['coli_dir'], 'build': {'ref': m['coli_dir'].split('-')[-1]}})
     for case, prompt, ngen, env, ram in CASES[bench]:
         name = f'suite-{bench}-{mid}-{stamp}-{case}'
+        previous = glm_lab.runs_table().get(name, {})
+        if previous.get('status') == 'ok':
+            print(f'  {name} saved; skipping', flush=True)
+            continue
+        # execute publishes to fixed paths: retain previous attempts before retry.
+        for base, suffix in ((glm_lab.RAW_LOGS, '.log'), (glm_lab.PUBLISHED, '.output.txt')):
+            old = base / (name + suffix)
+            if old.exists():
+                archive = ROOT / 'results' / 'suite-attempts' / name / str(time.time_ns())
+                archive.mkdir(parents=True, exist_ok=True)
+                (archive / old.name).write_bytes(old.read_bytes())
+        if previous:
+            archive = ROOT / 'results' / 'suite-attempts' / name
+            archive.mkdir(parents=True, exist_ok=True)
+            (archive / (str(time.time_ns()) + '.json')).write_text(json.dumps(previous))
         glm_lab.execute(name, prompt, ngen, env, coli_dir=m['coli_dir'], model=str(mdir), ram=ram)
         print(f'  {name} done', flush=True)
     lock.close()
@@ -60,8 +77,9 @@ def main():
     r = sub.add_parser('run')
     r.add_argument('bench', choices=sorted(CASES))
     r.add_argument('--model', required=True)
+    r.add_argument('--run-id', help='Stable sweep identity; successful cases are reused on resume')
     a = ap.parse_args()
-    run(a.bench, a.model)
+    run(a.bench, a.model, a.run_id)
 
 
 if __name__ == '__main__':

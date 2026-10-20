@@ -46,3 +46,28 @@ model is protected, and an active or downloading model cannot be removed.
 Models outside the managed catalog are listed separately.
 
 Advanced navigation keeps the experiment, research and machine tools available.
+
+## Resume an unfinished run
+
+Use **Resume · N remaining** in Recently finished or the full queue history.
+It queues the original model, settings and run identity and resumes the queue.
+The existing quiet-machine condition is preserved. A bench already queued or
+running cannot be queued a second time through Resume.
+
+```mermaid
+flowchart LR
+    A[Interrupted or failed run] --> B[Resume remaining cases]
+    B --> C[Keep successful cases]
+    B --> D[Archive failed attempts]
+    D --> E[Retry failed or missing cases]
+```
+
+Quality benches reuse successful answer files, including answers graded incorrect:
+a wrong answer is a measured result, not an execution failure. Failed and malformed
+answer records are archived under the run's `attempts/` folder before retrying.
+Speed, thread and RAM sweeps reuse successful published cases using a stable
+`--run-id`. Previous failed sweep records and logs are copied to
+`results/suite-attempts/`. Older sweep jobs use their original launch minute.
+Only quality and standard sweep jobs offer Resume; experimental and quiet
+campaign commands do not yet have this resume control. The full history currently
+shows the latest 25 jobs.

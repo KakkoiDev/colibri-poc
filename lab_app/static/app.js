@@ -616,7 +616,7 @@
             h('button', { type: 'button', class: 'btn btn-sm', onclick: function () { runOrQueue('planned', { id: e.id }, e.title, true); }, text: 'Queue' })) : null;
           return h('tr', { class: e.lossy ? 'lossy' : null }, td(h('div', { class: 'stack', style: 'gap:2px;min-width:220px' }, h('strong', { text: e.title }), h('span', { class: 'hint mono', text: e.id }), tags, acts)),
             td(e.category), td(verdict(e.verdict)), td(m.measured ? f2(m.ref_tok_s) + ' → ' + f2(m.tok_s) : '—', 'n'),
-            td(m.speed_change_pct == null ? '—' : (m.speed_change_pct > 0 ? '+' : '') + Math.round(m.speed_change_pct) + '%', 'n'), td(m.measured ? m.output : '—'), td(det, 'wrap'));
+            td(m.speed_change_pct == null ? '—' : (m.speed_change_pct > 0 ? '+' : '') + Math.round(m.speed_change_pct) + '%', 'n'), td(m.measured ? m.output : '—'), td(h('div',{class:'stack'},resumeButton(j,q.items),det), 'wrap'));
         })));
       }
       put(main, header('Experiments', 'The experiment registry (experiments/glm-experiments.json). Verdicts are computed from published runs; changes under ~10% are noise.'), tabs, body);
@@ -751,7 +751,7 @@
         });
         var cls = { running: 'st-running', done: 'st-done', finished: 'st-done', failed: 'st-failed' }[j.status] || 'st-waiting';
         return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('span', { text: j.title }), h('span', { class: 'hint mono', text: 'PID ' + j.pid + ' · ' + j.source }))),
-          td(j.started), td(chip(cls, j.status + (j.exit != null && j.status !== 'done' ? ' (' + j.exit + ')' : ''))), td(det, 'wrap'));
+          td(j.started), td(chip(cls, j.status + (j.exit != null && j.status !== 'done' ? ' (' + j.exit + ')' : ''))), td(h('div',{class:'stack'},resumeButton(j,q.items),det), 'wrap'));
       }));
       put(main, header('Queue', 'GPU jobs run one after another. The runner starts the first item when the GPU lock is free and no engine is running.',
           h('button', { type: 'button', class: 'btn', text: q.paused ? 'Resume queue' : 'Pause queue', onclick: function () { post('/api/queue/pause', { paused: !q.paused }).then(route); } })),
@@ -1052,6 +1052,19 @@
   }
 
   // Primary workflow: choose a model + one bench, then launch with one action.
+  function resumeButton(j, queuedItems) {
+    if (!j.resume) return null;
+    var queued=(queuedItems || []).some(function(q){return q.kind===j.kind && (j.kind==='bench' ? q.args.name===j.args.name : q.args.model===j.args.model && q.args.bench===j.args.bench);});
+    var button = h('button', {type:'button', class:'btn btn-sm', disabled:queued ? '' : null, text:queued ? 'Resume queued' : 'Resume · '+j.resume.remaining+' remaining',
+      'aria-label':'Resume unfinished: '+j.title, onclick:function () {
+        button.disabled=true; button.textContent='Queueing…';
+        post('/api/job/resume', {id:j.id}).then(function () {
+          toast('Resume queued. Saved successful cases will be kept.'); route();
+        }).catch(function (e) { button.disabled=false; button.textContent='Resume unfinished'; toast(e.message,true); });
+      }});
+    return button;
+  }
+
   var launchChoice = {model: '', item: '', schedule: 'ready', pending: false};
   // ---------- Run benchmarks (home) ----------
   // One workflow: choose a model, choose a benchmark, choose when it may start, queue it.
@@ -1259,7 +1272,7 @@
             var parts = jobParts(j.title);
             return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:0' }, h('strong', { text: parts.what || j.title }), parts.detail ? h('span', { class: 'hint', text: parts.detail }) : null)),
               td(parts.model || '—'), td(h('span', { class: 'num', style: 'white-space:nowrap', text: j.started })), td(outcome(j)),
-              td(j.kind === 'bench' && j.args && j.args.name ? h('a', { href: '#bench/' + encodeURIComponent(j.args.name), text: 'Answers' }) : h('a', { href: '#queue', text: 'Log' })));
+              td(h('div',{class:'row'},resumeButton(j,queue.items),j.kind === 'bench' && j.args && j.args.name ? h('a', { href: '#bench/' + encodeURIComponent(j.args.name), text: 'Answers' }) : h('a', { href: '#queue', text: 'Log' }))));
           }), 'Recently finished jobs') : empty('Finished benchmarks appear here.'));
       }
       function renderLive() {
