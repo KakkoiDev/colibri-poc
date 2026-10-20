@@ -381,7 +381,7 @@
   function envText(env) { var k = Object.keys(env || {}); return k.length ? k.map(function (x) { return x + '=' + (typeof env[x] === 'object' ? JSON.stringify(env[x]) : env[x]); }).join(' ') : 'none'; }
 
   // ---------- results ----------
-  var resultsState = { model: 'all', style: 'all', kind: 'all', speedOk: true, speedQ: '' };
+  var resultsState = { model: 'all', style: 'all', kind: 'all', speedOk: true, speedQ: '', qualityOrder: 'quality', speedOrder: 'saved' };
   function screenResults(main, tab) {
     tab = tab === 'speed' || tab === 'coverage' ? tab : 'quality';
     return Promise.all([api('/api/benches'), api('/api/runs'), api('/api/models')]).then(function (res) {
@@ -419,7 +419,7 @@
       });
       count.textContent = shown.length + ' of ' + rows.length + ' setting × style combinations. Bold = best value among the rows shown.';
       tblBox.textContent = '';
-      tblBox.appendChild(dataTable({ caption: 'Answer quality and speed per bench, setting and style', sortKey: 'pct', dir: 'desc', rows: shown,
+      tblBox.appendChild(dataTable({ caption: 'Answer quality and speed per bench, setting and style', sortKey: st.qualityOrder === 'quality' ? 'pct' : 'tok_s', dir: st.qualityOrder === 'slowest' ? 'asc' : 'desc', rows: shown,
         rowClass: function (r) { return r.lossy ? 'lossy' : null; },
         cols: [
           { id: 'model', t: 'Model', key: 'model', cell: function (r) { return h('div', { class: 'stack', style: 'gap:0;min-width:200px' }, h('strong', { text: r.model }), h('span', { class: 'hint mono', text: 'bench ' + r.bench })); } },
@@ -438,7 +438,8 @@
     var filters = h('div', { class: 'filters', role: 'group', 'aria-label': 'Filter results' },
       selectField('f-model', 'Model', [['all', 'All models']].concat(models.map(function (m) { return [m, m]; })), st.model, function (v) { st.model = v; draw(); }),
       selectField('f-style', 'Answer style', [['all', 'All styles']].concat(styles.map(function (m) { return [m, cap(m)]; })), st.style, function (v) { st.style = v; draw(); }),
-      selectField('f-kind', 'Output', [['all', 'Exact and lossy'], ['exact', 'Exact only'], ['lossy', 'Changes output only']], st.kind, function (v) { st.kind = v; draw(); }));
+      selectField('f-kind', 'Output', [['all', 'Exact and lossy'], ['exact', 'Exact only'], ['lossy', 'Changes output only']], st.kind, function (v) { st.kind = v; draw(); }),
+      selectField('f-quality-order', 'Sort by', [['quality', 'Quality score: highest first'], ['fastest', 'Tokens/s: fastest first'], ['slowest', 'Tokens/s: slowest first']], st.qualityOrder, function(v){st.qualityOrder=v;draw();}));
     draw();
     var settings = section('How each bench was run', null, h('div', { class: 'stack', style: 'gap:8px' }, d.results.map(function (r) {
       var s = r.settings || {};
@@ -471,7 +472,7 @@
       var shown = rows.filter(function (r) { return (!st.speedOk || r.status === 'ok') && (!q || (r.run + ' ' + r.backend + ' ' + r.env).toLowerCase().indexOf(q) >= 0); });
       count.textContent = shown.length + ' of ' + rows.length + ' runs. Bold = best value among the runs shown.';
       box.textContent = '';
-      box.appendChild(dataTable({ caption: 'Engine speed runs', rows: shown, sortKey: 'i', dir: 'desc',
+      box.appendChild(dataTable({ caption: 'Engine speed runs', rows: shown, sortKey: st.speedOrder === 'saved' ? 'i' : 'tok_s', dir: st.speedOrder === 'slowest' ? 'asc' : 'desc',
         cols: [
           { id: 'i', t: '#', n: 1, key: 'i', cell: function (r) { return h('span', { class: 'hint', text: String(r.i + 1) }); } },
           { id: 'run', t: 'Run', key: 'run', cell: function (r) { return h('span', { class: 'mono', style: 'white-space:nowrap', text: r.run }); } },
@@ -494,7 +495,8 @@
     draw();
     put(out, h('div', { class: 'filters', role: 'group', 'aria-label': 'Filter runs' },
         h('div', { class: 'field' }, h('label', { for: 'f-run', text: 'Search runs' }), search),
-        h('label', { class: 'check', for: 'f-ok' }, ok, h('span', { text: 'Successful runs only' }))),
+        h('label', { class: 'check', for: 'f-ok' }, ok, h('span', { text: 'Successful runs only' })),
+        selectField('f-speed-order', 'Sort by', [['saved', 'Saved run order'], ['fastest', 'Tokens/s: fastest first'], ['slowest', 'Tokens/s: slowest first']], st.speedOrder, function(v){st.speedOrder=v;draw();})),
       count, box,
       h('p', { class: 'hint', text: 'One row per engine run (results/runs.csv). Decode speed is generated tokens per second after the prompt is read. Open "Settings" for the exact engine flags and environment. Generated answers for quality benches are under Answer quality.' }));
     return out;
