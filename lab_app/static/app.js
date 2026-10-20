@@ -1,22 +1,27 @@
-/* GLM lab control app, v1 (read-only). Screens follow the designer's canvas
-   (project/Lab-*.dc.html). All data comes from lab_app/server.py's /api/*.
-   Text from the lab (answers, logs, titles) is always inserted as text, never HTML. */
+/* GLM lab control app. All data comes from lab_app/server.py's /api/*; the design system is
+   lab.css (documented in docs/lab-app/design-system.md). Text from the lab (answers, logs,
+   titles) is always inserted as text, never as HTML.
+   Main tasks get the primary navigation: Run benchmarks, Results, Models. Everything else
+   lives under "More tools". */
 (function () {
   'use strict';
 
   var GH = 'https://github.com/KakkoiDev/colibri-poc/blob/main/';
   var ICON = {
-    now: 'M3 12h4l3-8 4 16 3-8h4', models: 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8',
-    leaderboard: 'M4 20V10M10 20V4M16 20v-7M2 20h20', experiments: 'M9 3h6M10 3v6L4 19a1 1 0 0 0 1 1.5h14A1 1 0 0 0 20 19l-6-10V3',
+    dashboard: 'M7 4.5v15l12-7.5z', results: 'M4 5h16M4 12h16M4 19h16M9 5v14',
+    models: 'M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8',
+    now: 'M3 12h4l3-8 4 16 3-8h4', leaderboard: 'M4 20V10M10 20V4M16 20v-7M2 20h20',
+    experiments: 'M9 3h6M10 3v6L4 19a1 1 0 0 0 1 1.5h14A1 1 0 0 0 20 19l-6-10V3',
     benches: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z', runs: 'M4 17l6-5-6-5M12 19h8',
-    research: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5',
+    research: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5', start: 'M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9',
     queue: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', install: 'M12 3v12M7 10l5 5 5-5M4 21h16',
     settings: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M14 4v4M8 10v4M16 16v4'
   };
-  var SCREENS = [['dashboard', 'Run benches'], ['results', 'Results'], ['models', 'Models']];
-  var ADVANCED = [['queue', 'Manage queue'], ['now', 'Machine status'], ['benches', 'Coverage'], ['runs', 'Engine runs'],
+  var SCREENS = [['dashboard', 'Run benchmarks'], ['results', 'Results'], ['models', 'Models']];
+  var ADVANCED = [['queue', 'Queue and logs'], ['start', 'Select several benches'], ['now', 'Machine status'], ['runs', 'Engine runs'],
                   ['leaderboard', 'Leaderboard'], ['experiments', 'Experiments'], ['research', 'Research'], ['settings', 'Settings']];
-  var CFG = { exact: 'exact', d030: 'skip 0.3', d050: 'skip 0.5', d030t12: 'skip 0.3 · 12 thr', d040t12: 'skip 0.4 · 12 thr' };
+  var CFG = { exact: 'exact', d030: 'skip 0.3', d050: 'skip 0.5', d030t12: 'skip 0.3 · 12 threads', d040t12: 'skip 0.4 · 12 threads',
+              native: 'Ollama defaults (thinking on)' };
   var timer = null;
 
   // ---------- tiny DOM helpers ----------
@@ -37,22 +42,28 @@
     e.appendChild(typeof c === 'string' || typeof c === 'number' ? document.createTextNode(String(c)) : c);
   }
   function put(e) { for (var i = 1; i < arguments.length; i++) add(e, arguments[i]); }
-  function svgIcon(d) {
+  function svgIcon(d, size) {
     var ns = 'http://www.w3.org/2000/svg', s = document.createElementNS(ns, 'svg'), p = document.createElementNS(ns, 'path');
-    s.setAttribute('width', '18'); s.setAttribute('height', '18'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
+    s.setAttribute('width', size || '18'); s.setAttribute('height', size || '18'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
     p.setAttribute('d', d); s.appendChild(p); return s;
   }
-  var f2 = function (v, d) { return v == null || isNaN(v) ? '—' : Number(v).toFixed(d == null ? 2 : d); };
+  var f2 = function (v, d) { return v == null || v === '' || isNaN(v) ? '—' : Number(v).toFixed(d == null ? 2 : d); };
   var pct = function (a, b) { return b ? Math.round(a / b * 100) : 0; };
   function dur(s) {
     if (s == null) return '—';
     var hh = Math.floor(s / 3600), mm = Math.floor(s % 3600 / 60);
-    return hh ? hh + ' h ' + mm + ' m' : mm ? mm + ' m' : Math.round(s) + ' s';
+    return hh ? hh + ' h ' + mm + ' min' : mm ? mm + ' min' : Math.round(s) + ' s';
   }
-  function chip(cls, word) { return h('span', { class: 'chip ' + cls, text: word }); }
+  function at(s) {
+    var d = new Date(Date.now() + s * 1000), t = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+    var days = Math.round((new Date(d).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 864e5);
+    return days === 0 ? t : days === 1 ? 'tomorrow ' + t : d.toLocaleDateString(undefined, { weekday: 'short' }) + ' ' + t;
+  }
+  function cap(w) { w = String(w || ''); return w.charAt(0).toUpperCase() + w.slice(1); }
+  function chip(cls, word) { return h('span', { class: 'chip ' + cls, text: cap(word) }); }
   function verdict(v) {
-    var m = { 'improves': ['v-improves', '▲ improves'], 'no clear change': ['v-same', '= no clear change'], 'worse': ['v-worse', '▼ worse'],
-              'failed': ['v-failed', '✗ failed'] }[v] || ['v-pending', v];
+    var m = { 'improves': ['v-improves', '▲ Improves'], 'no clear change': ['v-same', '= No clear change'], 'worse': ['v-worse', '▼ Worse'],
+              'failed': ['v-failed', '✗ Failed'] }[v] || ['v-pending', cap(v)];
     return h('span', { class: 'verdict ' + m[0], text: m[1] });
   }
   function lossyTag() { return h('span', { class: 'tag tag-lossy', text: 'changes output' }); }
@@ -67,35 +78,50 @@
     return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Lab-Action': '1' }, body: JSON.stringify(body || {}) })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); });
   }
-  function toast(msg, bad) {
-    var t = h('div', { role: 'status', class: bad ? 'err' : 'banner', style: 'position:fixed;right:16px;bottom:16px;max-width:420px;z-index:20;background:var(--surface)', text: msg });
-    document.body.appendChild(t); setTimeout(function () { t.remove(); }, 6000);
+  // Toasts: short, announced, dismissible. Errors stay until dismissed.
+  function toast(msg, bad, link) {
+    var box = document.getElementById('toasts') || document.body;
+    var t = h('div', { class: 'toast' + (bad ? ' bad' : ''), role: bad ? 'alert' : 'status' },
+      h('span', { style: 'flex:1', text: msg }), link ? h('a', { href: link[0], text: link[1] }) : null,
+      h('button', { type: 'button', 'aria-label': 'Dismiss', text: '×', onclick: function () { t.remove(); } }));
+    box.appendChild(t);
+    if (!bad) setTimeout(function () { t.remove(); }, 7000);
   }
-  // Confirmation dialog: names exactly what will happen. Resolves true on confirm.
+  // Confirmation dialog: names exactly what will happen. Keeps focus inside; Esc or Cancel closes.
   function confirmDialog(o) {
     return new Promise(function (resolve) {
       var prev = document.activeElement;
-      var scrim = h('div', { class: 'scrim', style: 'position:fixed' });
-      function close(v) { scrim.remove(); document.removeEventListener('keydown', esc); if (prev) prev.focus(); resolve(v); }
-      function esc(e) { if (e.key === 'Escape') close(false); }
+      var scrim = h('div', { class: 'scrim' });
+      function close(v) { scrim.remove(); document.removeEventListener('keydown', key); if (prev && prev.focus) prev.focus(); resolve(v); }
+      function key(e) {
+        if (e.key === 'Escape') close(false);
+        if (e.key === 'Tab') {
+          var f = dlg.querySelectorAll('button, a[href], input, select');
+          if (!f.length) return;
+          if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+          else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+        }
+      }
+      var cancel = h('button', { type: 'button', class: 'btn', onclick: function () { close(false); }, text: 'Cancel' });
       var ok = h('button', { type: 'button', class: 'btn ' + (o.danger ? 'btn-danger-solid' : 'btn-primary'), onclick: function () { close(true); }, text: o.confirm });
-      var dlg = h('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'dlg-t' },
-        h('div', { class: 'dialog-head' }, o.eyebrow ? h('span', { class: 'eyebrow', text: o.eyebrow }) : null, h('h2', { id: 'dlg-t', style: 'font-size:18px;line-height:24px', text: o.title }),
-          o.sub ? h('p', { class: 'muted', style: 'font-size:13px', text: o.sub }) : null),
-        h('div', { class: 'dialog-body' }, h('dl', { class: 'kv' }, (o.rows || []).map(function (r) { return [h('dt', { text: r[0] }), h('dd', { class: r[2] ? 'mono' : null, style: 'overflow-wrap:anywhere', text: r[1] })]; })),
-          o.note ? h('div', { class: o.warn ? 'err' : 'well', style: 'padding:10px 12px;font-size:13px', text: o.note }) : null),
-        h('div', { class: 'dialog-foot' }, h('button', { type: 'button', class: 'btn', onclick: function () { close(false); }, text: 'Cancel' }), ok));
+      var dlg = h('div', { class: 'dialog', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'dlg-t', 'aria-describedby': o.sub ? 'dlg-s' : null },
+        h('div', { class: 'dialog-head' }, o.eyebrow ? h('span', { class: 'eyebrow', text: o.eyebrow }) : null, h('h2', { id: 'dlg-t', text: o.title }),
+          o.sub ? h('p', { id: 'dlg-s', class: 'muted', style: 'font-size:13px', text: o.sub }) : null),
+        h('div', { class: 'dialog-body' }, h('dl', { class: 'kv' }, (o.rows || []).map(function (r) { return [h('dt', { text: r[0] }), h('dd', { class: r[2] ? 'mono' : null, text: r[1] })]; })),
+          o.note ? h('div', { class: o.warn ? 'notice notice-warn' : 'notice', text: o.note }) : null),
+        h('div', { class: 'dialog-foot' }, cancel, ok));
       scrim.addEventListener('click', function (e) { if (e.target === scrim) close(false); });
-      scrim.appendChild(dlg); document.body.appendChild(scrim); document.addEventListener('keydown', esc); ok.focus();
+      scrim.appendChild(dlg); document.body.appendChild(scrim); document.addEventListener('keydown', key);
+      (o.danger ? cancel : ok).focus();   // a destructive dialog opens on Cancel
     });
   }
   function stopJob(j) {
-    return confirmDialog({ eyebrow: 'Confirmation · stop', title: 'Stop PID ' + j.pid + '?', danger: true, confirm: 'Stop PID ' + j.pid,
+    return confirmDialog({ eyebrow: 'Stop a job', title: 'Stop PID ' + j.pid + '?', danger: true, confirm: 'Stop PID ' + j.pid,
       sub: 'Only this job and the processes it started are stopped. Nothing else is touched.',
       rows: [['Job', j.kind + ' · ' + j.title], ['Process', j.command, true], ['Running for', dur(j.elapsed_s)],
              ['Holds', j.holds_lock ? '.bench.lock' : 'no lock'], ['Engine child', j.engine_pid ? 'PID ' + j.engine_pid : 'none']],
-      note: j.kind === 'Quality bench' ? 'Finished answers stay saved; re-queue the same bench to resume where it stopped.' :
-            j.kind === 'Download' ? 'The download is resumable: start it again from Install to continue.' : 'The current run is lost; finished results stay saved.' })
+      note: j.kind === 'Quality bench' ? 'Finished answers stay saved; queue the same bench again to resume where it stopped.' :
+            j.kind === 'Download' ? 'The download is resumable: start it again from Models to continue.' : 'The current run is lost; finished results stay saved.' })
       .then(function (ok) {
         if (!ok) return;
         return post('/api/stop', { pid: j.pid }).then(function (r) { toast('Stopped PID ' + r.stopped.join(', ')); route(); }, function (e) { toast(e.message, true); });
@@ -103,39 +129,50 @@
   }
   function runOrQueue(kind, args, label, queueOnly) {
     return post(queueOnly ? '/api/queue/add' : '/api/run', { kind: kind, args: args }).then(function (r) {
-      toast(r.started ? 'Started: ' + r.started.title + ' (PID ' + r.started.pid + ')' : (r.note ? r.note + ': ' : 'Queued: ') + (r.queued ? r.queued.title : label));
+      toast(r.started ? 'Started: ' + r.started.title + ' (PID ' + r.started.pid + ')' : (r.note ? r.note + ': ' : 'Queued: ') + (r.queued ? r.queued.title : label), false, ['#queue', 'View queue']);
       route();
     }, function (e) { toast(e.message, true); });
   }
-  function table(headers, rows) {
-    var t = h('table', { class: 't' });
-    t.appendChild(h('thead', {}, h('tr', {}, headers.map(function (x) {
-      var n = typeof x === 'object'; return h('th', { class: n && x.n ? 'n' : null, scope: 'col', text: n ? x.t : x });
-    }))));
+  // Header cells: 'Text' or { t: 'Text', n: numeric, u: 'unit' }.
+  function th(x) {
+    var n = typeof x === 'object';
+    return h('th', { class: n && x.n ? 'n' : null, scope: 'col' }, n ? x.t : x, n && x.u ? h('span', { class: 'u', text: x.u }) : null);
+  }
+  function table(headers, rows, caption) {
+    var t = h('table', { class: 't' }, caption ? h('caption', { class: 'sr-only', text: caption }) : null);
+    t.appendChild(h('thead', {}, h('tr', {}, headers.map(th))));
     var tb = h('tbody'); rows.forEach(function (r) { tb.appendChild(r); }); t.appendChild(tb);
-    return h('div', { class: 'card scroll' }, t);
+    return h('div', { class: 'table-wrap' }, t);
   }
   function td(content, cls) { return h('td', { class: cls || null }, content); }
   function header(title, sub, extra) {
-    return h('header', { class: 'head' }, h('div', { class: 'stack', style: 'gap:2px' }, h('h1', { text: title }), sub ? h('p', { class: 'muted', style: 'font-size:13px', text: sub }) : null), extra || null);
+    return h('header', { class: 'head' }, h('div', { class: 'stack' }, h('h1', { text: title }), sub ? h('p', { class: 'muted', text: sub }) : null), extra || null);
   }
   function section(title, right, body) {
     return h('section', { class: 'stack' }, h('div', { class: 'sec-title' }, h('h2', { text: title }), right || null), body);
   }
-  function card(children, pad) { return h('div', { class: 'card', style: 'padding:' + (pad || '16px 18px') + ';display:flex;flex-direction:column;gap:10px' }, children); }
-  function meter(done, total) {
-    return h('div', { class: 'meter', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': total, 'aria-valuenow': done },
+  function card(children, pad) { return h('div', { class: 'card', style: 'padding:' + (pad || '16px 20px') + ';display:flex;flex-direction:column;gap:12px' }, children); }
+  function meter(done, total, label) {
+    return h('div', { class: 'meter', role: 'progressbar', 'aria-label': label || 'Progress', 'aria-valuemin': 0, 'aria-valuemax': total, 'aria-valuenow': done },
       h('span', { style: 'width:' + Math.min(100, pct(done, total)) + '%' }));
   }
+  function empty(text, action) { return h('div', { class: 'empty' }, h('p', { text: text }), action ? h('div', { style: 'margin-top:12px' }, action) : null); }
   function errorBox(e) { return h('div', { class: 'err', role: 'alert', text: 'Could not load data: ' + (e.message || e) + '. Is lab_app/server.py running?' }); }
+  // "Quality bench v1 on GLM-5.3 int4 g64: exact, d030 · terse" -> what / model / detail
+  function jobParts(title) {
+    var m = /^(.*?) on (.*?)(?:: (.*))?$/.exec(title || '');
+    if (!m) return { what: title || '', model: '', detail: '' };
+    var detail = (m[3] || '').replace(/\b(exact|d030t12|d040t12|d030|d050|native)\b/g, function (c) { return CFG[c] || c; });
+    return { what: m[1].replace(/^Quality bench \S+$/, 'Quality bench').replace(/^Ram bench/, 'RAM bench'), model: m[2], detail: detail };
+  }
 
   // ---------- nav / theme ----------
   function renderNav(active) {
     var nav = document.getElementById('nav'); nav.textContent = '';
     function link(s) { return h('a', { href: '#' + s[0], 'aria-current': s[0] === active ? 'page' : null }, svgIcon(ICON[s[0]] || ICON.benches), h('span', { text: s[1] })); }
     SCREENS.forEach(function (s) { nav.appendChild(link(s)); });
-    nav.appendChild(h('details', { class: 'advanced-nav', open: ADVANCED.some(function (s) { return s[0] === active; }) ? '' : null },
-      h('summary', { text: 'Advanced' }), ADVANCED.map(link)));
+    var adv = ADVANCED.some(function (s) { return s[0] === active; });
+    nav.appendChild(h('details', { class: 'advanced-nav', open: adv ? '' : null }, h('summary', { text: 'More tools' }), ADVANCED.map(link)));
   }
   function setGpu(now) {
     var c = document.getElementById('gpu-chip'), d = document.getElementById('gpu-detail');
@@ -143,7 +180,7 @@
     if (gpu.length) {
       c.className = 'chip st-running'; c.textContent = 'GPU busy';
       d.textContent = gpu[0].title + ' · PID ' + gpu[0].pid;
-    } else { c.className = 'chip st-done'; c.textContent = 'GPU free'; d.textContent = (now.jobs || []).length ? now.jobs.length + ' other job(s)' : 'nothing running'; }
+    } else { c.className = 'chip st-done'; c.textContent = 'GPU free'; d.textContent = (now.jobs || []).length ? now.jobs.length + ' other job(s)' : 'Nothing running'; }
   }
   (function theme() {
     var sel = document.getElementById('theme'), saved = 'auto';
@@ -155,7 +192,12 @@
     });
   })();
 
-  // ---------- screens ----------
+  // The skip link must not change the hash (the hash is the router).
+  (function skip() {
+    var a = document.querySelector('.skip'); if (!a) return;
+    a.addEventListener('click', function (e) { e.preventDefault(); var m = document.getElementById('main'); if (m) { m.focus(); m.scrollIntoView(); } });
+  })();
+  // ---------- legacy live screens (More tools) ----------
   function jobCard(j) {
     var p = j.progress, unit = p && p.unit ? ' ' + p.unit : '';
     return card([
@@ -224,7 +266,6 @@
     });
   }
 
-  function at(s) { var d = new Date(Date.now() + s * 1000); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
   function benchStrip(p) {
     var strip = h('div', { role: 'img', 'aria-label': p.done + ' of ' + p.total + ' answers done', style: 'display:flex;flex-wrap:wrap;gap:3px' });
     p.items.forEach(function (i) {
@@ -267,7 +308,7 @@
   function covCell(c, onRun) {
     var map = { done: ['st-done', 'Done'], running: ['st-running', 'Running'], missing: ['st-missing', 'Missing'], failed: ['st-failed', 'Failed'], queued: ['st-queued', 'Queued'] }[c.status];
     return h('div', { class: 'cov' + (c.status === 'missing' ? ' missing' : '') }, h('span', { class: 'chip ' + map[0], style: 'align-self:flex-start', text: map[1] }), h('span', { class: 'hint num', text: c.detail || '' }),
-      onRun ? h('button', { type: 'button', class: 'btn btn-sm', style: 'align-self:flex-start', onclick: onRun, text: c.status === 'done' ? 'Run again' : 'Run' }) : null);
+      onRun ? h('button', { type: 'button', class: 'btn btn-sm', style: 'align-self:flex-start', onclick: onRun, text: c.status === 'done' ? 'Queue again' : 'Queue' }) : null);
   }
   // Queue job args for one standard bench on one model (defaults match how each bench is usually run).
   function benchJob(bench, m, opts) {
@@ -283,75 +324,228 @@
             function (e) { toast(e.message, true); });
   }
 
-  function screenBenches(main) {
-    return Promise.all([api('/api/benches'),api('/api/runs')]).then(function (data) {
-      var d=data[0], measured=data[1].runs.filter(function(r){return r.status==='ok';}).slice(-15).reverse();
-      var suite = d.suite.benches;
-      var cov = table([{ t: 'Model' }].concat(suite.map(function (b) { return { t: b.name }; })), d.models.map(function (m) {
-        var quietMissing = m.owner_model && (m.coverage.quiet.status === 'missing' || m.coverage.ram.status === 'missing');
-        return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: m.name }),
-          h('span', { class: 'hint', text: m.installed ? 'installed · ' + m.covered + ' of ' + suite.length + ' benches' : (m.download ? 'downloading ' + pct(m.download.done, m.download.total) + '%' : 'not installed') }),
-          quietMissing ? h('button', { type: 'button', class: 'btn btn-sm', style: 'align-self:flex-start', text: 'Queue quiet run + RAM sweep',
-            onclick: function () { post('/api/queue/add', { kind: 'quiet', args: { flags: ['ram-sweep', 'skip-original'] }, only_when_quiet: true }).then(function () { toast('Queued: quiet run (starts when ≥ 20 GB free)'); route(); }, function (e) { toast(e.message, true); }); } }) : null,
-          !m.installed && !m.download ? h('a', { class: 'btn btn-sm', style: 'align-self:flex-start', href: '#install', text: 'Install first' }) : null)),
-          suite.map(function (b) {
-            var c = m.coverage[b.id];
-            var can = m.installed && c.status !== 'running' && (b.id === 'quiet' ? m.owner_model : m.suite);
-            return td(covCell(c, can ? function () { queueBench(b.id, m); } : null));
-          }));
-      }));
-      var suiteTbl = table(['Bench', 'What it measures', 'Duration (int4, busy)', 'Runs with'], suite.map(function (b) {
-        return h('tr', {}, td(h('strong', { text: b.name })), td(b.what), td(b.duration, 'n'), td(h('span', { class: 'mono', text: b.runs_with })));
-      }));
-      var results = d.results.map(function (r) {
-        var rows = r.summary.map(function (s) {
-          var lossy = s.config !== 'exact';
-          return h('tr', { class: lossy ? 'lossy' : null }, td(s.style), td(h('span', { class: 'row' }, CFG[s.config] || s.config, lossy ? lossyTag() : exactTag())),
-            td(s.correct + '/' + s.graded, 'n'), td(s.same_as_exact + '/' + s.ok, 'n'), td(f2(s.answer_s, 1), 'n'), td(f2(s.prefill_s, 1), 'n'),
-            td(f2(s.output_tokens, 1), 'n'), td(f2(s.decode_tok_s), 'n'));
-        });
-        return section('Bench ' + r.name + ' · ' + r.answers + ' answers', h('div', { class: 'row' },
-          r.review ? ghLink(r.review, 'Manual review') : null, h('a', { href: '#bench/' + r.name, text: 'All answers' })),
-          h('div', { class: 'stack' },
-            table(['Style', 'Config', { t: 'Correct (auto)', n: 1 }, { t: 'Same text as exact', n: 1 }, { t: 'Mean answer s', n: 1 }, { t: 'Prompt read s', n: 1 }, { t: 'Output tokens', n: 1 }, { t: 'Decode tok/s', n: 1 }], rows),
-            h('p', { class: 'hint', text: 'Automatic grades: facts/logic by expected answer, maths by final number, code by running tests; normal answers capped at 128 tokens, so long answers can be under-counted. Single runs.' }),
-            r.notes.length ? h('p', { class: 'hint', text: 'Notes in the results folder: ' + r.notes.join(', ') + ' (e.g. downloads that ran during the bench).' }) : null));
+
+  // ---------- sortable data table ----------
+  // cols: [{ t, u, n, key, cell(row) -> node|string, best: 'max'|'min', sortable }]; rows: plain objects.
+  function dataTable(o) {
+    var wrap = h('div', { class: 'table-wrap' });
+    var st = { key: o.sortKey || null, dir: o.dir || 'desc' };
+    function val(r, c) { var v = typeof c.key === 'function' ? c.key(r) : r[c.key]; return v == null || v === '' || (typeof v === 'number' && isNaN(v)) ? null : v; }
+    function draw() {
+      var rows = o.rows.slice();
+      var col = o.cols.filter(function (c) { return c.id === st.key; })[0];
+      if (col) rows.sort(function (a, b) {
+        var x = val(a, col), y = val(b, col);
+        if (x == null) return 1; if (y == null) return -1;
+        var d = typeof x === 'number' ? x - y : String(x).localeCompare(String(y));
+        return st.dir === 'asc' ? d : -d;
       });
-      put(main, header('Results', 'Saved measurements, answer quality and model outputs. New answers appear as each bench progresses.',
-          h('a', { class: 'btn btn-primary', href: '#start', text: 'Start benches…' })),
-        h('div', { class: 'row' }, h('a', { class: 'btn', href: '#runs', text: 'Speed, RAM and thread measurements' }), h('a', { class: 'btn', href: '#leaderboard', text: 'Compare models' })),
-        section('Saved speed and memory measurements',null,measured.length ? table(['Run','Backend',{t:'Tokens/s',n:1},{t:'Prompt read s',n:1},{t:'Expert hit %',n:1},{t:'Process RSS GB',n:1}],measured.map(function(r){return h('tr',{},td(r.run),td(r.backend),td(r.tok_s,'n'),td(r.prefill_s,'n'),td(r.hit_pct,'n'),td(r.rss_gb,'n'));})) : h('p',{class:'muted',text:'No engine measurements saved yet.'})),
-        results.length ? results : card([h('p', { text: 'No saved quality results yet. Run a bench to see its measured values here.' })]),
-        h('details', { class: 'x' }, h('summary', { text: 'Model coverage and bench definitions' }), cov, suiteTbl));
+      var best = {};
+      o.cols.forEach(function (c) {
+        if (!c.best) return;
+        var vs = rows.map(function (r) { return val(r, c); }).filter(function (v) { return typeof v === 'number'; });
+        if (vs.length > 1) best[c.id] = c.best === 'max' ? Math.max.apply(null, vs) : Math.min.apply(null, vs);
+      });
+      var t = h('table', { class: 't' }, o.caption ? h('caption', { class: 'sr-only', text: o.caption }) : null);
+      t.appendChild(h('thead', {}, h('tr', {}, o.cols.map(function (c) {
+        var label = [c.t, c.u ? h('span', { class: 'u', text: c.u }) : null];
+        if (!c.id || c.sortable === false) return h('th', { scope: 'col', class: c.n ? 'n' : null }, label);
+        var sorted = st.key === c.id;
+        return h('th', { scope: 'col', class: (c.n ? 'n ' : '') + 'sort-th', 'aria-sort': sorted ? (st.dir === 'asc' ? 'ascending' : 'descending') : null },
+          h('button', { type: 'button', class: 'sort', onclick: function () {
+            if (st.key === c.id) st.dir = st.dir === 'asc' ? 'desc' : 'asc'; else { st.key = c.id; st.dir = c.n ? (c.best === 'min' ? 'asc' : 'desc') : 'asc'; }
+            draw(); var b = wrap.querySelector('th[aria-sort] .sort'); if (b) b.focus();
+          } }, h('span', {}, label)));
+      }))));
+      var tb = h('tbody');
+      if (!rows.length) tb.appendChild(h('tr', {}, h('td', { colspan: o.cols.length }, h('span', { class: 'muted', text: o.emptyText || 'No rows match these filters.' }))));
+      rows.forEach(function (r) {
+        tb.appendChild(h('tr', { class: o.rowClass ? o.rowClass(r) : null }, o.cols.map(function (c) {
+          var isBest = c.id in best && val(r, c) === best[c.id];
+          return h('td', { class: [c.n ? 'n' : '', c.wrap ? 'wrap' : '', isBest ? 'best' : ''].join(' ').trim() || null, title: isBest ? 'Best value in this table' : null },
+            c.cell ? c.cell(r) : (val(r, c) == null ? '—' : String(val(r, c))), isBest ? h('span', { class: 'sr-only', text: ' (best)' }) : null);
+        })));
+      });
+      t.appendChild(tb);
+      wrap.textContent = ''; wrap.appendChild(t);
+    }
+    draw();
+    return wrap;
+  }
+  function selectField(id, label, options, value, onchange) {
+    var sel = h('select', { class: 'input', id: id, onchange: function () { onchange(sel.value); } },
+      options.map(function (x) { return h('option', { value: x[0], selected: x[0] === value ? '' : null, text: x[1] }); }));
+    return h('div', { class: 'field' }, h('label', { for: id, text: label }), sel);
+  }
+  function uniq(list) { return list.filter(function (v, i, x) { return v != null && x.indexOf(v) === i; }); }
+  function envText(env) { var k = Object.keys(env || {}); return k.length ? k.map(function (x) { return x + '=' + (typeof env[x] === 'object' ? JSON.stringify(env[x]) : env[x]); }).join(' ') : 'none'; }
+
+  // ---------- results ----------
+  var resultsState = { model: 'all', style: 'all', kind: 'all', speedOk: true, speedQ: '' };
+  function screenResults(main, tab) {
+    tab = tab === 'speed' || tab === 'coverage' ? tab : 'quality';
+    return Promise.all([api('/api/benches'), api('/api/runs'), api('/api/models')]).then(function (res) {
+      var d = res[0], runs = res[1].runs, models = res[2].models;
+      var benchModel = {};
+      models.forEach(function (m) { benchModel[m.id] = m.name; (m.bench_names || []).forEach(function (n) { benchModel[n] = m.name; }); });
+      function modelOf(r) {
+        if (benchModel[r.name]) return benchModel[r.name];
+        if (r.settings && r.settings.ollama_model) return 'Ollama ' + r.settings.ollama_model;
+        return r.name;
+      }
+      var quality = [];
+      d.results.forEach(function (r) {
+        r.summary.forEach(function (s) {
+          quality.push({ model: modelOf(r), bench: r.name, style: s.style, config: s.config, lossy: s.config !== 'exact' && s.config !== 'native',
+            correct: s.correct, graded: s.graded, pctCorrect: s.graded ? s.correct / s.graded * 100 : null, same: s.same_as_exact, ok: s.ok,
+            answer_s: s.answer_s, prefill_s: s.prefill_s, tokens: s.output_tokens, tok_s: s.decode_tok_s, runs: s.runs });
+        });
+      });
+      var tabs = h('nav', { class: 'tabs', 'aria-label': 'Result views' }, [['quality', 'Answer quality', quality.length], ['speed', 'Speed runs', runs.length], ['coverage', 'Coverage', d.models.length]].map(function (t) {
+        return h('a', { class: 'tab', href: '#results' + (t[0] === 'quality' ? '' : '/' + t[0]), 'aria-current': t[0] === tab ? 'page' : null }, t[1], h('span', { class: 'count', text: t[2] }));
+      }));
+      var body = tab === 'quality' ? qualityView(quality, d) : tab === 'speed' ? speedView(runs) : coverageView(d);
+      put(main, header('Results', 'Measured values from saved benchmark runs. Every number is a single run on this Mac unless marked otherwise.',
+        h('a', { class: 'btn', href: '#dashboard', text: 'Run a benchmark' })), tabs, body);
     });
   }
 
-  function screenBench(main, name) {
+  function qualityView(rows, d) {
+    var st = resultsState, out = h('div', { class: 'stack' }), tblBox = h('div'), count = h('p', { class: 'hint', role: 'status' });
+    function draw() {
+      var shown = rows.filter(function (r) {
+        return (st.model === 'all' || r.model === st.model) && (st.style === 'all' || r.style === st.style) &&
+          (st.kind === 'all' || (st.kind === 'exact') === !r.lossy);
+      });
+      count.textContent = shown.length + ' of ' + rows.length + ' setting × style combinations. Bold = best value among the rows shown.';
+      tblBox.textContent = '';
+      tblBox.appendChild(dataTable({ caption: 'Answer quality and speed per bench, setting and style', sortKey: 'pct', dir: 'desc', rows: shown,
+        rowClass: function (r) { return r.lossy ? 'lossy' : null; },
+        cols: [
+          { id: 'model', t: 'Model', key: 'model', cell: function (r) { return h('div', { class: 'stack', style: 'gap:0;min-width:200px' }, h('strong', { text: r.model }), h('span', { class: 'hint mono', text: 'bench ' + r.bench })); } },
+          { id: 'config', t: 'Setting', key: function (r) { return CFG[r.config] || r.config; }, cell: function (r) { return h('span', { class: 'row', style: 'gap:6px;flex-wrap:nowrap;white-space:nowrap' }, h('span', { text: CFG[r.config] || r.config }), r.lossy ? lossyTag() : r.config === 'exact' ? exactTag() : null); } },
+          { id: 'style', t: 'Style', key: 'style' },
+          { id: 'pct', t: 'Correct', u: '% auto-graded', n: 1, best: 'max', key: 'pctCorrect', cell: function (r) { return h('span', {}, h('strong', { text: f2(r.pctCorrect, 0) + '%' }), h('span', { class: 'hint', text: ' ' + r.correct + '/' + r.graded })); } },
+          { id: 'same', t: 'Same text as exact', u: 'answers', n: 1, key: function (r) { return r.ok ? r.same / r.ok : null; }, cell: function (r) { return r.config === 'exact' ? h('span', { class: 'hint', text: 'reference' }) : r.same + '/' + r.ok; } },
+          { id: 'answer', t: 'Mean answer time', u: 's', n: 1, best: 'min', key: 'answer_s', cell: function (r) { return f2(r.answer_s, 1); } },
+          { id: 'prefill', t: 'Prompt read', u: 's', n: 1, best: 'min', key: 'prefill_s', cell: function (r) { return f2(r.prefill_s, 1); } },
+          { id: 'tokens', t: 'Output', u: 'tokens / answer', n: 1, key: 'tokens', cell: function (r) { return f2(r.tokens, 0); } },
+          { id: 'tok_s', t: 'Decode speed', u: 'tok/s', n: 1, best: 'max', key: 'tok_s', cell: function (r) { return f2(r.tok_s); } },
+          { t: 'Answers', cell: function (r) { return h('a', { href: '#bench/' + encodeURIComponent(r.bench) + '?style=' + encodeURIComponent(r.style) + '&config=' + encodeURIComponent(r.config), 'aria-label': 'Answers for ' + r.model + ', ' + (CFG[r.config] || r.config) + ', ' + r.style, text: 'Answers (' + r.runs + ')' }); } }
+        ] }));
+    }
+    var models = uniq(rows.map(function (r) { return r.model; })), styles = uniq(rows.map(function (r) { return r.style; }));
+    var filters = h('div', { class: 'filters', role: 'group', 'aria-label': 'Filter results' },
+      selectField('f-model', 'Model', [['all', 'All models']].concat(models.map(function (m) { return [m, m]; })), st.model, function (v) { st.model = v; draw(); }),
+      selectField('f-style', 'Answer style', [['all', 'All styles']].concat(styles.map(function (m) { return [m, cap(m)]; })), st.style, function (v) { st.style = v; draw(); }),
+      selectField('f-kind', 'Output', [['all', 'Exact and lossy'], ['exact', 'Exact only'], ['lossy', 'Changes output only']], st.kind, function (v) { st.kind = v; draw(); }));
+    draw();
+    var settings = section('How each bench was run', null, h('div', { class: 'stack', style: 'gap:8px' }, d.results.map(function (r) {
+      var s = r.settings || {};
+      var rowsKv = [['Started', r.started ? r.started.replace('T', ' ').replace('Z', ' UTC') : '—'], ['Backend', s.backend === 'ollama' ? 'Ollama ' + (s.ollama_model || '') + (s.ollama_version ? ' (' + s.ollama_version.replace('ollama version is ', 'v') + ')' : '') : 'Colibri' + (s.colibri_commit ? ' @ ' + s.colibri_commit : '')],
+        ['RAM budget', s.ram_gb ? s.ram_gb + ' GB' : '—'], ['Context', s.ctx ? s.ctx + ' tokens' : '—'], ['Answer limit', s.max_tokens ? s.max_tokens + ' tokens (normal style)' : '—'],
+        ['Base environment', envText(s.base_env), true]];
+      Object.keys(s.configs || {}).forEach(function (c) { rowsKv.push(['Setting · ' + (CFG[c] || c), envText(s.configs[c]), true]); });
+      Object.keys(s.styles || {}).forEach(function (k) { rowsKv.push(['Style · ' + k, s.styles[k] ? 'appends: "' + s.styles[k].trim() + '"' : 'prompt as written']); });
+      return h('details', { class: 'x card disclosure' }, h('summary', {}, h('strong', { text: modelOf2(r) }), h('span', { class: 'hint', text: ' · bench ' + r.name + ' · ' + r.answers + ' answers' })),
+        h('div', { class: 'stack', style: 'padding-top:8px' }, h('dl', { class: 'kv' }, rowsKv.map(function (x) { return [h('dt', { text: x[0] }), h('dd', { class: x[2] ? 'mono' : null, text: x[1] })]; })),
+          h('div', { class: 'row' }, h('a', { href: '#bench/' + encodeURIComponent(r.name), text: 'All ' + r.answers + ' answers' }), r.review ? ghLink(r.review, 'Manual review') : null),
+          r.notes.length ? h('p', { class: 'hint', text: 'Notes in the results folder: ' + r.notes.join(', ') }) : null));
+      function modelOf2(x) { var m = rows.filter(function (q) { return q.bench === x.name; })[0]; return m ? m.model : x.name; }
+    })));
+    put(out, filters, count, tblBox,
+      h('p', { class: 'hint', text: 'Correct: automatic grading (facts and logic by expected answer, maths by final number, code by running tests). Normal answers are capped at 128 tokens, so long answers can be under-counted. Rows marked "changes output" use lossy settings.' }),
+      settings);
+    return out;
+  }
+
+  function speedView(runs) {
+    var st = resultsState, out = h('div', { class: 'stack' }), box = h('div'), count = h('p', { class: 'hint', role: 'status' });
+    var rows = runs.map(function (r, i) {
+      var num = function (k) { return r[k] === '' || r[k] == null ? null : Number(r[k]); };
+      return { i: i, run: r.run, backend: r.backend, threads: num('omp_threads'), tok_s: num('tok_s'), prefill_s: num('prefill_s'), tokens: num('decode_tokens'), hit: num('hit_pct'), rss: num('rss_gb'),
+        io: num('io_pct'), status: r.status, config: r.config, env: r.env };
+    }).reverse();
+    function draw() {
+      var q = st.speedQ.toLowerCase();
+      var shown = rows.filter(function (r) { return (!st.speedOk || r.status === 'ok') && (!q || (r.run + ' ' + r.backend + ' ' + r.env).toLowerCase().indexOf(q) >= 0); });
+      count.textContent = shown.length + ' of ' + rows.length + ' runs. Bold = best value among the runs shown.';
+      box.textContent = '';
+      box.appendChild(dataTable({ caption: 'Engine speed runs', rows: shown, sortKey: 'i', dir: 'desc',
+        cols: [
+          { id: 'i', t: '#', n: 1, key: 'i', cell: function (r) { return h('span', { class: 'hint', text: String(r.i + 1) }); } },
+          { id: 'run', t: 'Run', key: 'run', cell: function (r) { return h('span', { class: 'mono', style: 'white-space:nowrap', text: r.run }); } },
+          { id: 'backend', t: 'Backend', key: 'backend' },
+          { id: 'threads', t: 'Threads', n: 1, key: 'threads' },
+          { id: 'tok_s', t: 'Decode speed', u: 'tok/s', n: 1, best: 'max', key: 'tok_s', cell: function (r) { return f2(r.tok_s); } },
+          { id: 'prefill', t: 'Prompt read', u: 's', n: 1, best: 'min', key: 'prefill_s', cell: function (r) { return f2(r.prefill_s, 1); } },
+          { id: 'tokens', t: 'Generated', u: 'tokens', n: 1, key: 'tokens', cell: function (r) { return r.tokens == null ? '—' : String(r.tokens); } },
+          { id: 'hit', t: 'Expert cache hits', u: '%', n: 1, key: 'hit', cell: function (r) { return f2(r.hit, 1); } },
+          { id: 'rss', t: 'Process memory', u: 'GB', n: 1, key: 'rss', cell: function (r) { return f2(r.rss, 1); } },
+          { id: 'status', t: 'Status', key: 'status', cell: function (r) { return r.status === 'ok' ? chip('st-done', 'OK') : chip('st-failed', r.status); } },
+          { t: 'Settings', cell: function (r) {
+            return h('details', { class: 'x' }, h('summary', { text: 'Show', 'aria-label': 'Settings for run ' + r.run }),
+              h('dl', { class: 'kv', style: 'margin-top:6px;min-width:280px;white-space:normal' }, [['Engine', r.config], ['Environment', r.env]].map(function (x) { return [h('dt', { text: x[0] }), h('dd', { class: 'mono', text: x[1] || '—' })]; })));
+          } }
+        ] }));
+    }
+    var search = h('input', { class: 'input', id: 'f-run', type: 'search', placeholder: 'e.g. skip050, metal, t12', value: st.speedQ, oninput: function () { st.speedQ = search.value; draw(); } });
+    var ok = h('input', { type: 'checkbox', id: 'f-ok', checked: st.speedOk ? '' : null, onchange: function () { st.speedOk = ok.checked; draw(); } });
+    draw();
+    put(out, h('div', { class: 'filters', role: 'group', 'aria-label': 'Filter runs' },
+        h('div', { class: 'field' }, h('label', { for: 'f-run', text: 'Search runs' }), search),
+        h('label', { class: 'check', for: 'f-ok' }, ok, h('span', { text: 'Successful runs only' }))),
+      count, box,
+      h('p', { class: 'hint', text: 'One row per engine run (results/runs.csv). Decode speed is generated tokens per second after the prompt is read. Open "Settings" for the exact engine flags and environment. Generated answers for quality benches are under Answer quality.' }));
+    return out;
+  }
+
+  function coverageView(d) {
+    var suite = d.suite.benches;
+    var cov = table([{ t: 'Model' }].concat(suite.map(function (b) { return { t: b.name }; })), d.models.map(function (m) {
+      return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: m.name }),
+          h('span', { class: 'hint', text: m.installed ? 'Installed · ' + m.covered + ' of ' + suite.length + ' benches' : (m.download ? 'Downloading ' + pct(m.download.done, m.download.total) + '%' : 'Not installed') }),
+          !m.installed && !m.download ? h('a', { href: '#models', text: 'Download in Models' }) : null)),
+        suite.map(function (b) {
+          var c = m.coverage[b.id];
+          var can = m.installed && c.status !== 'running' && (b.id === 'quiet' ? m.owner_model : m.suite);
+          return td(covCell(c, can ? function () { queueBench(b.id, m); } : null));
+        }));
+    }), 'Which standard benches each model has');
+    var suiteTbl = table(['Bench', 'What it measures', { t: 'Duration', u: 'int4, busy Mac' }, 'Runs with'], suite.map(function (b) {
+      return h('tr', {}, td(h('strong', { text: b.name })), td(b.what, 'wrap'), td(b.duration), td(h('span', { class: 'mono', text: b.runs_with })));
+    }), 'Standard bench definitions');
+    return h('div', { class: 'stack' }, h('p', { class: 'muted', text: 'The standard benches every model gets, so models are comparable. "Queue" adds the bench to the end of the queue; it starts when the GPU is free.' }),
+      cov, section('Bench definitions', null, suiteTbl));
+  }
+
+  function screenBench(main, spec) {
+    var q = (spec || '').split('?'), name = decodeURIComponent(q[0]), params = new URLSearchParams(q[1] || '');
     return api('/api/bench?name=' + encodeURIComponent(name)).then(function (d) {
-      var state = { style: 'all', config: 'all', correct: 'all' };
-      var list = h('div', { class: 'stack' });
-      function opt(sel, vals) { vals.forEach(function (v) { sel.appendChild(h('option', { value: v, text: v === 'all' ? 'all' : (CFG[v] || v) })); }); return sel; }
-      var uniq = function (k) { return ['all'].concat(d.answers.map(function (a) { return a[k]; }).filter(function (v, i, x) { return x.indexOf(v) === i; })); };
+      var state = { style: params.get('style') || 'all', config: params.get('config') || 'all', correct: params.get('grade') || 'all' };
+      var list = h('div', { class: 'stack' }), count = h('p', { class: 'hint', role: 'status' });
+      var vals = function (k) { return uniq(d.answers.map(function (a) { return a[k]; })); };
       function draw() {
-        list.textContent = '';
         var rows = d.answers.filter(function (a) {
           return (state.style === 'all' || a.style === state.style) && (state.config === 'all' || a.config === state.config) &&
             (state.correct === 'all' || String(a.correct) === state.correct);
         });
-        list.appendChild(h('p', { class: 'hint', text: rows.length + ' answers' }));
-        list.appendChild(table(['Prompt', 'Style', 'Config', 'Grade', { t: 'Answer s', n: 1 }, { t: 'Tokens', n: 1 }, 'Answer'], rows.map(function (a) {
-          var lossy = a.config !== 'exact';
-          var det = h('details', { class: 'x' }, h('summary', { text: 'Show' }), h('p', { class: 'hint', text: a.prompt || '' }), h('pre', { class: 'ans', text: a.text || '(no answer: run failed or was refused)' }));
-          return h('tr', { class: lossy ? 'lossy' : null }, td(h('span', { class: 'mono', text: a.id })), td(a.style), td(CFG[a.config] || a.config),
-            td(a.correct === true ? h('span', { class: 'verdict v-improves', text: '✓ correct' }) : a.correct === false ? h('span', { class: 'verdict v-worse', text: '✗ incorrect (auto)' }) : h('span', { class: 'verdict v-pending', text: 'not graded' })),
+        count.textContent = rows.length + ' of ' + d.answers.length + ' answers';
+        list.textContent = '';
+        list.appendChild(table(['Prompt', 'Style', 'Setting', 'Grade', { t: 'Answer time', u: 's', n: 1 }, { t: 'Output', u: 'tokens', n: 1 }, 'Answer'], rows.map(function (a) {
+          var lossy = a.config !== 'exact' && a.config !== 'native';
+          var det = h('details', { class: 'x' }, h('summary', { text: 'Show answer', 'aria-label': 'Show answer to ' + a.id + ', ' + a.style + ', ' + (CFG[a.config] || a.config) }),
+            h('p', { class: 'hint', style: 'white-space:normal;max-width:60ch', text: a.prompt || '' }), h('pre', { class: 'ans', text: a.text || '(no answer: the run failed or was refused)' }));
+          return h('tr', { class: lossy ? 'lossy' : null }, td(h('span', { class: 'mono', style: 'white-space:nowrap', text: a.id })), td(a.style), td(h('span', { class: 'row', style: 'gap:6px;flex-wrap:nowrap' }, CFG[a.config] || a.config, lossy ? lossyTag() : null)),
+            td(a.correct === true ? h('span', { class: 'verdict v-improves', text: '✓ Correct' }) : a.correct === false ? h('span', { class: 'verdict v-worse', text: '✗ Incorrect (auto)' }) : h('span', { class: 'verdict v-pending', text: 'Not graded' })),
             td(f2(a.answer_s, 1), 'n'), td(a.output_tokens == null ? '—' : a.output_tokens, 'n'), td(det));
-        })));
+        }), 'Answers of bench ' + name));
       }
-      var filters = h('div', { class: 'filters', role: 'toolbar', 'aria-label': 'Filters' },
-        h('label', { class: 'hint' }, 'Style ', opt(h('select', { class: 'input', onchange: function (e) { state.style = e.target.value; draw(); } }), uniq('style'))),
-        h('label', { class: 'hint' }, 'Config ', opt(h('select', { class: 'input', onchange: function (e) { state.config = e.target.value; draw(); } }), uniq('config'))),
-        h('label', { class: 'hint' }, 'Grade ', opt(h('select', { class: 'input', onchange: function (e) { state.correct = e.target.value; draw(); } }), ['all', 'true', 'false'])));
-      put(main, header('Bench ' + name + ' · answers', 'Every answer with its automatic grade. A manual review may correct grader errors.', h('a', { class: 'btn', href: '#benches', text: '← Benches' })), filters, list);
+      var filters = h('div', { class: 'filters', role: 'group', 'aria-label': 'Filter answers' },
+        selectField('a-style', 'Style', [['all', 'All styles']].concat(vals('style').map(function (v) { return [v, cap(v)]; })), state.style, function (v) { state.style = v; draw(); }),
+        selectField('a-config', 'Setting', [['all', 'All settings']].concat(vals('config').map(function (v) { return [v, CFG[v] || v]; })), state.config, function (v) { state.config = v; draw(); }),
+        selectField('a-grade', 'Grade', [['all', 'All grades'], ['true', 'Correct'], ['false', 'Incorrect'], ['null', 'Not graded']], state.correct, function (v) { state.correct = v; draw(); }));
+      put(main, header('Answers · bench ' + name, 'Every generated answer with its automatic grade. A manual review may correct grader errors.', h('a', { class: 'btn', href: '#results', text: '← Results' })), filters, count, list);
       draw();
     });
   }
@@ -427,33 +621,6 @@
       }
       put(main, header('Experiments', 'The experiment registry (experiments/glm-experiments.json). Verdicts are computed from published runs; changes under ~10% are noise.'), tabs, body);
       draw();
-    });
-  }
-
-  function screenModels(main) {
-    return api('/api/models').then(function (d) {
-      var n = d.suite.benches.length;
-      var cards = d.models.map(function (m) {
-        var st = m.installed ? chip('st-done', 'Installed') : m.download ? chip('st-running', 'Downloading ' + pct(m.download.done, m.download.total) + '%') : chip('st-missing', 'Not installed');
-        var b = m.best || {};
-        return card([
-          h('div', { class: 'row between' }, h('strong', { text: m.name }), st),
-          h('span', { class: 'hint', text: [m.family, m.params, m.format, m.size_gb + ' GB', m.mtp ? 'MTP head' : null].filter(Boolean).join(' · ') }),
-          h('span', { class: 'hint', text: 'Engine: ' + m.engine }),
-          m.download ? h('div', { class: 'stack', style: 'gap:4px' }, meter(m.download.done, m.download.total), h('span', { class: 'hint num', text: f2(m.download.done, 1) + ' of ' + m.download.total + ' GB' })) : null,
-          h('div', { class: 'kv2', style: 'border-top:1px solid var(--line);padding-top:8px' },
-            [['best exact', b.best_exact, false], ['everyday', b.everyday, true], ['best usable lossy', b.best_usable_lossy, true]].map(function (x) {
-              return h('div', {}, h('span', { class: 'tag ' + (x[2] ? 'tag-lossy' : 'tag-exact'), text: x[0] }), h('div', { class: x[1] ? 'num' : 'muted', style: 'font-size:' + (x[1] ? '18px' : '13px') + ';margin-top:4px', text: x[1] ? f2(x[1].tok_s) + ' tok/s' : 'not run' }));
-            })),
-          m.aa ? h('span', { class: 'hint', text: 'Published Artificial Analysis Intelligence Index: ' + m.aa.score + ' (' + m.aa.model + ', full model as served by its makers; reported, not measured here)' }) : null,
-          h('span', { class: 'hint', text: 'Bench coverage: ' + m.covered + ' of ' + n + (m.bench_names.length ? ' · quality bench ' + m.bench_names.join(', ') : ' · quality: not benched') }),
-          !m.installed ? h('dl', { class: 'kv', style: 'font-size:13px' }, [['Source', m.source], ['Download', m.download_gb ? '~' + m.download_gb + ' GB' : null], ['Prepare with', m.prep], ['Unlocks', (m.unlocks || []).join(', ')]]
-            .filter(function (x) { return x[1]; }).map(function (x) { return [h('dt', { text: x[0] }), h('dd', { class: x[0] === 'Prepare with' ? 'mono' : null, text: x[1] })]; })) : null,
-          m.owner_model ? h('span', { class: 'hint', text: "The owner's model folder: never modified by the lab." }) : null
-        ]);
-      });
-      put(main, header('Models', 'Every model the lab can run, installed or not (models/catalog.json). Downloads need your OK; run the prep command in a terminal.'),
-        h('div', { class: 'grid3' }, cards));
     });
   }
 
@@ -596,60 +763,111 @@
     });
   }
 
-  function screenInstall(main) {
+
+  // ---------- models: disk, downloads, install and remove ----------
+  function screenModels(main) {
     return Promise.all([api('/api/models'), api('/api/now'), api('/api/storage')]).then(function (res) {
-      var ms = res[0].models, now = res[1], store = res[2], free = now.machine.disk_free_gb;
-      function remove(m) {
-        confirmDialog({ eyebrow: 'Confirmation · remove', title: 'Move ' + m.name + ' to the Trash?', danger: true, confirm: 'Move ' + f2(m.gb, 1) + ' GB to the Trash',
-          sub: 'Its folders move to the macOS Trash. Nothing is deleted: you can restore them until you empty the Trash, which frees the space.',
-          rows: m.folders.map(function (f) { return ['Folder', f.path + ' · ' + f2(f.gb, 1) + ' GB', true]; }).concat([['Results and logs', 'kept (they are in the lab repo, not here)']]),
-          note: 'Experiments that need this model become blocked until it is installed again.' })
+      var ms = res[0].models, nSuite = res[0].suite.benches.length, now = res[1], store = res[2];
+      var free = store.disk_free_gb != null ? store.disk_free_gb : now.machine.disk_free_gb;
+      setGpu(now);
+      var stored = {}; store.models.forEach(function (s) { stored[s.id] = s; });
+      var labGb = store.models.reduce(function (a, m) { return a + (m.gb || 0); }, 0);
+      var otherGb = store.other.reduce(function (a, m) { return a + (m.gb || 0); }, 0);
+      var dlJobs = now.jobs.filter(function (j) { return j.kind === 'Download'; });
+      var gpuBusy = now.jobs.some(function (j) { return j.gpu; });
+      var pending = ms.filter(function (m) { return !m.installed && m.download_gb; }).reduce(function (a, m) { return a + m.download_gb - (m.download ? m.download.done : 0); }, 0);
+      var gb = function (v) { return v >= 100 ? Math.round(v) + ' GB' : f2(v, 1) + ' GB'; };
+
+      function remove(m, s) {
+        confirmDialog({ eyebrow: 'Move to Trash', title: 'Move ' + m.name + ' to the Trash?', danger: true, confirm: 'Move ' + gb(s.gb) + ' to the Trash',
+          sub: 'Its folders move to the macOS Trash. Nothing is deleted yet: you can restore them until you empty the Trash, which frees the space.',
+          rows: s.folders.filter(function (f) { return f.gb > 0 || s.folders.length === 1; }).map(function (f) { return ['Folder', f.path + ' · ' + gb(f.gb), true]; })
+            .concat([['Benchmark results', 'Kept (they live in the lab repo)']]),
+          note: 'Benchmarks that need this model are blocked until it is downloaded again (~' + (m.download_gb || m.size_gb) + ' GB).', warn: true })
           .then(function (ok) {
             if (ok) post('/api/remove', { model: m.id }).then(function (r) { toast('Moved to the Trash: ' + r.moved.map(function (x) { return x.src; }).join(', ')); route(); }, function (e) { toast(e.message, true); });
           });
       }
-      var storeRows = store.models.map(function (m) {
-        var state = m.owner_model ? h('span', { class: 'hint', text: 'your model · never removed by the app' })
-          : m.in_use ? h('span', { class: 'hint', text: 'in use (downloading or running): stop it first' })
-          : m.removable ? h('button', { type: 'button', class: 'btn btn-sm btn-danger', onclick: function () { remove(m); }, text: 'Move to Trash…' }) : h('span', { class: 'hint', text: '—' });
-        return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: m.name }),
-          m.folders.map(function (f) { return h('span', { class: 'hint mono', text: f.path + ' · ' + f2(f.gb, 1) + ' GB' + (f.in_use ? ' · in use' : '') }); }))),
-          td(chip(m.installed ? 'st-done' : 'st-running', m.installed ? 'Installed' : 'Partial / downloading')), td(f2(m.gb, 1) + ' GB', 'n'), td(state));
-      });
-      var downloaded = section('Downloaded models · ' + store.models.length, h('span', { class: 'hint', text: 'Sizes are measured on disk now' }), h('div', { class: 'stack' },
-        table(['Model and folders', 'Status', { t: 'On disk', n: 1 }, 'Remove'], storeRows),
-        store.other.length ? h('p', { class: 'hint', text: 'Other folders in ~/colibri-models, not in the lab catalog (not managed here): ' + store.other.map(function (o) { return o.path + ' (' + f2(o.gb, 1) + ' GB)'; }).join(', ') + '.' }) : null));
-      setGpu(now);
-      var dlRunning = now.jobs.filter(function (j) { return j.kind === 'Download'; });
-      var gpuBusy = now.jobs.some(function (j) { return j.gpu; });
       function download(m) {
-        var after = free - (m.download_gb || 0);
-        confirmDialog({ eyebrow: 'Confirmation · download', title: m.name, confirm: 'Download ~' + m.download_gb + ' GB',
-          rows: [['Source', m.source, true], ['Download size', '~' + m.download_gb + ' GB'], ['Kept on disk', '~' + m.size_gb + ' GB'],
-                 ['Free disk after', '~' + after + ' GB'], ['Saved to', '~/' + (m.download_path || m.path), true], ['Runs', m.prep, true], ['Unlocks', (m.unlocks || []).join(', ')]],
+        var left = m.download_gb - (m.download ? m.download.done : 0), after = Math.round(free - left);
+        confirmDialog({ eyebrow: m.download ? 'Resume download' : 'Download', title: m.name, confirm: (m.download ? 'Resume' : 'Download') + ' ~' + Math.round(left) + ' GB',
+          rows: [['Source', m.source, true], ['Download size', '~' + m.download_gb + ' GB' + (m.download ? ' (' + f2(m.download.done, 1) + ' GB already here)' : '')], ['Kept on disk', '~' + m.size_gb + ' GB'],
+                 ['Free disk after', '~' + after + ' GB'], ['Saved to', '~/' + (m.download_path || m.path), true], ['Runs', m.prep, true], ['Unlocks', (m.unlocks || []).join(', ') || '—']],
           warn: after < 30 || gpuBusy,
-          note: after < 30 ? 'This would leave less than 30 GB free.' : gpuBusy ? 'A GPU job is running: the download will skew its timings (quality results are unaffected).' : 'Resumable: if it stops, start it again here.' })
-          .then(function (ok) { if (ok) { toast('Starting the download… checking it really runs (about 6 s).'); post('/api/download', { model: m.id }).then(function (r) { toast('Download running: ' + r.started.title + ' (PID ' + r.started.pid + '). Progress shows on Now and here.'); route(); }, function (e) { toast('Download did not start: ' + e.message, true); route(); }); } });
+          note: after < 30 ? 'This would leave less than 30 GB free.' : gpuBusy ? 'A benchmark is running: the download will slow it and skew its timings (answers and grades are unaffected).' : 'Resumable: if it stops, start it again here.' })
+          .then(function (ok) {
+            if (!ok) return;
+            toast('Starting the download… checking that it really runs (about 6 s).');
+            post('/api/download', { model: m.id }).then(function (r) { toast('Download running: ' + r.started.title + (r.started.pid ? ' (PID ' + r.started.pid + ')' : '') + '.'); route(); },
+              function (e) { toast('Download did not start: ' + e.message, true); route(); });
+          });
       }
+
+      // Disk overview: lab models / other model folders / free, to scale.
+      var total = labGb + otherGb + free;
+      var low = free < 30, lowAfter = free - pending < 30;
+      var disk = h('section', { class: 'card', 'aria-labelledby': 'disk-h', style: 'padding:16px 20px;display:flex;flex-direction:column;gap:12px' },
+        h('div', { class: 'card-head' }, h('h2', { id: 'disk-h', text: 'Disk' }), h('span', { class: 'hint', text: 'Measured now · warns below 30 GB free' })),
+        h('dl', { class: 'kv2' }, [['Free', gb(free)], ['Lab models', gb(labGb)], ['Other model folders', gb(otherGb)], ['Still to download', pending ? '~' + gb(pending) : 'nothing']]
+          .map(function (x) { return h('div', {}, h('dt', { text: x[0] }), h('dd', { text: x[1] })); })),
+        h('div', { class: 'disk-bar', role: 'img', 'aria-label': 'Lab models ' + gb(labGb) + ', other folders ' + gb(otherGb) + ', free ' + gb(free) },
+          h('span', { class: 'seg-models', style: 'width:' + (labGb / total * 100) + '%' }), h('span', { class: 'seg-other', style: 'width:' + (otherGb / total * 100) + '%' })),
+        h('div', { class: 'legend', 'aria-hidden': 'true' }, h('span', {}, h('i', { style: 'background:var(--accent)' }), 'Lab models'), h('span', {}, h('i', { style: 'background:var(--fg-3)' }), 'Other folders in ~/colibri-models'),
+          h('span', {}, h('i', { style: 'background:var(--sunk);box-shadow:inset 0 0 0 1px var(--line-strong)' }), 'Free')),
+        low ? h('div', { class: 'notice notice-warn', role: 'alert', text: 'Less than 30 GB free. Move an unused model to the Trash and empty the Trash before downloading.' })
+          : lowAfter && pending ? h('div', { class: 'notice notice-warn', text: 'Downloading every remaining model would leave ~' + gb(free - pending) + ' free.' }) : null,
+        store.other.length ? h('p', { class: 'hint', text: 'Not managed by the lab: ' + store.other.map(function (o) { return o.path + ' (' + gb(o.gb) + ')'; }).join(', ') + '.' }) : null);
+
+      // Downloads in progress
+      function jobFor(m) { return dlJobs.filter(function (x) { return x.title === m.name || (x.command || '').indexOf(' ' + m.id) >= 0; })[0]; }
+      var dlRows = dlJobs.map(function (j) { return { j: j, m: ms.filter(function (m) { return jobFor(m) === j; })[0] }; })
+        .concat(ms.filter(function (m) { return m.download && !jobFor(m); }).map(function (m) { return { j: null, m: m }; }));
+      var downloads = h('section', { class: 'card', 'aria-labelledby': 'dl-h', style: 'padding:16px 20px;display:flex;flex-direction:column;gap:12px' },
+        h('div', { class: 'card-head' }, h('h2', { id: 'dl-h', text: 'Downloads' }), dlJobs.length ? chip('st-running', 'Downloading') : chip('st-waiting', 'Idle')),
+        dlRows.length ? dlRows.map(function (x) {
+          var j = x.j, m = x.m, p = j && j.progress && j.progress.total ? j.progress : m && m.download ? m.download : null;
+          var name = m ? m.name : j.title;
+          return h('div', { class: 'stack', style: 'gap:6px' },
+            h('div', { class: 'row between' }, h('strong', { text: name }), p ? h('span', { class: 'num', text: pct(p.done, p.total) + '%' }) : null),
+            p ? meter(p.done, p.total, 'Download of ' + name) : null,
+            h('div', { class: 'row between hint num' }, h('span', { text: p ? f2(p.done, 1) + ' of ' + f2(p.total, 0) + ' GB' + (p.eta_s ? ' · ~' + dur(p.eta_s) + ' left' : '') : (j.detail || '') }),
+              h('span', { text: j ? 'PID ' + j.pid + ' · running ' + dur(j.elapsed_s) : 'Stopped · resume it in the table' })),
+            j && j.detail ? h('span', { class: 'hint', text: j.detail }) : null,
+            j && j.stoppable ? h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn btn-sm btn-danger', text: 'Stop download…', onclick: function () { stopJob(j); } }),
+              h('span', { class: 'hint', text: 'Resumable: downloaded parts are kept.' })) : null);
+        }) : h('p', { class: 'muted', text: 'No download running. Start one from the table below; one download runs at a time.' }));
+
+      // Unified table
       var rows = ms.map(function (m) {
-        var st = m.installed ? chip('st-done', 'Installed') : m.download ? chip('st-running', pct(m.download.done, m.download.total) + '% downloaded') : chip('st-missing', 'Not installed');
-        var act = m.installed ? h('span', { class: 'hint', text: m.owner_model ? 'your model (never changed)' : 'ready' })
-          : !m.prep ? h('span', { class: 'hint', text: 'no prep step' })
-          : dlRunning.length ? h('span', { class: 'hint', text: 'wait for the running download' })
-          : h('button', { type: 'button', class: 'btn btn-primary btn-sm', onclick: function () { download(m); }, text: (m.download ? 'Resume download (~' : 'Download (~') + m.download_gb + ' GB)…' });
+        var s = stored[m.id] || { gb: 0, folders: [], in_use: false, removable: false };
+        var job = jobFor(m), jp = job && job.progress && job.progress.total ? job.progress : m.download;
+        var status = job ? chip('st-running', 'Downloading' + (jp ? ' ' + pct(jp.done, jp.total) + '%' : ''))
+          : m.owner_model ? chip('st-done', 'Installed · your model') : m.installed && s.in_use ? chip('st-running', 'Installed · in use')
+          : m.installed ? chip('st-done', 'Installed') : m.download ? chip(dlJobs.length ? 'st-running' : 'st-paused', (dlJobs.length ? 'Downloading ' : 'Partial ') + pct(m.download.done, m.download.total) + '%')
+          : chip('st-missing', 'Not installed');
+        var action = job ? h('span', { class: 'hint', text: 'Downloading now · stop it above' }) : m.owner_model ? h('span', { class: 'hint', text: 'Protected: never changed by the app' })
+          : m.installed ? (s.in_use ? h('span', { class: 'hint', text: 'In use by a running job: stop it first' })
+            : s.removable ? h('button', { type: 'button', class: 'btn btn-sm btn-danger', 'aria-label': 'Move ' + m.name + ' to the Trash', onclick: function () { remove(m, s); }, text: 'Move to Trash…' }) : h('span', { class: 'hint', text: '—' }))
+          : !m.prep ? h('span', { class: 'hint', text: 'No download step' })
+          : dlJobs.length ? h('span', { class: 'hint', text: 'Wait for the running download' })
+          : h('button', { type: 'button', class: 'btn btn-sm btn-primary', 'aria-label': (m.download ? 'Resume download of ' : 'Download ') + m.name, onclick: function () { download(m); }, text: (m.download ? 'Resume…' : 'Download…') });
         var ld = m.last_download;
-        var ldNode = ld && ld.status === 'failed' ? h('details', { class: 'x' }, h('summary', { style: 'color:var(--bad)', text: 'Last download failed (' + ld.started + ', exit ' + ld.exit + ')' }), h('pre', { class: 'log', text: (ld.tail || []).join('\n') }))
-          : ld && ld.status === 'running' ? h('span', { class: 'hint', text: 'Downloading since ' + ld.started }) : null;
-        return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px' }, h('strong', { text: m.name }), h('span', { class: 'hint', text: m.format }), ldNode)), td(st),
-          td(m.download_gb ? '~' + m.download_gb + ' GB' : '—', 'n'), td(m.size_gb + ' GB', 'n'), td((m.unlocks || []).join(', ') || '—', 'wrap'), td(act));
+        var details = h('details', { class: 'x' }, h('summary', { text: 'Details', 'aria-label': 'Details for ' + m.name }),
+          h('dl', { class: 'kv', style: 'margin-top:6px;white-space:normal;min-width:260px' }, [['Family', m.family], ['Parameters', m.params], ['Engine', m.engine], ['Source', m.source, true],
+            ['Folders', s.folders.length ? s.folders.map(function (f) { return f.path + ' · ' + gb(f.gb) + (f.in_use ? ' · in use' : ''); }).join('\n') : '~/' + m.path, true],
+            ['Prepared with', m.prep, true], ['Unlocks', (m.unlocks || []).join(', ')], ['Quality benches', (m.bench_names || []).join(', ') || 'none yet']]
+            .filter(function (x) { return x[1]; }).map(function (x) { return [h('dt', { text: x[0] }), h('dd', { class: x[2] ? 'mono' : null, style: 'white-space:pre-line', text: x[1] })]; })),
+          ld && ld.status === 'failed' ? h('div', { class: 'stack', style: 'gap:4px;margin-top:8px' }, h('span', { class: 'chip st-failed', text: 'Last download failed · ' + ld.started + ' · exit ' + ld.exit }), h('pre', { class: 'log', text: (ld.tail || []).join('\n') })) : null);
+        return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:2px;min-width:200px' }, h('strong', { text: m.name }), h('span', { class: 'hint', text: [m.format, m.mtp ? 'MTP head' : null].filter(Boolean).join(' · ') }))),
+          td(status), td(m.installed || m.download ? gb(s.gb || (m.download ? m.download.done : 0)) : '—', 'n'), td(m.download_gb ? '~' + m.download_gb + ' GB' : '—', 'n'),
+          td(h('span', { class: 'num', text: m.covered + ' of ' + nSuite }), 'n'), td(action), td(details));
       });
-      var sel = ms.filter(function (m) { return !m.installed && m.download_gb; }).reduce(function (a, m) { return a + m.download_gb - (m.download ? m.download.done : 0); }, 0);
-      put(main, header('Models', 'Download models, check disk usage, or move unused models to the Trash. Saved benchmark results are kept.'),
-        card([h('div', { class: 'row between' }, h('span', { class: 'num' }, h('strong', { text: free + ' GB' }), ' free · ', h('strong', { text: Math.round(free - sel) + ' GB' }), ' if every remaining download finished'), h('span', { class: 'hint', text: 'Warn below 30 GB' })),
-          h('div', { class: 'bar', style: 'height:14px', 'aria-hidden': 'true' }, h('span', { style: 'width:' + Math.max(0, 100 - pct(free, 2000)) + '%;background:var(--fg-2)' }), h('span', { class: 'hatch', style: 'width:' + pct(sel, 2000) + '%' })),
-          dlRunning.length ? h('p', { class: 'hint', text: 'Downloading now: ' + dlRunning.map(function (j) { return j.title + ' (PID ' + j.pid + ')'; }).join(', ') + '. Stop it from Now.' }) : null]),
-        downloaded,
-        section('Catalog · available to install', null, table(['Model', 'Status', { t: 'Download', n: 1 }, { t: 'Kept', n: 1 }, 'Unlocks', 'Action'], rows)));
+      var tbl = table(['Model', 'Status', { t: 'On disk', u: 'measured', n: 1 }, { t: 'Download', u: 'size', n: 1 }, { t: 'Benches run', u: 'standard set', n: 1 }, 'Action', ''], rows, 'Models: status, size and actions');
+
+      put(main, header('Models', 'What is installed, how much space it uses, and what you can download or remove. Removing moves folders to the Trash; results are kept.'),
+        h('div', { class: 'grid2' }, disk, downloads),
+        section('All models · ' + ms.length, h('span', { class: 'hint', text: ms.filter(function (m) { return m.installed; }).length + ' installed' }), tbl),
+        h('p', { class: 'hint', text: 'Ollama models are managed by Ollama (ollama pull / ollama rm) and are not listed here.' }));
     });
   }
 
@@ -835,121 +1053,274 @@
 
   // Primary workflow: choose a model + one bench, then launch with one action.
   var launchChoice = {model: '', item: '', schedule: 'ready', pending: false};
+  // ---------- Run benchmarks (home) ----------
+  // One workflow: choose a model, choose a benchmark, choose when it may start, queue it.
+  // Then the live column shows what runs now, the queue in order, and what just finished.
+  var launchChoice = { model: '', item: '', schedule: 'ready', front: false, pending: false, last: null };
   function screenDashboard(main) {
-    var requestedHash=location.hash;
+    var requestedHash = location.hash;
     return Promise.all([api('/api/bench-catalog'), api('/api/now'), api('/api/queue')]).then(function (res) {
-      if(location.hash!==requestedHash)return;
+      if (location.hash !== requestedHash) return;
       var catalog = res[0], current = res[1], queue = res[2];
-      var live = h('div', {class:'stack', id:'live-jobs'});
-      var form = h('div', {class:'card launch-card'});
-      var groupSelect = h('select', {class:'input', id:'launch-model'});
-      var benchSelect = h('select', {class:'input', id:'launch-bench'});
-      var condition = h('select', {class:'input', id:'launch-condition'},
-        h('option', {value:'ready', text:'As soon as the GPU is free'}),
-        h('option', {value:'quiet', text:'When the machine is quiet (20 GB free for 2 min)'}));
-      condition.value = launchChoice.schedule;
-      var plan = h('div', {class:'run-plan', 'aria-live':'polite'});
-      var submit = h('button', {type:'button', class:'btn btn-primary launch-button'});
-      var feedback = h('div', {role:'status', 'aria-live':'polite'});
+      var byGroup = {};
+      catalog.items.forEach(function (i) { (byGroup[i.group] = byGroup[i.group] || []).push(i); });
       var groups = catalog.groups.filter(function (g) { return g.kind === 'model'; });
-      groups.forEach(function (g) { groupSelect.appendChild(h('option', {value:g.id,text:g.title + (g.note ? ' · ' + g.note : '')})); });
-      if (!groups.some(function(g){return g.id===launchChoice.model;})) {
-        launchChoice.model = (groups.filter(function(g){return catalog.items.some(function(i){return i.group===g.id && i.available;});})[0] || groups[0] || {}).id || '';
+      function runnable(g) { return (byGroup[g.id] || []).some(function (i) { return i.available && (i.kind === 'suite' || i.kind === 'bench'); }); }
+
+      // -- step 1: model
+      var modelSel = h('select', { class: 'input', id: 'launch-model', 'aria-describedby': 'launch-model-help' });
+      ['Colibri', 'Ollama'].forEach(function (eng) {
+        var gs = groups.filter(function (g) { return g.engine === eng; });
+        if (!gs.length) return;
+        modelSel.appendChild(h('optgroup', { label: eng === 'Ollama' ? 'Ollama models' : 'Colibri models' }, gs.map(function (g) {
+          return h('option', { value: g.id, text: g.title + (runnable(g) ? '' : ' — nothing to run') });
+        })));
+      });
+      if (!groups.some(function (g) { return g.id === launchChoice.model; }))
+        launchChoice.model = ((groups.filter(runnable)[0]) || groups[0] || {}).id || '';
+      modelSel.value = launchChoice.model;
+      var modelHelp = h('p', { class: 'help', id: 'launch-model-help' });
+
+      // -- step 2: benchmark
+      var benchSel = h('select', { class: 'input', id: 'launch-bench', 'aria-describedby': 'launch-bench-help' });
+      var benchHelp = h('p', { class: 'help', id: 'launch-bench-help' });
+
+      // -- step 3: start condition (+ run next)
+      function radio(value, title, text) {
+        var r = h('input', { type: 'radio', name: 'launch-when', value: value, checked: launchChoice.schedule === value ? '' : null,
+          onchange: function () { launchChoice.schedule = value; drawPlan(); } });
+        return h('label', { class: 'choice' }, r, h('span', {}, h('strong', { text: title }), h('span', { class: 'hint', text: text })));
       }
-      groupSelect.value = launchChoice.model;
-      function selected() { return catalog.items.filter(function(i){return i.id===benchSelect.value;})[0]; }
+      var when = h('fieldset', { class: 'clean' }, h('legend', { class: 'sr-only', text: 'When may it start?' }),
+        h('div', { class: 'choices' },
+          radio('ready', 'When the GPU is free', 'Starts after the jobs ahead of it.'),
+          radio('quiet', 'Only on a quiet machine', '≥ ' + catalog.quiet_threshold_gb + ' GB RAM free for ' + Math.round(catalog.quiet_hold_s / 60) + ' min. Cleaner timings.')));
+      var front = h('input', { type: 'checkbox', id: 'launch-front', checked: launchChoice.front ? '' : null, onchange: function () { launchChoice.front = front.checked; drawPlan(); } });
+      var frontLabel = h('label', { for: 'launch-front', class: 'row', style: 'gap:8px;font-size:13px;flex-wrap:nowrap' }, front, 'Run it next (put it at the front of the queue)');
+
+      var plan = h('div', { class: 'run-plan', 'aria-live': 'polite' });
+      var submit = h('button', { type: 'button', class: 'btn btn-primary btn-lg launch-button' });
+      var result = h('div', { role: 'status', 'aria-live': 'polite' });
+
+      function selected() { return (byGroup[benchSel.value.split('|')[0]] || catalog.items).filter(function (i) { return i.id === benchSel.value; })[0]; }
+      function gpuJob() { return current.jobs.filter(function (j) { return j.gpu; })[0]; }
+      function startLine(i, quiet) {
+        var ahead = launchChoice.front ? 0 : queue.items.length, busy = gpuJob();
+        var tl = queue.timeline || {};
+        var eta = launchChoice.front ? (tl.current && tl.current.eta_s) : tl.total_s;
+        if (queue.paused) return 'The queue is paused. Queuing this resumes it.';
+        var when = !busy && !ahead ? 'Starts within a few seconds' : eta != null ? 'Expected start ~' + at(eta) + ' (in ' + dur(eta) + ')' : 'Starts after the running job';
+        return when + (quiet ? ', once the machine is quiet.' : '.');
+      }
       function drawPlan() {
-        var i=selected(), busy=current.jobs.some(function(j){return j.gpu;});
-        var quiet=condition.value==='quiet' || (i && i.kind==='quiet');
-        plan.textContent='';
-        put(plan, h('strong', {text:i ? i.title : 'Choose a bench'}),
-          h('p', {class:'muted',text:i ? i.what : 'No benches are available for this model.'}),
-          i ? h('div', {class:'row'}, chip('st-waiting',dur(i.est_s)+' estimated'), i.lossy ? lossyTag() : null,
-            h('span',{class:'hint',text:i.total ? i.done+'/'+i.total+' saved · resumes unfinished answers' : 'Runs the standard cases for this model'})) : null,
-          h('p', {text:i && i.why_not==='already queued' ? 'Already in the queue. Follow this bench under Up next below.' : quiet ? 'Starts after earlier jobs finish and the machine has been quiet for 2 minutes.' :
-            busy || queue.items.length ? 'Queue position '+(queue.items.length+1)+' · '+queue.items.length+' queued ahead'+(busy ? ' plus the active bench.' : '.')+' Starts automatically.' : 'Starts automatically when the runner picks it up.'}));
-        submit.disabled=launchChoice.pending || !i || !i.available;
-        submit.textContent=launchChoice.pending ? 'Adding bench…' : !i || !i.available ? (i && i.why_not==='already queued' ? 'Queued' : 'Unavailable') :
-          queue.paused ? 'Queue bench and resume' : busy || queue.items.length ? 'Add bench to queue' : 'Run bench';
+        var i = selected(), quiet = launchChoice.schedule === 'quiet' || (i && i.kind === 'quiet');
+        var ahead = launchChoice.front ? 0 : queue.items.length, busy = gpuJob();
+        plan.textContent = '';
+        if (!i) {
+          put(plan, h('p', { class: 'muted', text: 'This model has nothing to run. Pick another model, or install it under Models.' }));
+        } else {
+          put(plan,
+            h('div', { class: 'row between' }, h('strong', { text: i.title.replace(/^Quality · /, 'Quality bench · ') }), i.lossy ? lossyTag() : (i.kind === 'bench' ? exactTag() : null)),
+            i.what ? h('p', { class: 'muted', style: 'font-size:13px', text: i.what }) : null,
+            h('dl', { class: 'kv' },
+              h('dt', { text: 'Estimated time' }), h('dd', { class: 'num', text: '~' + dur(i.est_s) }),
+              i.total ? [h('dt', { text: 'Already saved' }), h('dd', { class: 'num', text: i.done + ' of ' + i.total + ' answers' + (i.done ? ' · it resumes' : '') })] : null,
+              h('dt', { text: 'Queue position' }), h('dd', { class: 'num', text: (ahead + 1) + (ahead ? ' · ' + ahead + ' job' + (ahead === 1 ? '' : 's') + ' ahead' : ' · next') + (busy ? ' + the running job' : '') }),
+              h('dt', { text: 'Start' }), h('dd', { text: startLine(i, quiet) })),
+            i.available ? null : h('p', { class: 'notice notice-warn', text: i.why_not === 'already queued' ? 'Already in the queue — see Up next.' : i.why_not === 'running now' ? 'Running now — see Running now.' : 'Unavailable: ' + i.why_not }));
+        }
+        submit.disabled = launchChoice.pending || !i || !i.available;
+        submit.setAttribute('aria-busy', launchChoice.pending ? 'true' : 'false');
+        submit.textContent = launchChoice.pending ? 'Queuing…' : !i || !i.available ? 'Cannot queue this benchmark'
+          : queue.paused ? 'Queue and resume the queue' : !busy && !ahead && !quiet ? 'Start benchmark' : 'Queue benchmark';
       }
       function drawChoices() {
-        benchSelect.textContent='';
-        var choices=catalog.items.filter(function(i){return i.group===groupSelect.value;});
-        choices.forEach(function(i){benchSelect.appendChild(h('option',{value:i.id,disabled:!i.available ? '' : null,text:i.title+(i.available ? '' : ' · '+i.why_not)}));});
-        var saved=choices.filter(function(i){return i.id===launchChoice.item && i.available;})[0];
-        var first=saved || choices.filter(function(i){return i.available && i.kind==='suite';})[0] || choices.filter(function(i){return i.available;})[0];
-        benchSelect.value=first ? first.id : '';launchChoice.item=benchSelect.value;
+        benchSel.textContent = '';
+        var g = groups.filter(function (x) { return x.id === modelSel.value; })[0] || {};
+        modelHelp.textContent = [g.engine ? g.engine + ' engine' : '', g.note || ''].filter(Boolean).join(' · ');
+        var items = byGroup[modelSel.value] || [];
+        [['suite', 'Standard benchmarks'], ['bench', 'Quality bench (24 graded prompts) · setting · style']].forEach(function (k) {
+          var its = items.filter(function (i) { return i.kind === k[0]; });
+          if (!its.length) return;
+          benchSel.appendChild(h('optgroup', { label: k[1] }, its.map(function (i) {
+            var label = i.title.replace(/^Quality · /, '') + (i.total ? ' — ' + i.done + '/' + i.total + ' saved' : '') + (i.available ? ' · ~' + dur(i.est_s) : ' — ' + i.why_not);
+            return h('option', { value: i.id, disabled: i.available ? null : '', text: label });
+          })));
+        });
+        var saved = items.filter(function (i) { return i.id === launchChoice.item && i.available; })[0];
+        var first = saved || items.filter(function (i) { return i.available && i.kind === 'suite'; })[0] || items.filter(function (i) { return i.available; })[0];
+        benchSel.value = first ? first.id : (items[0] || {}).id || '';
+        launchChoice.item = benchSel.value;
+        benchHelp.textContent = items.length ? items.filter(function (i) { return i.available; }).length + ' of ' + items.length + ' can be queued now. Unavailable ones show why.' : '';
         drawPlan();
       }
-      groupSelect.addEventListener('change',function(){launchChoice.model=groupSelect.value;launchChoice.item='';drawChoices();});
-      benchSelect.addEventListener('change',function(){launchChoice.item=benchSelect.value;drawPlan();});
-      condition.addEventListener('change',function(){launchChoice.schedule=condition.value;drawPlan();});
-      submit.addEventListener('click',function(){
-        var i=selected();if(launchChoice.pending || !i || !i.available)return;
-        launchChoice.pending=true;drawPlan();feedback.className='';feedback.textContent='Adding '+i.title+'…';
-        post('/api/queue/add-selection',{ids:[i.id],schedule:condition.value,resume:true}).then(function(r){
-          launchChoice.pending=false;
-          feedback.className='banner';feedback.textContent='Added to queue: '+r.queued.map(function(j){return j.title;}).join(', ')+'. It will start automatically. Follow its position below.';
-          i.available=false;i.why_not='already queued';if(benchSelect.selectedOptions[0])benchSelect.selectedOptions[0].textContent=i.title+' · queued';drawPlan();refreshLive();
-        },function(e){launchChoice.pending=false;feedback.className='err';feedback.textContent=e.message;drawPlan();});
+      modelSel.addEventListener('change', function () { launchChoice.model = modelSel.value; launchChoice.item = ''; drawChoices(); });
+      benchSel.addEventListener('change', function () { launchChoice.item = benchSel.value; drawPlan(); });
+      submit.addEventListener('click', function () {
+        var i = selected(); if (launchChoice.pending || !i || !i.available) return;
+        launchChoice.pending = true; drawPlan(); result.textContent = '';
+        post('/api/queue/add-selection', { ids: [i.id], schedule: launchChoice.schedule, front: launchChoice.front, resume: true }).then(function (r) {
+          launchChoice.pending = false;
+          i.available = false; i.why_not = 'already queued';
+          launchChoice.last = { title: i.title, qids: r.queued.map(function (q) { return q.qid; }) };
+          return refreshLive().then(function () { drawChoices(); showLaunched(r); });
+        }, function (e) {
+          launchChoice.pending = false; drawPlan();
+          result.textContent = ''; put(result, h('div', { class: 'err', role: 'alert', text: 'Not queued: ' + e.message }));
+        });
       });
+      function showLaunched(r) {
+        result.textContent = '';
+        var q = r.queued[0] || {}, pos = queue.items.map(function (x) { return x.qid; }).indexOf(q.qid);
+        var item = pos >= 0 ? queue.items[pos] : null;
+        put(result, h('div', { class: 'launched', tabindex: '-1' },
+          h('div', { class: 'row', style: 'gap:8px' }, chip('st-done', 'Queued'), h('strong', { text: jobParts(q.title).what + (jobParts(q.title).model ? ' on ' + jobParts(q.title).model : '') })),
+          h('p', { style: 'font-size:13px', text: (pos >= 0 ? 'Position ' + (pos + 1) + ' of ' + queue.items.length + '. ' : '') +
+            (item && item.starts_in_s != null ? 'Expected start ~' + at(item.starts_in_s) + '. ' : '') +
+            (q.only_when_quiet ? 'Waits for a quiet machine. ' : '') + 'It starts on its own; you can close this page.' }),
+          h('div', { class: 'row' }, h('a', { href: '#queue', text: 'Open the queue' }), h('a', { href: '#results', text: 'Results' }))));
+        result.firstChild.focus();
+      }
+
+      // -- live column
+      var live = h('div', { class: 'stack', id: 'live-jobs' });
+      var tiles = h('div', { class: 'tiles', 'aria-label': 'Summary' });
+      function drawTiles() {
+        tiles.textContent = '';
+        var j = gpuJob(), m = current.machine, p = j && j.progress;
+        put(tiles,
+          h('div', { class: 'tile' }, h('span', { class: 'eyebrow', text: 'Running now' }),
+            h('span', { class: 'big', text: j ? jobParts(j.title).what || j.title : 'Nothing' }),
+            h('span', { class: 'hint', text: j ? (p && p.total ? pct(p.done, p.total) + '% · ' : '') + (p && p.eta_s ? 'done ~' + at(p.eta_s) : 'running ' + dur(j.elapsed_s)) : 'GPU free' })),
+          h('div', { class: 'tile' }, h('span', { class: 'eyebrow', text: 'Queue' }),
+            h('span', { class: 'big num', text: queue.items.length + ' waiting' }),
+            h('span', { class: 'hint', text: queue.paused ? 'Paused — nothing starts' : queue.timeline && queue.timeline.total_s != null && queue.items.length ? 'All done ~' + at(queue.timeline.total_s) : 'Runs one at a time' })),
+          h('div', { class: 'tile' }, h('span', { class: 'eyebrow', text: 'Machine' }),
+            h('span', { class: 'big', text: m.quiet ? 'Quiet' : 'Busy' }),
+            h('span', { class: 'hint num', text: f2(m.free_gb, 1) + ' GB RAM free · quiet needs ≥ ' + m.quiet_threshold_gb + ' GB' })));
+      }
+      function runningCard() {
+        var j = gpuJob();
+        if (!j) return h('section', { class: 'card live-card', 'aria-labelledby': 'run-h' },
+          h('div', { class: 'card-head' }, h('h2', { id: 'run-h', text: 'Running now' }), chip('st-done', 'GPU free')),
+          h('p', { class: 'muted', text: queue.items.length ? (queue.paused ? 'The queue is paused, so nothing starts.' : 'The next job starts on its own when its start condition is met.') : 'Nothing is running. Queue a benchmark on the left.' }));
+        var p = j.progress || {}, parts = jobParts(j.title), bench = p.name;
+        return h('section', { class: 'card live-card', 'aria-labelledby': 'run-h' },
+          h('div', { class: 'card-head' }, h('h2', { id: 'run-h', text: 'Running now' }), j.foreign ? chip('st-blocked', 'Not started by the lab') : chip('st-running', 'Running')),
+          h('div', { class: 'stack', style: 'gap:2px' }, h('span', { class: 'job-title', text: j.kind === 'Quality bench' && bench ? 'Quality bench “' + bench + '”' : (parts.what || j.title) }),
+            h('span', { class: 'hint', text: j.detail || '' })),
+          p.total ? h('div', { class: 'stack', style: 'gap:6px' }, meter(p.done, p.total, 'Benchmark progress'),
+            h('div', { class: 'progress-line num' }, h('span', { text: f2(p.done, p.unit ? 1 : 0) + ' of ' + p.total + (p.unit ? ' ' + p.unit : ' answers') + ' · ' + pct(p.done, p.total) + '%' }),
+              h('span', { text: p.eta_s ? '~' + dur(p.eta_s) + ' left · done ~' + at(p.eta_s) : 'finishing' }))) : null,
+          p.current ? h('p', { class: 'current-case' }, h('span', { class: 'hint', text: 'Now answering ' }), p.current.replace(/__/g, ' · ').replace(/\b(d030t12|d040t12|d030|d050)\b/g, function (c) { return CFG[c]; }),
+            p.per_answer_s ? h('span', { class: 'hint', text: ' · ' + p.per_answer_s + ' s per answer' }) : null) : null,
+          h('dl', { class: 'kv' }, h('dt', { text: 'Process' }), h('dd', { class: 'num', text: 'PID ' + j.pid + (j.engine_pid ? ' · engine PID ' + j.engine_pid : '') + ' · running ' + dur(j.elapsed_s) })),
+          h('div', { class: 'row' },
+            bench ? h('a', { class: 'btn btn-sm', href: '#bench/' + encodeURIComponent(bench), text: 'Answers so far' }) : null,
+            p.items ? h('details', { class: 'x', style: 'flex-basis:100%' }, h('summary', { text: 'Every case in this bench' }), benchStrip(p)) : null,
+            j.stoppable ? h('button', { type: 'button', class: 'btn btn-danger btn-sm', text: 'Stop…', 'aria-label': 'Stop PID ' + j.pid, onclick: function () { stopJob(j); } })
+              : h('p', { class: 'hint', text: 'Not started by the lab (e.g. your own Colibri session): the app never stops it.' })));
+      }
+      function queueCard() {
+        var items = queue.items, show = items.slice(0, 6);
+        var mine = (launchChoice.last && launchChoice.last.qids) || [];
+        return h('section', { class: 'card live-card', 'aria-labelledby': 'q-h' },
+          h('div', { class: 'card-head' }, h('h2', { id: 'q-h' }, 'Up next ', h('span', { class: 'count', text: String(items.length) })),
+            items.length ? h('button', { type: 'button', class: 'btn btn-sm', text: queue.paused ? 'Resume queue' : 'Pause queue',
+              onclick: function () { post('/api/queue/pause', { paused: !queue.paused }).then(refreshLive).catch(function (e) { toast(e.message, true); }); } }) : null),
+          queue.paused ? h('div', { class: 'notice notice-warn', role: 'status' }, chip('st-paused', 'Paused'), h('span', { text: 'Nothing queued starts until you resume.' })) : null,
+          items.length ? h('ol', { class: 'up-next' }, show.map(function (q, n) {
+            var parts = jobParts(q.title), cond = q.only_when_quiet ? chip('st-blocked', 'Waits for quiet') : null;
+            return h('li', { class: n === 0 ? 'next' : null, 'aria-current': mine.indexOf(q.qid) >= 0 ? 'true' : null },
+              h('span', { class: 'pos', 'aria-label': 'Position ' + (n + 1), text: String(n + 1) }),
+              h('div', { style: 'min-width:0' }, h('div', { class: 'job-title' }, parts.what, parts.model ? h('span', { class: 'muted', style: 'font-weight:400', text: ' · ' + parts.model }) : null),
+                h('div', { class: 'job-meta' }, parts.detail ? h('span', { text: parts.detail }) : null, cond,
+                  h('span', { class: 'num', text: '~' + dur(q.est_s) + (q.starts_in_s != null && !queue.paused ? ' · starts ~' + at(q.starts_in_s) : '') }),
+                  mine.indexOf(q.qid) >= 0 ? h('span', { class: 'badge', text: 'just added' }) : null)),
+              h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Remove ' + q.title + ' from the queue', title: 'Remove from queue',
+                onclick: function () { removeQueued(q); } }, svgIcon('M6 6l12 12M18 6L6 18', 14)));
+          })) : h('p', { class: 'muted', text: 'Nothing waiting. Queued benchmarks appear here in the order they will run.' }),
+          items.length > show.length ? h('a', { href: '#queue', text: 'All ' + items.length + ' queued jobs, reorder and logs' }) : h('a', { href: '#queue', text: 'Reorder and view logs' }));
+      }
+      function removeQueued(q) {
+        confirmDialog({ eyebrow: 'Queue', title: 'Remove from the queue?', confirm: 'Remove', danger: true,
+          rows: [['Job', q.title], ['Estimated time', '~' + dur(q.est_s)]], note: 'Nothing is deleted: saved answers stay, and you can queue it again later.' })
+          .then(function (ok) { if (ok) post('/api/queue/remove', { qid: q.qid }).then(function () { toast('Removed from the queue: ' + q.title); return refreshLive(); }).catch(function (e) { toast(e.message, true); }); });
+      }
+      function finishedSection() {
+        var hist = (queue.jobs || []).filter(function (j) { return j.status !== 'running'; }).slice(0, 6);
+        var outcome = function (j) {
+          if (j.status === 'failed') return chip('st-failed', 'Failed' + (j.exit != null ? ' · exit ' + j.exit : ''));
+          if (j.status === 'finished') return chip('st-waiting', 'Ended · no exit code');
+          return chip('st-done', 'Done');
+        };
+        return section('Recently finished', h('a', { href: '#results', text: 'Measured results' }),
+          hist.length ? table(['Job', 'Model', 'Started', 'Outcome', ''], hist.map(function (j) {
+            var parts = jobParts(j.title);
+            return h('tr', {}, td(h('div', { class: 'stack', style: 'gap:0' }, h('strong', { text: parts.what || j.title }), parts.detail ? h('span', { class: 'hint', text: parts.detail }) : null)),
+              td(parts.model || '—'), td(h('span', { class: 'num', style: 'white-space:nowrap', text: j.started })), td(outcome(j)),
+              td(j.kind === 'bench' && j.args && j.args.name ? h('a', { href: '#bench/' + encodeURIComponent(j.args.name), text: 'Answers' }) : h('a', { href: '#queue', text: 'Log' })));
+          }), 'Recently finished jobs') : empty('Finished benchmarks appear here.'));
+      }
       function renderLive() {
-        setGpu(current);live.textContent='';
-        var gpu=current.jobs.filter(function(j){return j.gpu;}), active=gpu[0];
-        var running = active ? h('div',{class:'stack'},
-          h('div',{class:'row between'},chip('st-running','Running now'),h('span',{class:'hint',text:'Updated '+new Date().toLocaleTimeString()})),
-          h('h2',{text:active.title}),h('p',{class:'muted',text:active.detail || ''}),
-          active.progress && active.progress.total ? meter(active.progress.done,active.progress.total) : null,
-          active.progress ? h('p',{class:'num',text:active.progress.done+' / '+active.progress.total+' completed'+(active.progress.eta_s ? ' · about '+dur(active.progress.eta_s)+' left' : '')}) : null,
-          active.progress && active.progress.current ? h('p',{class:'current-case',text:'Current case: '+active.progress.current.replace(/__/g,' · ')}) : null,
-          active.progress && active.progress.items ? h('details',{class:'x'},h('summary',{text:'See finished and upcoming cases in this bench'}),benchStrip(active.progress)) : null,
-          active.stoppable ? h('button',{class:'btn btn-danger btn-sm',style:'align-self:flex-start',text:'Stop this bench…',onclick:function(){stopJob(active);}}) : null)
-          : h('div',{class:'stack'},chip('st-done','GPU free'),h('h2',{text:'Ready for a bench'}),h('p',{class:'muted',text:'Choose a model and a bench above. The queue runs one job at a time.'}));
-        var waiting=h('div',{class:'stack'},h('div',{class:'row between'},h('h2',{text:'Up next · '+queue.items.length}),
-          h('button',{class:'btn btn-sm',text:queue.paused ? 'Resume queue' : 'Pause queue',onclick:function(){post('/api/queue/pause',{paused:!queue.paused}).then(refreshLive).catch(function(e){toast(e.message,true);});}})),
-          h('p',{class:queue.paused ? 'err' : 'hint',text:queue.paused ? 'Paused — nothing queued will start until you resume.' : queue.runner || 'Jobs start automatically, in the order below.'}),
-          queue.items.length ? h('ol',{class:'up-next'},queue.items.slice(0,5).map(function(j,n){return h('li',{},h('div',{class:'stack'},h('strong',{text:j.title}),
-            h('span',{class:'hint',text:(n===0 ? 'Next' : 'Position '+(n+1))+' · '+(j.only_when_quiet ? 'waits for quiet' : 'when GPU is free')})),
-            h('button',{class:'btn btn-sm',text:'Remove', 'aria-label':'Remove '+j.title+' from queue',onclick:function(){post('/api/queue/remove',{qid:j.qid}).then(refreshLive).catch(function(e){toast(e.message,true);});}}));})) : h('p',{class:'muted',text:'No benches waiting.'}),
-          h('a',{href:'#queue',text:queue.items.length>5 ? 'View all '+queue.items.length+' queued jobs and reorder →' : 'Reorder queue and view logs'}));
-        var history=(queue.jobs || []).filter(function(j){return j.status!=='running';}).slice(0,5);
-        put(live,h('div',{class:'grid2'},card([running]),card([waiting])),
-          section('Recently finished',h('a',{href:'#results',text:'View measured results →'}),history.length ? table(['Bench','Started','Outcome'],history.map(function(j){return h('tr',{},td(j.title),td(j.started),td(chip(j.status==='failed' ? 'st-failed':'st-done',j.status==='finished' ? 'Finished · exit unknown' : j.status)));})) : h('p',{class:'muted',text:'Finished benches will appear here.'})));
-        drawPlan();
+        setGpu(current); drawTiles();
+        live.textContent = '';
+        put(live, runningCard(), queueCard());
+        fin.replaceWith(fin = finishedSection());
       }
-      var refreshing=false;
-      function refreshLive(){
-        if(refreshing)return Promise.resolve();refreshing=true;
-        return Promise.all([api('/api/now'),api('/api/queue')]).then(function(r){current=r[0];queue=r[1];renderLive();}).catch(function(e){toast('Live status could not update: '+e.message,true);}).finally(function(){refreshing=false;});
+      var refreshing = false;
+      function refreshLive() {
+        if (refreshing) return Promise.resolve(); refreshing = true;
+        return Promise.all([api('/api/now'), api('/api/queue')]).then(function (r) { current = r[0]; queue = r[1]; renderLive(); drawPlan(); })
+          .catch(function (e) { toast('Live status could not update: ' + e.message, true); }).finally(function () { refreshing = false; });
       }
-      put(form,h('div',{class:'row between'},h('div',{},h('span',{class:'eyebrow',text:'New run'}),h('h2',{text:'New benchmark'})),h('a',{href:'#start',text:'Select multiple benches →'})),
-        h('div',{class:'launch-fields'},h('label',{for:'launch-model'},'Model',groupSelect),h('label',{for:'launch-bench'},'Bench',benchSelect),h('label',{for:'launch-condition'},'Start condition',condition)),plan,submit,feedback);
-      put(main,header('Run benches','Start a run, see exactly what is running, and follow the queue.'),form,live);
-      drawChoices();renderLive();
-      timer=setInterval(function(){if(!document.querySelector('.scrim') && !document.querySelector('#live-jobs details[open]'))refreshLive();},5000);
+
+      var form = h('section', { class: 'card launch-card', 'aria-labelledby': 'launch-h' },
+        h('div', { class: 'card-head' }, h('h2', { id: 'launch-h', text: 'New benchmark run' }), h('a', { href: '#start', text: 'Select several at once' })),
+        h('div', { class: 'step' }, h('span', { class: 'step-n', 'aria-hidden': 'true', text: '1' }), h('div', { class: 'field' }, h('label', { for: 'launch-model', text: 'Model' }), modelSel, modelHelp)),
+        h('div', { class: 'step' }, h('span', { class: 'step-n', 'aria-hidden': 'true', text: '2' }), h('div', { class: 'field' }, h('label', { for: 'launch-bench', text: 'Benchmark' }), benchSel, benchHelp)),
+        h('div', { class: 'step' }, h('span', { class: 'step-n', 'aria-hidden': 'true', text: '3' }), h('div', { class: 'field' }, h('span', { class: 'field-label', 'aria-hidden': 'true', text: 'When may it start?' }), when, frontLabel)),
+        plan, submit, result);
+      var fin = h('div');
+      put(main, header('Run benchmarks', 'Choose a model and a benchmark, then queue it. Jobs run one at a time, in order.'),
+        tiles, h('div', { class: 'split' }, form, live), fin);
+      drawChoices(); renderLive();
+      timer = setInterval(function () { if (main.isConnected && !document.querySelector('.scrim') && !document.querySelector('#live-jobs details[open]')) refreshLive(); }, 5000);
     });
   }
 
+
   // ---------- router ----------
-  var ROUTES = { dashboard: screenDashboard, results: screenBenches, now: screenNow, queue: screenQueue, install: screenInstall, settings: screenSettings, benches: screenBenches, runs: screenRuns,
-                 experiments: screenExperiments, models: screenInstall, leaderboard: screenLeaderboard, research: screenResearch, start: screenStart };
+  var ROUTES = { dashboard: screenDashboard, results: screenResults, models: screenModels, install: screenModels, benches: function (m) { return screenResults(m, 'coverage'); },
+                 now: screenNow, queue: screenQueue, settings: screenSettings, runs: screenRuns, experiments: screenExperiments,
+                 leaderboard: screenLeaderboard, research: screenResearch, start: screenStart };
+  var NAV_OF = { bench: 'results', benches: 'results', install: 'models' };
   function route() {
     clearInterval(timer);
     var hash = (location.hash || '#dashboard').slice(1), parts = hash.split('/'), name = parts[0];
-    var main = document.getElementById('main');
-    var fn = name === 'bench' ? function (m) { return screenBench(m, parts[1]); } : ROUTES[name] || screenDashboard;
-    renderNav(name === 'bench' ? 'results' : name === 'start' ? 'dashboard' : (ROUTES[name] ? name : 'dashboard'));
-    function load(keepScroll) {
+    var fn = name === 'bench' ? function (m) { return screenBench(m, parts.slice(1).join('/')); }
+      : name === 'results' ? function (m) { return screenResults(m, parts[1]); } : ROUTES[name] || screenDashboard;
+    renderNav(NAV_OF[name] || (ROUTES[name] ? name : 'dashboard'));
+    var title = { dashboard: 'Run benchmarks', results: 'Results', bench: 'Answers', models: 'Models', install: 'Models' }[name] ||
+      (ADVANCED.filter(function (s) { return s[0] === name; })[0] || [0, 'Run benchmarks'])[1];
+    document.title = title + ' · GLM lab';
+    function load(keepScroll, focus) {
       var y = window.scrollY, fresh = h('main', { id: 'main', tabindex: '-1' });
       return fn(fresh).then(function () {
         if ((location.hash || '#dashboard').slice(1) !== hash) return;
+        fresh.setAttribute('data-ready', ''); fresh.setAttribute('data-route', hash);
         var cur = document.getElementById('main'); cur.replaceWith(fresh);
         if (keepScroll) window.scrollTo(0, y);
-      }).catch(function (e) { if ((location.hash || '#dashboard').slice(1) !== hash) return; var currentMain=document.getElementById('main'); currentMain.textContent=''; put(currentMain,errorBox(e)); });
+        else if (focus) { window.scrollTo(0, 0); fresh.focus({ preventScroll: true }); }
+      }).catch(function (e) {
+        if ((location.hash || '#dashboard').slice(1) !== hash) return;
+        var cur = document.getElementById('main'); cur.textContent = ''; cur.setAttribute('data-ready', ''); cur.setAttribute('data-route', hash); put(cur, errorBox(e));
+      });
     }
-    load(false);
+    load(false, route.started);
+    route.started = true;
     if (fn === screenNow || fn === screenQueue) timer = setInterval(function () { if (!document.querySelector('.scrim') && !document.querySelector('details.x[open]') && !(document.activeElement && /INPUT|SELECT/.test(document.activeElement.tagName))) load(true); }, fn === screenNow ? 5000 : 10000);
-    else api('/api/now').then(setGpu).catch(function () {});
+    if (fn !== screenNow && fn !== screenDashboard) api('/api/now').then(setGpu).catch(function () {});
   }
   window.addEventListener('hashchange', route);
   route();

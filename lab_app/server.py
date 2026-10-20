@@ -467,6 +467,24 @@ def models():
 
 # ---------- other screens ----------
 
+def bench_settings(meta):
+    """How a quality bench ran, for the Results page: engine, RAM, context, token cap and each config's settings.
+    Older meta files list only the configs they started with, so known configs fill the gaps."""
+    import glm_bench
+    ollama = meta.get('backend') == 'ollama'
+    cfg = meta.get('ollama_configs') if ollama else meta.get('configs')
+    if not isinstance(cfg, dict):
+        cfg = {}
+    known = glm_bench.OLLAMA_CONFIGS if ollama else glm_bench.CONFIGS
+    cfg = dict(known, **cfg)
+    base = meta.get('base_env')
+    return dict(backend='ollama' if ollama else 'colibri', ollama_model=meta.get('ollama_model'), ollama_version=meta.get('ollama_version'),
+                colibri_commit=(meta.get('colibri_commit') or '')[:8] or None, ram_gb=meta.get('ram'), ctx=meta.get('ctx'), max_tokens=meta.get('ngen'),
+                base_env=base if isinstance(base, dict) else dict(glm_bench.BASE_ENV) if not ollama else {},
+                configs={k: (v if isinstance(v, dict) else {}) for k, v in cfg.items()},
+                styles=meta.get('styles') if isinstance(meta.get('styles'), dict) else {})
+
+
 def benches():
     m = models()
     results = []
@@ -474,7 +492,7 @@ def benches():
         recs = bench_records(n)
         meta = read_json(ROOT / 'results' / f'glm-bench-{n}' / 'meta.json', {})
         pub = ROOT / 'published-results' / f'glm-bench-{n}'
-        results.append(dict(name=n, answers=len(recs), summary=bench_summary(recs), started=meta.get('started'),
+        results.append(dict(name=n, answers=len(recs), summary=bench_summary(recs), started=meta.get('started'), settings=bench_settings(meta),
                             review='published-results/glm-bench-%s/review.md' % n if (pub / 'review.md').exists() else None,
                             published=pub.exists(),
                             notes=[p.name for p in (ROOT / 'results' / f'glm-bench-{n}').glob('*.md') if p.name != 'report.md']))

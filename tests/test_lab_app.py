@@ -52,6 +52,23 @@ class LabAppTests(unittest.TestCase):
         e = s.external()
         self.assertTrue(any(x.get('lab') for x in e['aa_index']['rows']))
 
+    def test_bench_settings_fill_known_configs(self):
+        st = s.bench_settings({'configs': {'exact': {}}, 'base_env': "{'PIPE': '1'}", 'ram': '18', 'ngen': 128})
+        self.assertEqual(st['backend'], 'colibri')
+        self.assertIn('d030t12', st['configs'])          # known configs fill an older meta file
+        self.assertIsInstance(st['base_env'], dict)
+        o = s.bench_settings({'backend': 'ollama', 'ollama_model': 'm', 'ollama_configs': {'exact': {'think': False}}})
+        self.assertEqual(o['backend'], 'ollama')
+        self.assertEqual(o['configs']['exact'], {'think': False})
+        self.assertIn('native', o['configs'])
+
+    def test_demo_server_never_touches_the_mac(self):
+        import demo_server, inspect
+        src = inspect.getsource(demo_server.main)
+        for name in ('a.launch', 'a.stop', 'a.remove_model', 'a.refresh_jobs'):
+            self.assertIn(name, src)           # each one is replaced by a fake
+        self.assertNotIn('start_runner', src)  # the queue never runs in the demo
+
 
 if __name__ == '__main__':
     unittest.main()

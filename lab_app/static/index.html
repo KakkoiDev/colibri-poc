@@ -8,30 +8,31 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#141414">
+<meta name="theme-color" content="#19191C">
 <meta name="apple-mobile-web-app-title" content="GLM lab">
 </head>
 <body class="lab" data-theme="auto">
+<a class="skip" href="#main">Skip to content</a>
 <div class="app">
   <aside class="side" aria-label="Lab sections">
     <div class="brand">
-      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" style="fill:none;stroke:var(--fg);stroke-width:2px;stroke-linecap:round;stroke-linejoin:round"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>
       <div style="display:flex;flex-direction:column"><strong style="font-size:15px;line-height:18px">GLM lab</strong><span class="hint">M6 · 32 GB · local</span></div>
     </div>
-    <nav class="nav" id="nav"></nav>
+    <nav class="nav" id="nav" aria-label="Main"></nav>
     <div class="side-foot">
-      <span class="chip st-waiting" id="gpu-chip">checking…</span>
+      <span class="chip st-waiting" id="gpu-chip" role="status" aria-live="polite">Checking…</span>
       <span class="hint" id="gpu-detail"></span>
-      <label class="hint" style="display:flex;gap:6px;align-items:center">Theme
-        <select class="input" id="theme" style="width:auto;min-height:28px;padding:2px 6px;font-size:12px" aria-label="Theme">
-          <option value="auto">auto</option><option value="light">light</option><option value="dark">dark</option>
-        </select>
-      </label>
-      <span class="hint mono" style="font-size:11px">127.0.0.1 · local only</span>
+      <label class="hint theme-label" for="theme">Theme</label>
+      <select class="input" id="theme" aria-label="Colour theme">
+        <option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option>
+      </select>
+      <span class="hint mono">127.0.0.1 · local only</span>
     </div>
   </aside>
   <main id="main" tabindex="-1"><p class="muted">Loading…</p></main>
 </div>
+<div id="toasts" aria-live="polite" aria-atomic="false"></div>
 <script src="app.js"></script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function () {});</script>
 </body>
