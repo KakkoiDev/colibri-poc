@@ -327,8 +327,10 @@
 
   // ---------- sortable data table ----------
   // cols: [{ t, u, n, key, cell(row) -> node|string, best: 'max'|'min', sortable }]; rows: plain objects.
+  // o.freeze: keep the first column (the row's name) visible while the table scrolls sideways.
+  // o.onSort(key, dir): called when a header changes the order, so a "Sort by" control can follow.
   function dataTable(o) {
-    var wrap = h('div', { class: 'table-wrap' });
+    var wrap = h('div', { class: 'table-wrap' + (o.freeze ? ' freeze' : '') });
     var st = { key: o.sortKey || null, dir: o.dir || 'desc' };
     function val(r, c) { var v = typeof c.key === 'function' ? c.key(r) : r[c.key]; return v == null || v === '' || (typeof v === 'number' && isNaN(v)) ? null : v; }
     function draw() {
@@ -354,7 +356,8 @@
         return h('th', { scope: 'col', class: (c.n ? 'n ' : '') + 'sort-th', 'aria-sort': sorted ? (st.dir === 'asc' ? 'ascending' : 'descending') : null },
           h('button', { type: 'button', class: 'sort', onclick: function () {
             if (st.key === c.id) st.dir = st.dir === 'asc' ? 'desc' : 'asc'; else { st.key = c.id; st.dir = c.n ? (c.best === 'min' ? 'asc' : 'desc') : 'asc'; }
-            draw(); var b = wrap.querySelector('th[aria-sort] .sort'); if (b) b.focus();
+            draw(); if (o.onSort) o.onSort(st.key, st.dir);
+            var b = wrap.querySelector('th[aria-sort] .sort'); if (b) b.focus({ preventScroll: true }); reveal();
           } }, h('span', {}, label)));
       }))));
       var tb = h('tbody');
@@ -369,7 +372,15 @@
       t.appendChild(tb);
       wrap.textContent = ''; wrap.appendChild(t);
     }
+    // The column the rows are ordered by must be on screen, also when the table is wider than the page.
+    function reveal() {
+      var th = wrap.querySelector('th[aria-sort]'); if (!th || wrap.scrollWidth <= wrap.clientWidth) return;
+      var first = o.freeze ? wrap.querySelector('th').offsetWidth : 0;
+      if (th.offsetLeft < wrap.scrollLeft + first || th.offsetLeft + th.offsetWidth > wrap.scrollLeft + wrap.clientWidth)
+        wrap.scrollLeft = Math.max(0, th.offsetLeft - first - 8);
+    }
     draw();
+    requestAnimationFrame(reveal);
     return wrap;
   }
   function selectField(id, label, options, value, onchange) {
@@ -381,7 +392,23 @@
   function envText(env) { var k = Object.keys(env || {}); return k.length ? k.map(function (x) { return x + '=' + (typeof env[x] === 'object' ? JSON.stringify(env[x]) : env[x]); }).join(' ') : 'none'; }
 
   // ---------- results ----------
-  var resultsState = { model: 'all', style: 'all', kind: 'all', speedOk: true, speedQ: '', qualityOrder: 'quality', speedOrder: 'saved' };
+  var resultsState = { model: 'all', style: 'all', kind: 'all', speedOk: true, speedQ: '', qualityOrder: 'quality', speedOrder: 'saved',
+                       qSort: { key: 'pct', dir: 'desc' }, sSort: { key: 'i', dir: 'desc' } };
+  // "Sort by" presets <-> table header order. A header click that matches no preset shows "Column header".
+  var ORDER_PRESETS = { quality: ['pct', 'desc'], fastest: ['tok_s', 'desc'], slowest: ['tok_s', 'asc'], saved: ['i', 'desc'] };
+  function presetFor(sort) {
+    for (var k in ORDER_PRESETS) if (ORDER_PRESETS[k][0] === sort.key && ORDER_PRESETS[k][1] === sort.dir) return k;
+    return 'custom';
+  }
+  function orderField(id, presets, sort, redraw) {
+    var opts = presets.concat([['custom', 'Column header (click a header)']]);
+    var f = selectField(id, 'Sort by', opts, presetFor(sort), function (v) {
+      if (v === 'custom') return; sort.key = ORDER_PRESETS[v][0]; sort.dir = ORDER_PRESETS[v][1]; redraw();
+    });
+    f.querySelector('option[value="custom"]').disabled = true;
+    f.sync = function () { f.querySelector('select').value = presetFor(sort); };
+    return f;
+  }
   function screenResults(main, tab) {
     tab = tab === 'speed' || tab === 'coverage' ? tab : 'quality';
     return Promise.all([api('/api/benches'), api('/api/runs'), api('/api/models')]).then(function (res) {
@@ -419,27 +446,28 @@
       });
       count.textContent = shown.length + ' of ' + rows.length + ' setting × style combinations. Bold = best value among the rows shown.';
       tblBox.textContent = '';
-      tblBox.appendChild(dataTable({ caption: 'Answer quality and speed per bench, setting and style', sortKey: st.qualityOrder === 'quality' ? 'pct' : 'tok_s', dir: st.qualityOrder === 'slowest' ? 'asc' : 'desc', rows: shown,
+      tblBox.appendChild(dataTable({ caption: 'Answer quality and speed per bench, setting and style', freeze: true, sortKey: st.qSort.key, dir: st.qSort.dir, rows: shown,
+        onSort: function (k, d) { st.qSort.key = k; st.qSort.dir = d; order.sync(); },
         rowClass: function (r) { return r.lossy ? 'lossy' : null; },
         cols: [
-          { id: 'model', t: 'Model', key: 'model', cell: function (r) { return h('div', { class: 'stack', style: 'gap:0;min-width:200px' }, h('strong', { text: r.model }), h('span', { class: 'hint mono', text: 'bench ' + r.bench })); } },
-          { id: 'config', t: 'Setting', key: function (r) { return CFG[r.config] || r.config; }, cell: function (r) { return h('span', { class: 'row', style: 'gap:6px;flex-wrap:nowrap;white-space:nowrap' }, h('span', { text: CFG[r.config] || r.config }), r.lossy ? lossyTag() : r.config === 'exact' ? exactTag() : null); } },
-          { id: 'style', t: 'Style', key: 'style' },
-          { id: 'pct', t: 'Correct', u: '% auto-graded', n: 1, best: 'max', key: 'pctCorrect', cell: function (r) { return h('span', {}, h('strong', { text: f2(r.pctCorrect, 0) + '%' }), h('span', { class: 'hint', text: ' ' + r.correct + '/' + r.graded })); } },
-          { id: 'same', t: 'Same text as exact', u: 'answers', n: 1, key: function (r) { return r.ok ? r.same / r.ok : null; }, cell: function (r) { return r.config === 'exact' ? h('span', { class: 'hint', text: 'reference' }) : r.same + '/' + r.ok; } },
-          { id: 'answer', t: 'Mean answer time', u: 's', n: 1, best: 'min', key: 'answer_s', cell: function (r) { return f2(r.answer_s, 1); } },
+          { id: 'model', t: 'Model', u: 'bench · answer style', key: 'model', cell: function (r) { return h('div', { class: 'cell-name' }, h('strong', { text: r.model }), h('span', { class: 'hint', text: r.bench + ' · ' + r.style })); } },
+          { id: 'config', t: 'Setting', key: function (r) { return CFG[r.config] || r.config; }, cell: function (r) { return h('div', { class: 'cell-setting' }, h('span', { text: CFG[r.config] || r.config }), r.lossy ? lossyTag() : r.config === 'exact' ? exactTag() : null); } },
+          { id: 'pct', t: 'Correct', u: '% graded', n: 1, best: 'max', key: 'pctCorrect', cell: function (r) { return h('span', {}, h('strong', { text: f2(r.pctCorrect, 0) + '%' }), h('span', { class: 'hint', text: ' ' + r.correct + '/' + r.graded })); } },
+          { id: 'tok_s', t: 'Speed', u: 'tok/s', n: 1, best: 'max', key: 'tok_s', cell: function (r) { return f2(r.tok_s); } },
+          { id: 'answer', t: 'Answer time', u: 's, mean', n: 1, best: 'min', key: 'answer_s', cell: function (r) { return f2(r.answer_s, 1); } },
+          { id: 'same', t: 'Same as exact', u: 'answers', n: 1, key: function (r) { return r.ok ? r.same / r.ok : null; }, cell: function (r) { return r.config === 'exact' ? h('span', { class: 'hint', text: 'reference' }) : r.same + '/' + r.ok; } },
           { id: 'prefill', t: 'Prompt read', u: 's', n: 1, best: 'min', key: 'prefill_s', cell: function (r) { return f2(r.prefill_s, 1); } },
-          { id: 'tokens', t: 'Output', u: 'tokens / answer', n: 1, key: 'tokens', cell: function (r) { return f2(r.tokens, 0); } },
-          { id: 'tok_s', t: 'Decode speed', u: 'tok/s', n: 1, best: 'max', key: 'tok_s', cell: function (r) { return f2(r.tok_s); } },
+          { id: 'tokens', t: 'Output', u: 'tokens', n: 1, key: 'tokens', cell: function (r) { return f2(r.tokens, 0); } },
           { t: 'Answers', cell: function (r) { return h('a', { href: '#bench/' + encodeURIComponent(r.bench) + '?style=' + encodeURIComponent(r.style) + '&config=' + encodeURIComponent(r.config), 'aria-label': 'Answers for ' + r.model + ', ' + (CFG[r.config] || r.config) + ', ' + r.style, text: 'Answers (' + r.runs + ')' }); } }
         ] }));
     }
+    var order = orderField('f-quality-order', [['quality', 'Correct: highest first'], ['fastest', 'Speed: fastest first'], ['slowest', 'Speed: slowest first']], st.qSort, function () { draw(); });
     var models = uniq(rows.map(function (r) { return r.model; })), styles = uniq(rows.map(function (r) { return r.style; }));
     var filters = h('div', { class: 'filters', role: 'group', 'aria-label': 'Filter results' },
       selectField('f-model', 'Model', [['all', 'All models']].concat(models.map(function (m) { return [m, m]; })), st.model, function (v) { st.model = v; draw(); }),
       selectField('f-style', 'Answer style', [['all', 'All styles']].concat(styles.map(function (m) { return [m, cap(m)]; })), st.style, function (v) { st.style = v; draw(); }),
       selectField('f-kind', 'Output', [['all', 'Exact and lossy'], ['exact', 'Exact only'], ['lossy', 'Changes output only']], st.kind, function (v) { st.kind = v; draw(); }),
-      selectField('f-quality-order', 'Sort by', [['quality', 'Quality score: highest first'], ['fastest', 'Tokens/s: fastest first'], ['slowest', 'Tokens/s: slowest first']], st.qualityOrder, function(v){st.qualityOrder=v;draw();}));
+      order);
     draw();
     var settings = section('How each bench was run', null, h('div', { class: 'stack', style: 'gap:8px' }, d.results.map(function (r) {
       var s = r.settings || {};
@@ -472,17 +500,17 @@
       var shown = rows.filter(function (r) { return (!st.speedOk || r.status === 'ok') && (!q || (r.run + ' ' + r.backend + ' ' + r.env).toLowerCase().indexOf(q) >= 0); });
       count.textContent = shown.length + ' of ' + rows.length + ' runs. Bold = best value among the runs shown.';
       box.textContent = '';
-      box.appendChild(dataTable({ caption: 'Engine speed runs', rows: shown, sortKey: st.speedOrder === 'saved' ? 'i' : 'tok_s', dir: st.speedOrder === 'slowest' ? 'asc' : 'desc',
+      box.appendChild(dataTable({ caption: 'Engine speed runs', freeze: true, rows: shown, sortKey: st.sSort.key, dir: st.sSort.dir,
+        onSort: function (k, d) { st.sSort.key = k; st.sSort.dir = d; sOrder.sync(); },
         cols: [
-          { id: 'i', t: '#', n: 1, key: 'i', cell: function (r) { return h('span', { class: 'hint', text: String(r.i + 1) }); } },
-          { id: 'run', t: 'Run', key: 'run', cell: function (r) { return h('span', { class: 'mono', style: 'white-space:nowrap', text: r.run }); } },
-          { id: 'backend', t: 'Backend', key: 'backend' },
-          { id: 'threads', t: 'Threads', n: 1, key: 'threads' },
-          { id: 'tok_s', t: 'Decode speed', u: 'tok/s', n: 1, best: 'max', key: 'tok_s', cell: function (r) { return f2(r.tok_s); } },
+          { id: 'run', t: 'Run', u: 'backend', key: 'run', cell: function (r) { return h('div', { class: 'cell-name' }, h('span', { class: 'mono', text: r.run }), h('span', { class: 'hint', text: r.backend })); } },
+          { id: 'i', t: 'Saved', u: 'order', n: 1, key: 'i', cell: function (r) { return h('span', { class: 'hint', text: String(r.i + 1) }); } },
+          { id: 'tok_s', t: 'Speed', u: 'tok/s', n: 1, best: 'max', key: 'tok_s', cell: function (r) { return f2(r.tok_s); } },
           { id: 'prefill', t: 'Prompt read', u: 's', n: 1, best: 'min', key: 'prefill_s', cell: function (r) { return f2(r.prefill_s, 1); } },
+          { id: 'rss', t: 'Memory', u: 'GB, process', n: 1, key: 'rss', cell: function (r) { return f2(r.rss, 1); } },
+          { id: 'threads', t: 'Threads', n: 1, key: 'threads' },
+          { id: 'hit', t: 'Expert hits', u: '%, cache', n: 1, key: 'hit', cell: function (r) { return f2(r.hit, 1); } },
           { id: 'tokens', t: 'Generated', u: 'tokens', n: 1, key: 'tokens', cell: function (r) { return r.tokens == null ? '—' : String(r.tokens); } },
-          { id: 'hit', t: 'Expert cache hits', u: '%', n: 1, key: 'hit', cell: function (r) { return f2(r.hit, 1); } },
-          { id: 'rss', t: 'Process memory', u: 'GB', n: 1, key: 'rss', cell: function (r) { return f2(r.rss, 1); } },
           { id: 'status', t: 'Status', key: 'status', cell: function (r) { return r.status === 'ok' ? chip('st-done', 'OK') : chip('st-failed', r.status); } },
           { t: 'Settings', cell: function (r) {
             return h('details', { class: 'x' }, h('summary', { text: 'Show', 'aria-label': 'Settings for run ' + r.run }),
@@ -490,13 +518,14 @@
           } }
         ] }));
     }
+    var sOrder = orderField('f-speed-order', [['saved', 'Newest saved first'], ['fastest', 'Speed: fastest first'], ['slowest', 'Speed: slowest first']], st.sSort, function () { draw(); });
     var search = h('input', { class: 'input', id: 'f-run', type: 'search', placeholder: 'e.g. skip050, metal, t12', value: st.speedQ, oninput: function () { st.speedQ = search.value; draw(); } });
     var ok = h('input', { type: 'checkbox', id: 'f-ok', checked: st.speedOk ? '' : null, onchange: function () { st.speedOk = ok.checked; draw(); } });
     draw();
     put(out, h('div', { class: 'filters', role: 'group', 'aria-label': 'Filter runs' },
         h('div', { class: 'field' }, h('label', { for: 'f-run', text: 'Search runs' }), search),
         h('label', { class: 'check', for: 'f-ok' }, ok, h('span', { text: 'Successful runs only' })),
-        selectField('f-speed-order', 'Sort by', [['saved', 'Saved run order'], ['fastest', 'Tokens/s: fastest first'], ['slowest', 'Tokens/s: slowest first']], st.speedOrder, function(v){st.speedOrder=v;draw();})),
+        sOrder),
       count, box,
       h('p', { class: 'hint', text: 'One row per engine run (results/runs.csv). Decode speed is generated tokens per second after the prompt is read. Open "Settings" for the exact engine flags and environment. Generated answers for quality benches are under Answer quality.' }));
     return out;
@@ -618,7 +647,7 @@
             h('button', { type: 'button', class: 'btn btn-sm', onclick: function () { runOrQueue('planned', { id: e.id }, e.title, true); }, text: 'Queue' })) : null;
           return h('tr', { class: e.lossy ? 'lossy' : null }, td(h('div', { class: 'stack', style: 'gap:2px;min-width:220px' }, h('strong', { text: e.title }), h('span', { class: 'hint mono', text: e.id }), tags, acts)),
             td(e.category), td(verdict(e.verdict)), td(m.measured ? f2(m.ref_tok_s) + ' → ' + f2(m.tok_s) : '—', 'n'),
-            td(m.speed_change_pct == null ? '—' : (m.speed_change_pct > 0 ? '+' : '') + Math.round(m.speed_change_pct) + '%', 'n'), td(m.measured ? m.output : '—'), td(h('div',{class:'stack'},resumeButton(j,q.items),det), 'wrap'));
+            td(m.speed_change_pct == null ? '—' : (m.speed_change_pct > 0 ? '+' : '') + Math.round(m.speed_change_pct) + '%', 'n'), td(m.measured ? m.output : '—'), td(det, 'wrap'));
         })));
       }
       put(main, header('Experiments', 'The experiment registry (experiments/glm-experiments.json). Verdicts are computed from published runs; changes under ~10% are noise.'), tabs, body);

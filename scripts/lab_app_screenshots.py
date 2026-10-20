@@ -6,8 +6,8 @@
 Needs Playwright (pip install playwright && playwright install chromium). Point --url at the
 demo server, never at the real app: the script clicks through pages (it does not press any
 button that starts, stops, downloads or removes, but the demo makes that harmless anyway).
-Each page is also checked for console errors, horizontal overflow, unlabeled form controls
-and images without alt text; problems are printed and make the exit code non-zero.
+Each page is also checked for console errors, horizontal overflow, unlabeled form controls,
+images without alt text, and a sorted table column scrolled off screen (every "Sort by" preset is tried); problems are printed and make the exit code non-zero.
 """
 import argparse, sys
 from pathlib import Path
@@ -33,7 +33,28 @@ CHECK = """() => {
   document.querySelectorAll('img:not([alt])').forEach(el => out.push('img without alt: ' + el.src));
   return out;
 }"""
+# The column a table is ordered by must be on screen: not scrolled away, not under the frozen first column.
+SORTED = """() => [...document.querySelectorAll('.table-wrap')].map(w => {
+  const th = w.querySelector('th[aria-sort]'); if (!th) return null;
+  const a = w.getBoundingClientRect(), t = th.getBoundingClientRect();
+  const frozen = w.classList.contains('freeze') ? w.querySelector('th').getBoundingClientRect().width : 0;
+  return t.left >= a.left + frozen - 1 && t.right <= a.right + 1 ? null : 'sorted column off screen: ' + th.innerText.replace(/\\s+/g, ' ');
+}).filter(Boolean)"""
 
+
+def check_orders(page):
+    """Try every "Sort by" preset on the page; the ordered column must stay visible each time."""
+    found = []
+    for sel in page.query_selector_all('main select[id$="-order"]'):
+        sid = sel.get_attribute('id')
+        for opt in sel.query_selector_all('option:not([disabled])'):
+            v = opt.get_attribute('value')
+            page.select_option('#' + sid, v)
+            page.wait_for_timeout(150)
+            found += [f'{sid}={v}: {x}' for x in page.evaluate(SORTED)]
+        page.select_option('#' + sid, sel.query_selector('option').get_attribute('value'))
+        page.wait_for_timeout(150)
+    return found
 
 def main():
     ap = argparse.ArgumentParser()
@@ -58,7 +79,7 @@ def main():
                 page.goto(f'{o.url}/#{name}')
                 page.wait_for_selector(f'main[data-ready][data-route="{name}"]', timeout=15000)
                 page.wait_for_timeout(300)
-                found = page.evaluate(CHECK) + [f'console: {e}' for e in errs]
+                found = page.evaluate(CHECK) + page.evaluate(SORTED) + check_orders(page) + [f'console: {e}' for e in errs]
                 problems += [f'{name} ({size}): {x}' for x in found]
                 tall = min(page.evaluate('document.documentElement.scrollHeight'), MAX_H)   # long tables: the top is enough
                 page.screenshot(path=str(out / f"{name.replace('/', '-')}-{size}{o.suffix}.png"), full_page=True, clip=dict(x=0, y=0, width=w, height=tall))

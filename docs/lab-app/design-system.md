@@ -94,6 +94,9 @@ Every text and background pair meets WCAG AA for normal text (4.5:1 or more). Th
 - Use `table.t` inside `.table-wrap`. The wrapper scrolls horizontally on narrow screens, so the page itself never scrolls sideways, and the header stays sticky.
 - Every header names its unit on a second line (`th .u`), for example *Decode speed / tok/s* or *Mean answer time / s*. Cells hold bare numbers, right-aligned and tabular.
 - Sortable headers are buttons inside `th`. The `th` carries `aria-sort`. An arrow shows the direction; unsorted columns show a faint ↕.
+- Key values come first. After the column that names the row, put the values people compare (correct %, speed), then the supporting ones (answer time, prompt read, memory), then links and settings.
+- Wide tables use `.table-wrap.freeze`: the first column stays put while the rest scrolls sideways, so a row never loses its name.
+- The column a table is ordered by is always on screen. A "Sort by" preset and a header click share one sort state; a header click that matches no preset shows "Column header" in the select. If the sorted column would be off screen, the table scrolls it into view. `scripts/lab_app_screenshots.py` tries every "Sort by" preset at 1440 px and 390 px, and fails if the sorted column is hidden.
 - The best value in a column, among the rows currently shown, is bold and gets a screen-reader-only "(best)". Columns declare whether best means `max` or `min`.
 - Lossy rows get a left rule (`tr.lossy`). Missing values show "—".
 - Captions are present for screen readers, and filters show a live row count (`role="status"`).
@@ -136,4 +139,4 @@ Screenshots and automatic checks:
 .venv/bin/python scripts/lab_app_screenshots.py --theme dark --suffix=-dark
 ```
 
-The script fails if a page has console errors, horizontal overflow, unlabeled form controls, controls without a name, or images without alt text. Screenshots are in `docs/lab-app/screenshots/`.
+The script fails if a page has console errors, horizontal overflow, unlabeled form controls, controls without a name, images without alt text, or a sorted table column that is off screen. Screenshots are in `docs/lab-app/screenshots/`.
