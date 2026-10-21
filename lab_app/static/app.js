@@ -17,7 +17,7 @@
     queue: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', install: 'M12 3v12M7 10l5 5 5-5M4 21h16',
     settings: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M14 4v4M8 10v4M16 16v4'
   };
-  var SCREENS = [['dashboard', 'Run benchmarks'], ['results', 'Results'], ['models', 'Models']];
+  var SCREENS = [['dashboard', 'Run benchmarks'], ['results', 'Results'], ['models', 'Models'], ['phone', 'Open on phone']];
   var ADVANCED = [['queue', 'Queue and logs'], ['start', 'Select several benches'], ['now', 'Machine status'], ['runs', 'Engine runs'],
                   ['leaderboard', 'Leaderboard'], ['experiments', 'Experiments'], ['research', 'Research'], ['settings', 'Settings']];
   var CFG = { exact: 'exact', d030: 'skip 0.3', d050: 'skip 0.5', d030t12: 'skip 0.3 · 12 threads', d040t12: 'skip 0.4 · 12 threads',
@@ -902,6 +902,23 @@
     });
   }
 
+  function screenPhone(main) {
+    return api('/api/settings').then(function(d) {
+      var body=card([h('h2',{text:'Open on your phone or tablet'}),h('p',{text:'Connect the other device to Tailscale using your account, then scan this code or open the address.'})]);
+      if(d.phone) {
+        var qr=window.LabQRCode(0,'M'); qr.addData(d.phone); qr.make();
+        var canvas=h('canvas',{width:256,height:256,role:'img','aria-label':'QR code for '+d.phone,style:'width:256px;max-width:100%;height:auto;align-self:flex-start;border-radius:8px;'});
+        var ctx=canvas.getContext('2d'), size=qr.getModuleCount(), cell=Math.floor(256/(size+8)), edge=Math.floor((256-size*cell)/2);
+        ctx.fillStyle='#fff';ctx.fillRect(0,0,256,256);ctx.fillStyle='#000';
+        for(var y=0;y<size;y++)for(var x=0;x<size;x++)if(qr.isDark(y,x))ctx.fillRect(edge+x*cell,edge+y*cell,cell,cell);
+        put(body,canvas,h('a',{href:d.phone,text:d.phone,style:'overflow-wrap:anywhere;'}),
+          h('button',{class:'btn',text:'Copy address',onclick:function(){navigator.clipboard.writeText(d.phone).then(function(){toast('Address copied');}).catch(function(){toast('Select the address above to copy it.',true);});}}),
+          h('p',{class:'hint',text:'Private access for your configured Tailscale login. The Mac must be awake. The lab starts automatically after macOS login.'}));
+      } else put(body,h('p',{text:'Phone access has not been configured on this Mac.'}),h('pre',{class:'log',text:'.venv/bin/python scripts/lab_app_phone.py enable'}));
+      put(main,header('Open on phone','Your private lab address and QR code.'),body);
+    });
+  }
+
   function screenSettings(main) {
     return api('/api/settings').then(function (d) {
       put(main, header('Settings and rules', 'Read-only. Paths and rules the app follows.'),
@@ -1336,7 +1353,7 @@
 
   // ---------- router ----------
   var ROUTES = { dashboard: screenDashboard, results: screenResults, models: screenModels, install: screenModels, benches: function (m) { return screenResults(m, 'coverage'); },
-                 now: screenNow, queue: screenQueue, settings: screenSettings, runs: screenRuns, experiments: screenExperiments,
+                 phone: screenPhone, now: screenNow, queue: screenQueue, settings: screenSettings, runs: screenRuns, experiments: screenExperiments,
                  leaderboard: screenLeaderboard, research: screenResearch, start: screenStart };
   var NAV_OF = { bench: 'results', benches: 'results', install: 'models' };
   function route() {
@@ -1345,7 +1362,7 @@
     var fn = name === 'bench' ? function (m) { return screenBench(m, parts.slice(1).join('/')); }
       : name === 'results' ? function (m) { return screenResults(m, parts[1]); } : ROUTES[name] || screenDashboard;
     renderNav(NAV_OF[name] || (ROUTES[name] ? name : 'dashboard'));
-    var title = { dashboard: 'Run benchmarks', results: 'Results', bench: 'Answers', models: 'Models', install: 'Models' }[name] ||
+    var title = { dashboard: 'Run benchmarks', results: 'Results', bench: 'Answers', models: 'Models', install: 'Models', phone: 'Open on phone' }[name] ||
       (ADVANCED.filter(function (s) { return s[0] === name; })[0] || [0, 'Run benchmarks'])[1];
     document.title = title + ' · GLM lab';
     function load(keepScroll, focus) {

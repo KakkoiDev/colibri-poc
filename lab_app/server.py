@@ -6,7 +6,7 @@
 It shows what is running, models, benches and coverage, runs, experiments and research, and
 (v2) can queue and start the lab's own jobs, stop lab jobs by PID and start catalog downloads,
 with the safety rules in actions.py. It binds to 127.0.0.1 only; actions need the app's own
-X-Lab-Action header and origin, so other web pages cannot trigger them. Data comes from the same files the lab tools write, so nothing is retyped.
+X-Lab-Action header and origin. Remote access additionally requires the configured Tailscale host and identity. Data comes from the same files the lab tools write, so nothing is retyped.
 """
 import argparse, csv, glob, json, os, re, subprocess, sys, time
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
@@ -665,7 +665,7 @@ def settings():
     plist = HOME / 'Library' / 'LaunchAgents' / 'dev.kakkoi.glm-lab.plist'
     import glm_quiet
     return dict(repo=str(ROOT).replace(str(HOME), '~'), engine='~/Code/colibri', models='~/colibri-models',
-                port=PORT, quiet_threshold_gb=glm_quiet.QUIET_FREE_GB, service_installed=plist.exists(),
+                phone=remote_access.config().get('url'), port=PORT, quiet_threshold_gb=glm_quiet.QUIET_FREE_GB, service_installed=plist.exists(),
                 state_dir='results/lab-app', rules=[
                     'One GPU job at a time: the queue starts the next job only when the GPU lock is free and no engine runs.',
                     'Stop is by PID, only for jobs the lab runs; your own Colibri sessions are never stopped from here.',
@@ -757,6 +757,9 @@ TYPES = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=u
          '.webmanifest': 'application/manifest+json'}
 
 
+import remote_access
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -770,9 +773,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         u = urlparse(self.path)
-        origin = self.headers.get('Origin')
-        ok_origin = origin in (None, f'http://127.0.0.1:{PORT}', f'http://localhost:{PORT}')
-        if self.headers.get('X-Lab-Action') != '1' or not ok_origin:
+        if self.headers.get('X-Lab-Action') != '1' or not remote_access.allowed(self.headers, PORT, mutation=True):
             return self.send(403, b'{"error":"actions are only accepted from the lab app page"}', 'application/json')
         try:
             n = int(self.headers.get('Content-Length') or 0)
@@ -787,6 +788,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send(200, json.dumps(data, ensure_ascii=False).encode(), 'application/json; charset=utf-8')
 
     def do_GET(self):
+        if not remote_access.allowed(self.headers, PORT):
+            return self.send(403, b'Access is restricted to this Mac and the configured Tailscale user.', 'text/plain')
         u = urlparse(self.path)
         if u.path in API:
             try:

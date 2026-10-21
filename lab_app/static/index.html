@@ -27,12 +27,13 @@
       <select class="input" id="theme" aria-label="Colour theme">
         <option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option>
       </select>
-      <span class="hint mono">127.0.0.1 · local only</span>
+      <span class="hint mono">Local + private Tailscale</span>
     </div>
   </aside>
   <main id="main" tabindex="-1"><p class="muted">Loading…</p></main>
 </div>
 <div id="toasts" aria-live="polite" aria-atomic="false"></div>
+<script src="qrcode.js"></script>
 <script src="app.js"></script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function () {});</script>
 </body>

@@ -1,8 +1,8 @@
 /* GLM lab service worker: makes the app installable and opens its shell even when the
    local server is down (the page then says so). Data (/api/*) is never cached: the lab
    is live state, so a stale answer would be worse than none. */
-var SHELL = 'glm-lab-shell-v3';
-var FILES = ['/', '/app.js', '/lab.css', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
+var SHELL = 'glm-lab-shell-v4';
+var FILES = ['/', '/app.js', '/qrcode.js', '/lab.css', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(SHELL).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));
