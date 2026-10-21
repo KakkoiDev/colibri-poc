@@ -1642,5 +1642,48 @@
    ],
    "prep": "make glm-prep-iq2m"
   }
+ },
+ {
+  "id": "sm-olmoe-concurrent",
+  "title": "OLMoE: quality on our bench, and total tok/s serving 1, 4 and 10 requests at once",
+  "category": "small-models",
+  "change": "One OLMoE-1B-7B 4-bit copy (models/olmoe-1b-7b-4bit, MLX, ~4 GB in memory) behind mlx_lm.server; 24-question bench in both styles; then 1, 4 and 10 concurrent requests",
+  "hypothesis": "Resident OLMoE decodes ~199 tok/s for one request. Decoding is memory-bound, so one copy serving a batch should give far more total tokens per second than one request, with each request somewhat slower: e.g. 10 parallel answers at several hundred tok/s in total. Running 10 separate copies would cost ~10x the memory (~46 GB peak, more than this Mac has) for no gain. The open question is quality: OLMoE (1B active) is far weaker than the models benched so far, so its correct-answer rate decides whether the throughput is useful.",
+  "ref": null,
+  "runs": [],
+  "lossy": false,
+  "date": "2026-10-22",
+  "verdict": "not run",
+  "conclusion": "Planned: needs the two harness pieces listed under plan_outline before it can run unattended.",
+  "tradeoffs": "Batching raises total throughput but slows each answer and raises peak memory (KV cache per request); single-request latency must be reported next to total tok/s.",
+  "plan_outline": {
+   "model": "models/olmoe-1b-7b-4bit (mlx-community/OLMoE-1B-7B-0125-Instruct-4bit, revision in model.lock.json)",
+   "server": ".venv/bin/python -m mlx_lm.server --model models/olmoe-1b-7b-4bit --host 127.0.0.1 --port 8771 (one process = one copy; it batches concurrent requests)",
+   "needs": [
+    "glm_bench.py backend \"openai\" (like the Ollama backend): POST /v1/chat/completions, temperature 0, max_tokens = --ngen, record prompt/generated tokens and timings",
+    "a concurrency script: N parallel clients (N = 1, 4, 10) each looping over the 24 prompts in a different order; record per-request time, generated tokens, wall time and peak memory of the server process"
+   ],
+   "quality": "glm_bench run --backend openai --name olmoe-mlx --configs exact --styles normal,terse (same grading, 128-token cap, 512 too for normal)",
+   "metrics": [
+    "correct / graded per style",
+    "single-request decode tok/s",
+    "total tok/s at N = 1, 4, 10",
+    "p50 / p95 answer time per request at each N",
+    "peak RSS of the server",
+    "outputs identical to N = 1 (batching should not change greedy output)"
+   ],
+   "controls": [
+    "quiet machine, no other GPU job (.bench.lock)",
+    "warm-up request discarded",
+    "3 repeats per N, alternating order",
+    "same prompts and token limits at every N"
+   ],
+   "compare_with": "gemma4-e4b-ollama and qwen38-27b-ollama (quality and single-request speed), and Ollama with OLLAMA_NUM_PARALLEL for the same N if time allows"
+  },
+  "sources": [
+   "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/09-two-track-experiments.md",
+   "https://huggingface.co/allenai/OLMoE-1B-7B-0125",
+   "https://github.com/ml-explore/mlx-lm"
+  ]
  }
 ]

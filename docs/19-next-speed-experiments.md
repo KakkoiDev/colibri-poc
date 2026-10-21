@@ -98,6 +98,12 @@ flowchart TD
 | `prefill-expert-union` | Trace experts loaded per prompt token | Prompt reading is ~80% of a terse answer; if experts are reloaded per token, batching by expert is the biggest win for real use | no |
 | `prefill-warm-prefix` | KV cache of a fixed preamble (KVSAVE) | Cuts repeated prompt reading in real conversations | no |
 
+One small-model experiment was added too: `sm-olmoe-concurrent` grades OLMoE on the same
+24 questions and measures its **total** tok/s when one loaded copy serves 1, 4 and 10
+requests at once (mlx_lm's server batches them). Ten separate copies would need ~46 GB;
+one batched copy needs ~4-5 GB plus a KV cache per request. Whether it is useful depends on
+its quality, which is likely well below the 24/24 the bigger models reach.
+
 Plus the existing `glm-explicit-cache-capacity` (umbrella for the cache runs) and the
 small-model track (`sm-qwen36-a3b-*`, needs the Qwen bench adapter).
 
