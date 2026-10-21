@@ -1,0 +1,19 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.91,
+ "prompt_tokens": 21,
+ "prefill_s": 0.026,
+ "output_tokens": 128,
+ "decode_s": 0.877,
+ "load_s": 0.001,
+ "text": "2 to the power of 10, written as $2^{10}$, is **1024**.\n\nHere's how you can calculate it:\n\n$2^{10} = 2 \\times 2 \\times 2 \\times 2 \\times 2 \\times 2 \\times 2 \\times 2 \\times 2 \\times 2$\n\nYou can also break it down:\n* $2^5 = 32$\n* $2^{10} = 2^5 \\times 2^5 = 32 \\times 32",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 145.95,
+ "answer_s": 0.9,
+ "correct": false
+}

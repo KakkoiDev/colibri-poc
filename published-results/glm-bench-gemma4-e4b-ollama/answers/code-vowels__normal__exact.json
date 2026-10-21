@@ -1,0 +1,19 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 1.01,
+ "prompt_tokens": 46,
+ "prefill_s": 0.049,
+ "output_tokens": 128,
+ "decode_s": 0.955,
+ "load_s": 0.0,
+ "text": "```python\ndef count_vowels(s):\n  \"\"\"\n  Counts the number of vowels (a, e, i, o, u, case-insensitive) in a given string.\n\n  Args:\n    s: The input string.\n\n  Returns:\n    The total count of vowels in the string.\n  \"\"\"\n  vowels = \"aeiouAEIOU\"\n  vowel_count = 0\n  for char in s:\n    if char in vowels:\n      vowel_count += 1\n  return vowel_count\n\n# Alternative implementation using lowerc",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 134.03,
+ "answer_s": 1.0,
+ "correct": true
+}

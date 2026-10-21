@@ -1,0 +1,19 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.49,
+ "prompt_tokens": 34,
+ "prefill_s": 0.031,
+ "output_tokens": 72,
+ "decode_s": 0.459,
+ "load_s": 0.001,
+ "text": "Here's how to solve that:\n\n1. **Start:** You have 12 apples.\n2. **Give away 5:** $12 - 5 = 7$ apples.\n3. **Buy 8 more:** $7 + 8 = 15$ apples.\n\nYou have **15** apples.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 156.86,
+ "answer_s": 0.49,
+ "correct": true
+}

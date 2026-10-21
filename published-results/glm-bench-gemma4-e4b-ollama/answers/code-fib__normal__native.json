@@ -1,0 +1,19 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 13.76,
+ "prompt_tokens": 47,
+ "prefill_s": 0.047,
+ "output_tokens": 1713,
+ "decode_s": 13.709,
+ "load_s": 0.0,
+ "text": "This is a classic interview problem. An iterative solution is preferred over a recursive one because it avoids the overhead and potential stack overflow issues that large inputs might cause.\n\n```python\ndef fib(n: int) -> int:\n    \"\"\"\n    Calculates the n-th Fibonacci number iteratively.\n    \n    The sequence starts with F(0)=0 and F(1)=1.\n    F(n) = F(n-1) + F(n-2)\n    \n    Args:\n        n: The index of the Fibonacci number to calculate (must be non-negative).\n        \n    Returns:\n        The n-th Fibonacci number.\n\n    Raises:\n        ValueError: If n is a negative number.\n    \"\"\"\n    \n    # Handle the base cases\n    if n < 0:\n        raise ValueError(\"Fibonacci index must be a non-negative integer.\")\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n    \n    # Initialization for iteration\n    # a holds F(i-2)\n    # b holds F(i-1)\n    a = 0\n    b = 1\n    \n    # Loop from the 2nd index up to the desired index 'n'\n    for _ in range(2, n + 1):\n        # Calculate the next Fibonacci number (F(i))\n        next_fib = a + b\n        \n        # Shift the values for the next iteration:\n        # The old 'b' (F(i-1)) becomes the new 'a' (F(i-2))\n        a = b\n        # The new calculated number (F(i)) becomes the new 'b' (F(i-1))\n        b = next_fib\n        \n    return b\n\n# --- Examples and Verification ---\n\n# Base Cases\nprint(f\"F(0): {fib(0)}\") # Expected: 0\nprint(f\"F(1): {fib(1)}\") # Expected: 1\n\n# Standard Cases\nprint(f\"F(2): {fib(2)}\") # Expected: 1 (0+1)\nprint(f\"F(3): {fib(3)}\") # Expected: 2 (1+1)\nprint(f\"F(4): {fib(4)}\") # Expected: 3 (1+2)\nprint(f\"F(5): {fib(5)}\") # Expected: 5 (2+3)\nprint(f\"F(10): {fib(10)}\") # Expected: 55\n\n# Large Case (demonstrates efficiency)\nprint(f\"F(50): {fib(50)}\") \n```\n\n### Complexity Analysis\n\n*   **Time Complexity: $O(n)$**\n    The function runs a single `for` loop that executes exactly $n-1$ times. The time taken grows linearly with the input $n$.\n*   **Space Complexity: $O(1)$**\n    The function only uses a fixed number of variables (`a`, `b`, `next_fib`), regardless of how large $n$ is. This is highly memory efficient.",
+ "thinking_chars": 2799,
+ "truncated": false,
+ "decode_tok_s": 124.95,
+ "answer_s": 13.76,
+ "correct": true
+}

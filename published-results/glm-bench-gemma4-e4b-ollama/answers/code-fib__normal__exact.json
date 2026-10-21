@@ -1,0 +1,19 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.98,
+ "prompt_tokens": 40,
+ "prefill_s": 0.046,
+ "output_tokens": 128,
+ "decode_s": 0.933,
+ "load_s": 0.0,
+ "text": "```python\ndef fib(n):\n    \"\"\"\n    Calculates the n-th Fibonacci number iteratively.\n\n    The sequence starts with fib(0) = 0 and fib(1) = 1.\n\n    Args:\n        n (int): The index of the Fibonacci number to calculate (must be non-negative).\n\n    Returns:\n        int: The n-th Fibonacci number.\n\n    Raises:\n        ValueError: If n is a negative number.\n    \"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"Input must be an integer.\")\n    if n",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 137.19,
+ "answer_s": 0.98,
+ "correct": false
+}

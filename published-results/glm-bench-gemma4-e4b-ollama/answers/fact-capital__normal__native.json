@@ -1,0 +1,19 @@
+{
+ "id": "fact-capital",
+ "kind": "fact",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 0.19,
+ "prompt_tokens": 23,
+ "prefill_s": 0.028,
+ "output_tokens": 9,
+ "decode_s": 0.161,
+ "load_s": 0.0,
+ "text": "The capital of Australia is **Canberra**.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 55.9,
+ "answer_s": 0.19,
+ "correct": true
+}

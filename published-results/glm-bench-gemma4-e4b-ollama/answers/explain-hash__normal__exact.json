@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 1.4,
+ "prompt_tokens": 15,
+ "prefill_s": 0.021,
+ "output_tokens": 128,
+ "decode_s": 1.376,
+ "load_s": 0.0,
+ "text": "## What is a Hash Table?\n\nA **hash table** (also known as a hash map) is a fundamental and highly efficient **data structure** used to implement an **associative array**. In simpler terms, it's a way to store and retrieve data (usually in the form of **key-value pairs**) so that the operations of **insertion, deletion, and lookup (retrieval)** can be performed, on average, in **constant time, $O(1)$**.\n\nThink of it like a highly optimized, digital filing cabinet where you don't look through every file; instead, you use a",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 93.02,
+ "answer_s": 1.4,
+ "correct": true
+}

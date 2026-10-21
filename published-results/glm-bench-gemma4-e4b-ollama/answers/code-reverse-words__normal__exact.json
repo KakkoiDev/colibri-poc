@@ -1,0 +1,19 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.88,
+ "prompt_tokens": 34,
+ "prefill_s": 0.03,
+ "output_tokens": 128,
+ "decode_s": 0.852,
+ "load_s": 0.0,
+ "text": "```python\ndef reverse_words(s: str) -> str:\n    \"\"\"\n    Reverses the order of words in a given string s.\n\n    Args:\n        s: The input string.\n\n    Returns:\n        A string containing the words of s in reverse order, separated by single spaces.\n    \"\"\"\n    # 1. Split the string into a list of words.\n    # The split() method handles multiple spaces between words and leading/trailing spaces correctly,\n    # resulting in a list of non-empty words.\n    words = s.split()\n\n    #",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 150.23,
+ "answer_s": 0.88,
+ "correct": false
+}

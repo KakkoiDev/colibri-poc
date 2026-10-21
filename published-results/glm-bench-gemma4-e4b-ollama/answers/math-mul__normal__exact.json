@@ -1,0 +1,19 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 1.05,
+ "prompt_tokens": 20,
+ "prefill_s": 0.026,
+ "output_tokens": 128,
+ "decode_s": 1.024,
+ "load_s": 0.0,
+ "text": "Here are a few ways to calculate 17 multiplied by 23:\n\n**1. Standard Multiplication:**\n\n```\n  23\nx 17\n----\n 161  (7 * 23)\n 230  (10 * 23)\n----\n 391\n```\n\n**2. Distributive Property (Breaking it down):**\n\n* **Method A (Using 20):**\n   $(17 \\times 20) + (17 \\times 3)$\n   $340 + 51$",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 125.0,
+ "answer_s": 1.05,
+ "correct": false
+}

@@ -25,6 +25,14 @@
    "ollama_version": "ollama version is 0.40.6"
   },
   {
+   "name": "gemma4-e4b-ollama",
+   "file": "bench-gemma4-e4b-ollama.json",
+   "answers": 48,
+   "engine": "Ollama",
+   "model": "gemma4:e4b-mlx",
+   "ollama_version": "ollama version is 0.40.6"
+  },
+  {
    "name": "glm-5.3-iq2m",
    "file": "bench-glm-5.3-iq2m.json",
    "answers": 240,

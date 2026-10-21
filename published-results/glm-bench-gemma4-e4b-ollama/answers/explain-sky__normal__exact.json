@@ -1,0 +1,19 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 1.59,
+ "prompt_tokens": 16,
+ "prefill_s": 0.025,
+ "output_tokens": 128,
+ "decode_s": 1.56,
+ "load_s": 0.0,
+ "text": "The reason the sky appears blue is a phenomenon called **Rayleigh scattering**.\n\nTo fully understand this, we need to look at a few key components: **sunlight**, the **Earth's atmosphere**, and **how light interacts with gases and particles**.\n\nHere is a detailed breakdown:\n\n---\n\n### 1. What is Sunlight?\n\nSunlight, although appearing \"white\" to us, is actually composed of all the colors of the rainbow (the visible spectrum: Red, Orange, Yellow, Green, Blue, Indigo, Violet). Each of these colors travels as a wave, and each color has a slightly different **",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 82.05,
+ "answer_s": 1.58,
+ "correct": true
+}

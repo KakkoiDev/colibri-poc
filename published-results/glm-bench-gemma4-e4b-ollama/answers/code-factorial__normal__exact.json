@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 1.17,
+ "prompt_tokens": 29,
+ "prefill_s": 0.028,
+ "output_tokens": 128,
+ "decode_s": 1.143,
+ "load_s": 0.0,
+ "text": "Here are a few ways to write the `factorial(n)` function in Python, depending on the approach you prefer (iterative, recursive, or using the built-in `math` module).\n\n### 1. Iterative Approach (Using a loop) - Recommended for performance\n\nThis is generally the most efficient method for large numbers as it avoids the overhead of function calls associated with recursion.\n\n```python\ndef factorial(n):\n    \"\"\"\n    Calculates the factorial of a non-negative integer n using iteration.\n\n    Args:\n        n (int): The number to calculate the factorial for.",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 111.99,
+ "answer_s": 1.17,
+ "correct": false
+}

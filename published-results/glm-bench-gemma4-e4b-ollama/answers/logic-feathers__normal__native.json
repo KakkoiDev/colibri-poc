@@ -1,0 +1,19 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 2.61,
+ "prompt_tokens": 30,
+ "prefill_s": 0.027,
+ "output_tokens": 253,
+ "decode_s": 2.583,
+ "load_s": 0.0,
+ "text": "They weigh exactly the same.\n\nA kilogram is a unit of mass, so one kilogram of anything (feathers, steel, air, etc.) has the same mass and thus the same weight.",
+ "thinking_chars": 842,
+ "truncated": false,
+ "decode_tok_s": 97.95,
+ "answer_s": 2.61,
+ "correct": true
+}

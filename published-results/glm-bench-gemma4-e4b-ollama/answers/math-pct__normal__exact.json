@@ -1,0 +1,19 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.87,
+ "prompt_tokens": 21,
+ "prefill_s": 0.025,
+ "output_tokens": 128,
+ "decode_s": 0.841,
+ "load_s": 0.0,
+ "text": "Here are a few ways to calculate 15% of 240:\n\n**Method 1: Converting the percentage to a decimal**\n\n1. **Convert 15% to a decimal:** Divide 15 by 100: $15 / 100 = 0.15$\n2. **Multiply the decimal by the number:** $0.15 \\times 240$\n   * $0.15 \\times 240 = 36$\n\n**Method 2: Using fractions**\n\n1. **Convert 15%",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 152.2,
+ "answer_s": 0.87,
+ "correct": false
+}

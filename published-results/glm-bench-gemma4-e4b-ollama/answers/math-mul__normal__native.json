@@ -1,0 +1,19 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 2.08,
+ "prompt_tokens": 27,
+ "prefill_s": 0.026,
+ "output_tokens": 285,
+ "decode_s": 2.05,
+ "load_s": 0.006,
+ "text": "17 multiplied by 23 is **391**.",
+ "thinking_chars": 519,
+ "truncated": false,
+ "decode_tok_s": 139.02,
+ "answer_s": 2.08,
+ "correct": true
+}

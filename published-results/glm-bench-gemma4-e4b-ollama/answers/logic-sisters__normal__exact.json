@@ -1,0 +1,19 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.91,
+ "prompt_tokens": 29,
+ "prefill_s": 0.03,
+ "output_tokens": 93,
+ "decode_s": 0.872,
+ "load_s": 0.002,
+ "text": "This is a classic riddle! Here's how to solve it:\n\n* **Sally has 3 brothers.** This means there are at least 3 boys in the family.\n* **Each brother has 2 sisters.** Since all the brothers share the same sisters, this means there are 2 girls in the family.\n* **Sally is one of those sisters.**\n\nTherefore, Sally has **1** sister (the other girl in the family).",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 106.65,
+ "answer_s": 0.9,
+ "correct": true
+}
