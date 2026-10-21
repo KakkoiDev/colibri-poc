@@ -1,0 +1,19 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 4.31,
+ "prompt_tokens": 89,
+ "prefill_s": 0.185,
+ "output_tokens": 161,
+ "decode_s": 4.116,
+ "load_s": 0.001,
+ "text": "Because Rayleigh scattering preferentially scatters short‑wavelength (blue) light, making the sky appear blue.",
+ "thinking_chars": 580,
+ "truncated": false,
+ "decode_tok_s": 39.12,
+ "answer_s": 4.3,
+ "correct": true
+}

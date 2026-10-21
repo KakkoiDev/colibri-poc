@@ -1,0 +1,19 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 3.61,
+ "prompt_tokens": 91,
+ "prefill_s": 0.187,
+ "output_tokens": 135,
+ "decode_s": 3.412,
+ "load_s": 0.001,
+ "text": "391",
+ "thinking_chars": 488,
+ "truncated": false,
+ "decode_tok_s": 39.57,
+ "answer_s": 3.6,
+ "correct": true
+}

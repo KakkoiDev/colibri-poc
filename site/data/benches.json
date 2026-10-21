@@ -59,7 +59,7 @@
   {
    "name": "gpt-oss-20b-ollama",
    "file": "bench-gpt-oss-20b-ollama.json",
-   "answers": 48,
+   "answers": 96,
    "engine": "Ollama",
    "model": "gpt-oss:20b",
    "ollama_version": "ollama version is 0.40.6"

@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.25,
+ "prompt_tokens": 83,
+ "prefill_s": 0.181,
+ "output_tokens": 120,
+ "decode_s": 3.064,
+ "load_s": 0.001,
+ "text": "A hash table is a data structure that maps keys to values using a hash function to compute an index into an array, allowing average‑time O(1) insert, lookup, and delete operations.",
+ "thinking_chars": 297,
+ "truncated": false,
+ "decode_tok_s": 39.16,
+ "answer_s": 3.25,
+ "correct": true
+}

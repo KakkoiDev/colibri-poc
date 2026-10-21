@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 13.44,
+ "prompt_tokens": 88,
+ "prefill_s": 0.182,
+ "output_tokens": 515,
+ "decode_s": 13.251,
+ "load_s": 0.001,
+ "text": "A hash table is a data structure that maps keys to values using a hash function, allowing average‑time O(1) insert, lookup, and delete operations. It handles collisions by chaining or probing.  \n\n```python\nclass HashTable:\n    def __init__(self, size=8):\n        self.size = size\n        self.buckets = [[] for _ in range(size)]\n\n    def _hash(self, key):\n        return hash(key) % self.size\n\n    def set(self, key, value):\n        idx = self._hash(key)\n        bucket = self.buckets[idx]\n        for i, (k, _) in enumerate(bucket):\n            if k == key:\n                bucket[i] = (key, value)\n                return\n        bucket.append((key, value))\n\n    def get(self, key):\n        idx = self._hash(key)\n        for k, v in self.buckets[idx]:\n            if k == key:\n                return v\n        raise KeyError(key)\n\n    def delete(self, key):\n        idx = self._hash(key)\n        bucket = self.buckets[idx]\n        for i, (k, _) in enumerate(bucket):\n            if k == key:\n                del bucket[i]\n                return\n        raise KeyError(key)\n```",
+ "thinking_chars": 1163,
+ "truncated": false,
+ "decode_tok_s": 38.86,
+ "answer_s": 13.43,
+ "correct": true
+}

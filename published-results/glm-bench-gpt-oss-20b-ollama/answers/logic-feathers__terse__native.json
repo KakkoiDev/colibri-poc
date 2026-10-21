@@ -1,0 +1,19 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 5.22,
+ "prompt_tokens": 96,
+ "prefill_s": 0.187,
+ "output_tokens": 197,
+ "decode_s": 5.026,
+ "load_s": 0.001,
+ "text": "They weigh the same.",
+ "thinking_chars": 797,
+ "truncated": false,
+ "decode_tok_s": 39.2,
+ "answer_s": 5.21,
+ "correct": true
+}
