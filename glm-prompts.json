@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Graded prompts for the GLM quality and speed bench. 'accept' answers match case-insensitively as substrings; 'number' extracts the first number; 'code' runs the given asserts against the first Python code block; 'none' is reported but not graded.",
+  "note": "Graded prompts for the GLM quality and speed bench. 'accept' answers match case-insensitively as substrings; 'number' checks the last number; 'code' runs the given asserts against the first Python code block; 'none' is reported but not graded.",
   "prompts": [
     {"id": "fact-capital", "kind": "fact", "prompt": "What is the capital of Australia?", "accept": ["canberra"]},
     {"id": "fact-gold", "kind": "fact", "prompt": "What is the chemical symbol for gold?", "accept": ["au"], "word": true},

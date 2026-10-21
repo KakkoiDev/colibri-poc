@@ -2168,16 +2168,16 @@
   },
   {
    "id": "sm-qwen36-a3b-ram-sweep",
-   "title": "Qwen3.6-35B-A3B at simulated 8 / 16 / 24 GB machines",
+   "title": "Qwen MoE: verified resident versus partial expert cache",
    "category": "small-models",
-   "change": "RAM budgets 5 / 11 / 17 / 24 GB, threads 4 / 6 / 8 / 12",
-   "hypothesis": "A MoE reads only ~1.5 GB of experts per token, so it should stay usable on 8-16 GB machines where a dense model cannot.",
+   "change": "Same weights and engine; explicit 8/16/32/64/128/256 experts per layer; 3 repeated paired rounds",
+   "hypothesis": "Measure the throughput/correctness frontier as actual retained expert bytes change.",
    "ref": null,
    "runs": [],
    "lossy": false,
    "date": "2026-10-18",
-   "conclusion": "Planned: after sm-qwen36-a3b-resident. Simulated: a RAM cap does not reproduce a slower SSD (~3 GB/s on base Macs).",
-   "tradeoffs": "",
+   "conclusion": "Campaign specified in experiments/qwen-expert-memory.json. Weights downloaded. Blocked on isolated engine build and Qwen adapter; no resident/partial results yet.",
+   "tradeoffs": "Full residency must be verified; skip unsafe capacities on this 32 GB machine. CPU results must not be presented as Metal.",
    "verdict": "not run",
    "sources": [
     "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
@@ -2249,6 +2249,25 @@
     "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
     "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
    ],
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "glm-explicit-cache-capacity",
+   "title": "Override Metal cap=1 and measure useful GLM cache capacity",
+   "category": "cache",
+   "change": "Explicit capacities 1/2/4/8 with fixed pins and routing; safety-preflight every case",
+   "hypothesis": "Explicit capacity overrides the Metal fast-SSD cap=1 heuristic and makes larger RAM budgets retain more useful experts",
+   "conclusion": "Not run. Current RAM26 log still reports cap=1/layer and ~1.9 GB pinned. See experiments/glm-cache-capacity.json.",
+   "tradeoffs": "Larger caches compete with KV, GPU buffers and OS page cache; hit rate alone is not the objective.",
+   "ref": null,
+   "runs": [],
+   "lossy": false,
+   "date": "2026-10-22",
+   "verdict": "not run",
+   "sources": [],
    "metrics": {
     "measured": false
    },

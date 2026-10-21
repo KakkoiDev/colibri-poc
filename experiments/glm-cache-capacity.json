@@ -1,0 +1,31 @@
+{
+ "id": "glm-explicit-cache-capacity",
+ "status": "planned, not run",
+ "model": "original GLM int4",
+ "hypothesis": "Explicit capacity overrides the Metal fast-SSD cap=1 heuristic and makes larger RAM budgets retain more useful experts",
+ "primary_metrics": [
+  "decode_tok_s",
+  "correct",
+  "graded"
+ ],
+ "capacities_per_layer": [
+  1,
+  2,
+  4,
+  8
+ ],
+ "controls": [
+  "Hold pin set, engine, weights, threads, routing and prompts fixed",
+  "Disable expert skipping and cache-aware routing",
+  "Enforce projected peak plus safety headroom; skip unsafe capacities",
+  "Separate prefill/decode hits, pin/dynamic hits and bytes actually retained",
+  "Three repeats, output comparison and identical actual memory budgets for policy comparisons"
+ ],
+ "followups": [
+  "Frequency-aware admission or protected hot experts, not plain frequency alone",
+  "Unequal per-layer allocation by avoided read cost per retained byte",
+  "Trace-driven prefetch: measure demand hits and wasted reads separately",
+  "Avoid duplicate host/GPU expert copies and repeated packing"
+ ],
+ "warning": "Increasing hit rate is not a win unless measured decode speed improves at acceptable correctness and memory"
+}

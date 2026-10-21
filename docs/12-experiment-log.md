@@ -11,7 +11,7 @@ Target: **5.0 tok/s**. Best exact: **0.46 tok/s** (Metal exact: 6 threads instea
 
 Memory is not judged: peak RSS varied 6.2-9.3 GB between two runs with identical settings, so it reflects what macOS kept resident rather than the setting.
 
-Verdicts: confirmed 1, failed 1, improves 20, inconclusive 1, no clear change 17, not run 22, reference 1, worse 5.
+Verdicts: confirmed 1, failed 1, improves 20, inconclusive 1, no clear change 17, not run 23, reference 1, worse 5.
 
 ```mermaid
 flowchart LR
@@ -91,8 +91,10 @@ flowchart LR
 | Experiment | Verdict | tok/s (ref → new) | Change | Prompt reading s (ref → new) | Output | Effects | Runs |
 |---|---|---|---:|---|---|---|---|
 | **2 cache slots per layer (RAM 20 GB)** | no clear change | 0.43 → 0.44 | +2% | 23.6 → 23.9 | identical | — | c12-combo-cap2-r20 |
+| **Override Metal cap=1 and measure useful GLM cache capacity** | not run | — → — | — | — → — | — | — | — |
 
 - **2 cache slots per layer (RAM 20 GB)** (`cache-2-slots`): change `--ram 20, CAP=2`. Why: Doubling the expert cache should raise the hit rate. Result: Hit rate 2% to 4%; too small to matter. A useful cache needs tens of GB. Reference: `c9-best-combo`.
+- **Override Metal cap=1 and measure useful GLM cache capacity** (`glm-explicit-cache-capacity`): change `Explicit capacities 1/2/4/8 with fixed pins and routing; safety-preflight every case`. Why: Explicit capacity overrides the Metal fast-SSD cap=1 heuristic and makes larger RAM budgets retain more useful experts Result: Not run. Current RAM26 log still reports cap=1/layer and ~1.9 GB pinned. See experiments/glm-cache-capacity.json. Tradeoffs: Larger caches compete with KV, GPU buffers and OS page cache; hit rate alone is not the objective.
 
 ## memory
 
@@ -201,7 +203,7 @@ flowchart LR
 | **Check the Qwen models' architecture (dense vs MoE)** | confirmed | — → — | — | — → — | — | — | — |
 | **Qwen3.8-27B (dense) through the installed Ollama MLX model** | not run | — → — | — | — → — | — | — | — |
 | **Qwen3.6-35B-A3B (MoE, ~3B active) with every expert in RAM** | not run | — → — | — | — → — | — | — | — |
-| **Qwen3.6-35B-A3B at simulated 8 / 16 / 24 GB machines** | not run | — → — | — | — → — | — | — | — |
+| **Qwen MoE: verified resident versus partial expert cache** | not run | — → — | — | — → — | — | — | — |
 | **Qwen3.6-35B-A3B: Vulkan expert tier (MoltenVK) vs CPU** | not run | — → — | — | — → — | — | — | — |
 | **Dense Qwen3.8-27B on Colibri at 16 / 24 GB profiles** | not run | — → — | — | — → — | — | — | — |
 | **Correct answers per minute vs published intelligence, per model and machine profile** | not run | — → — | — | — → — | — | — | — |
@@ -209,7 +211,7 @@ flowchart LR
 - **Check the Qwen models' architecture (dense vs MoE)** (`sm-arch-check`): change `read config.json of Qwen3.8-27B and Qwen3.6-35B-A3B`. Why: Artificial Analysis lists Qwen3.8-27B as 3B active, Colibri says dense; expert streaming only helps a MoE. Result: Read from the official config.json files. Qwen3.8-27B is dense: Qwen3_5ForConditionalGeneration, 64 layers, hidden 5120, one MLP per layer (intermediate 17408), no experts, so all ~27.8B weights are used for every token (Ollama: 27.8B, NVFP4). Artificial Analysis's "3B active" for it is wrong. Qwen3.6-35B-A3B is a MoE: Qwen3_5MoeForConditionalGeneration, 40 layers, hidden 2048, 256 experts with 8 routed plus 1 shared per token (expert width 512). Routed experts per token are ~1.0B parameters (~0.55 GB at int4 gs64), so expert streaming applies to it and not to the 27B. Tradeoffs: Config files only; nothing measured.
 - **Qwen3.8-27B (dense) through the installed Ollama MLX model** (`sm-qwen38-27b-ollama`): change `Ollama qwen3.8:27b-mlx fully in RAM; quality bench (normal, terse) in two settings: exact (thinking off, temperature 0, 128 tokens, comparable with GLM) and native (Ollama defaults: thinking on, model sampling, up to 4096 tokens)`. Why: Published intelligence 34 vs GLM-5.3 45, but it fits in RAM: likely tens of tok/s, so far more correct answers per minute. Result: Ready and queued in the lab app (bench qwen38-27b-ollama: exact + native, normal + terse), after the skip-0.4 re-run, when the machine has been quiet for 2 min. glm_bench.py compare puts it next to GLM: correct answers, waiting time, correct per minute.
 - **Qwen3.6-35B-A3B (MoE, ~3B active) with every expert in RAM** (`sm-qwen36-a3b-resident`): change `Colibri qwen36 engine, int4 gs64, --ram 24`. Why: Upper bound for the small MoE on this Mac; Colibri reports 6.0 tok/s CPU and 9.9 tok/s integrated-GPU Vulkan elsewhere. Result: Planned: needs ~23 GB download (make glm-prep-qwen36) and a qwen36 adapter for the bench tools.
-- **Qwen3.6-35B-A3B at simulated 8 / 16 / 24 GB machines** (`sm-qwen36-a3b-ram-sweep`): change `RAM budgets 5 / 11 / 17 / 24 GB, threads 4 / 6 / 8 / 12`. Why: A MoE reads only ~1.5 GB of experts per token, so it should stay usable on 8-16 GB machines where a dense model cannot. Result: Planned: after sm-qwen36-a3b-resident. Simulated: a RAM cap does not reproduce a slower SSD (~3 GB/s on base Macs).
+- **Qwen MoE: verified resident versus partial expert cache** (`sm-qwen36-a3b-ram-sweep`): change `Same weights and engine; explicit 8/16/32/64/128/256 experts per layer; 3 repeated paired rounds`. Why: Measure the throughput/correctness frontier as actual retained expert bytes change. Result: Campaign specified in experiments/qwen-expert-memory.json. Weights downloaded. Blocked on isolated engine build and Qwen adapter; no resident/partial results yet. Tradeoffs: Full residency must be verified; skip unsafe capacities on this 32 GB machine. CPU results must not be presented as Metal.
 - **Qwen3.6-35B-A3B: Vulkan expert tier (MoltenVK) vs CPU** (`sm-qwen36-a3b-vulkan`): change `COLI_VULKAN=1 with the MoltenVK portability patch, engines/ clone`. Why: The qwen36 engine has no Metal backend; Colibri's Vulkan tier helped an integrated GPU (9.9 vs 6.0 tok/s). Result: Planned: after sm-qwen36-a3b-resident.
 - **Dense Qwen3.8-27B on Colibri at 16 / 24 GB profiles** (`sm-qwen38-27b-lowram`): change `Colibri qwen3.8-27b-colibri, --ram 11 / 17`. Why: Contrast case: a dense model must read most weights from the SSD every token once it does not fit, ~13.5 GB per token. Result: Planned: needs a Colibri conversion of Qwen3.8-27B (~56 GB source download).
 - **Correct answers per minute vs published intelligence, per model and machine profile** (`sm-intelligence-per-minute`): change `analysis of the runs above + GLM-5.3 bench v1`. Why: The deciding view: which model gives the most correct answers per minute on each machine size, next to its published score. Result: Planned: after the runs above.

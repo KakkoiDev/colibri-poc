@@ -1,0 +1,149 @@
+{
+ "date": "2026-10-22",
+ "primary_metrics": [
+  "mean_decode_tok_s",
+  "correct",
+  "graded"
+ ],
+ "secondary_metrics": [
+  "median_answer_s",
+  "truncated"
+ ],
+ "terse": {
+  "finding": "Higher measured automatic correctness, not proven general quality improvement",
+  "glm_int4_exact": {
+   "normal_correct": 21,
+   "terse_correct": 24,
+   "graded_per_style": 24,
+   "normal_mean_decode_tok_s": 0.41,
+   "terse_mean_decode_tok_s": 0.41
+  },
+  "confounders": [
+   "128-token budget penalizes verbose answers",
+   "Numeric grader checks last number; explanations with trailing numbers may fail",
+   "Code grader executes first code block",
+   "Keyword checks do not judge explanation quality",
+   "No independent repeated quality trials"
+  ]
+ },
+ "glm_cache": {
+  "ram_budgets_gb": [
+   18,
+   22,
+   26
+  ],
+  "decode_tok_s": [
+   0.4,
+   0.41,
+   0.42
+  ],
+  "hit_pct": [
+   2.1,
+   2.8,
+   3.6
+  ],
+  "ram26_log_evidence": {
+   "dynamic_cap_per_layer": 1,
+   "dynamic_cache_gb": 1.6,
+   "pinned_experts": 91,
+   "pinned_gb": 1.9,
+   "reported_reason": "Metal fast SSD heuristic favors page cache; override with --cap"
+  },
+  "conclusion": "RAM-budget sweep did not substantially grow dynamic cache; explicit capacity test required"
+ },
+ "olmoe": {
+  "description": "Allen AI open mixture-of-experts model; approximately 7B total / 1B active parameters; small caching testbed, not Qwen",
+  "source": "https://huggingface.co/allenai/OLMoE-1B-7B-0125"
+ },
+ "qwen_memory": {
+  "id": "qwen36-expert-memory",
+  "status": "blocked: isolated Qwen engine build and benchmark adapter required",
+  "model": "qwen3.6-35b-a3b",
+  "weights": "existing Colibri int4 gs64; pin revision and SHA256 before first run",
+  "primary_metrics": [
+   "decode_tok_s",
+   "correct",
+   "graded",
+   "output_matches_resident"
+  ],
+  "secondary_metrics": [
+   "prefill_s",
+   "answer_s",
+   "actual_peak_rss_gb",
+   "retained_expert_bytes",
+   "decode_cache_hit_pct",
+   "requested_read_bytes",
+   "physical_ssd_read_bytes_if_available",
+   "cache_capacity_per_layer"
+  ],
+  "capacities_per_layer": [
+   8,
+   16,
+   32,
+   64,
+   128,
+   256
+  ],
+  "resident_baseline": {
+   "capacity_per_layer": 256,
+   "requirement": "Confirm all experts resident and no steady-state expert misses; a large RAM flag alone is insufficient"
+  },
+  "controls": {
+   "threads": 12,
+   "expert_bits": 4,
+   "temperature": 0,
+   "routing": "unchanged; no expert skipping",
+   "model_and_engine": "same hashes for every case",
+   "repeats": 3,
+   "order": "alternate resident and candidate; seeded randomized candidate order",
+   "cache": "fresh process; record first-use and warmed phases separately; OS page cache uncontrolled",
+   "context": 1024,
+   "generated_tokens": 128,
+   "prompts": "same sky/code and 24 graded prompts, both styles"
+  },
+  "safety": {
+   "lock": ".bench.lock; one GPU campaign at a time",
+   "engine": "isolated engines/ clone; do not build or reconfigure owner engine",
+   "memory": "preflight estimated peak incl dense/KV/scratch and OS headroom; skip unsafe capacity, record reason; abort on pressure",
+   "output": "retain raw logs and outputs including failures; mark output mismatches"
+  },
+  "phases": [
+   "Build adapter and validate parse/output with one smoke run",
+   "Measure capacities that pass memory preflight",
+   "Grade every capacity against resident answers; compare same prompts/style",
+   "Compare LRU vs LFU/admission and unequal layer allocation at identical actual byte budgets"
+  ],
+  "publication": "One update after campaign completion; no invented results; no claim of full residency without telemetry"
+ },
+ "glm_cache_experiment": {
+  "id": "glm-explicit-cache-capacity",
+  "status": "planned, not run",
+  "model": "original GLM int4",
+  "hypothesis": "Explicit capacity overrides the Metal fast-SSD cap=1 heuristic and makes larger RAM budgets retain more useful experts",
+  "primary_metrics": [
+   "decode_tok_s",
+   "correct",
+   "graded"
+  ],
+  "capacities_per_layer": [
+   1,
+   2,
+   4,
+   8
+  ],
+  "controls": [
+   "Hold pin set, engine, weights, threads, routing and prompts fixed",
+   "Disable expert skipping and cache-aware routing",
+   "Enforce projected peak plus safety headroom; skip unsafe capacities",
+   "Separate prefill/decode hits, pin/dynamic hits and bytes actually retained",
+   "Three repeats, output comparison and identical actual memory budgets for policy comparisons"
+  ],
+  "followups": [
+   "Frequency-aware admission or protected hot experts, not plain frequency alone",
+   "Unequal per-layer allocation by avoided read cost per retained byte",
+   "Trace-driven prefetch: measure demand hits and wasted reads separately",
+   "Avoid duplicate host/GPU expert copies and repeated packing"
+  ],
+  "warning": "Increasing hit rate is not a win unless measured decode speed improves at acceptable correctness and memory"
+ }
+}

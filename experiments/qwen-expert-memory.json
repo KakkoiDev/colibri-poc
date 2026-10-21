@@ -1,0 +1,60 @@
+{
+ "id": "qwen36-expert-memory",
+ "status": "blocked: isolated Qwen engine build and benchmark adapter required",
+ "model": "qwen3.6-35b-a3b",
+ "weights": "existing Colibri int4 gs64; pin revision and SHA256 before first run",
+ "primary_metrics": [
+  "decode_tok_s",
+  "correct",
+  "graded",
+  "output_matches_resident"
+ ],
+ "secondary_metrics": [
+  "prefill_s",
+  "answer_s",
+  "actual_peak_rss_gb",
+  "retained_expert_bytes",
+  "decode_cache_hit_pct",
+  "requested_read_bytes",
+  "physical_ssd_read_bytes_if_available",
+  "cache_capacity_per_layer"
+ ],
+ "capacities_per_layer": [
+  8,
+  16,
+  32,
+  64,
+  128,
+  256
+ ],
+ "resident_baseline": {
+  "capacity_per_layer": 256,
+  "requirement": "Confirm all experts resident and no steady-state expert misses; a large RAM flag alone is insufficient"
+ },
+ "controls": {
+  "threads": 12,
+  "expert_bits": 4,
+  "temperature": 0,
+  "routing": "unchanged; no expert skipping",
+  "model_and_engine": "same hashes for every case",
+  "repeats": 3,
+  "order": "alternate resident and candidate; seeded randomized candidate order",
+  "cache": "fresh process; record first-use and warmed phases separately; OS page cache uncontrolled",
+  "context": 1024,
+  "generated_tokens": 128,
+  "prompts": "same sky/code and 24 graded prompts, both styles"
+ },
+ "safety": {
+  "lock": ".bench.lock; one GPU campaign at a time",
+  "engine": "isolated engines/ clone; do not build or reconfigure owner engine",
+  "memory": "preflight estimated peak incl dense/KV/scratch and OS headroom; skip unsafe capacity, record reason; abort on pressure",
+  "output": "retain raw logs and outputs including failures; mark output mismatches"
+ },
+ "phases": [
+  "Build adapter and validate parse/output with one smoke run",
+  "Measure capacities that pass memory preflight",
+  "Grade every capacity against resident answers; compare same prompts/style",
+  "Compare LRU vs LFU/admission and unequal layer allocation at identical actual byte budgets"
+ ],
+ "publication": "One update after campaign completion; no invented results; no claim of full residency without telemetry"
+}
