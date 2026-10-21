@@ -1,7 +1,7 @@
-# GLM and Gemma: completed benchmark comparison
+# GLM, Gemma and Qwen: completed benchmark comparison
 
-Updated 22 October 2026. All seven model/format groups below have 24 answers per
-setting and style: 1,248 recorded answers, with no execution failures.
+Updated 22 October 2026. All eight model/format groups below have 24 answers per
+setting and style: 1,344 recorded answers, with no execution failures.
 
 ## Which should I use?
 
@@ -20,6 +20,19 @@ setting and style: 1,248 recorded answers, with no execution failures.
   21/24, 0.41 tokens/s, 297.6 s. Expert skipping **changes output**.
   The IQ2 exact run had the best GLM normal score, 23/24, but took 516.2 s
   median at 0.23 tokens/s. There is no single GLM winner across quality and speed.
+
+## Where Qwen fits
+
+Qwen's saved model alias is `qwen3.8:27b-mlx` (the record label, not an independently
+verified model identity). Native normal answers scored **24/24** at **24.74 mean
+tokens/s**, with **5.77 s** median answer time and no truncation. This matches
+Gemma 26B's score, but Gemma 26B answered in 3.4 s median and generated at 66.66
+tokens/s on these runs. Qwen terse, thinking off scored **24/24** at **15.90
+tokens/s**, with **0.51 s** median answer time; Gemma E4B matched that score at
+0.1 s median. Qwen native terse scored 23/24 at 23.45 tokens/s and 2.73 s median.
+Normal short-budget Qwen scored 18/24, but 10/24 answers were cut off, so it is
+not a clean measure of its underlying quality. No overall speed or score advantage
+for Qwen over the recommended Gemma settings appears on this small prompt set.
 
 ## How to read this
 
@@ -95,6 +108,10 @@ engine commits, so this is a practical comparison, not an isolated quantization 
 | glm-5.3-mtp | terse | d040t12 | 24/24 | 1.27 | 50.55 | 0 |
 | glm-5.3-mtp | terse | d050 | 23/24 | 1.22 | 48.78 | 0 |
 | glm-5.3-mtp | terse | exact | 24/24 | 0.34 | 57.38 | 0 |
+| qwen38-27b-ollama | normal | exact | 18/24 | 23.66 | 4.83 | 10 |
+| qwen38-27b-ollama | normal | native | 24/24 | 24.74 | 5.77 | 0 |
+| qwen38-27b-ollama | terse | exact | 24/24 | 15.90 | 0.51 | 0 |
+| qwen38-27b-ollama | terse | native | 23/24 | 23.45 | 2.73 | 0 |
 | GLM int4 baseline | normal | d030 | 21/24 | 0.86 | 174.97 | 0 |
 | GLM int4 baseline | normal | d030t12 | 21/24 | 0.92 | 161.49 | 0 |
 | GLM int4 baseline | normal | d040t12 | 18/24 | 1.25 | 129.72 | 0 |

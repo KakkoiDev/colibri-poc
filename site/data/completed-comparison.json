@@ -462,6 +462,50 @@
   "truncated": 0
  },
  {
+  "model": "qwen38-27b-ollama",
+  "style": "normal",
+  "config": "exact",
+  "runs": 24,
+  "correct": 18,
+  "graded": 24,
+  "tok_s": 23.66,
+  "median_s": 4.83,
+  "truncated": 10
+ },
+ {
+  "model": "qwen38-27b-ollama",
+  "style": "normal",
+  "config": "native",
+  "runs": 24,
+  "correct": 24,
+  "graded": 24,
+  "tok_s": 24.74,
+  "median_s": 5.77,
+  "truncated": 0
+ },
+ {
+  "model": "qwen38-27b-ollama",
+  "style": "terse",
+  "config": "exact",
+  "runs": 24,
+  "correct": 24,
+  "graded": 24,
+  "tok_s": 15.9,
+  "median_s": 0.51,
+  "truncated": 0
+ },
+ {
+  "model": "qwen38-27b-ollama",
+  "style": "terse",
+  "config": "native",
+  "runs": 24,
+  "correct": 23,
+  "graded": 24,
+  "tok_s": 23.45,
+  "median_s": 2.73,
+  "truncated": 0
+ },
+ {
   "model": "GLM int4 baseline",
   "style": "normal",
   "config": "d030",
