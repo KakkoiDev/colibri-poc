@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 18.81,
+ "prompt_tokens": 36,
+ "prefill_s": 0.144,
+ "output_tokens": 1106,
+ "decode_s": 18.656,
+ "load_s": 0.003,
+ "text": "There are several ways to write a factorial function in Python. Below are the three most common methods: the **iterative approach**, the **recursive approach**, and using the **built-in library**.\n\n### 1. The Iterative Approach (Recommended)\nThis is the most efficient way to implement it manually because it avoids the overhead of multiple function calls and won't hit a \"recursion depth limit\" for large numbers.\n\n```python\ndef factorial(n):\n    if n < 0:\n        return \"Factorial is not defined for negative numbers\"\n    \n    result = 1\n    for i in range(1, n + 1):\n        result *= i\n    return result\n\n# Testing the function\nprint(factorial(5))  # Output: 120\nprint(factorial(0))  # Output: 1\n```\n\n### 2. The Recursive Approach\nThis version is more \"mathematical\" and follows the definition of a factorial: $n! = n \\times (n-1)!$.\n\n```python\ndef factorial(n):\n    if n < 0:\n        return \"Factorial is not defined for negative numbers\"\n    # Base case: 0! and 1! are both 1\n    if n == 0 or n == 1:\n        return 1\n    # Recursive step\n    else:\n        return n * factorial(n - 1)\n\n# Testing the function\nprint(factorial(5))  # Output: 120\n```\n\n### 3. The Built-in Approach (Best for Production)\nIf you are writing code for a real-world application, you should use Python's standard library. It is written in C and is extremely fast.\n\n```python\nimport math\n\ndef factorial(n):\n    try:\n        return math.factorial(n)\n    except ValueError:\n        return \"Factorial is not defined for negative numbers\"\n\n# Testing the function\nprint(factorial(5))  # Output: 120\n```\n\n### Which one should you use?\n1.  **Use the Iterative approach** if you are in a coding interview and they ask you to write the logic from scratch without using libraries.\n2.  **Use the Recursive approach** if you want to demonstrate your understanding of computer science concepts like recursion.\n3.  **Use `math.factorial`** for any real software development or data science task because it is highly optimized.",
+ "thinking_chars": 2069,
+ "truncated": false,
+ "decode_tok_s": 59.28,
+ "answer_s": 18.8,
+ "correct": true
+}

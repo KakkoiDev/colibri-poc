@@ -9,6 +9,14 @@
    "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850"
   },
   {
+   "name": "gemma4-26b-ollama",
+   "file": "bench-gemma4-26b-ollama.json",
+   "answers": 48,
+   "engine": "Ollama",
+   "model": "gemma4:26b",
+   "ollama_version": "ollama version is 0.40.6"
+  },
+  {
    "name": "glm-5.3-iq2m",
    "file": "bench-glm-5.3-iq2m.json",
    "answers": 240,

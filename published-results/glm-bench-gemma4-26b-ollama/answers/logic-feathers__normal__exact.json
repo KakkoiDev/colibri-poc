@@ -1,0 +1,19 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 1.07,
+ "prompt_tokens": 27,
+ "prefill_s": 0.156,
+ "output_tokens": 59,
+ "decode_s": 0.907,
+ "load_s": 0.009,
+ "text": "They are **equal** in weight.\n\nBoth weigh exactly one kilogram. The difference is in their **density** and **volume**: the steel is much denser, so a kilogram of steel would be a small object, while a kilogram of feathers would take up a very large amount of space.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 65.05,
+ "answer_s": 1.06,
+ "correct": true
+}

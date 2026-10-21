@@ -1,0 +1,19 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 20.76,
+ "prompt_tokens": 47,
+ "prefill_s": 0.248,
+ "output_tokens": 1286,
+ "decode_s": 20.498,
+ "load_s": 0.003,
+ "text": "Here is the iterative implementation of the Fibonacci sequence in Python.\n\n```python\ndef fib(n):\n    \"\"\"\n    Returns the n-th Fibonacci number using an iterative approach.\n    \n    Args:\n        n (int): The position in the Fibonacci sequence.\n        \n    Returns:\n        int: The n-th Fibonacci number.\n    \"\"\"\n    # Handle base cases for 0 and 1\n    if n <= 0:\n        return 0\n    elif n == 1:\n        return 1\n    \n    # Initialize the first two numbers in the sequence\n    a, b = 0, 1\n    \n    # Iterate from 2 up to n\n    for _ in range(2, n + 1):\n        # Update a and b: \n        # 'a' becomes the old 'b', and 'b' becomes the sum of the previous two\n        a, b = b, a + b\n        \n    return b\n\n# Example usage:\nif __name__ == \"__main__\":\n    for i in range(11):\n        print(f\"fib({i}) = {fib(i)}\")\n```\n\n### Explanation:\n1.  **Base Cases**: The function first checks if $n$ is 0 or 1 to return the predefined values immediately.\n2.  **Variables**: We use two variables, `a` and `b`, to keep track of the two most recent numbers in the sequence. This allows us to calculate the next number without storing the entire sequence in a list, making the space complexity **$O(1)$**.\n3.  **The Loop**: We use a `for` loop to iterate from the 2nd index up to $n$. \n4.  **Tuple Unpacking**: The line `a, b = b, a + b` is a Pythonic way to update both variables simultaneously. It calculates the new sum (`a + b`) and assigns it to `b`, while moving the old value of `b` into `a`, all in one atomic step.\n5.  **Complexity**:\n    *   **Time Complexity**: $O(n)$, as we iterate through the loop exactly $n-1$ times.\n    *   **Space Complexity**: $O(1)$, as we only store two integer variables regardless of how large $n$ is.",
+ "thinking_chars": 1977,
+ "truncated": false,
+ "decode_tok_s": 62.74,
+ "answer_s": 20.75,
+ "correct": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.65,
+ "prompt_tokens": 22,
+ "prefill_s": 0.096,
+ "output_tokens": 36,
+ "decode_s": 0.555,
+ "load_s": 0.002,
+ "text": "The chemical formula for table salt is **NaCl**.\n\nIt is composed of one sodium atom (**Na**) and one chlorine atom (**Cl**), forming the compound **sodium chloride**.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 64.86,
+ "answer_s": 0.65,
+ "correct": true
+}

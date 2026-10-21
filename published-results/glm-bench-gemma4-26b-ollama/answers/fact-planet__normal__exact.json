@@ -1,0 +1,19 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.27,
+ "prompt_tokens": 23,
+ "prefill_s": 0.128,
+ "output_tokens": 11,
+ "decode_s": 0.138,
+ "load_s": 0.002,
+ "text": "The largest planet in our solar system is **Jupiter**.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 79.71,
+ "answer_s": 0.27,
+ "correct": true
+}

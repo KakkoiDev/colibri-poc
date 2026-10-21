@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 2.05,
+ "prompt_tokens": 33,
+ "prefill_s": 0.172,
+ "output_tokens": 128,
+ "decode_s": 1.863,
+ "load_s": 0.008,
+ "text": "Here are three different ways to implement a factorial function in Python, depending on whether you want to use recursion, a loop, or a built-in library.\n\n### 1. The Iterative Approach (Recommended for efficiency)\nThis approach uses a `for` loop. It is generally more memory-efficient in Python because it avoids the overhead of multiple function calls.\n\n```python\ndef factorial(n):\n    if n < 0:\n        return \"Error: Factorial is not defined for negative numbers.\"\n    \n    result = 1\n    for i in range(2, n + 1",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 68.71,
+ "answer_s": 2.04,
+ "correct": false
+}
