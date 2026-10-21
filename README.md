@@ -10,7 +10,8 @@ A long-running lab with one goal: run **GLM-5.x (744B MoE) on a 32 GB Apple M6 a
 - **Research reviewed so far:** [research/watchlist.md](research/watchlist.md).
 - **Lab control app (local):** `make lab-app`, then open http://127.0.0.1:8766: what is running, a job queue, models (download, remove to Trash), benches, runs, experiments, research, and how GLM compares with frontier models. `make lab-app-install` keeps it running at login.
 
-The GLM work started from a user-reported 0.1 token/s. The lab's earlier rounds used
+The GLM work started from 0.06 token/s: the original engine (CPU only, one thread), measured on a quiet
+machine on 2026-10-21 (it had been remembered as about 0.1). The lab's earlier rounds used
 a small stand-in model, **OLMoE-1B-7B-0125-Instruct, MLX 4-bit (~3.89 GB)**, to learn
 expert streaming safely; those results do not transfer directly to GLM.
 

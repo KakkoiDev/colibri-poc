@@ -12,16 +12,27 @@
   "Single runs unless noted; differences under ~10% are noise.",
   "OS page cache uncontrolled: some expert reads may have been served from memory rather than the SSD.",
   "Lossy settings change the model's computation; small prompt sets are smoke tests, not quality benchmarks.",
-  "0.10 tok/s starting point is user-reported; the installed engine later refused to start at all for lack of free RAM. The original engine will be re-measured on a quiet machine.",
+  "The starting point, 0.06 tok/s, is the original engine (CPU only, single-threaded) measured on a quiet machine on 2026-10-21; it had been remembered as about 0.10. The later steps were measured on the busy machine, so the speed-ups shown are, if anything, understated.",
   "Thread count: all runs except the thread test used Colibri's default of 2 threads on the M6 (see `threads`). Exact Metal speed did not change with more threads; lossy and CPU-only runs did."
  ],
  "starting_point": {
-  "user_reported_tok_s": 0.1,
-  "installed_engine": "CPU-only, no OpenMP (single-threaded, a local setup issue), refused to start: projected 19.0 GB peak vs 17.5 GB free"
+  "measured_tok_s": 0.06,
+  "measured_label": "Original engine (CPU only, 1 thread)",
+  "measured_run": "original-defaults, quiet run 2026-10-21 (results/glm-quiet-20261021T162228Z)",
+  "measured_conditions": "quiet machine, 28 GB free; the installed engine as first used: CPU only, no OpenMP, its own default settings (it chose a 24.3 GB budget)",
+  "measured_prefill_s": 273.08,
+  "also_measured": {
+   "run": "original-r18-c1k",
+   "ram_gb": 18,
+   "ctx": 1024,
+   "tok_s": 0.07
+  },
+  "remembered_tok_s": 0.1,
+  "installed_engine": "CPU-only, no OpenMP (single-threaded, a local setup issue). On the busy machine it refused to start (projected 19.0 GB peak vs 17.5 GB free); on a quiet machine it ran at 0.06 tok/s"
  },
  "exact_progression": [
   {
-   "label": "CPU + libomp (2 threads: Colibri default on M6)",
+   "label": "+ OpenMP (2 threads, Colibri default)",
    "run": "c1-omp-cpu-r18-c1k",
    "status": "ok",
    "backend": "cpu",
@@ -1117,14 +1128,14 @@
   "needed_gbs_at_5_tok_s": 64
  },
  "headline": {
-  "exact_speedup_vs_user_reported": 4.3,
   "exact_tok_s": 0.43,
   "lossy_tok_s_at_0_5": 1.91,
-  "lossy_speedup": 19,
+  "lossy_speedup": 32,
   "target_reached": false,
   "max_seen_tok_s": 1.95,
   "max_seen_note": "skip all missed experts; output broken",
-  "lossy_note": "skip < 0.50 with 12 threads; 1.57 at Colibri's default 2"
+  "lossy_note": "skip < 0.50 with 12 threads; 1.57 at Colibri's default 2",
+  "exact_speedup_vs_start": 7.2
  },
  "pending": {
   "quality_speed_bench": "published-results/glm-bench-v1/summary.json (24 graded prompts × exact/0.3/0.5 × normal/terse); running"

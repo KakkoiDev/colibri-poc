@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GLM-5.3 on a 32 GB Apple M6</title>
-<meta name="description" content="How GLM-5.3 (744B MoE) got about 4× faster on a 32 GB Apple M6 with Colibri, and what going further costs.">
+<meta name="description" content="How GLM-5.3 (744B MoE) got about 7× faster on a 32 GB Apple M6 with Colibri, and what going further costs.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -151,7 +151,7 @@ a.sh-name{display:flex;flex-direction:column;color:var(--ink);text-decoration:no
 <section id="top"><div class="wrap">
   <span class="badge miss" id="target-badge">Target 5 tok/s: not reached</span>
   <h1 id="title">GLM-5.3 on a 32 GB Apple M6: what we changed and what it cost</h1>
-  <p class="lede">Exact tuning made GLM about 4× faster on this Mac. Going further means trading answer quality, and 5 tok/s was not reachable here.</p>
+  <p class="lede">Exact tuning made GLM about 7× faster on this Mac than the original engine as first used. Going further means trading answer quality, and 5 tok/s was not reachable here.</p>
   <div class="hero-grid">
     <div class="card">
       <span class="badge exact">Exact · same output</span>
@@ -190,7 +190,7 @@ a.sh-name{display:flex;flex-direction:column;color:var(--ink);text-decoration:no
   <p class="muted">Each step keeps the model's math unchanged. Every run produced the same text as the baseline.</p>
   <figure class="chart" id="chart-a"><figcaption class="cap" id="cap-a"></figcaption><div class="plot"></div>
     <p class="foot">tok/s, axis starts at 0. Single run each; differences under ~10% are noise. Hover a bar for its run; click to read its output.</p></figure>
-  <div class="tbl"><table id="tbl-exact"><thead><tr><th>Setting</th><th class="num">tok/s</th><th class="num">× vs 0.10</th><th class="num">SSD share</th><th>Same output</th><th>Run (raw output)</th></tr></thead><tbody></tbody></table></div>
+  <div class="tbl"><table id="tbl-exact"><thead><tr><th>Setting</th><th class="num">tok/s</th><th class="num" id="x-vs">× vs start</th><th class="num">SSD share</th><th>Same output</th><th>Run (raw output)</th></tr></thead><tbody></tbody></table></div>
   <h3>Thread count: Colibri uses 2 of 12 cores on the M6</h3>
   <p class="muted small" id="threads-note"></p>
   <div class="tbl"><table id="tbl-threads"><thead><tr><th>Setup</th><th class="num">2 threads (default)</th><th class="num">6 threads</th><th class="num">12 threads</th><th class="num">Gain at 12</th><th>Same output</th></tr></thead><tbody></tbody></table></div>
@@ -391,13 +391,13 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
   }
 
   function render(D, bench) {
-    var base = D.starting_point.user_reported_tok_s, H = D.headline, C = D.ceiling;
+    var SP = D.starting_point, base = SP.measured_tok_s, H = D.headline, C = D.ceiling;
     var lossyNote = '';
 
     // hero
     $('#hero-exact').innerHTML = '';
     $('#hero-exact').append(f2(base) + ' → ' + f2(H.exact_tok_s) + ' ', el('small', {}, 'tok/s'));
-    $('#hero-exact-note').textContent = '~' + H.exact_speedup_vs_user_reported.toFixed(1) + '× faster than the user-reported start. Identical text on every tested prompt.';
+    $('#hero-exact-note').textContent = '~' + H.exact_speedup_vs_start.toFixed(1) + '× faster than the original engine as first used (' + f2(base) + ' tok/s, measured on a quiet machine). Identical text on every tested prompt.';
     $('#hero-lossy').innerHTML = '';
     $('#hero-lossy').append('→ ' + f2(H.lossy_tok_s_at_0_5) + ' ', el('small', {}, 'tok/s'));
     $('#hero-lossy-note').textContent = '~' + H.lossy_speedup + '× faster (' + (H.lossy_note || 'skip < 0.50') + '). Facts held in a 5-question smoke test; instruction following got worse.';
@@ -410,8 +410,8 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
 
     // chart A: exact progression
     var prog = D.exact_progression.slice(0, 6);
-    $('#cap-a').textContent = 'Metal plus four I/O settings took generation from ' + f2(base) + ' to ' + f2(H.exact_tok_s) + ' tok/s.';
-    var bars = [{ label: 'User-reported start', tok_s: base, ghost: true }].concat(prog);
+    $('#cap-a').textContent = 'OpenMP threads, Metal and four I/O settings took generation from ' + f2(base) + ' to ' + f2(H.exact_tok_s) + ' tok/s. The first bar was measured on a quiet machine, the others on the busy one.';
+    var bars = [{ label: SP.measured_label, tok_s: base, start: true }].concat(prog);
     var W = 640, LW = 230, rowH = 34, Hh = bars.length * rowH + 30, max = 0.5;
     var A = svgRoot(W, Hh, 'Bar chart of tok/s for each exact step');
     [0, 0.1, 0.2, 0.3, 0.4, 0.5].forEach(function (t) {
@@ -424,7 +424,7 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
       A.appendChild(s('text', { x: LW - 8, y: y + 17, 'text-anchor': 'end', class: b.ghost ? '' : 'lbl' }, b.label));
       var rect = s('rect', { x: LW, y: y, width: w, height: 22, rx: 3,
         fill: b.ghost ? 'none' : 'var(--exact)', stroke: b.ghost ? 'var(--ghost)' : 'none', 'stroke-dasharray': b.ghost ? '4 3' : '' });
-      tip(rect, b.ghost ? 'User-reported, not a run' : 'Run ' + b.run + ': ' + f2(b.tok_s) + ' tok/s');
+      tip(rect, b.start ? 'Run ' + SP.measured_run + ': ' + f2(b.tok_s) + ' tok/s (' + SP.measured_conditions + ')' : 'Run ' + b.run + ': ' + f2(b.tok_s) + ' tok/s');
       if (b.run) { var a = s('a', { href: href(b.run) }); a.appendChild(rect); A.appendChild(a); } else A.appendChild(rect);
       A.appendChild(s('text', { x: LW + w + 6, y: y + 16, class: 'lbl' }, f2(b.tok_s) + ' · ' + (b.tok_s / base).toFixed(1) + '×'));
     });
