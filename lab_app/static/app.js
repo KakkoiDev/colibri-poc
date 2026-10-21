@@ -69,9 +69,14 @@
   function lossyTag() { return h('span', { class: 'tag tag-lossy', text: 'changes output' }); }
   function exactTag() { return h('span', { class: 'tag tag-exact', text: 'exact' }); }
   function ghLink(path, label) { return h('a', { href: GH + path, target: '_blank', rel: 'noopener', text: label || path }); }
-  function api(path) {
+  /* GET a lab API. A dropped connection (Safari: "Load failed", e.g. right after the Mac wakes) is retried once;
+     an answer from the server, even an error, is not. */
+  function api(path, retried) {
     return fetch(path, { cache: 'no-store' }).then(function (r) {
       return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; });
+    }, function (e) {
+      if (retried) throw e;
+      return new Promise(function (ok) { setTimeout(ok, 800); }).then(function () { return api(path, true); });
     });
   }
   function post(path, body) {
@@ -157,7 +162,13 @@
       h('span', { style: 'width:' + Math.min(100, pct(done, total)) + '%' }));
   }
   function empty(text, action) { return h('div', { class: 'empty' }, h('p', { text: text }), action ? h('div', { style: 'margin-top:12px' }, action) : null); }
-  function errorBox(e) { return h('div', { class: 'err', role: 'alert', text: 'Could not load data: ' + (e.message || e) + '. Is lab_app/server.py running?' }); }
+  function errorBox(e, retry, wait) {
+    var lost = e instanceof TypeError;   // fetch could not reach the server at all
+    return h('div', { class: 'err', role: 'alert' },
+      h('span', { text: lost ? 'Could not reach the lab server (' + (e.message || e) + '). ' : 'Could not load data: ' + (e.message || e) + '. ' }),
+      h('span', { text: lost ? 'Trying again' + (wait ? ' in ' + Math.round(wait / 1000) + ' s' : '') + '. If it keeps failing, check that the lab app service is running (make lab-app-install). ' : '' }),
+      retry ? h('button', { type: 'button', class: 'btn btn-sm', onclick: retry, text: 'Try again' }) : null);
+  }
   // "Quality bench v1 on GLM-5.3 int4 g64: exact, d030 · terse" -> what / model / detail
   function jobParts(title) {
     var m = /^(.*?) on (.*?)(?:: (.*))?$/.exec(title || '');
@@ -1369,13 +1380,18 @@
       var y = window.scrollY, fresh = h('main', { id: 'main', tabindex: '-1' });
       return fn(fresh).then(function () {
         if ((location.hash || '#dashboard').slice(1) !== hash) return;
-        fresh.setAttribute('data-ready', ''); fresh.setAttribute('data-route', hash);
+        fresh.setAttribute('data-ready', ''); fresh.setAttribute('data-route', hash); route.fails = 0;
         var cur = document.getElementById('main'); cur.replaceWith(fresh);
         if (keepScroll) window.scrollTo(0, y);
         else if (focus) { window.scrollTo(0, 0); fresh.focus({ preventScroll: true }); }
       }).catch(function (e) {
         if ((location.hash || '#dashboard').slice(1) !== hash) return;
-        var cur = document.getElementById('main'); cur.textContent = ''; cur.setAttribute('data-ready', ''); cur.setAttribute('data-route', hash); put(cur, errorBox(e));
+        /* keep trying while this error is on screen: 3 s, 6 s, 12 s, then every 30 s; a successful load ends it */
+        var wait = Math.min(30000, 3000 * Math.pow(2, route.fails || 0)); route.fails = (route.fails || 0) + 1;
+        var cur = document.getElementById('main'); cur.textContent = ''; cur.setAttribute('data-ready', ''); cur.setAttribute('data-route', hash);
+        put(cur, errorBox(e, function () { clearTimeout(route.retryTimer); route(); }, wait));
+        clearTimeout(route.retryTimer);
+        route.retryTimer = setTimeout(function () { if ((location.hash || '#dashboard').slice(1) === hash && document.querySelector('#main .err')) route(); }, wait);
       });
     }
     load(false, route.started);
@@ -1384,5 +1400,10 @@
     if (fn !== screenNow && fn !== screenDashboard) api('/api/now').then(setGpu).catch(function () {});
   }
   window.addEventListener('hashchange', route);
+  /* after sleep, a closed Dock app or a lost connection: refresh when the app is in front again */
+  function wake() { if (document.visibilityState === 'visible' && document.querySelector('#main .err')) { clearTimeout(route.retryTimer); route(); } }
+  document.addEventListener('visibilitychange', wake);
+  window.addEventListener('pageshow', function (e) { if (e.persisted) wake(); });
+  window.addEventListener('online', wake);
   route();
 })();
