@@ -1,0 +1,8 @@
+Here's a Python function that computes the n-th Fibonacci number **iteratively** using a simple loop-based approach:
+
+```python
+def fibonacci(n):
+    """
+    Compute the n-th Fibonacci number iteratively.
+
+    The Fibonacci sequence is defined

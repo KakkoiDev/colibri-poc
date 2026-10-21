@@ -1,0 +1,19 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 5.62,
+ "prompt_tokens": 23,
+ "prefill_s": 0.246,
+ "output_tokens": 128,
+ "decode_s": 5.354,
+ "load_s": 0.019,
+ "text": "To calculate $17 \\times 23$, we can break the multiplication down into simpler steps using the distributive property.\n\n**Step 1: Break down the numbers**\nWe can rewrite 23 as $20 + 3$.\nSo, the expression becomes:\n$$17 \\times (20 + 3)$$\n\n**Step 2: Distribute the multiplication**\nMultiply 17 by each part of the sum:\n1. $17 \\times 20$\n2. $17 \\times 3$\n\n**Step 3: Calculate each part",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 23.91,
+ "answer_s": 5.6,
+ "correct": false
+}

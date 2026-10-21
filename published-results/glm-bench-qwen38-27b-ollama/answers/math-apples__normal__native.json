@@ -1,0 +1,19 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 4.09,
+ "prompt_tokens": 35,
+ "prefill_s": 0.111,
+ "output_tokens": 115,
+ "decode_s": 3.973,
+ "load_s": 0.004,
+ "text": "You start with **12** apples.\n\n- Give away 5 → 12 − 5 = **7**\n- Buy 8 more → 7 + 8 = **15**\n\nYou end up with **15 apples**. 🍎",
+ "thinking_chars": 144,
+ "truncated": false,
+ "decode_tok_s": 28.95,
+ "answer_s": 4.08,
+ "correct": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 2.97,
+ "prompt_tokens": 23,
+ "prefill_s": 0.241,
+ "output_tokens": 62,
+ "decode_s": 2.721,
+ "load_s": 0.007,
+ "text": "To determine the day of the week that comes two days after Friday, we can count forward step-by-step:\n\n1.  **One day after Friday** is **Saturday**.\n2.  **Two days after Friday** is the day after Saturday, which is **Sunday**.\n\n**Answer:** Sunday",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 22.79,
+ "answer_s": 2.96,
+ "correct": true
+}

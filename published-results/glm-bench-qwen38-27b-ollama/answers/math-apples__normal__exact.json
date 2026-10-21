@@ -1,0 +1,19 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 4.75,
+ "prompt_tokens": 37,
+ "prefill_s": 0.238,
+ "output_tokens": 117,
+ "decode_s": 4.503,
+ "load_s": 0.002,
+ "text": "To determine the final number of apples, we can follow the sequence of events step-by-step:\n\n1.  **Start**: You begin with **12** apples.\n2.  **Give away 5**: Subtract 5 from the initial amount.\n    $$12 - 5 = 7$$\n    You now have 7 apples.\n3.  **Buy 8 more**: Add 8 to the current amount.\n    $$7 + 8 = 15$$\n\n**Conclusion:**\nYou have **15** apples.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 25.98,
+ "answer_s": 4.74,
+ "correct": true
+}

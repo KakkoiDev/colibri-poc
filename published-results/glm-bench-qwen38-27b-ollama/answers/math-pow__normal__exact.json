@@ -1,0 +1,19 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 5.21,
+ "prompt_tokens": 24,
+ "prefill_s": 0.257,
+ "output_tokens": 128,
+ "decode_s": 4.933,
+ "load_s": 0.01,
+ "text": "To calculate $2$ to the power of $10$ ($2^{10}$), we multiply the number $2$ by itself $10$ times.\n\nHere is the step-by-step calculation:\n\n1.  $2^1 = 2$\n2.  $2^2 = 2 \\times 2 = 4$\n3.  $2^3 = 4 \\times 2 = 8$\n4.  $2^4 = 8 \\times 2 = 16$\n5.  $2^5 = 16 \\times",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 25.95,
+ "answer_s": 5.19,
+ "correct": false
+}

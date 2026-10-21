@@ -1,0 +1,19 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 3.4,
+ "prompt_tokens": 22,
+ "prefill_s": 0.111,
+ "output_tokens": 83,
+ "decode_s": 3.288,
+ "load_s": 0.0,
+ "text": "2 to the power of 10 (2¹⁰) is **1,024**.",
+ "thinking_chars": 104,
+ "truncated": false,
+ "decode_tok_s": 25.24,
+ "answer_s": 3.4,
+ "correct": true
+}

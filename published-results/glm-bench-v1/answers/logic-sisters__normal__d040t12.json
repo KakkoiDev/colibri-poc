@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 134.22,
+ "prompt_tokens": 27,
+ "prefill_s": 36.03,
+ "output_tokens": 128,
+ "decode_s": 94.36,
+ "decode_tok_s": 1.36,
+ "zeroed_slots": 58958,
+ "hit_pct": 23.1,
+ "text": "**1. Break down the problem and identify what's being asked.**\n\nThe question asks: How many sisters does Sally (a girl with 3 brothers) has, given that each of her brothers has 2 sisters.\n\n**2. Analyze the relationships and calculate step by step.**\n\n- Sally has 3 brothers.\n- Each of her 3 brothers has 2 sisters.\n- The phrase \"each brother has 2 sisters\" means the brothers share the same set of sisters — the family's girls.\n- So the family has 2 girls (Sally and one other sister), plus 3 boys.\n- Sally is",
+ "answer_s": 130.39,
+ "correct": false
+}

@@ -1,0 +1,19 @@
+{
+ "id": "fact-ocean",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 6.13,
+ "prompt_tokens": 20,
+ "prefill_s": 0.324,
+ "output_tokens": 128,
+ "decode_s": 5.794,
+ "load_s": 0.004,
+ "text": "The largest ocean on Earth is the **Pacific Ocean**.\n\n### Key Facts:\n- **Area**: Approximately **165.25 million square kilometers** (63.8 million square miles).\n- **Volume**: It holds about **46%** of the Earth's total ocean water.\n- **Size Comparison**: The Pacific Ocean is larger than all of Earth's landmasses combined.\n- **Location**: It lies between Asia and Australia to the west and the Americas to the east.\n\nThe other major oceans, in descending order of size, are:\n1. Atlantic Ocean\n2. Indian Ocean",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 22.09,
+ "answer_s": 6.12,
+ "correct": true
+}

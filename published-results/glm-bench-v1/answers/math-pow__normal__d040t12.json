@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 121.71,
+ "prompt_tokens": 17,
+ "prefill_s": 24.85,
+ "output_tokens": 128,
+ "decode_s": 93.7,
+ "decode_tok_s": 1.37,
+ "zeroed_slots": 60211,
+ "hit_pct": 23.4,
+ "text": "2 to the power of 10 is **1,024** (2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = 1,024).\n\nThis is a useful number to know for computer science contexts — for example, 2¹⁰ bytes = 1 kilobyte (technically called a *kibibyte* when precisely 1,024 bytes, but commonly called a \"kilobyte\" in marketing contexts like hard drive storage capacities, where the decimal meaning of 1,000 bytes per \"kil",
+ "answer_s": 118.55,
+ "correct": false
+}

@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 172.69,
+ "prompt_tokens": 22,
+ "prefill_s": 28.69,
+ "output_tokens": 128,
+ "decode_s": 141.13,
+ "decode_tok_s": 0.91,
+ "zeroed_slots": 45346,
+ "hit_pct": 10.0,
+ "text": "They weigh exactly the same — a kilogram is a kilogram, regardless of the material. A kilogram of feathers and a kilogram of steel both have a mass of one kilogram, so on a scale they'd balance perfectly.\n\nThis is a classic trick question that plays on our intuitions. It feels like steel should be \"heavier\" because it's denser — a kilogram of steel would fit in your hands as a small, compact block, while a kilogram of feathers would be an enormous, fluffy pile. But density and weight are different things: density is mass per unit volume, and steel is much dens",
+ "answer_s": 169.82,
+ "correct": true
+}

@@ -1,0 +1,5 @@
+Here's an iterative implementation of the Fibonacci function:
+
+```python
+def fibonacci(n):
+    """Return the n-th Fibonacci

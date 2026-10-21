@@ -1,0 +1,18 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 166.17,
+ "prompt_tokens": 19,
+ "prefill_s": 26.43,
+ "output_tokens": 128,
+ "decode_s": 136.89,
+ "decode_tok_s": 0.94,
+ "zeroed_slots": 45349,
+ "hit_pct": 10.8,
+ "text": "Water boils at **100°C** (212°F) at sea level, which corresponds to standard atmospheric pressure of 1 atmosphere (about 101.3 kPa or 14.7 psi).\n\nThis is actually the basis for the historical definition of the Celsius scale: 0°C was set as the freezing point of water, and 100°C as the boiling point, both at standard atmospheric pressure.\n\nA few interesting notes:\n\n- **Altitude matters**: The boiling point drops as you go higher in elevation. For example, in Denver (about 1.6 km above sea level), water boils at roughly 95°C. On",
+ "answer_s": 163.32,
+ "correct": true
+}

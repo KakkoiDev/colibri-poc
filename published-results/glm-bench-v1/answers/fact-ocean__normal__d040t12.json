@@ -1,0 +1,18 @@
+{
+ "id": "fact-ocean",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 114.9,
+ "prompt_tokens": 14,
+ "prefill_s": 32.24,
+ "output_tokens": 106,
+ "decode_s": 78.4,
+ "decode_tok_s": 1.35,
+ "zeroed_slots": 49366,
+ "hit_pct": 24.1,
+ "text": "The largest ocean on Earth is the Pacific Ocean, which covers about 63 million square miles (165 million square kilometers) — roughly 46% of the planet's water surface and about 32% of its total surface area. It's larger than all the continents combined and borders Asia and Australia on the west, and the Americas on the east. The Pacific also contains the Mariana Trench, the deepest point on Earth, reaching about 36,000 feet (nearly 11,000 meters) below sea level.",
+ "answer_s": 110.64,
+ "correct": true
+}

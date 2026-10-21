@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 135.52,
+ "prompt_tokens": 27,
+ "prefill_s": 33.58,
+ "output_tokens": 88,
+ "decode_s": 98.87,
+ "decode_tok_s": 0.89,
+ "zeroed_slots": 31626,
+ "hit_pct": 9.4,
+ "text": "**Sally has 1 sister.**\n\nHere's the reasoning:\n\n- Sally has 3 brothers, and each brother has 2 sisters.\n- The brothers' sisters are Sally and her one sister — the same set of girls for all the brothers.\n- So the family has: 3 boys + 2 girls (Sally + 1 sister) = 5 children total.\n\n**Answer: Sally has 1 sister.**",
+ "answer_s": 132.45,
+ "correct": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 4.16,
+ "prompt_tokens": 21,
+ "prefill_s": 0.249,
+ "output_tokens": 96,
+ "decode_s": 3.887,
+ "load_s": 0.009,
+ "text": "The chemical formula for table salt is **NaCl**.\n\n### Explanation:\n*   **Na**: Represents the element **Sodium** (from the Latin *natrium*).\n*   **Cl**: Represents the element **Chlorine**.\n\nTable salt is chemically known as **sodium chloride**. It is an ionic compound formed by the electrostatic attraction between positively charged sodium ions ($Na^+$) and negatively charged chloride ions ($Cl^-$).",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 24.7,
+ "answer_s": 4.14,
+ "correct": true
+}

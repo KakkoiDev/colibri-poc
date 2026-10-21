@@ -1,0 +1,19 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 2.45,
+ "prompt_tokens": 18,
+ "prefill_s": 0.109,
+ "output_tokens": 70,
+ "decode_s": 2.335,
+ "load_s": 0.005,
+ "text": "The chemical symbol for gold is **Au**, derived from the Latin word *aurum*. It has the atomic number 79 on the periodic table.",
+ "thinking_chars": 163,
+ "truncated": false,
+ "decode_tok_s": 29.98,
+ "answer_s": 2.44,
+ "correct": true
+}

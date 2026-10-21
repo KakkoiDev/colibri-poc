@@ -1,0 +1,19 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 40.06,
+ "prompt_tokens": 31,
+ "prefill_s": 0.268,
+ "output_tokens": 261,
+ "decode_s": 11.833,
+ "load_s": 27.95,
+ "text": "**Sally has 1 sister.**\n\nHere's the reasoning:\n\n- Sally has 3 brothers, and they all share the same set of sisters.\n- Each brother has **2 sisters**. Those 2 sisters are the girls in the family: **Sally** and **one other sister**.\n- So from Sally's perspective, she has **1** sister.",
+ "thinking_chars": 730,
+ "truncated": false,
+ "decode_tok_s": 22.06,
+ "answer_s": 12.1,
+ "correct": true
+}

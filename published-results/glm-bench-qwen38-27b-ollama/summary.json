@@ -1,0 +1,28 @@
+[
+ {
+  "style": "normal",
+  "config": "exact",
+  "runs": 20,
+  "ok": 20,
+  "correct": 15,
+  "graded": 20,
+  "same_as_exact": 20,
+  "answer_s": 4.253,
+  "prefill_s": 0.2858,
+  "output_tokens": 95.0,
+  "decode_tok_s": 23.334
+ },
+ {
+  "style": "normal",
+  "config": "native",
+  "runs": 20,
+  "ok": 20,
+  "correct": 20,
+  "graded": 20,
+  "same_as_exact": 0,
+  "answer_s": 9.3955,
+  "prefill_s": 0.15105,
+  "output_tokens": 209.1,
+  "decode_tok_s": 24.874000000000002
+ }
+]

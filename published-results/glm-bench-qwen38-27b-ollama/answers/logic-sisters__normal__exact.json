@@ -1,0 +1,19 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 5.75,
+ "prompt_tokens": 33,
+ "prefill_s": 0.25,
+ "output_tokens": 128,
+ "decode_s": 5.49,
+ "load_s": 0.006,
+ "text": "To determine how many sisters Sally has, we can break down the family structure logically:\n\n1.  **Identify the siblings:**\n    *   Sally has 3 brothers.\n    *   The total number of children in the family is the sum of the brothers and the sisters.\n\n2.  **Analyze the perspective of the brothers:**\n    *   Each of the 3 brothers has 2 sisters.\n    *   Since all siblings share the same parents, the set of sisters for any brother is the same.\n    *   Therefore, there are exactly **2 girls** in the family.",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 23.32,
+ "answer_s": 5.74,
+ "correct": false
+}

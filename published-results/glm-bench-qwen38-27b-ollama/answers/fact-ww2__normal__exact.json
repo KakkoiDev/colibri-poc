@@ -1,0 +1,19 @@
+{
+ "id": "fact-ww2",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.49,
+ "prompt_tokens": 21,
+ "prefill_s": 0.241,
+ "output_tokens": 79,
+ "decode_s": 3.227,
+ "load_s": 0.017,
+ "text": "World War II ended in **1945**.\n\nHere are the key dates:\n*   **May 8, 1945 (V-E Day):** Germany surrendered, ending the war in Europe.\n*   **September 2, 1945:** Japan formally surrendered aboard the USS *Missouri*, officially ending the war in the Pacific and globally.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 24.48,
+ "answer_s": 3.47,
+ "correct": true
+}

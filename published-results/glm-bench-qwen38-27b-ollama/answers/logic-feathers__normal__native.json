@@ -1,0 +1,19 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 11.86,
+ "prompt_tokens": 24,
+ "prefill_s": 0.121,
+ "output_tokens": 224,
+ "decode_s": 11.714,
+ "load_s": 0.02,
+ "text": "They are **exactly the same weight** — one kilogram each.\n\nThe question is a classic trick. Because steel is far denser than feathers, a kilogram of steel takes up a tiny volume while a kilogram of feathers takes up a huge volume. That contrast tricks the brain into \"feeling\" that the steel must be heavier, but the unit is already fixed at one kilogram for both. Same mass, same weight.",
+ "thinking_chars": 611,
+ "truncated": false,
+ "decode_tok_s": 19.12,
+ "answer_s": 11.84,
+ "correct": true
+}

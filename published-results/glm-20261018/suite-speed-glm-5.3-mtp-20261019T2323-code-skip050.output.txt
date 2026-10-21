@@ -1,0 +1,1 @@
+Here's a Python function that computes the n-th Fibonacci number iteratively (that is, without recursion, using a loop and just two variables to keep track of the two most-recent Fibonacci numbers so far — actually, since the two most

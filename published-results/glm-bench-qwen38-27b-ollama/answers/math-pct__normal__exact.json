@@ -1,0 +1,19 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 4.94,
+ "prompt_tokens": 24,
+ "prefill_s": 0.247,
+ "output_tokens": 128,
+ "decode_s": 4.687,
+ "load_s": 0.0,
+ "text": "To find 15% of 240, follow these steps:\n\n1.  **Convert the percentage to a decimal**:\n    $$15\\% = \\frac{15}{100} = 0.15$$\n\n2.  **Multiply the decimal by the number**:\n    $$0.15 \\times 240$$\n\n    *Calculation:*\n    $$15 \\times 240 = 3600$$\n    Since $0.15$ has two decimal places, move the decimal point in $3600$",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 27.31,
+ "answer_s": 4.93,
+ "correct": false
+}
