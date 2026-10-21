@@ -1,0 +1,18 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 199.45,
+ "prompt_tokens": 32,
+ "prefill_s": 35.91,
+ "output_tokens": 128,
+ "decode_s": 159.8,
+ "decode_tok_s": 0.8,
+ "zeroed_slots": 57894,
+ "hit_pct": 2.8,
+ "text": "Here's a simple Python function to check if a string is a palindrome (case-insensitive):\n\n```python\ndef is_palindrome(s):\n    s = s.lower()\n    return s == s[::-1]\n```\n\n**Explanation:**\n1. `s.lower()` — converts the string to lowercase so the comparison is case-insensitive (e.g., \"Racecar\" → \"racecar\").\n2. `s[::-1]` — Python's slice notation with a step of `-1` creates a reversed copy of the string (e.g., \"racecar\" → \"racecaracecar\" reversed → \"racecar\").",
+ "answer_s": 195.71,
+ "correct": true
+}

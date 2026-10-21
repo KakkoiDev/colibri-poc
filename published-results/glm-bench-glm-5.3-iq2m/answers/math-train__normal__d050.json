@@ -1,0 +1,18 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 358.24,
+ "prompt_tokens": 28,
+ "prefill_s": 58.56,
+ "output_tokens": 128,
+ "decode_s": 295.8,
+ "decode_tok_s": 0.43,
+ "zeroed_slots": 64631,
+ "hit_pct": 3.4,
+ "text": "# Solving the Train Distance Problem\n\n## Understanding the Given Data\n\nTo find the **distance** the train travels, I need to use the relationship between **distance, speed, and time**:\n\n$$\\text{Distance} = \\text{Speed} \\times \\text{Time}$$\n\n**Given information:**\n- Speed: 60 km/h\n- Time: 2.5 hours\n\n## Setting Up the Calculation\n\n$$\\text{Distance} = 60 \\times 2.5$$\n\n## Converting Between Mixed Units (Speed in km/h and Time in Hours)\n\nBoth speed and time are already",
+ "answer_s": 354.36,
+ "correct": false
+}

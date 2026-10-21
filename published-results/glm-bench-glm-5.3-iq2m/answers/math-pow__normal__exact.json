@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 464.64,
+ "prompt_tokens": 17,
+ "prefill_s": 39.08,
+ "output_tokens": 99,
+ "decode_s": 421.68,
+ "decode_tok_s": 0.23,
+ "zeroed_slots": 0,
+ "hit_pct": 0.6,
+ "text": "2 to the power of 10 is **1,024**.\n\nThis means 2 multiplied by itself 10 times: 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = 1,024\n\nFun fact: this is why 1,024 bytes is called a kilobyte in computing, and why 2¹⁰ is such an important number in computer science!",
+ "answer_s": 460.76,
+ "correct": false
+}

@@ -1,0 +1,18 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 424.3,
+ "prompt_tokens": 29,
+ "prefill_s": 61.66,
+ "output_tokens": 128,
+ "decode_s": 358.77,
+ "decode_tok_s": 0.36,
+ "zeroed_slots": 70799,
+ "hit_pct": 4.0,
+ "text": "Here's the implementation using simple slicing which is quite efficient as termination conditions are handled via separate variables (substrings and arrays which are quite efficient as well as termination conditions as handled via separate variables (substrings and arrays which are quite efficient as termination conditions as handled via separate variables (substrings and arrays which are quite efficient as termination conditions as handled via separate variables (substrings and arrays which are quite efficient as termination conditions as handled via separate variables (substrings and arrays which are quite efficient as termination conditions as handled via separate variables (substrings and arrays which are quite efficient as termination conditions as handled via separate variables (substrings and arrays",
+ "answer_s": 420.43,
+ "correct": false
+}

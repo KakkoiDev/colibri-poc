@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 343.43,
+ "prompt_tokens": 15,
+ "prefill_s": 35.83,
+ "output_tokens": 128,
+ "decode_s": 303.78,
+ "decode_tok_s": 0.42,
+ "zeroed_slots": 66079,
+ "hit_pct": 3.2,
+ "text": "15% of 240 is **36**.\n\nTo calculate this: 15% = 15/100 = 0.15, so 0.15 × 240 = 36.\n\nOr you can think of it as: 240 × 15 = 240 × 15/100 = 3600/100 = 36.\n\nOr as a fraction: 15% = 3/20 (since 15% = 15/100 = 3/20, simplifying by 5), so (3/20) × 240 = 720/20 = 36.\n\nOr as a decimal",
+ "answer_s": 339.61,
+ "correct": true
+}

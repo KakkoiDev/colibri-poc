@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 410.01,
+ "prompt_tokens": 22,
+ "prefill_s": 47.78,
+ "output_tokens": 128,
+ "decode_s": 358.45,
+ "decode_tok_s": 0.36,
+ "zeroed_slots": 44923,
+ "hit_pct": 1.7,
+ "text": "A kilogram of feathers and a kilogram of steel have the same mass, so neither is heavier. They both weigh the same — one kilogram.\n\nThe classic trick in this question is that people intuitively think steel is heavier because it's denser. But weight depends on mass, not density. Since both are exactly one kilogram, they weigh the same.\n\nOne interesting nuance: if you're being extremely precise about *apparent* weight as measured on a scale, buoyancy in air actually matters. Feathers are much bulkier for the same mass, so a kilogram of feathers displaces more air, and the",
+ "answer_s": 406.23,
+ "correct": true
+}

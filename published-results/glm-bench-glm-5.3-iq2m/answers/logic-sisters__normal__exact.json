@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 400.46,
+ "prompt_tokens": 27,
+ "prefill_s": 56.0,
+ "output_tokens": 78,
+ "decode_s": 340.32,
+ "decode_tok_s": 0.23,
+ "zeroed_slots": 0,
+ "hit_pct": 0.8,
+ "text": "Sally has **1 sister**.\n\nHere's the reasoning:\n- Sally has 3 brothers, and each brother has 2 sisters.\n- All the brothers share the same sisters (siblings are shared within a family).\n- So there are 2 girls in the family total.\n- Since Sally is one of those girls, she has 2 − 1 = **1 sister**.",
+ "answer_s": 396.32,
+ "correct": true
+}

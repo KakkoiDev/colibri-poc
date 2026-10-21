@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 276.25,
+ "prompt_tokens": 27,
+ "prefill_s": 29.07,
+ "output_tokens": 128,
+ "decode_s": 243.36,
+ "decode_tok_s": 0.53,
+ "zeroed_slots": 46102,
+ "hit_pct": 1.8,
+ "text": "Sally has **1** sister (and herself included in the count of sisters, that would be **2** sisters total in the family).\n\nHere's the reasoning:\n\n- Sally has 3 brothers.\n- Each of her brothers has the same 2 sisters (since all siblings share the same family).\n- So Sally + her sister = the 2 sisters that each brother has.\n- Therefore, Sally has 1 sister, plus herself, making 2 girls in the family.\n- And there are 3 boys (brothers) in the family.\n\n**Total children in the family: 5** (3 boys + 2",
+ "answer_s": 272.43,
+ "correct": false
+}

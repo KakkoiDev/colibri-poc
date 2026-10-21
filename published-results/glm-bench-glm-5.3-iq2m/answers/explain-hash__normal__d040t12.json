@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 218.63,
+ "prompt_tokens": 12,
+ "prefill_s": 16.17,
+ "output_tokens": 128,
+ "decode_s": 198.64,
+ "decode_tok_s": 0.64,
+ "zeroed_slots": 57866,
+ "hit_pct": 2.1,
+ "text": "# What is a Hash Table?\n\nA **hash table** (also called a **hash map**) is a fundamental data structure in computer science that stores **key-value pairs** and associates keys with specific memory locations for efficient retrieval.\n\n## How It Works\n\n1. **Hashing**: A **hash function** converts a key (like a string or number) into an index in an array of storage slots (called \"buckets\" or \"slots\")\n2. **Storage**: The key-value pair is stored in the location corresponding to that index\n3. **Retrieval**: To find a value, the same hash function is applied to",
+ "answer_s": 214.81,
+ "correct": true
+}

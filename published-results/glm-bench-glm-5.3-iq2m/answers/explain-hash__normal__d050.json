@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 361.81,
+ "prompt_tokens": 12,
+ "prefill_s": 30.03,
+ "output_tokens": 128,
+ "decode_s": 327.95,
+ "decode_tok_s": 0.39,
+ "zeroed_slots": 65197,
+ "hit_pct": 2.9,
+ "text": "# What is a Hash Table?\n\n## The Basics\n\nA **hash table** (also known as an **associative array**, **dictionary**, **map**, or **hash map**) is a data structure that stores **key-value pairs**. It allows you to associate a unique key with a specific value, and retrieve that value later by referencing the key. Think of it like a real-world dictionary or a filing cabinet where you look up information by a specific label (the key) rather than by a numeric position (like an array index).\n\n## Key Characteristics\n\n- **Key-value pairs**: Each entry consists of a unique key and its",
+ "answer_s": 357.98,
+ "correct": true
+}

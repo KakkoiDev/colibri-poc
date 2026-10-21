@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 299.39,
+ "prompt_tokens": 17,
+ "prefill_s": 20.78,
+ "output_tokens": 128,
+ "decode_s": 274.68,
+ "decode_tok_s": 0.47,
+ "zeroed_slots": 47699,
+ "hit_pct": 1.9,
+ "text": "Two days after Friday is Sunday.\n\nHere's the reasoning: Saturday is one day after Friday, and then counting two days total, we arrive at Sunday, which follows Saturday in the weekly sequence.\n\nThis counting method is a standard approach used to solve such problems, often taught in mathematics and reasoning lessons for young students. You can generalize this systematic approach to count forward and backward X days for many other problems, such as counting 1 day after/before a given day, X days after/before a given day, or even counting X days (or X weeks, or Y days after X weeks) from a given day. These types of",
+ "answer_s": 295.46,
+ "correct": true
+}

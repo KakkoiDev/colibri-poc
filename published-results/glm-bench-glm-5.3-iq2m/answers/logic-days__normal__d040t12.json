@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 284.86,
+ "prompt_tokens": 17,
+ "prefill_s": 20.62,
+ "output_tokens": 128,
+ "decode_s": 260.32,
+ "decode_tok_s": 0.49,
+ "zeroed_slots": 59870,
+ "hit_pct": 4.2,
+ "text": "Two days after Friday is **Sunday**.\n\nHere's the reasoning: Starting from Friday, count forward two days — Saturday is one day after, and Sunday is two days after. (Note: Some people might initially think \"Tuesday\" if they miscount or work backward, but counting forward from Friday gives Sunday.)\n\nWait, let me double-check that reasoning, as the phrasing \"two days after Friday\" can be ambiguous and often trips people up. Let me think carefully.\n\n**Alternative interpretation 1:** \"Two days after Friday\" could mean the day that is two days later in the week relative to Friday — i.e., if",
+ "answer_s": 280.94,
+ "correct": true
+}

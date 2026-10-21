@@ -1,0 +1,18 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 631.2,
+ "prompt_tokens": 36,
+ "prefill_s": 74.09,
+ "output_tokens": 128,
+ "decode_s": 553.15,
+ "decode_tok_s": 0.23,
+ "zeroed_slots": 0,
+ "hit_pct": 0.6,
+ "text": "Here's an iterative Fibonacci function:\n\n```python\ndef fib(n):\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n    \n    prev, curr = 0, 1\n    for _ in range(2, n + 1):\n        prev, curr = curr, prev + curr\n    \n    return curr\n```\n\n**How it works:**\n\n1. Handle the base cases: `fib(0) = 0` and `fib(1) =",
+ "answer_s": 627.24,
+ "correct": true
+}

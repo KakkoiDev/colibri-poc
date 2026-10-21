@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 375.96,
+ "prompt_tokens": 22,
+ "prefill_s": 47.72,
+ "output_tokens": 128,
+ "decode_s": 324.16,
+ "decode_tok_s": 0.39,
+ "zeroed_slots": 66505,
+ "hit_pct": 3.6,
+ "text": "A kilogram of feathers and a kilogram of steel would weigh exactly the same thing on a scale (in whatever units you choose, be that pounds, ounces, newtons, or kilograms — as long as both are measured in the same system and units).\n\n- Both have the same mass, and the same weight (if measured in the same gravitational field, i.e., on the same planet with the same acceleration due to gravity, g, and the same elevation/submergence depth/latitude, etc.). The common \"trick\" answer is that they weigh the same, but steel is more \"dense\" than feathers, so people",
+ "answer_s": 371.88,
+ "correct": true
+}
