@@ -1,0 +1,18 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 130.98,
+ "prompt_tokens": 16,
+ "prefill_s": 19.67,
+ "output_tokens": 128,
+ "decode_s": 107.59,
+ "decode_tok_s": 1.19,
+ "zeroed_slots": 59890,
+ "hit_pct": 1.6,
+ "text": "The largest planet in our solar system is **Jupiter**.\n\nJupiter is a gas giant, the largest of all planets in the solar system, and is entirely composed of gas and liquified elements related mostly to gaseous hydrogen and helium. It is the fifth planet from the Sun, orbiting at a distance of approximately 5 AU (astronomical units) or 778 million km from the Sun. Jupiter is so massive that its mass is about 2.5 times the combined mass of all other planets in the solar system. In fact, Jupiter's mass is 318 times that of Earth's, and",
+ "answer_s": 127.26,
+ "correct": true
+}

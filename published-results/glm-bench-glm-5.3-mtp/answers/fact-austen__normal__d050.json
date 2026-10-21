@@ -1,0 +1,18 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 116.15,
+ "prompt_tokens": 16,
+ "prefill_s": 24.16,
+ "output_tokens": 128,
+ "decode_s": 89.05,
+ "decode_tok_s": 1.44,
+ "zeroed_slots": 64932,
+ "hit_pct": 31.1,
+ "text": "Pride and Prejudice was written by Jane Austen, an English novelist known for her works that often explore themes of social class, marriage, and women's roles in society. The novel was first published in 1813 and is widely considered a classic of English literature. It follows the story of Elizabeth Bennet and Mr. Fitzwilliam Darcy, focusing on their evolving relationship and the social dynamics of early 19th-century England. The novel remains highly influential and continues to be studied and referenced in discussions about **class, social mobility, and gender roles** in art and literature contexts.\n\nWould you like to continue exploring any",
+ "answer_s": 113.21,
+ "correct": true
+}

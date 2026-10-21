@@ -1,0 +1,18 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 265.38,
+ "prompt_tokens": 16,
+ "prefill_s": 36.99,
+ "output_tokens": 128,
+ "decode_s": 224.69,
+ "decode_tok_s": 0.57,
+ "zeroed_slots": 65736,
+ "hit_pct": 3.1,
+ "text": "Pride and Prejudice was written by the English novelist **Jane Austen**, published in 1813. The novel is a beloved classic of English literature, celebrated for its wit, social critique of the British class system, and exploration of the marriage market and manners of the era (the Regency period, roughly 1811-1820 with the Regent Prince, later George IV, on the throne and a strict policy of censorship and the Press and publishing and publishing houses and periodicals, of the of the of the of the of the of the of the of the of the of the of of the of of the of",
+ "answer_s": 261.68,
+ "correct": true
+}

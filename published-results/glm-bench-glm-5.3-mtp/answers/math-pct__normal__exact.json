@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 281.1,
+ "prompt_tokens": 15,
+ "prefill_s": 65.61,
+ "output_tokens": 88,
+ "decode_s": 212.54,
+ "decode_tok_s": 0.41,
+ "zeroed_slots": 0,
+ "hit_pct": 1.4,
+ "text": "**15% of 240 = 36**\n\nHere's how to calculate it:\n\n**Method 1: Convert to decimal**\n- 15% = 0.15\n- 0.15 × 240 = 36\n\n**Method 2: Break it down**\n- 10% of 240 = 24\n- 5% of 240 = 12\n- 24 + 12 = 36",
+ "answer_s": 278.15,
+ "correct": true
+}

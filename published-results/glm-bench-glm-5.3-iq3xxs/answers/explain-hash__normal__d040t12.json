@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 270.4,
+ "prompt_tokens": 12,
+ "prefill_s": 21.76,
+ "output_tokens": 128,
+ "decode_s": 244.28,
+ "decode_tok_s": 0.52,
+ "zeroed_slots": 58011,
+ "hit_pct": 2.5,
+ "text": "# Hash Table\n\nA **hash table** (also called a hash map or dictionary) is a data structure that stores key-value pairs and provides near-constant time complexity for insertion, deletion, and lookup operations.\n\n## How It Works\n\n1. **Hash Function**: A hash function takes a key (like a string \"username\") and converts it into an integer (a \"hash value\") through a mathematical computation\n2. **Indexing**: The hash value is then mapped to an index in an underlying array (often using modulo: `index = hash % array_size`)\n3. **Storage**: The key-value pair is stored at",
+ "answer_s": 266.04,
+ "correct": true
+}

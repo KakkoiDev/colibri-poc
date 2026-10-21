@@ -1,0 +1,18 @@
+{
+ "id": "fact-capital",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 396.82,
+ "prompt_tokens": 13,
+ "prefill_s": 37.97,
+ "output_tokens": 79,
+ "decode_s": 354.56,
+ "decode_tok_s": 0.22,
+ "zeroed_slots": 0,
+ "hit_pct": 0.4,
+ "text": "The capital of Australia is **Canberra**.\n\nThis is a common trick question, as many people guess Sydney or Melbourne, which are the largest cities. Canberra was purpose-built as the capital in the early 1900s as a compromise between Sydney and Melbourne, which both competed to be the capital. It's located in the Australian Capital Territory (ACT), situated between the two rival cities.",
+ "answer_s": 392.53,
+ "correct": true
+}

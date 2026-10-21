@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 388.26,
+ "prompt_tokens": 15,
+ "prefill_s": 37.7,
+ "output_tokens": 128,
+ "decode_s": 346.22,
+ "decode_tok_s": 0.37,
+ "zeroed_slots": 64420,
+ "hit_pct": 3.4,
+ "text": "# Chemical Formula of Table Salt\n\nThe **chemical formula for table salt** is **NaCl (Sodium Chloride)**.\n\n## Components Breakdown:\n- **Sodium (Na)**\n  - Atomic Symbol: Na\n  - Atomic Number: 11\n  - Atomic Mass: 22.99\n  - Electronegativity: 0.93\n  - Position: Group 1, Period 3\n  - Block: s\n  - Electron Configuration: [Ne] 3s1\n  - Common Ion: Na⁺ ( +1 charge, \"cation\")\n  - Melting Point",
+ "answer_s": 383.92,
+ "correct": true
+}

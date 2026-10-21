@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 253.28,
+ "prompt_tokens": 15,
+ "prefill_s": 35.25,
+ "output_tokens": 128,
+ "decode_s": 214.3,
+ "decode_tok_s": 0.6,
+ "zeroed_slots": 65141,
+ "hit_pct": 3.7,
+ "text": "The chemical formula of table salt is NaCl (sodium chloride), often written as **Na⁺Cl⁻** or simply \"NaCl\" to indicate the ratio of these ions in the crystal lattice. It's commonly known as **rock salt** when in its natural (mineral) form, halite**.**\n\nTo clarify: what exactly are you asking? Please name the attribute, subject, or **specific** chemical formula, substance, or other aspect that I'm supposed to describe, explain, or analyze in scientifically **testable** terms, and **within a contextual or historical framework** that includes at least",
+ "answer_s": 249.55,
+ "correct": true
+}

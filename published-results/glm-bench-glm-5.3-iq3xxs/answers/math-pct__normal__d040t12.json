@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 242.2,
+ "prompt_tokens": 15,
+ "prefill_s": 23.22,
+ "output_tokens": 128,
+ "decode_s": 214.35,
+ "decode_tok_s": 0.6,
+ "zeroed_slots": 58380,
+ "hit_pct": 2.6,
+ "text": "# Calculating 15% of 240\n\n**Method 1: Using the decimal form**\n\n15% = 15 ÷ 100 = 0.15\n\nSo: 240 × 0.15 = **36**\n\n**Method 2: Breaking down the percentage**\n\n15% = 10% + 5%\n- 10% of 240 = 24\n- 5% of 240 = 12 (half of 24)\n- 24 + 12 = **36**\n\n**Method 3: Using fractions**\n\n15% = 15/100 = 3/20\n\n240 ×",
+ "answer_s": 237.57,
+ "correct": false
+}

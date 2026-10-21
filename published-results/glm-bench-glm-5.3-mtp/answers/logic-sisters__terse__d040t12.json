@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "terse",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 58.92,
+ "prompt_tokens": 42,
+ "prefill_s": 54.55,
+ "output_tokens": 1,
+ "decode_s": 1.41,
+ "decode_tok_s": 0.71,
+ "zeroed_slots": 785,
+ "hit_pct": 3.7,
+ "text": "1",
+ "answer_s": 55.96,
+ "correct": true
+}

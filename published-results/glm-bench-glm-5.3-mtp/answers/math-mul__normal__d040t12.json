@@ -1,0 +1,18 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 119.32,
+ "prompt_tokens": 15,
+ "prefill_s": 30.4,
+ "output_tokens": 128,
+ "decode_s": 85.89,
+ "decode_tok_s": 1.49,
+ "zeroed_slots": 60916,
+ "hit_pct": 20.6,
+ "text": "17 × 23 = **391**\n\nHere's how you can work it out:\n\n1. **Break it into steps:** 17 × 23 = 17 × (20 + 3)\n2. **Multiply each part:** 17 × 20 = 340, and 17 × 3 = 51\n3. **Add the results:** 340 + 51 = 391\n\nOr using the traditional column method:\n\n```\n    17\n  × 23\n  -----\n    51   (17 × 3)\n   340    (17 × 20, shifted one place)",
+ "answer_s": 116.29,
+ "correct": false
+}

@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 358.43,
+ "prompt_tokens": 22,
+ "prefill_s": 29.93,
+ "output_tokens": 128,
+ "decode_s": 325.35,
+ "decode_tok_s": 0.39,
+ "zeroed_slots": 0,
+ "hit_pct": 1.6,
+ "text": "They weigh exactly the same — one kilogram is one kilogram, regardless of the material.\n\nThis is a classic trick question! The intuitive (but wrong) answer is \"steel,\" because steel is much *denser* than feathers. Density is mass per unit volume, so a kilogram of steel would be a small, compact block, while a kilogram of feathers would be a huge, fluffy pile. But on a scale, both would read exactly 1 kg.\n\n**Fun bonus fact:** If you want to get extremely technical, there's a subtle physics argument that the feathers might actually register *very slightly* heavier on a",
+ "answer_s": 355.28,
+ "correct": true
+}

@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 116.28,
+ "prompt_tokens": 17,
+ "prefill_s": 24.77,
+ "output_tokens": 128,
+ "decode_s": 88.51,
+ "decode_tok_s": 1.45,
+ "zeroed_slots": 58961,
+ "hit_pct": 21.4,
+ "text": "2 to the power of 10 is **1,024** (2¹⁰).\n\nThis is a well-known value in computer science and comes up often in contexts like:\n- **Binary numbers**: 2¹⁰ = 1024 ≈ 10³, which is why \"kilo\" in computing contexts (like kilobytes) actually means 1,024 rather than 1,000\n- **Memory sizes**: RAM capacities are often powers of 2, like 2¹⁰ bytes = 1 KiB (kibibyte)\n- **Data storage**: 2¹�",
+ "answer_s": 113.28,
+ "correct": false
+}

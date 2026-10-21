@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 620.38,
+ "prompt_tokens": 15,
+ "prefill_s": 38.08,
+ "output_tokens": 128,
+ "decode_s": 577.69,
+ "decode_tok_s": 0.22,
+ "zeroed_slots": 0,
+ "hit_pct": 0.5,
+ "text": "# Chemical Formula of Table Salt\n\nThe chemical formula of table salt is **NaCl**, which represents **sodium chloride**.\n\n## What It Means:\n- **Na** = Sodium (one sodium atom)\n- **Cl** = Chlorine (one chlorine atom)\n\n## Quick Facts:\n- Table salt is an ionic compound formed when sodium (Na⁺) and chloride (Cl⁻) ions bond together\n- The 1:1 ratio means each molecule contains one sodium atom and one chlorine atom\n- It's held together by ionic bonds, which is why salt dissolves easily in water and forms crystal structures",
+ "answer_s": 615.77,
+ "correct": true
+}

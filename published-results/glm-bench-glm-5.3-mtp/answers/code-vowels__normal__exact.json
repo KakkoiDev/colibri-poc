@@ -1,0 +1,18 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 361.84,
+ "prompt_tokens": 42,
+ "prefill_s": 49.86,
+ "output_tokens": 128,
+ "decode_s": 308.97,
+ "decode_tok_s": 0.41,
+ "zeroed_slots": 0,
+ "hit_pct": 1.4,
+ "text": "Here's a simple function:\n\n```python\ndef count_vowels(s):\n    vowels = \"aeiou\"\n    count = 0\n    for char in s:\n        if char.lower() in vowels:\n            count += 1\n    return count\n```\n\n**How it works:**\n- `char.lower()` converts each character to lowercase, making the check case-insensitive (so both 'A' and 'a' are counted)\n- We check if each character is in the string `\"aeiou\"`\n- We increment a counter for each match\n\n**Example usage:**\n\n```python\nprint(count_vowels(\"",
+ "answer_s": 358.83,
+ "correct": true
+}

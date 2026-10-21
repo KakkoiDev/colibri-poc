@@ -1,0 +1,18 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 124.29,
+ "prompt_tokens": 24,
+ "prefill_s": 33.67,
+ "output_tokens": 128,
+ "decode_s": 87.59,
+ "decode_tok_s": 1.46,
+ "zeroed_slots": 58029,
+ "hit_pct": 13.8,
+ "text": "Here's a simple implementation of the factorial function:\n\n```python\ndef factorial(n):\n    \"\"\"Return n! (n factorial) for a non-negative integer n.\"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n```\n\n**How it works:**\n\n1. **Input validation:** First, it checks if `n` is negative, raising a `ValueError` if it is (since factorial isn't defined for negative integers in the real number system",
+ "answer_s": 121.26,
+ "correct": true
+}

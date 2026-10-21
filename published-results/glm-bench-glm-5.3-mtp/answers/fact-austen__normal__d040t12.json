@@ -1,0 +1,18 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 74.7,
+ "prompt_tokens": 16,
+ "prefill_s": 24.04,
+ "output_tokens": 69,
+ "decode_s": 47.62,
+ "decode_tok_s": 1.45,
+ "zeroed_slots": 29053,
+ "hit_pct": 15.3,
+ "text": "Pride and Prejudice is a novel written by Jane Austen. It was first published in 1813 and is one of her most famous works, telling the story of Elizabeth Bennet and Mr. Darcy. The novel explores themes of pride, prejudice, class, marriage, and social expectations in early 19th-century England.",
+ "answer_s": 71.66,
+ "correct": true
+}

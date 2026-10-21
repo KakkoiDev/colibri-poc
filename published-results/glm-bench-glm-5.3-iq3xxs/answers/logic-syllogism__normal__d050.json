@@ -1,0 +1,18 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 423.73,
+ "prompt_tokens": 36,
+ "prefill_s": 75.46,
+ "output_tokens": 128,
+ "decode_s": 343.97,
+ "decode_tok_s": 0.37,
+ "zeroed_slots": 65589,
+ "hit_pct": 4.8,
+ "text": "Yes. This follows directly from the transitive property: if all bloops are razzies**s** (A⊆B), and all razzies are lazzies (B⊆C), then all bloops are lazzies (A⊆C). This is a valid syllogism in logic, specifically a Barbara (AAA-1) syllogism, where both premises are universal affirmatives and the conclusion is a universal affirmative relating the major to the minor term, with the middle term (razzies) being the subject in the major premise and the predicate in the minor premise. In set-theoret",
+ "answer_s": 419.43,
+ "correct": true
+}

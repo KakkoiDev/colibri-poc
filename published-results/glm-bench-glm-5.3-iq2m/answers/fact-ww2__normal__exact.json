@@ -1,0 +1,18 @@
+{
+ "id": "fact-ww2",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 321.41,
+ "prompt_tokens": 15,
+ "prefill_s": 35.19,
+ "output_tokens": 68,
+ "decode_s": 282.33,
+ "decode_tok_s": 0.24,
+ "zeroed_slots": 0,
+ "hit_pct": 0.6,
+ "text": "World War II ended in 1945. Specifically, Germany surrendered in May 1945 (May 8, known as V-E Day in Europe), and Japan surrendered in August/September 1945 (Japan formally signed the surrender on September 2, 1945, aboard the USS Missouri in Tokyo Bay).",
+ "answer_s": 317.52,
+ "correct": true
+}

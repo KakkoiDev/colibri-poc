@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 483.08,
+ "prompt_tokens": 15,
+ "prefill_s": 41.16,
+ "output_tokens": 89,
+ "decode_s": 437.05,
+ "decode_tok_s": 0.2,
+ "zeroed_slots": 0,
+ "hit_pct": 0.6,
+ "text": "# Finding 15% of 240\n\n**Method 1: Convert to decimal**\n$$15\\% = 0.15$$\n$$0.15 \\times 240 = 36$$\n\n**Method 2: Break it down**\n- 10% of 240 = 24\n- 5% of 240 = 12\n- 24 + 12 = **36**\n\n**Answer: 36**",
+ "answer_s": 478.21,
+ "correct": true
+}

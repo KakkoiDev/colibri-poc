@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 252.78,
+ "prompt_tokens": 15,
+ "prefill_s": 21.06,
+ "output_tokens": 128,
+ "decode_s": 227.27,
+ "decode_tok_s": 0.56,
+ "zeroed_slots": 42010,
+ "hit_pct": 1.2,
+ "text": "# Chemical Formula of Table Salt\n\nThe chemical formula for table salt is **NaCl**, which represents **sodium chloride**.\n\n## Composition\n- **Na** = Sodium (a metal element)\n- **Cl** = Chlorine (a non-metal element)\n\n## Quick Facts\n- Table salt forms when sodium (Na⁺) and chlorine (Cl⁻) ions bond together through an **ionic bond**\n- The formula indicates a 1:1 ratio — one sodium ion for every one chloride ion\n- Interestingly, pure sodium is a highly reactive metal, and chlorine is a toxic gas, but when combined, they form",
+ "answer_s": 248.33,
+ "correct": true
+}

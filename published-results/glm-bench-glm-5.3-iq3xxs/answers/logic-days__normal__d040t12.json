@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 209.4,
+ "prompt_tokens": 17,
+ "prefill_s": 25.61,
+ "output_tokens": 78,
+ "decode_s": 179.64,
+ "decode_tok_s": 0.43,
+ "zeroed_slots": 37005,
+ "hit_pct": 3.5,
+ "text": "# Day Two Days After Friday\n\n**Two days after Friday is Sunday.**\n\nHere's the reasoning:\n- Friday + 1 day = Saturday\n- Saturday + 1 day = **Sunday** (which is two days after Friday)\n\nThis is a classic logic puzzle that sometimes tricks people who overthink it by counting backward or using modular arithmetic incorrectly. The straightforward answer is simply Sunday.",
+ "answer_s": 205.25,
+ "correct": true
+}

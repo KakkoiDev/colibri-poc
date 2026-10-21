@@ -1,0 +1,18 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 262.07,
+ "prompt_tokens": 42,
+ "prefill_s": 46.81,
+ "output_tokens": 128,
+ "decode_s": 210.96,
+ "decode_tok_s": 0.61,
+ "zeroed_slots": 56581,
+ "hit_pct": 2.9,
+ "text": "Here's a simple Python function to count vowels in a string:\n\n```python\ndef count_vowels(s):\n    \"\"\"\n    Count the number of vowels (a, e, i, o, u) in the given string,\n    case-insensitively.\n\n    Args:\n        s (str): The input string to check for vowels.\n\n    Returns:\n        int: The number of vowels found in the string.\n    \"\"\"\n    # Convert the string to lowercase to handle both upper and lowercase vowels\n    # (e.g., 'A' and 'a', 'E' and 'e', etc.)\n    lowered = s",
+ "answer_s": 257.77,
+ "correct": false
+}

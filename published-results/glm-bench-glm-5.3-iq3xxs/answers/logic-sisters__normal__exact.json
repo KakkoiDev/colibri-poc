@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 676.67,
+ "prompt_tokens": 27,
+ "prefill_s": 60.06,
+ "output_tokens": 128,
+ "decode_s": 612.39,
+ "decode_tok_s": 0.21,
+ "zeroed_slots": 0,
+ "hit_pct": 0.7,
+ "text": "# Solving the Sister Puzzle\n\n**Key insight:** Sally's brothers all share the same sisters — Sally and any other girls in the family.\n\n## Setting Up\n\n- Sally has **3 brothers**\n- Each brother has **2 sisters**\n\n## Reasoning Through It\n\nSince all the brothers have the same set of sisters, and each brother has 2 sisters, there must be **2 girls** total in the family.\n\nSally is one of those girls. So the other girl is Sally's only sister.\n\n## Answer\n\nSally has **1 sister**.\n\n**Check:** The family has 3 boys and 2 girls (",
+ "answer_s": 672.45,
+ "correct": false
+}

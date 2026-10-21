@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 457.51,
+ "prompt_tokens": 22,
+ "prefill_s": 57.46,
+ "output_tokens": 128,
+ "decode_s": 395.35,
+ "decode_tok_s": 0.32,
+ "zeroed_slots": 66696,
+ "hit_pct": 4.0,
+ "text": "Neither is heavier—they're both the same weight (1 kilogram each). I assume this is a trick question testing whether you fall for the common misconception that \"steel is heavier than feathers\" because steel is denser/more compact, while feathers are voluminous and fluffy. The materials differ in density, but the equal masses mean the equal weights when measured on a scale. A kilogram of steel and a kilogram of feathers (assuming feathers are genuine, not something like loosely bound stuffing or hypothetical \"weightless\" mass like fluffy goose down clusters at standard density, which would weigh less than a kilogram for the same volume) would",
+ "answer_s": 452.81,
+ "correct": true
+}

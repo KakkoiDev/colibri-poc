@@ -1,0 +1,18 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 121.46,
+ "prompt_tokens": 14,
+ "prefill_s": 29.03,
+ "output_tokens": 128,
+ "decode_s": 89.5,
+ "decode_tok_s": 1.43,
+ "zeroed_slots": 58340,
+ "hit_pct": 21.9,
+ "text": "The chemical symbol for gold is **Au**, which comes from the Latin word *aurum*, meaning \"shining dawn\" or \"glow of sunrise.\" This Latin origin connects gold to its historical and cultural significance across civilizations, from ancient Egypt (where it was called \"the flesh of the gods\" and buried with pharaohs like Tutankhamun, whose 3,000-year-old treasures still glitter in museum displays today) to the Incas, who called it the \"sweat of the sun\" and whose empire was famously described as \"rich in gold\" by the conquistadors. The Spanish conquest of the",
+ "answer_s": 118.53,
+ "correct": true
+}

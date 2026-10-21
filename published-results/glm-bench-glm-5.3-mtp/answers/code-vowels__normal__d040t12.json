@@ -1,0 +1,18 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 134.38,
+ "prompt_tokens": 42,
+ "prefill_s": 49.66,
+ "output_tokens": 128,
+ "decode_s": 81.76,
+ "decode_tok_s": 1.57,
+ "zeroed_slots": 53974,
+ "hit_pct": 15.4,
+ "text": "Here's a simple implementation:\n\n```python\ndef count_vowels(s):\n    vowels = \"aeiouAEIOU\"\n    return sum(1 for char in s if char in vowels)\n```\n\n**How it works:**\n\n1. `vowels = \"aeiouAEIOU\"` — defines a string containing all vowels, both lowercase and uppercase, so the check is case-insensitive (e.g., `'A'` and `'a'` both count).\n\n2. `sum(1 for char in s if char in vowels)` — iterates through each character `char` in the input string `s",
+ "answer_s": 131.42,
+ "correct": true
+}

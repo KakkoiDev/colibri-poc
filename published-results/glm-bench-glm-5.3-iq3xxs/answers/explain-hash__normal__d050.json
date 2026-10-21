@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 353.78,
+ "prompt_tokens": 12,
+ "prefill_s": 33.6,
+ "output_tokens": 128,
+ "decode_s": 315.95,
+ "decode_tok_s": 0.41,
+ "zeroed_slots": 64119,
+ "hit_pct": 4.3,
+ "text": "# Hash Tables\n\nA **hash table** (also known as a **hash map** or **dictionary**) is one of the most fundamental and widely used data structures in computer science. It's an abstract data type that maps **keys** to **values**, allowing for near-constant time (O(1)) complexity for insertion, deletion, and lookup operations in the average case.\n\n## Core Concepts\n\n### 1. The Key-Value Pair Structure\nA hash table stores data as **key-value pairs** — a structure where:\n- The **key** is a unique identifier (like a username, ID number, or string)",
+ "answer_s": 349.55,
+ "correct": true
+}

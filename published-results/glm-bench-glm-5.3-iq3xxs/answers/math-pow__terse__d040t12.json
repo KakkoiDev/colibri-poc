@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "terse",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 46.31,
+ "prompt_tokens": 32,
+ "prefill_s": 38.37,
+ "output_tokens": 2,
+ "decode_s": 3.77,
+ "decode_tok_s": 0.53,
+ "zeroed_slots": 775,
+ "hit_pct": 2.2,
+ "text": "1024",
+ "answer_s": 42.14,
+ "correct": true
+}

@@ -1,0 +1,18 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 151.76,
+ "prompt_tokens": 14,
+ "prefill_s": 62.01,
+ "output_tokens": 128,
+ "decode_s": 86.77,
+ "decode_tok_s": 1.48,
+ "zeroed_slots": 64052,
+ "hit_pct": 31.5,
+ "text": "The chemical symbol for gold is **Au**, which comes from the Latin word *aurum*, meaning \"shining dawn\" or \"glow\" (from *aurum*, related to *aurale*, \"to shine, glow\"). This etymology reflects both gold's ancient, culturally universal status as a valuable metal, and its distinctive, symbolic resource as a standard for commerce, wealth, and beauty in jewelry, which has maintained a high, and exchange-valuation (both material-valuation and exchange-valuation) as a precious metal, with an extremely high density (19.32 g/cm³), at 19.32 g",
+ "answer_s": 148.78,
+ "correct": true
+}

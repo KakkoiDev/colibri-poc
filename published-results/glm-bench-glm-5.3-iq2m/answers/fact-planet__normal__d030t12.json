@@ -1,0 +1,18 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 167.59,
+ "prompt_tokens": 16,
+ "prefill_s": 19.75,
+ "output_tokens": 128,
+ "decode_s": 144.18,
+ "decode_tok_s": 0.89,
+ "zeroed_slots": 42610,
+ "hit_pct": 0.8,
+ "text": "The largest planet in our solar system is **Jupiter**.\n\nSome key facts about Jupiter:\n\n- **Size**: Jupiter's diameter is about 142,984 km (88,846 miles) — roughly 11 times the diameter of Earth. All the other planets in the solar system combined could fit inside Jupiter, and it's so large that about 1,300 Earths could fit inside it.\n\n- **Mass**: Jupiter is about 2.5 times more massive than all the other planets combined. However, it's still much less massive than the Sun — you'd need about 1,000 Jupiters",
+ "answer_s": 163.93,
+ "correct": true
+}

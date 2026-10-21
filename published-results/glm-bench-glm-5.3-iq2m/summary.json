@@ -1,0 +1,67 @@
+[
+ {
+  "style": "normal",
+  "config": "d030",
+  "runs": 8,
+  "ok": 8,
+  "correct": 8,
+  "graded": 8,
+  "same_as_exact": 0,
+  "answer_s": 326.6125,
+  "prefill_s": 35.7175,
+  "output_tokens": 123.125,
+  "decode_tok_s": 0.42375
+ },
+ {
+  "style": "normal",
+  "config": "d030t12",
+  "runs": 8,
+  "ok": 8,
+  "correct": 8,
+  "graded": 8,
+  "same_as_exact": 0,
+  "answer_s": 170.5625,
+  "prefill_s": 19.045,
+  "output_tokens": 123.125,
+  "decode_tok_s": 0.82125
+ },
+ {
+  "style": "normal",
+  "config": "d040t12",
+  "runs": 7,
+  "ok": 7,
+  "correct": 7,
+  "graded": 7,
+  "same_as_exact": 0,
+  "answer_s": 137.03571428571428,
+  "prefill_s": 19.150000000000002,
+  "output_tokens": 128.0,
+  "decode_tok_s": 1.1457142857142857
+ },
+ {
+  "style": "normal",
+  "config": "d050",
+  "runs": 8,
+  "ok": 8,
+  "correct": 8,
+  "graded": 8,
+  "same_as_exact": 0,
+  "answer_s": 259.015,
+  "prefill_s": 35.7525,
+  "output_tokens": 128.0,
+  "decode_tok_s": 0.57875
+ },
+ {
+  "style": "normal",
+  "config": "exact",
+  "runs": 8,
+  "ok": 8,
+  "correct": 8,
+  "graded": 8,
+  "same_as_exact": 8,
+  "answer_s": 453.7025,
+  "prefill_s": 35.79875,
+  "output_tokens": 98.25,
+  "decode_tok_s": 0.23375
+ }
+]

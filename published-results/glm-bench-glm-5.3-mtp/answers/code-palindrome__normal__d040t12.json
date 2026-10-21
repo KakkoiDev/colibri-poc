@@ -1,0 +1,18 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 127.13,
+ "prompt_tokens": 32,
+ "prefill_s": 42.49,
+ "output_tokens": 128,
+ "decode_s": 81.61,
+ "decode_tok_s": 1.57,
+ "zeroed_slots": 55703,
+ "hit_pct": 13.8,
+ "text": "```python\ndef is_palindrome(s):\n    \"\"\"\n    Return True if the string s reads the same forwards and backwards,\n    ignoring case (uppercase/lowercase differences are disregarded).\n\n    Args:\n        s (str): The string to check.\n\n    Returns:\n        bool: True if s is a palindrome ignoring case, False otherwise.\n\n    Examples:\n        >>> is_palindrome(\"racecar\")\n        True\n        >>> is_palindrome(\"RaceCar\")   # case-insensitive\n        True\n        >>> is_palindrome(\"hello\")\n        False\n        >>> is_palindrome(\"\")\n        True   # empty string is a palindrome",
+ "answer_s": 124.1,
+ "correct": false
+}

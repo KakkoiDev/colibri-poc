@@ -1,0 +1,18 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 263.83,
+ "prompt_tokens": 19,
+ "prefill_s": 43.25,
+ "output_tokens": 128,
+ "decode_s": 216.97,
+ "decode_tok_s": 0.59,
+ "zeroed_slots": 65875,
+ "hit_pct": 3.8,
+ "text": "Water boils at 100°C (212°F) at sea level. This is the standard boiling point of pure water at one atmosphere of pressure (the average sea-level atmospheric pressure, 1 atm ≈ 33.9 inches of mercury ≈ 101.325 kPa). At this pressure, the vapor pressure of water reaches the atmospheric pressure, and bubbles can form and expand freely within the water, leading to vigorous boiling and rapid conversion of steam at the surface and throughout the liquid volume.\n\nThis 100°C value is not a \"mixture constant\" (like the \"ice-cold\" or \"boiling-steam",
+ "answer_s": 260.22,
+ "correct": true
+}

@@ -9,6 +9,30 @@
    "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850"
   },
   {
+   "name": "glm-5.3-iq2m",
+   "file": "bench-glm-5.3-iq2m.json",
+   "answers": 39,
+   "engine": "Colibri",
+   "model": "glm-5.3-iq2m",
+   "colibri_commit": "16239caafd71588fe6efb12d287f29094060c1b8"
+  },
+  {
+   "name": "glm-5.3-iq3xxs",
+   "file": "bench-glm-5.3-iq3xxs.json",
+   "answers": 209,
+   "engine": "Colibri",
+   "model": "glm-5.3-iq3xxs",
+   "colibri_commit": "16239caafd71588fe6efb12d287f29094060c1b8"
+  },
+  {
+   "name": "glm-5.3-mtp",
+   "file": "bench-glm-5.3-mtp.json",
+   "answers": 240,
+   "engine": "Colibri",
+   "model": "glm-5.3-mtp",
+   "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850"
+  },
+  {
    "name": "qwen38-27b-ollama",
    "file": "bench-qwen38-27b-ollama.json",
    "answers": 40,

@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 129.34,
+ "prompt_tokens": 27,
+ "prefill_s": 34.04,
+ "output_tokens": 128,
+ "decode_s": 92.26,
+ "decode_tok_s": 1.39,
+ "zeroed_slots": 59262,
+ "hit_pct": 19.8,
+ "text": "**1. Identify the core question the user is asking.**\nThe user is asking a specific question: \"How many sisters does Sally have?\" given the established facts that (1) Sally has 3 brothers, and (2) each of her brothers has 2 sisters. This is a classic riddle designed to test logical reasoning about family relationships.\n\nThe key insight needed to solve it: **The \"2 sisters\" that each brother has must include Sally herself and one other sister.** This is because all the siblings (brothers and sisters) share the same set of sisters — the family's daughters. Since Sally is female,",
+ "answer_s": 126.3,
+ "correct": false
+}

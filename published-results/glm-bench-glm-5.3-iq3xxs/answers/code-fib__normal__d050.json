@@ -1,0 +1,18 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 434.78,
+ "prompt_tokens": 36,
+ "prefill_s": 82.49,
+ "output_tokens": 128,
+ "decode_s": 347.9,
+ "decode_tok_s": 0.37,
+ "zeroed_slots": 66046,
+ "hit_pct": 5.2,
+ "text": "Here's a Python function that computes the n-th Fibonacci number iteratively (i.e., without recursion or memoization), using the standard iterative approach with two variables and a loop:\n\n```python\ndef fib(n):\n    \"\"\"\n    Iteratively computes the n-th Fibonacci number, where fib(0)=0 and fib(1)=1.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    a, b = 0, 1  # fib(0), fib(1) / \"a\" is current fib(k-2), \"b\" is current fib(k-",
+ "answer_s": 430.39,
+ "correct": false
+}

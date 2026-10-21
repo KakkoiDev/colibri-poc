@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 154.95,
+ "prompt_tokens": 15,
+ "prefill_s": 65.48,
+ "output_tokens": 128,
+ "decode_s": 86.51,
+ "decode_tok_s": 1.48,
+ "zeroed_slots": 63579,
+ "hit_pct": 34.0,
+ "text": "The chemical formula of table salt is **NaCl** (sodium chloride), sometimes written as Na⁺Cl⁻ or often referred to as **NaCl (sodium chloride)**, representing the ionic bond between a metal (Na) and a non-metal (Cl/gas) that exists, when in the molten state (as fused NaCl, in a \"ionic crystal lattice \" NaClL or a \"covalent network lattices\" (e.g., (CH3)3N+Cl- _74_5_5_5_5_5_5_5_5_5",
+ "answer_s": 151.99,
+ "correct": true
+}

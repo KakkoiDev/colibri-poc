@@ -1,0 +1,18 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 165.65,
+ "prompt_tokens": 16,
+ "prefill_s": 24.09,
+ "output_tokens": 128,
+ "decode_s": 138.53,
+ "decode_tok_s": 0.92,
+ "zeroed_slots": 42704,
+ "hit_pct": 7.9,
+ "text": "Pride and Prejudice was written by Jane Austen, the English novelist known for her sharp social commentary and keen observations of the British landed gentry at the end of the 18th century. Published in 1813, the novel is widely considered her masterpiece and one of the most beloved works in English literature.\n\nThe story follows Elizabeth Bennet, the second of five daughters in a family of modest means, as she navigates issues of class, reputation, and—most importantly—her complicated relationship with the proud and wealthy Mr. Darcy. The novel's enduring popularity stems from its witty dialogue, memorable characters, and its",
+ "answer_s": 162.62,
+ "correct": true
+}

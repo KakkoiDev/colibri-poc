@@ -1,0 +1,18 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 85.93,
+ "prompt_tokens": 14,
+ "prefill_s": 28.94,
+ "output_tokens": 52,
+ "decode_s": 54.04,
+ "decode_tok_s": 0.96,
+ "zeroed_slots": 16712,
+ "hit_pct": 6.7,
+ "text": "The chemical symbol for gold is **Au**, which comes from the Latin word *aurum*, meaning \"shining dawn\" or \"glow of sunrise.\" Gold's atomic number is 79, placing it in the transition metals group of the periodic table.",
+ "answer_s": 82.98,
+ "correct": true
+}

@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 129.24,
+ "prompt_tokens": 30,
+ "prefill_s": 37.8,
+ "output_tokens": 128,
+ "decode_s": 88.33,
+ "decode_tok_s": 1.45,
+ "zeroed_slots": 65459,
+ "hit_pct": 25.0,
+ "text": "**12 - 5 = 7** ← _starts with 12, then subtract 5 apples_\n\n**7 + 8 = 15** ← _gives_7, then adds 8 more_ (buying more)_\n\n**15 total** ← _15 apples in hand (resulting apples A + 8 bought apples B)_7 apples + 8 bought = 15_7 + 8 = 15_7 + 8 = 15_7 + 8 = 15_7 + 8 = 15_7 + 8 = 15_7 + 8 =",
+ "answer_s": 126.13,
+ "correct": false
+}

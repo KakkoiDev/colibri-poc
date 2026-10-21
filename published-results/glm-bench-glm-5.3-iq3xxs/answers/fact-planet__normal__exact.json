@@ -1,0 +1,18 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 623.19,
+ "prompt_tokens": 16,
+ "prefill_s": 41.6,
+ "output_tokens": 128,
+ "decode_s": 577.4,
+ "decode_tok_s": 0.22,
+ "zeroed_slots": 0,
+ "hit_pct": 0.4,
+ "text": "The largest planet in our solar system is **Jupiter**.\n\nSome key facts about Jupiter:\n\n- **Mass**: About 318 times the mass of Earth\n- **Size**: Over 11 times the diameter of Earth\n- **Volume**: So large that roughly 1,300 Earths could fit inside it\n- **Composition**: A gas giant made primarily of hydrogen and helium\n- **Notable feature**: The Great Red Spot, a massive storm that has been raging for at least 350 years\n\nInterestingly, Jupiter is so massive that it's more than twice as massive as all the other planets in the solar system combined",
+ "answer_s": 619.0,
+ "correct": true
+}

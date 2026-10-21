@@ -1,0 +1,18 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 201.71,
+ "prompt_tokens": 14,
+ "prefill_s": 19.95,
+ "output_tokens": 128,
+ "decode_s": 177.21,
+ "decode_tok_s": 0.72,
+ "zeroed_slots": 55958,
+ "hit_pct": 2.3,
+ "text": "The chemical symbol for gold is **Au**, which comes from the Latin word \"aurum,\" meaning \"shining dawn\" or \"glow of sunrise.\" This Latin-derived symbol reflects gold's historical association with the sun and its radiant, lustrous quality that has fascinated humanity for millennia.\n\nGold is a chemical element with:\n- **Atomic number**: 79\n- **Atomic mass**: approximately 197 u (196.96657 u)\n- **Position**: in Group 11 of the periodic table, alongside copper (Cu) and silver (Ag)\n- **Category**: a transition metal, specifically classified as a coin",
+ "answer_s": 197.16,
+ "correct": true
+}

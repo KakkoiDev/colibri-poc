@@ -1,0 +1,18 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 254.78,
+ "prompt_tokens": 32,
+ "prefill_s": 41.83,
+ "output_tokens": 128,
+ "decode_s": 208.84,
+ "decode_tok_s": 0.61,
+ "zeroed_slots": 57465,
+ "hit_pct": 2.2,
+ "text": "Here's a simple Python function to check if a string is a palindrome (ignoring case):\n\n```python\ndef is_palindrome(s):\n    # Convert the string to lowercase for case-insensitive comparison\n    # and remove non-alphanumeric characters (optional, but common in palindrome checks)\n    normalized = ''.join(c.lower() for c in s if c.isalnum())\n    \n    # Compare the normalized string with its reverse\n    return normalized == normalized[::-1]\n```\n\n**How it works:**\n\n1. **Normalization step**: The function converts all characters in the input string to lowercase using `c.lower()`, ensuring the comparison",
+ "answer_s": 250.67,
+ "correct": true
+}

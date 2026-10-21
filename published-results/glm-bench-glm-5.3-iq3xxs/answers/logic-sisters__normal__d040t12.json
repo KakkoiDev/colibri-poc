@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 326.54,
+ "prompt_tokens": 27,
+ "prefill_s": 33.88,
+ "output_tokens": 128,
+ "decode_s": 288.45,
+ "decode_tok_s": 0.44,
+ "zeroed_slots": 60133,
+ "hit_pct": 3.0,
+ "text": "# Solving the Classic \"Sally Has 3 Brothers\" Puzzle\n\n## The Setup\n\nLet me carefully parse this problem step by step.\n\n**Given information:**\n- Sally has 3 brothers (this tells us Sally is a girl, since she has brothers, not sisters... wait, actually it tells us Sally has 3 siblings who are male)\n- Each brother has 2 sisters\n\n**The key insight:** When we say \"each brother has 2 sisters,\" those 2 sisters are the same sisters shared among all 3 brothers. The brothers all come from the same family, so they all have the same set of",
+ "answer_s": 322.33,
+ "correct": false
+}

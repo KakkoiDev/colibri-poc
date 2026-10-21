@@ -1,0 +1,18 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 112.76,
+ "prompt_tokens": 16,
+ "prefill_s": 24.35,
+ "output_tokens": 128,
+ "decode_s": 85.45,
+ "decode_tok_s": 1.5,
+ "zeroed_slots": 64001,
+ "hit_pct": 33.0,
+ "text": "The largest planet in our solar system is **Jupiter**.\n\nSome quick facts about Jupiter:\n\n- **Mass:** ~1.9 × 10²⁷ kg (318 Earth masses; more than 2× the mass of all other planets combined, ~1.4× the mass of the Sun's remaining planetary-forming disk after the Sun itself condensed from the same nebular material, so ~1.4× the mass of the Sun's remaining planetary-forming disk after the Sun itself condensed from the same nebular material, so ~1.4× the mass of the Sun's remaining planetary-forming disk after",
+ "answer_s": 109.8,
+ "correct": true
+}

@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 114.14,
+ "prompt_tokens": 17,
+ "prefill_s": 25.1,
+ "output_tokens": 128,
+ "decode_s": 86.02,
+ "decode_tok_s": 1.49,
+ "zeroed_slots": 64954,
+ "hit_pct": 27.3,
+ "text": "2 to the power of 10 is **1,024** (2¹⁰ or 2^10 using superscript formatting).\n\nHere's a quick reference for powers of 2 up to 2¹⁰ (2^10 or, using superscript/caret formatting, 2^10, 2^1, 2^2, 2^3, 2^4, 2^5, 2^6, 2^7, 2^8, 2^9, 2^10, 2^1, 2^1, 2^1",
+ "answer_s": 111.12,
+ "correct": false
+}

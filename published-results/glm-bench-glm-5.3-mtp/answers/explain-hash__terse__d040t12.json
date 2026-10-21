@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 56.66,
+ "prompt_tokens": 27,
+ "prefill_s": 38.17,
+ "output_tokens": 23,
+ "decode_s": 15.56,
+ "decode_tok_s": 1.48,
+ "zeroed_slots": 9799,
+ "hit_pct": 14.2,
+ "text": "A data structure that maps keys to values, using a hash function to compute an index into an array of buckets.",
+ "answer_s": 53.73,
+ "correct": true
+}

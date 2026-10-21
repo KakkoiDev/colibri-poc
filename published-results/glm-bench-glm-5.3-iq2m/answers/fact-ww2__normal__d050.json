@@ -1,0 +1,18 @@
+{
+ "id": "fact-ww2",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 259.67,
+ "prompt_tokens": 15,
+ "prefill_s": 35.15,
+ "output_tokens": 128,
+ "decode_s": 220.84,
+ "decode_tok_s": 0.58,
+ "zeroed_slots": 66938,
+ "hit_pct": 3.3,
+ "text": "World War II ended in **1945**. The exact date within 1945 that marked the end of the war varies depending on the theater of war and the surrender documents signed by the Axis powers (Germany, Italy, and Japan) and their respective belligerent and operational command command oaths surrenders extant 1st 1945 surrenders extant 2nd 1945 surrenders extant 3rd 1945 surrenders extant 4th 1945 surrendars extant 5th 1945 surrendars extant",
+ "answer_s": 255.99,
+ "correct": true
+}

@@ -1,0 +1,18 @@
+{
+ "id": "fact-ocean",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 350.2,
+ "prompt_tokens": 14,
+ "prefill_s": 35.66,
+ "output_tokens": 128,
+ "decode_s": 310.37,
+ "decode_tok_s": 0.41,
+ "zeroed_slots": 64693,
+ "hit_pct": 1.9,
+ "text": "The largest ocean on Earth is the **Pacific Ocean**, which is one of the three (or five, depending on how you count) major global oceanic divisions that cover Earth's surface waters and oceanic basins. \n\nThe Pacific Ocean is the largest and deepest oceanic basin on Earth, covering approximately **33% of Earth's total surface area** (at 64,626,000 square miles (mi²,km²) [34,646,611.116sq mi²,km²,34,646,611.116sq mi²,km²,34,646,6",
+ "answer_s": 346.03,
+ "correct": true
+}

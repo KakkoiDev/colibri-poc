@@ -1,0 +1,18 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 305.4,
+ "prompt_tokens": 36,
+ "prefill_s": 77.71,
+ "output_tokens": 71,
+ "decode_s": 223.33,
+ "decode_tok_s": 0.32,
+ "zeroed_slots": 23781,
+ "hit_pct": 1.9,
+ "text": "Yes. If all bloops are razzies, and all razzies are lazzies, then every bloop must also be a lazzie. This follows by the transitive property: each bloop is a razzie, and each razzie is a lazzie, so each bloop is a lazzie.",
+ "answer_s": 301.04,
+ "correct": true
+}

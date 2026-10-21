@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 144.39,
+ "prompt_tokens": 12,
+ "prefill_s": 54.14,
+ "output_tokens": 128,
+ "decode_s": 87.27,
+ "decode_tok_s": 1.47,
+ "zeroed_slots": 63352,
+ "hit_pct": 32.5,
+ "text": "# Hash Tables: A Complete Overview\n\nHash tables are one of the most versatile and widely used data structures in computing, enabling **average constant-time O(1) lookup, insertion, and deletion**. This remarkable efficiency comes from a clever design that trades space for speed, making hash tables fundamental to databases, caches, programming language implementations (dictionaries, objects, hash maps, hash sets, hash collections), and many other applications.\n\n## What Is a Hash Table?\n\nA **hash table** (also called a hash map, dictionary, or associative array) is a data structure that stores **key→value pairs** and provides near-",
+ "answer_s": 141.41,
+ "correct": true
+}

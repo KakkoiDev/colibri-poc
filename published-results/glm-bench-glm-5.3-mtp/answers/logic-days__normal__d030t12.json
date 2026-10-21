@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 86.21,
+ "prompt_tokens": 17,
+ "prefill_s": 25.17,
+ "output_tokens": 52,
+ "decode_s": 58.0,
+ "decode_tok_s": 0.9,
+ "zeroed_slots": 17037,
+ "hit_pct": 6.2,
+ "text": "# Day of the Week Puzzle\n\nTwo days after **Friday** is **Sunday**.\n\nHere's the reasoning:\n- Friday + 1 day = Saturday\n- Saturday + 1 day = **Sunday** ✓\n\nSo the answer is **Sunday**.",
+ "answer_s": 83.17,
+ "correct": true
+}

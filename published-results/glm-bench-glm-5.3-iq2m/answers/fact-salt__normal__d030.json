@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 334.93,
+ "prompt_tokens": 15,
+ "prefill_s": 35.39,
+ "output_tokens": 128,
+ "decode_s": 295.87,
+ "decode_tok_s": 0.43,
+ "zeroed_slots": 43633,
+ "hit_pct": 1.2,
+ "text": "The chemical formula of table salt is **NaCl** — sodium chloride.\n\nIt consists of sodium (Na⁺) and chloride (Cl⁻) ions held together in a crystal lattice structure, where each sodium ion is surrounded by chloride ions and vice versa (in a 1:1 ratio). This ionic bonding gives table salt its characteristic properties, such as high melting point (801°C) and its solubility in water.\n\nNote that \"table salt\" as sold commercially often contains small amounts of additives:\n- **Iodine** (as iodide or iodate) — added to prevent iodine deficiency",
+ "answer_s": 331.26,
+ "correct": true
+}

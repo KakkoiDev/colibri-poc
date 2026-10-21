@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 192.51,
+ "prompt_tokens": 27,
+ "prefill_s": 34.16,
+ "output_tokens": 123,
+ "decode_s": 155.34,
+ "decode_tok_s": 0.79,
+ "zeroed_slots": 41355,
+ "hit_pct": 6.3,
+ "text": "**Sally has 1 sister.**\n\nHere's the reasoning:\n\n- Sally has 3 brothers, and each brother has 2 sisters.\n- The brothers' sisters are the same set of girls — they all share the same siblings.\n- Since Sally is one of those 2 sisters, the other sister must be Sally's sister too.\n\nSo the family looks like this:\n- **3 boys** (Sally's brothers)\n- **2 girls** (Sally + her 1 sister)\n\nEach brother sees 2 sisters (Sally and the other girl), and Sally sees 1 sister. ✓",
+ "answer_s": 189.5,
+ "correct": true
+}

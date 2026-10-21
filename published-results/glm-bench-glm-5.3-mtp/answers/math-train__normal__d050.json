@@ -1,0 +1,18 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 131.26,
+ "prompt_tokens": 28,
+ "prefill_s": 36.31,
+ "output_tokens": 128,
+ "decode_s": 91.89,
+ "decode_tok_s": 1.39,
+ "zeroed_slots": 64020,
+ "hit_pct": 23.7,
+ "text": "# Train Travel Calculation\n\n## Given Information\n- **Speed**: 60 km/h\n- **Time**: 2.5 hours\n- **Unknown**: Distance travelled (km)\n\n## Solution Steps\n\nThe relationship between these three quantities is:\n$$\\text{Distance} = \\text{Speed} \\times \\text{Time}$$\n\nThis is because speed is defined as distance per unit time, so multiplying speed by time gives the distance covered.\n\n### Step 1: Set Up the Calculation\n$$\\text{Distance} = 60 \\text{ km/h} \\times 2.5 \\text{ h}",
+ "answer_s": 128.2,
+ "correct": false
+}

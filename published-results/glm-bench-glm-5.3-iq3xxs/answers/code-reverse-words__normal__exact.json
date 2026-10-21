@@ -1,0 +1,18 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 717.83,
+ "prompt_tokens": 29,
+ "prefill_s": 77.55,
+ "output_tokens": 128,
+ "decode_s": 635.89,
+ "decode_tok_s": 0.2,
+ "zeroed_slots": 0,
+ "hit_pct": 0.7,
+ "text": "Here's a simple implementation:\n\n```python\ndef reverse_words(s):\n    return ' '.join(s.split()[::-1])\n```\n\n**How it works:**\n\n1. `s.split()` — splits the string on any whitespace, automatically discarding extra spaces, tabs, and newlines. This gives a list of words.\n2. `[::-1]` — reverses the list.\n3. `' '.join(...)` — joins the words back together with single spaces.\n\n**Example:**\n\n```python\n>>> reverse_words(\"the sky is blue\")\n'blue is sky the'\n\n>>> reverse_words(\"  hello   world  \")",
+ "answer_s": 713.44,
+ "correct": true
+}

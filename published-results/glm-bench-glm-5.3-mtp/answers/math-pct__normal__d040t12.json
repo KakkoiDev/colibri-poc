@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 75.73,
+ "prompt_tokens": 15,
+ "prefill_s": 30.37,
+ "output_tokens": 69,
+ "decode_s": 42.4,
+ "decode_tok_s": 1.63,
+ "zeroed_slots": 29944,
+ "hit_pct": 15.3,
+ "text": "**15% of 240 = 36**\n\n**Calculation:**\n15% = 0.15\n0.15 × 240 = 36\n\n**Alternative method:**\n10% of 240 = 24\n5% of 240 = 12 (half of 10%)\n24 + 12 = 36",
+ "answer_s": 72.77,
+ "correct": true
+}

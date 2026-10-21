@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 155.9,
+ "prompt_tokens": 14,
+ "prefill_s": 62.08,
+ "output_tokens": 128,
+ "decode_s": 90.83,
+ "decode_tok_s": 1.41,
+ "zeroed_slots": 64662,
+ "hit_pct": 32.6,
+ "text": "# Why the Sky Is Blue\n\nThe sky appears blue (on clear, sunny days) because of **Rayleigh scattering** — a phenomenon where light, particularly short wavelengths like blue and violet, is scattered more strongly by air molecules than longer wavelengths like red and orange.\n\n## The Key Physics\n\nSunlight is made up of all colors of the visible spectrum (roughly 400–700 nanometers). Blue/violet light (~400–425 nm) has the **shortest wavelengths**, meaning it travels in shorter, choppier waves that make it **more likely to bounce off** molecules of nitrogen (N₂) and oxygen",
+ "answer_s": 152.91,
+ "correct": true
+}

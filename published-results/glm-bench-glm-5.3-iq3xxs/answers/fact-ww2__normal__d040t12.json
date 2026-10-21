@@ -1,0 +1,18 @@
+{
+ "id": "fact-ww2",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 313.22,
+ "prompt_tokens": 15,
+ "prefill_s": 22.05,
+ "output_tokens": 128,
+ "decode_s": 286.42,
+ "decode_tok_s": 0.45,
+ "zeroed_slots": 60170,
+ "hit_pct": 2.7,
+ "text": "World War II ended in 1945. The exact date varies slightly depending on the theater of operations and which combatants you're referring to, but the major milestones marking the end of the war were:\n\n- **In Europe:** Germany surrendered unconditionally on May 8, 1945 (Victory in Europe Day, or V-E Day), though fighting continued in some areas until May 11 as Soviet forces finished clearing pockets of German resistance in Czechoslovakia. The formal, definitive end came with the signing of the German Instrument of Surrender in Berlin on May 8, 1945, ratified the next",
+ "answer_s": 308.47,
+ "correct": true
+}

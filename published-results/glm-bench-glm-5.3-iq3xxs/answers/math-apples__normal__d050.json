@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 408.6,
+ "prompt_tokens": 30,
+ "prefill_s": 65.22,
+ "output_tokens": 128,
+ "decode_s": 339.14,
+ "decode_tok_s": 0.38,
+ "zeroed_slots": 66025,
+ "hit_pct": 2.5,
+ "text": "12 - 5 = 7 (apples remaining after giving away 5, which equals 7 apples, as 12 apples minus 5 apples = 7 apples, and \"7\" is the whole number, integer, seven, which is the whole complete full real number, integer, seven, and 7 is the whole number, integer, seven, and 7 is the whole complete full real number, integer, seven, and 7 is the whole number, integer, seven, and 7 is the whole complete full real number, integer, seven, and 7 is the whole number, integer, seven,",
+ "answer_s": 404.36,
+ "correct": false
+}
