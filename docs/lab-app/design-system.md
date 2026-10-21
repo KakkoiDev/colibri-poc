@@ -36,37 +36,41 @@ Old links still work: `#install` opens Models and `#benches` opens Coverage.
 
 ## Tokens
 
-All values are CSS custom properties on `:root` and are redefined for dark mode. Dark mode comes from `prefers-color-scheme`, or you can force it with the theme selector, which sets `body[data-theme]`.
+All values are CSS custom properties on `.lab` and are redefined for dark mode. Dark mode comes from `prefers-color-scheme`, or you can force it with the theme selector, which sets `body[data-theme]`.
+
+The look is the design canvas's "technical report" theme (the designer's `project/lab.css`), the same as the public results page: serif text, ink on paper, hairline rules, square corners. Exact results are solid ink; lossy ones are hatched and say "changes output".
 
 ### Typography
 
 | Token | Size | Use |
 |---|---|---|
-| `--fs-xs` | 12px | hints, table header units, chips |
-| `--fs-sm` | 13px | labels, secondary text, notices |
-| `--fs-md` | 14px | body text, table cells |
-| `--fs-lg` | 16px | card titles, key values |
-| `--fs-xl` | 20px | section titles |
-| `--fs-2xl` | 26px | page title (`h1`) |
+| `--fs-xs` | 12px | hints, chips, tags |
+| `--fs-sm` | 13px | labels, secondary text, table headers |
+| `--fs-md` | 15px | body text |
+| `--fs-lg` | 16px | section titles (`h2`) |
+| `--fs-xl` | 20px | dialog titles |
+| `--fs-2xl` | 24px | page title (`h1`) |
 
-`--font-ui` is the system sans stack. `--font-mono` is used for run ids, prompt ids, paths and commands. Numbers use `font-variant-numeric: tabular-nums`, so columns line up.
+`--font-ui` is Source Serif 4 (Georgia as fallback). `--font-nav` is the system sans, used only in the sidebar, as on the canvas. `--font-mono` (IBM Plex Mono) is used for run ids, prompt ids, paths and commands. Numbers use `font-variant-numeric: tabular-nums`, so columns line up. Section labels (`.eyebrow`), chips and table group rows use small caps.
 
 ### Spacing and shape
 
-The spacing scale is 4px based: `--s1` through `--s7` are 4, 8, 12, 16, 24, 32 and 48px. Cards use `--radius` (8px), and controls use `--radius-sm`. Controls are `--control-h` (40px) tall. Touch targets on narrow screens are at least `--touch` (44px).
+The spacing scale is 4px based: `--s1` through `--s7` are 4, 8, 12, 16, 24, 32 and 48px. Corners are square (`--radius` and `--radius-sm` are 0); only status dots are round. Surfaces are ruled boxes without shadows. Tables use booktabs rules: a thick rule above and below, a thin one under the header, no fills. Controls are `--control-h` (34px) tall. Touch targets on narrow screens are at least `--touch` (44px).
 
 ### Color
 
 | Token | Light | Dark | Meaning |
 |---|---|---|---|
-| `--bg` / `--surface` / `--surface-2` | #F6F6F4 / #FFF / #F1F1EE | #111113 / #19191C / #222226 | page, cards, table headers and wells |
-| `--fg` / `--fg-2` / `--fg-3` | #18181B / #55555E / #66666F | #EDEDEF / #B0B0B8 / #9696A0 | text, secondary text, units |
-| `--accent` | #1F4FBF | #7FA6FF | primary actions, links, current navigation, focus |
-| `--ok` | #17663A | #6FCF97 | done, installed |
-| `--warn` | #8A5300 | #F2C266 | waits for quiet, low disk |
-| `--bad` | #B42318 | #FF8A80 | failed, destructive actions |
+| `--bg` / `--surface` / `--surface-2` | #FFF / #FFF / #F6F5F1 | #141414 / #141414 / #1D1C1A | page, cards, wells and current navigation |
+| `--fg` / `--fg-2` | #111111 / #555555 | #ECEAE4 / #A9A69F | ink (text, rules, primary buttons, running chip), secondary text |
+| `--line` | #DDDAD3 | #34332F | hairline rules |
+| `--link` | #1F4E99 | #9DB8E8 | links |
+| `--accent` | = `--fg` | = `--fg` | primary actions and focus are ink, not a colour |
+| `--ok` | #1E5B32 | #8FC79C | done, installed |
+| `--warn` | #7A4B00 | #E2B86B | waits for quiet, low disk |
+| `--bad` | #9B1C1C | #EE9A90 | failed, destructive actions |
 
-Every text and background pair meets WCAG AA for normal text (4.5:1 or more). The lowest pair is `--fg-3` on `--surface-2`, at about 5:1. Color never carries meaning on its own: each status has a word and a shape, and lossy settings carry a hatched "changes output" tag.
+Every text and background pair meets WCAG AA for normal text (4.5:1 or more); the lowest pair is `--fg-2` on `--surface-2`, at about 7:1. Color never carries meaning on its own: each status has a word and a shape, and lossy settings carry a hatched "changes output" tag.
 
 ## Components
 

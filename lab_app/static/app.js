@@ -843,7 +843,7 @@
           .map(function (x) { return h('div', {}, h('dt', { text: x[0] }), h('dd', { text: x[1] })); })),
         h('div', { class: 'disk-bar', role: 'img', 'aria-label': 'Lab models ' + gb(labGb) + ', other folders ' + gb(otherGb) + ', free ' + gb(free) },
           h('span', { class: 'seg-models', style: 'width:' + (labGb / total * 100) + '%' }), h('span', { class: 'seg-other', style: 'width:' + (otherGb / total * 100) + '%' })),
-        h('div', { class: 'legend', 'aria-hidden': 'true' }, h('span', {}, h('i', { style: 'background:var(--accent)' }), 'Lab models'), h('span', {}, h('i', { style: 'background:var(--fg-3)' }), 'Other folders in ~/colibri-models'),
+        h('div', { class: 'legend', 'aria-hidden': 'true' }, h('span', {}, h('i', { style: 'background:var(--fg)' }), 'Lab models'), h('span', {}, h('i', { style: 'background:var(--fg-2)' }), 'Other folders in ~/colibri-models'),
           h('span', {}, h('i', { style: 'background:var(--sunk);box-shadow:inset 0 0 0 1px var(--line-strong)' }), 'Free')),
         low ? h('div', { class: 'notice notice-warn', role: 'alert', text: 'Less than 30 GB free. Move an unused model to the Trash and empty the Trash before downloading.' })
           : lowAfter && pending ? h('div', { class: 'notice notice-warn', text: 'Downloading every remaining model would leave ~' + gb(free - pending) + ' free.' }) : null,
@@ -907,7 +907,7 @@
       var body=card([h('h2',{text:'Open on your phone or tablet'}),h('p',{text:'Connect the other device to Tailscale using your account, then scan this code or open the address.'})]);
       if(d.phone) {
         var qr=window.LabQRCode(0,'M'); qr.addData(d.phone); qr.make();
-        var canvas=h('canvas',{width:256,height:256,role:'img','aria-label':'QR code for '+d.phone,style:'width:256px;max-width:100%;height:auto;align-self:flex-start;border-radius:8px;'});
+        var canvas=h('canvas',{width:256,height:256,role:'img','aria-label':'QR code for '+d.phone,style:'width:256px;max-width:100%;height:auto;align-self:flex-start;border:1px solid var(--line);'});
         var ctx=canvas.getContext('2d'), size=qr.getModuleCount(), cell=Math.floor(256/(size+8)), edge=Math.floor((256-size*cell)/2);
         ctx.fillStyle='#fff';ctx.fillRect(0,0,256,256);ctx.fillStyle='#000';
         for(var y=0;y<size;y++)for(var x=0;x<size;x++)if(qr.isDark(y,x))ctx.fillRect(edge+x*cell,edge+y*cell,cell,cell);

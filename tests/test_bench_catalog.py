@@ -10,12 +10,15 @@ class BenchCatalogTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.old = a.STATE, a.LOGS, a.ollama_models
+        self.old_done = bc._done
+        bc._done = lambda name, style, config: 0   # independent of the real results folder
         a.STATE = Path(self.tmp.name)
         a.LOGS = a.STATE / 'logs'
         a.ollama_models = lambda: {'qwen3.8:27b-mlx'}
 
     def tearDown(self):
         a.STATE, a.LOGS, a.ollama_models = self.old
+        bc._done = self.old_done
         self.tmp.cleanup()
 
     def test_ollama_names_match_the_queued_bench(self):
