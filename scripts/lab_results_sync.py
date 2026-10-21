@@ -35,7 +35,7 @@ def snapshot(source, target):
     """Only allowlisted public data; logs, credentials and user edits stay local."""
     for folder in sorted((source / 'results').glob('glm-bench-*')):
         name = folder.name.removeprefix('glm-bench-')
-        if name == 'smoke' or not re.fullmatch(r'[a-zA-Z0-9_-]+', name):
+        if name in ('smoke', '.', '..') or not re.fullmatch(r'[a-zA-Z0-9_.-]+', name):
             continue
         records = {}
         # Preserve previously published answers while a local resume is in progress.
