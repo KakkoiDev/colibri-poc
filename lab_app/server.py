@@ -519,7 +519,26 @@ def bench_detail(name):
 
 
 def experiments():
-    return read_json(ROOT / 'site' / 'data' / 'experiments.json', {'entries': []})
+    """The published experiment log, plus for each experiment not yet run: `status` (ready / needs / idea), what it
+    still needs, and an estimated time, so the page can say what each one is and whether it can start."""
+    data = read_json(ROOT / 'site' / 'data' / 'experiments.json', {'entries': []})
+    try:
+        import glm_lab
+        reg = {e['id']: e for e in glm_lab.load_registry()}
+    except Exception:
+        return data
+    queued = {i['args'].get('id') for i in actions.queue_state()['items'] if i['kind'] == 'planned'}
+    for e in data.get('entries', []):
+        if e.get('verdict') != 'not run':
+            continue
+        r = reg.get(e['id'], {})
+        if not r.get('plan'):
+            e.update(status='idea', needs=(r.get('conclusion') or '').removeprefix('Planned: ').removeprefix('Not run: ') or None)
+        else:
+            why = glm_lab.readiness(r)
+            e.update(status='needs' if why else 'ready', needs=why, est_s=estimate_item({'kind': 'planned', 'args': {'id': e['id']}}),
+                     queued=e['id'] in queued)
+    return data
 
 
 def research():
