@@ -1713,12 +1713,14 @@
    "change": "COLI_LOOKUP=0",
    "hypothesis": "Colibri drafts n-grams from the prompt by default (our runs show 1.04 tokens per forward). Each verify reads experts for every drafted row, so on an SSD-bound run a rejected draft costs a full extra set of expert reads; turning it off could be faster, or show the gate already pays for itself (code prompt repeats more n-grams).",
    "ref": "r2-p0-sky-exact",
-   "runs": [],
+   "runs": [
+    "x-lookup-off"
+   ],
    "lossy": false,
-   "date": "2026-10-18",
-   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "date": "2026-10-22",
+   "conclusion": "0.40 tok/s vs 0.44 reference (-9%), prompt read 24.7 s. Prompt-lookup drafts neither help nor hurt exact decoding on the sky prompt. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "",
-   "verdict": "not run",
+   "verdict": "no clear change",
    "sources": [
     "https://github.com/JustVugg/colibri/blob/main/docs/speculative.md"
    ],
@@ -1728,10 +1730,24 @@
     "env": {
      "COLI_LOOKUP": "0"
     },
-    "ref": "r2-p0-sky-exact"
+    "ref": "r2-p0-sky-exact",
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 0.4,
+    "prefill_s": 24.65,
+    "rss_gb": 12.0,
+    "hit_pct": 2.1,
+    "ref_tok_s": 0.44,
+    "ref_prefill_s": 23.46,
+    "ref_rss_gb": 7.72,
+    "speed_change_pct": -9.1,
+    "prefill_change_pct": 5.1,
+    "rss_change_pct": 55.4,
+    "output": "identical"
    },
    "effects": []
   },
@@ -1742,12 +1758,14 @@
    "change": "COLI_LOOKUP=0 (code prompt)",
    "hypothesis": "The code prompt repeats more n-grams than the sky prompt, so drafts may pay there even if they cost on sky.",
    "ref": "r2-p0-code-exact",
-   "runs": [],
+   "runs": [
+    "x-lookup-off-code"
+   ],
    "lossy": false,
-   "date": "2026-10-18",
-   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "date": "2026-10-22",
+   "conclusion": "0.40 tok/s vs 0.42 on the code prompt. Drafts from the prompt do not pay off here either. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "",
-   "verdict": "not run",
+   "verdict": "no clear change",
    "sources": [
     "https://github.com/JustVugg/colibri/blob/main/docs/speculative.md"
    ],
@@ -1757,10 +1775,24 @@
     "env": {
      "COLI_LOOKUP": "0"
     },
-    "ref": "r2-p0-code-exact"
+    "ref": "r2-p0-code-exact",
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 0.4,
+    "prefill_s": 34.43,
+    "rss_gb": 11.43,
+    "hit_pct": 1.7,
+    "ref_tok_s": 0.42,
+    "ref_prefill_s": 32.28,
+    "ref_rss_gb": 12.63,
+    "speed_change_pct": -4.8,
+    "prefill_change_pct": 6.7,
+    "rss_change_pct": -9.5,
+    "output": "identical"
    },
    "effects": []
   },
@@ -1771,12 +1803,14 @@
    "change": "DEGRADE_ZERO=1 DEGRADE_TAU=0.50 COLI_LOOKUP=0",
    "hypothesis": "Combining techniques: on the best usable lossy setting, attention and per-forward overhead dominate, so a wasted verify forward costs relatively more than in exact mode.",
    "ref": "r2-k-sky-skip050-t12",
-   "runs": [],
+   "runs": [
+    "x-stack-skip050-lookup-off"
+   ],
    "lossy": true,
-   "date": "2026-10-18",
-   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "date": "2026-10-22",
+   "conclusion": "1.89 tok/s vs 1.87 for skip 0.5 + 12 threads. Turning drafts off on top of skipping changes nothing measurable. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "",
-   "verdict": "not run",
+   "verdict": "no clear change",
    "sources": [
     "https://github.com/JustVugg/colibri/blob/main/docs/speculative.md"
    ],
@@ -1788,10 +1822,24 @@
      "DEGRADE_TAU": "0.50",
      "COLI_LOOKUP": "0"
     },
-    "ref": "r2-k-sky-skip050-t12"
+    "ref": "r2-k-sky-skip050-t12",
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 1.89,
+    "prefill_s": 24.75,
+    "rss_gb": 11.42,
+    "hit_pct": 35.8,
+    "ref_tok_s": 1.87,
+    "ref_prefill_s": 23.46,
+    "ref_rss_gb": 7.59,
+    "speed_change_pct": 1.1,
+    "prefill_change_pct": 5.5,
+    "rss_change_pct": 50.5,
+    "output": "identical"
    },
    "effects": []
   },
@@ -1802,12 +1850,14 @@
    "change": "Colibri dev 16239caa, best exact settings",
    "hypothesis": "The dev branch is 412 commits past the installed v2.0.0 (bf244291) and touches colibri.c (GGUF reader, QT_GGML/QT_KVB, MTP from a GGUF). Check it does not regress the int4 Metal path before using it for the GGUF experiment below.",
    "ref": "r2-p0-sky-exact",
-   "runs": [],
+   "runs": [
+    "x-baseline-16239caa"
+   ],
    "lossy": false,
-   "date": "2026-10-18",
-   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "date": "2026-10-22",
+   "conclusion": "The dev engine (412 commits after v2.0.0) gives 0.40 tok/s vs 0.44 on the installed engine: no speed gain from upgrading for int4 GLM. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "",
-   "verdict": "not run",
+   "verdict": "no clear change",
    "sources": [
     "https://github.com/JustVugg/colibri/pull/2140"
    ],
@@ -1819,10 +1869,24 @@
     "coli_dir": "engines/colibri-16239caa",
     "build": {
      "ref": "16239caa"
-    }
+    },
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 0.4,
+    "prefill_s": 24.77,
+    "rss_gb": 11.18,
+    "hit_pct": 2.1,
+    "ref_tok_s": 0.44,
+    "ref_prefill_s": 23.46,
+    "ref_rss_gb": 7.72,
+    "speed_change_pct": -9.1,
+    "prefill_change_pct": 5.6,
+    "rss_change_pct": 44.8,
+    "output": "identical"
    },
    "effects": []
   },
@@ -1833,12 +1897,14 @@
    "change": "Colibri dev 16239caa + DEGRADE_ZERO=1 DEGRADE_TAU=0.50",
    "hypothesis": "Does the newer engine move the best usable lossy stack (attention/overhead bound)?",
    "ref": "r2-k-sky-skip050-t12",
-   "runs": [],
+   "runs": [
+    "x-stack-skip050-16239caa"
+   ],
    "lossy": true,
-   "date": "2026-10-18",
-   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "date": "2026-10-22",
+   "conclusion": "1.89 tok/s on the dev engine with skip 0.5 + 12 threads, the same as the installed engine (1.87). Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "",
-   "verdict": "not run",
+   "verdict": "no clear change",
    "sources": [],
    "plan": {
     "prompt": "sky",
@@ -1851,10 +1917,24 @@
     "coli_dir": "engines/colibri-16239caa",
     "build": {
      "ref": "16239caa"
-    }
+    },
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 1.89,
+    "prefill_s": 24.69,
+    "rss_gb": 11.44,
+    "hit_pct": 35.8,
+    "ref_tok_s": 1.87,
+    "ref_prefill_s": 23.46,
+    "ref_rss_gb": 7.59,
+    "speed_change_pct": 1.1,
+    "prefill_change_pct": 5.2,
+    "rss_change_pct": 50.7,
+    "output": "identical"
    },
    "effects": []
   },
@@ -1865,12 +1945,14 @@
    "change": "glm-5.3 + int8 MTP head (symlinked copy ~/colibri-models/glm-5.3-mtp)",
    "hypothesis": "Our glm-5.3 container has no MTP head (\"MTP absent\"). Colibri reports 2.2-2.8 tokens per forward when it pays. On an SSD-bound run a 3-row verify reads more experts (2% hits), so exact-mode gain is uncertain; output stays identical (only verified tokens are kept).",
    "ref": "r2-p0-sky-exact",
-   "runs": [],
+   "runs": [
+    "x-mtp-int8"
+   ],
    "lossy": false,
-   "date": "2026-10-18",
-   "conclusion": "Planned: needs `make glm-prep-mtp` first (downloads the FP8 shards holding layer 78 from zai-org/GLM-5.3 and converts the head to int8, ~10 GB on disk; the owner's model folder is not touched). Then the quiet run picks it up.",
+   "date": "2026-10-22",
+   "conclusion": "0.42 tok/s vs 0.44 without the head. The int8 MTP draft head did not speed up exact decoding: drafted tokens still need every expert of the verify pass, so SSD reads stay the limit (io 78% of time). The quality bench (glm-5.3-mtp) matched int4 within noise. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "~10 GB more on disk; the head's dense part stays resident (its experts stream like the others), so some RAM leaves the expert cache.",
-   "verdict": "not run",
+   "verdict": "no clear change",
    "sources": [
     "https://github.com/JustVugg/colibri/blob/main/docs/tuning.md",
     "https://github.com/JustVugg/colibri/blob/main/docs/speculative.md"
@@ -1884,10 +1966,24 @@
     "needs": [
      "~/colibri-models/glm-5.3-mtp/.mtp-ready"
     ],
-    "prep": "make glm-prep-mtp"
+    "prep": "make glm-prep-mtp",
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 0.42,
+    "prefill_s": 25.46,
+    "rss_gb": 12.78,
+    "hit_pct": 1.7,
+    "ref_tok_s": 0.44,
+    "ref_prefill_s": 23.46,
+    "ref_rss_gb": 7.72,
+    "speed_change_pct": -4.5,
+    "prefill_change_pct": 8.5,
+    "rss_change_pct": 65.5,
+    "output": "identical"
    },
    "effects": []
   },
@@ -1898,12 +1994,14 @@
    "change": "int8 MTP head + DEGRADE_ZERO=1 DEGRADE_TAU=0.50",
    "hypothesis": "In lossy mode each forward is dominated by attention and overhead, not SSD, so fewer forwards per token (MTP) should compound with skipping.",
    "ref": "r2-k-sky-skip050-t12",
-   "runs": [],
+   "runs": [
+    "x-mtp-int8-skip050"
+   ],
    "lossy": true,
-   "date": "2026-10-18",
-   "conclusion": "Planned: needs `make glm-prep-mtp` first.",
+   "date": "2026-10-22",
+   "conclusion": "1.69 tok/s vs 1.87 for skip 0.5 without the head (-10%). With skipping, the head adds work instead of saving it. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "",
-   "verdict": "not run",
+   "verdict": "worse",
    "sources": [],
    "plan": {
     "prompt": "sky",
@@ -1917,12 +2015,28 @@
     "needs": [
      "~/colibri-models/glm-5.3-mtp/.mtp-ready"
     ],
-    "prep": "make glm-prep-mtp"
+    "prep": "make glm-prep-mtp",
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 1.69,
+    "prefill_s": 25.51,
+    "rss_gb": 12.86,
+    "hit_pct": 24.1,
+    "ref_tok_s": 1.87,
+    "ref_prefill_s": 23.46,
+    "ref_rss_gb": 7.59,
+    "speed_change_pct": -9.6,
+    "prefill_change_pct": 8.7,
+    "rss_change_pct": 69.4,
+    "output": "changed"
    },
-   "effects": []
+   "effects": [
+    "output changed"
+   ]
   },
   {
    "id": "gguf-iq2m",
@@ -1931,12 +2045,14 @@
    "change": "Colibri dev 16239caa + unsloth GLM-5.3 UD-IQ2_M GGUF (imported)",
    "hypothesis": "The 2-bit GGUF is ~239 GB against ~419 GB for the int4 container, so roughly 40% fewer expert bytes per token (~7 GB instead of 12.7 GB): exact-mode SSD ceiling ~0.9 tok/s instead of ~0.5, and lossy skip runs read less too. Risk: Colibri computes GGUF blocks (QT_GGML) on the CPU only, with no Metal copy, so the math may eat the I/O saving; NEON kernels exist. The GGUF carries the MTP (nextn) layer, which Colibri dev turns on.",
    "ref": "r2-p0-sky-exact",
-   "runs": [],
+   "runs": [
+    "x-gguf-iq2m"
+   ],
    "lossy": true,
-   "date": "2026-10-18",
-   "conclusion": "Planned: needs `make glm-prep-iq2m` first (~239 GB download, imported to ~/colibri-models/glm-5.3-iq2m). Lossy: needs the quality bench before any use.",
+   "date": "2026-10-22",
+   "conclusion": "0.35 tok/s vs 0.44 int4 (-20%) although the files are 43% smaller. SSD share drops to 37%, but attention (32%) and expert math (20%) on the dev engine take over. Quality bench: 23/24 normal, 24/24 terse at exact, within noise of int4. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "Lossy (2-bit experts); CPU-only expert math for GGUF blocks; a second 239 GB model on disk.",
-   "verdict": "not run",
+   "verdict": "worse",
    "sources": [
     "https://github.com/JustVugg/colibri/pull/2140",
     "https://huggingface.co/unsloth/GLM-5.3-GGUF",
@@ -1955,12 +2071,29 @@
     "needs": [
      "~/colibri-models/glm-5.3-iq2m/config.json"
     ],
-    "prep": "make glm-prep-iq2m"
+    "prep": "make glm-prep-iq2m",
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 0.35,
+    "prefill_s": 21.37,
+    "rss_gb": 9.54,
+    "hit_pct": 0.8,
+    "ref_tok_s": 0.44,
+    "ref_prefill_s": 23.46,
+    "ref_rss_gb": 7.72,
+    "speed_change_pct": -20.5,
+    "prefill_change_pct": -8.9,
+    "rss_change_pct": 23.6,
+    "output": "changed"
    },
-   "effects": []
+   "effects": [
+    "generation -20%",
+    "output changed"
+   ]
   },
   {
    "id": "gguf-iq2m-skip050",
@@ -1969,12 +2102,14 @@
    "change": "UD-IQ2_M GGUF + DEGRADE_ZERO=1 DEGRADE_TAU=0.50",
    "hypothesis": "Fewer bytes per expert and fewer experts read should multiply; tests how far the stack goes before compute dominates.",
    "ref": "r2-k-sky-skip050-t12",
-   "runs": [],
+   "runs": [
+    "x-gguf-iq2m-skip050"
+   ],
    "lossy": true,
-   "date": "2026-10-18",
-   "conclusion": "Planned: needs `make glm-prep-iq2m` first. Lossy twice over (2-bit and skipping): quality bench required.",
+   "date": "2026-10-22",
+   "conclusion": "0.73 tok/s vs 1.87 int4 skip 0.5. SSD share is only 12%: attention takes 66% of the time, about 0.9 s per token, 4-5x int4 attention. The GGUF path is attention-bound, not read-bound. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "",
-   "verdict": "not run",
+   "verdict": "worse",
    "sources": [],
    "plan": {
     "prompt": "sky",
@@ -1992,19 +2127,38 @@
     "needs": [
      "~/colibri-models/glm-5.3-iq2m/config.json"
     ],
-    "prep": "make glm-prep-iq2m"
+    "prep": "make glm-prep-iq2m",
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 0.73,
+    "prefill_s": 21.21,
+    "rss_gb": 15.08,
+    "hit_pct": 3.8,
+    "ref_tok_s": 1.87,
+    "ref_prefill_s": 23.46,
+    "ref_rss_gb": 7.59,
+    "speed_change_pct": -61.0,
+    "prefill_change_pct": -9.6,
+    "rss_change_pct": 98.7,
+    "output": "changed"
    },
-   "effects": []
+   "effects": [
+    "generation -61%",
+    "output changed"
+   ]
   },
   {
    "category": "model-format",
-   "runs": [],
+   "runs": [
+    "x-gguf-iq3xxs"
+   ],
    "lossy": true,
-   "date": "2026-10-18",
-   "verdict": "not run",
+   "date": "2026-10-22",
+   "verdict": "worse",
    "sources": [
     "https://huggingface.co/unsloth/GLM-5.3-GGUF",
     "https://unsloth.ai/docs/models/glm-5.3"
@@ -2014,7 +2168,7 @@
    "change": "Colibri dev 16239caa + unsloth GLM-5.3 UD-IQ3_XXS GGUF (imported)",
    "hypothesis": "The quality-safer middle ground: 282 GB vs 419 GB int4 (~33% fewer expert bytes), top-1 agreement 84.2% and KLD 0.27 per Unsloth (2-bit: 78.5%, 0.45). Same CPU-only caveat for GGUF blocks; the GGUF carries the MTP layer.",
    "ref": "r2-p0-sky-exact",
-   "conclusion": "Planned: needs `make glm-prep-iq3xxs` first (~282 GB download). Lossy: quality bench required.",
+   "conclusion": "0.33 tok/s vs 0.44 int4 (-25%); same picture as IQ2_M: fewer bytes read, slower attention and expert math on the dev engine. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "Lossy (3-bit experts); CPU-only expert math for GGUF blocks.",
    "plan": {
     "prompt": "sky",
@@ -2029,19 +2183,37 @@
     "needs": [
      "~/colibri-models/glm-5.3-iq3xxs/config.json"
     ],
-    "prep": "make glm-prep-iq3xxs"
+    "prep": "make glm-prep-iq3xxs",
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 0.33,
+    "prefill_s": 24.04,
+    "rss_gb": 10.97,
+    "hit_pct": 0.7,
+    "ref_tok_s": 0.44,
+    "ref_prefill_s": 23.46,
+    "ref_rss_gb": 7.72,
+    "speed_change_pct": -25.0,
+    "prefill_change_pct": 2.5,
+    "rss_change_pct": 42.1,
+    "output": "identical"
    },
-   "effects": []
+   "effects": [
+    "generation -25%"
+   ]
   },
   {
    "category": "lossy-routing",
-   "runs": [],
+   "runs": [
+    "x-gguf-iq3xxs-skip050"
+   ],
    "lossy": true,
-   "date": "2026-10-18",
-   "verdict": "not run",
+   "date": "2026-10-22",
+   "verdict": "worse",
    "sources": [
     "https://huggingface.co/unsloth/GLM-5.3-GGUF",
     "https://unsloth.ai/docs/models/glm-5.3"
@@ -2051,7 +2223,7 @@
    "change": "UD-IQ3_XXS GGUF + DEGRADE_ZERO=1 DEGRADE_TAU=0.50",
    "hypothesis": "The best-quality low-bit file with the best lossy stack on top.",
    "ref": "r2-k-sky-skip050-t12",
-   "conclusion": "Planned: needs `make glm-prep-iq3xxs` first. Lossy twice over: quality bench required.",
+   "conclusion": "0.64 tok/s vs 1.87 int4 skip 0.5; attention 65% of the time. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise.",
    "tradeoffs": "",
    "plan": {
     "prompt": "sky",
@@ -2069,12 +2241,29 @@
     "needs": [
      "~/colibri-models/glm-5.3-iq3xxs/config.json"
     ],
-    "prep": "make glm-prep-iq3xxs"
+    "prep": "make glm-prep-iq3xxs",
+    "note": "ran in the quiet-run campaign; results recorded 2026-10-22"
    },
    "metrics": {
-    "measured": false
+    "measured": true,
+    "n_runs": 1,
+    "failed_runs": [],
+    "tok_s": 0.64,
+    "prefill_s": 23.48,
+    "rss_gb": 14.14,
+    "hit_pct": 4.4,
+    "ref_tok_s": 1.87,
+    "ref_prefill_s": 23.46,
+    "ref_rss_gb": 7.59,
+    "speed_change_pct": -65.8,
+    "prefill_change_pct": 0.1,
+    "rss_change_pct": 86.3,
+    "output": "changed"
    },
-   "effects": []
+   "effects": [
+    "generation -66%",
+    "output changed"
+   ]
   },
   {
    "id": "glm53-flash",
@@ -2268,6 +2457,438 @@
    "date": "2026-10-22",
    "verdict": "not run",
    "sources": [],
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "cache-cap2-exact",
+   "title": "Expert cache: 2 slots per layer (exact)",
+   "category": "cache",
+   "change": "CAP=2 CAP_RAISE=0, RAM 22 GB",
+   "hypothesis": "The Metal fast-SSD default keeps 1 slot per layer, so extra RAM sat unused (hit 2-4%). Two slots should raise hits and tok/s if experts repeat between tokens.",
+   "ref": "r2-p0-sky-exact",
+   "runs": [],
+   "lossy": false,
+   "date": "2026-10-22",
+   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "plan": {
+    "prompt": "sky",
+    "ngen": 48,
+    "ram": 22,
+    "env": {
+     "CAP": "2",
+     "CAP_RAISE": "0"
+    },
+    "ref": "r2-p0-sky-exact"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "cache-cap4-exact",
+   "title": "Expert cache: 4 slots per layer (exact)",
+   "category": "cache",
+   "change": "CAP=4 CAP_RAISE=0, RAM 26 GB (needs a quiet machine)",
+   "hypothesis": "About 6.6 GB of dynamic expert cache; the projected peak stays under 26 GB. If hit rate rises without slowing the loop, this is a lossless gain.",
+   "ref": "r2-p0-sky-exact",
+   "runs": [],
+   "lossy": false,
+   "date": "2026-10-22",
+   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "plan": {
+    "prompt": "sky",
+    "ngen": 48,
+    "ram": 26,
+    "env": {
+     "CAP": "4",
+     "CAP_RAISE": "0"
+    },
+    "ref": "r2-p0-sky-exact"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "cache-cap4-skip050",
+   "title": "Stack: 4 cache slots + skip < 0.5 + 12 threads",
+   "category": "cache",
+   "change": "CAP=4 CAP_RAISE=0 + DEGRADE_TAU=0.50, RAM 26 GB",
+   "hypothesis": "With skipping, half the time is still SSD reads (io 50%) and hits are 36%. Skipping already favours cached experts, so a larger cache should compound.",
+   "ref": "r2-k-sky-skip050-t12",
+   "runs": [],
+   "lossy": true,
+   "date": "2026-10-22",
+   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "plan": {
+    "prompt": "sky",
+    "ngen": 48,
+    "ram": 26,
+    "env": {
+     "DEGRADE_ZERO": "1",
+     "DEGRADE_TAU": "0.50",
+     "CAP": "4",
+     "CAP_RAISE": "0"
+    },
+    "ref": "r2-k-sky-skip050-t12"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "cache-route-skip050",
+   "title": "Cache-aware routing on top of skip < 0.5",
+   "category": "lossy-routing",
+   "change": "CACHE_ROUTE=1 ROUTE_J=2 ROUTE_M=12 + DEGRADE_TAU=0.50",
+   "hypothesis": "Instead of zeroing missing experts, substitute a cached runner-up beyond the top-2 ranks. Same reads saved, less lost signal than skipping: may allow the speed of a higher skip threshold at the quality of a lower one.",
+   "ref": "r2-k-sky-skip050-t12",
+   "runs": [],
+   "lossy": true,
+   "date": "2026-10-22",
+   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md",
+    "https://github.com/JustVugg/colibri/blob/main/docs/env-vars.md"
+   ],
+   "plan": {
+    "prompt": "sky",
+    "ngen": 48,
+    "env": {
+     "DEGRADE_ZERO": "1",
+     "DEGRADE_TAU": "0.50",
+     "CACHE_ROUTE": "1",
+     "ROUTE_J": "2",
+     "ROUTE_M": "12"
+    },
+    "ref": "r2-k-sky-skip050-t12"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "cache-route-cap4",
+   "title": "Cache-aware routing + 4 cache slots, no skipping",
+   "category": "lossy-routing",
+   "change": "CACHE_ROUTE=1 ROUTE_J=2 ROUTE_M=16 + CAP=4, RAM 26 GB",
+   "hypothesis": "A bigger cache gives the router more cached alternatives; without zeroing, quality may stay closer to exact than skip 0.5 while reads fall.",
+   "ref": "r2-p0-sky-exact",
+   "runs": [],
+   "lossy": true,
+   "date": "2026-10-22",
+   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "plan": {
+    "prompt": "sky",
+    "ngen": 48,
+    "ram": 26,
+    "env": {
+     "CACHE_ROUTE": "1",
+     "ROUTE_J": "2",
+     "ROUTE_M": "16",
+     "CAP": "4",
+     "CAP_RAISE": "0"
+    },
+    "ref": "r2-p0-sky-exact"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "repin-skip050",
+   "title": "Re-pin hot experts every 64 tokens (skip < 0.5)",
+   "category": "cache",
+   "change": "REPIN=64 + DEGRADE_TAU=0.50",
+   "hypothesis": "Pins are chosen once at start; re-pinning follows the experts this prompt actually uses. Lossless on its own; tested with skipping because that is the everyday setting.",
+   "ref": "r2-k-code-skip050-t12",
+   "runs": [],
+   "lossy": true,
+   "date": "2026-10-22",
+   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "plan": {
+    "prompt": "code",
+    "ngen": 96,
+    "env": {
+     "DEGRADE_ZERO": "1",
+     "DEGRADE_TAU": "0.50",
+     "REPIN": "64"
+    },
+    "ref": "r2-k-code-skip050-t12"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "policy-balanced",
+   "title": "Engine policy \"balanced\"",
+   "category": "engine-defaults",
+   "change": "COLI_POLICY=balanced",
+   "hypothesis": "Colibri ships quality / balanced / experimental-fast policies; we only ever measured the default (quality). A free check of what the engine authors consider safe speed-ups.",
+   "ref": "r2-p0-sky-exact",
+   "runs": [],
+   "lossy": true,
+   "date": "2026-10-22",
+   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "plan": {
+    "prompt": "sky",
+    "ngen": 48,
+    "env": {
+     "COLI_POLICY": "balanced"
+    },
+    "ref": "r2-p0-sky-exact"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "policy-experimental-fast",
+   "title": "Engine policy \"experimental-fast\"",
+   "category": "engine-defaults",
+   "change": "COLI_POLICY=experimental-fast",
+   "hypothesis": "Upper bound of the engine's own speed presets; quality must be checked on the hard bench.",
+   "ref": "r2-p0-sky-exact",
+   "runs": [],
+   "lossy": true,
+   "date": "2026-10-22",
+   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "plan": {
+    "prompt": "sky",
+    "ngen": 48,
+    "env": {
+     "COLI_POLICY": "experimental-fast"
+    },
+    "ref": "r2-p0-sky-exact"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "skip060-t12",
+   "title": "Skip < 0.6 with 12 threads",
+   "category": "lossy-routing",
+   "change": "DEGRADE_TAU=0.60",
+   "hypothesis": "Skip 0.7 reached ~1.98 tok/s at 2 threads with grammar errors in an early test; 0.6 may be the last threshold before visible damage. Speed now, quality on the hard bench.",
+   "ref": "r2-k-sky-skip050-t12",
+   "runs": [],
+   "lossy": true,
+   "date": "2026-10-22",
+   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "plan": {
+    "prompt": "sky",
+    "ngen": 48,
+    "env": {
+     "DEGRADE_ZERO": "1",
+     "DEGRADE_TAU": "0.60"
+    },
+    "ref": "r2-k-sky-skip050-t12"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "quality-bench-v2",
+   "title": "Harder quality bench (v2)",
+   "category": "method",
+   "change": "~40 harder prompts, 512-token budget, 3 repeats for sampled settings",
+   "hypothesis": "The 24-question bench saturates: every terse setting of every model scores 24/24, so it cannot tell skip 0.5 from exact, or GLM from a 26B model. A harder bench is needed before any new lossy setting is called usable.",
+   "ref": null,
+   "runs": [],
+   "lossy": false,
+   "date": "2026-10-22",
+   "conclusion": "Planned: needs the work listed in docs/19-next-speed-experiments.md before it can run.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "prefill-warm-prefix",
+   "title": "Warm prompt reuse: KV cache for a fixed preamble",
+   "category": "prefill",
+   "change": "KVSAVE=1 with a fixed system preamble, then measure the second question's prompt reading",
+   "hypothesis": "Terse answers take ~46 s, of which ~36-40 s is reading the prompt. Reusing the KV cache of a shared preamble could cut most of that wait in real use, without touching generation.",
+   "ref": null,
+   "runs": [],
+   "lossy": false,
+   "date": "2026-10-22",
+   "conclusion": "Planned: needs the work listed in docs/19-next-speed-experiments.md before it can run.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "prefill-expert-union",
+   "title": "Prompt reading: measure expert reads per prompt token",
+   "category": "prefill",
+   "change": "Log experts loaded during prefill (COLI_TIMERS=1, ROUTE_TRACE=1) for 17- and 35-token prompts",
+   "hypothesis": "Prompt reading costs ~1 s per prompt token. If each token reloads experts that the previous one just used, batching the prompt by expert (read each expert once per layer) is the largest remaining win for short answers.",
+   "ref": null,
+   "runs": [],
+   "lossy": false,
+   "date": "2026-10-22",
+   "conclusion": "Planned: needs the work listed in docs/19-next-speed-experiments.md before it can run.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "gguf-attention-profile",
+   "title": "Why is attention 4-5x slower on the GGUF path?",
+   "category": "engine",
+   "change": "COLI_TIMERS=1 on the dev engine with IQ2_M + skip 0.5",
+   "hypothesis": "GGUF IQ2_M with skip reads little from the SSD (io 12%) but spends 66% of its time in attention (~0.9 s/token vs ~0.2 s on int4). If attention ran at int4 speed, 2-bit + skip would reach ~1.9 tok/s with fewer bytes per token, the base for going further.",
+   "ref": "x-gguf-iq2m-skip050",
+   "runs": [],
+   "lossy": true,
+   "date": "2026-10-22",
+   "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+   "tradeoffs": "",
+   "verdict": "not run",
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
+   ],
+   "plan": {
+    "prompt": "sky",
+    "ngen": 48,
+    "env": {
+     "DEGRADE_ZERO": "1",
+     "DEGRADE_TAU": "0.50",
+     "COLI_TIMERS": "1"
+    },
+    "ref": "x-gguf-iq2m-skip050",
+    "coli_dir": "engines/colibri-16239caa",
+    "build": {
+     "ref": "16239caa"
+    },
+    "model": "~/colibri-models/glm-5.3-iq2m",
+    "needs": [
+     "~/colibri-models/glm-5.3-iq2m/config.json"
+    ],
+    "prep": "make glm-prep-iq2m"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
+  },
+  {
+   "id": "sm-olmoe-concurrent",
+   "title": "OLMoE: quality on our bench, and total tok/s serving 1, 4 and 10 requests at once",
+   "category": "small-models",
+   "change": "One OLMoE-1B-7B 4-bit copy (models/olmoe-1b-7b-4bit, MLX, ~4 GB in memory) behind mlx_lm.server; 24-question bench in both styles; then 1, 4 and 10 concurrent requests",
+   "hypothesis": "Resident OLMoE decodes ~199 tok/s for one request. Decoding is memory-bound, so one copy serving a batch should give far more total tokens per second than one request, with each request somewhat slower: e.g. 10 parallel answers at several hundred tok/s in total. Running 10 separate copies would cost ~10x the memory (~46 GB peak, more than this Mac has) for no gain. The open question is quality: OLMoE (1B active) is far weaker than the models benched so far, so its correct-answer rate decides whether the throughput is useful.",
+   "ref": null,
+   "runs": [],
+   "lossy": false,
+   "date": "2026-10-22",
+   "verdict": "not run",
+   "conclusion": "Planned: needs the two harness pieces listed under plan_outline before it can run unattended.",
+   "tradeoffs": "Batching raises total throughput but slows each answer and raises peak memory (KV cache per request); single-request latency must be reported next to total tok/s.",
+   "plan_outline": {
+    "model": "models/olmoe-1b-7b-4bit (mlx-community/OLMoE-1B-7B-0125-Instruct-4bit, revision in model.lock.json)",
+    "server": ".venv/bin/python -m mlx_lm.server --model models/olmoe-1b-7b-4bit --host 127.0.0.1 --port 8771 (one process = one copy; it batches concurrent requests)",
+    "needs": [
+     "glm_bench.py backend \"openai\" (like the Ollama backend): POST /v1/chat/completions, temperature 0, max_tokens = --ngen, record prompt/generated tokens and timings",
+     "a concurrency script: N parallel clients (N = 1, 4, 10) each looping over the 24 prompts in a different order; record per-request time, generated tokens, wall time and peak memory of the server process"
+    ],
+    "quality": "glm_bench run --backend openai --name olmoe-mlx --configs exact --styles normal,terse (same grading, 128-token cap, 512 too for normal)",
+    "metrics": [
+     "correct / graded per style",
+     "single-request decode tok/s",
+     "total tok/s at N = 1, 4, 10",
+     "p50 / p95 answer time per request at each N",
+     "peak RSS of the server",
+     "outputs identical to N = 1 (batching should not change greedy output)"
+    ],
+    "controls": [
+     "quiet machine, no other GPU job (.bench.lock)",
+     "warm-up request discarded",
+     "3 repeats per N, alternating order",
+     "same prompts and token limits at every N"
+    ],
+    "compare_with": "gemma4-e4b-ollama and qwen38-27b-ollama (quality and single-request speed), and Ollama with OLLAMA_NUM_PARALLEL for the same N if time allows"
+   },
+   "sources": [
+    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/09-two-track-experiments.md",
+    "https://huggingface.co/allenai/OLMoE-1B-7B-0125",
+    "https://github.com/ml-explore/mlx-lm"
+   ],
    "metrics": {
     "measured": false
    },
