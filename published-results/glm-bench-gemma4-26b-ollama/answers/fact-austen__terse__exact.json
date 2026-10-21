@@ -1,0 +1,19 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.33,
+ "prompt_tokens": 36,
+ "prefill_s": 0.239,
+ "output_tokens": 2,
+ "decode_s": 0.056,
+ "load_s": 0.035,
+ "text": "Jane Austen",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 35.71,
+ "answer_s": 0.29,
+ "correct": true
+}

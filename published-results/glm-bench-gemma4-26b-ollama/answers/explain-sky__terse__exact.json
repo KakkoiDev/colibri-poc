@@ -1,0 +1,19 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 1.15,
+ "prompt_tokens": 35,
+ "prefill_s": 0.198,
+ "output_tokens": 45,
+ "decode_s": 0.943,
+ "load_s": 0.003,
+ "text": "Sunlight reaches Earth's atmosphere and is scattered in all directions by the gases and particles in the air. Blue light is scattered more than other colors because it travels as shorter, smaller waves, making the sky appear blue.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 47.72,
+ "answer_s": 1.14,
+ "correct": true
+}

@@ -11,7 +11,7 @@
   {
    "name": "gemma4-26b-ollama",
    "file": "bench-gemma4-26b-ollama.json",
-   "answers": 48,
+   "answers": 96,
    "engine": "Ollama",
    "model": "gemma4:26b",
    "ollama_version": "ollama version is 0.40.6"

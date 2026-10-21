@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 12.82,
+ "prompt_tokens": 37,
+ "prefill_s": 0.167,
+ "output_tokens": 716,
+ "decode_s": 12.643,
+ "load_s": 0.002,
+ "text": "A data structure that maps keys to values using a hash function to compute an index for fast retrieval.",
+ "thinking_chars": 2929,
+ "truncated": false,
+ "decode_tok_s": 56.63,
+ "answer_s": 12.81,
+ "correct": true
+}
