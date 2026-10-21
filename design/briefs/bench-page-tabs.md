@@ -1,5 +1,7 @@
 # Brief: bench page with one tab per bench, and shareable links
 
+> Superseded by [public-site.md](public-site.md) (2026-10-22), which folds this in.
+
 For a Designer AI. Update `site/bench.html` (the scientific-paper theme: Source Serif 4,
 760 px column, booktabs tables) so it can show several quality benches, not just GLM's,
 and so any view can be shared as a URL.
