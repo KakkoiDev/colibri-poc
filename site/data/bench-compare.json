@@ -877,6 +877,36 @@
    "mean_tok_s": 24.736666666666665,
    "correct_per_min": 4.8689771766694845,
    "truncated": 0
+  },
+  {
+   "bench": "qwen38-27b-ollama",
+   "model": "qwen3.8:27b-mlx",
+   "engine": "Ollama qwen3.8:27b-mlx",
+   "style": "terse",
+   "config": "exact",
+   "correct": 24,
+   "graded": 24,
+   "median_answer_s": 0.51,
+   "mean_answer_s": 0.79,
+   "median_prefill_s": 0.247,
+   "mean_tok_s": 15.904166666666667,
+   "correct_per_min": 75.94936708860759,
+   "truncated": 0
+  },
+  {
+   "bench": "qwen38-27b-ollama",
+   "model": "qwen3.8:27b-mlx",
+   "engine": "Ollama qwen3.8:27b-mlx",
+   "style": "terse",
+   "config": "native",
+   "correct": 23,
+   "graded": 24,
+   "median_answer_s": 2.75,
+   "mean_answer_s": 3.38125,
+   "median_prefill_s": 0.115,
+   "mean_tok_s": 23.452916666666667,
+   "correct_per_min": 17.005545286506468,
+   "truncated": 0
   }
  ]
 }

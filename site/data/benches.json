@@ -67,7 +67,7 @@
   {
    "name": "qwen38-27b-ollama",
    "file": "bench-qwen38-27b-ollama.json",
-   "answers": 48,
+   "answers": 96,
    "engine": "Ollama",
    "model": "qwen3.8:27b-mlx",
    "ollama_version": "ollama version is 0.40.6"

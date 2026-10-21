@@ -1,0 +1,19 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 3.14,
+ "prompt_tokens": 39,
+ "prefill_s": 0.118,
+ "output_tokens": 58,
+ "decode_s": 3.011,
+ "load_s": 0.006,
+ "text": "Neither. Both are 1 kg.",
+ "thinking_chars": 214,
+ "truncated": false,
+ "decode_tok_s": 19.26,
+ "answer_s": 3.13,
+ "correct": true
+}
