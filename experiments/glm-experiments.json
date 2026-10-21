@@ -1194,12 +1194,14 @@
   "change": "Ollama qwen3.8:27b-mlx fully in RAM; quality bench (normal, terse) in two settings: exact (thinking off, temperature 0, 128 tokens, comparable with GLM) and native (Ollama defaults: thinking on, model sampling, up to 4096 tokens)",
   "hypothesis": "Published intelligence 34 vs GLM-5.3 45, but it fits in RAM: likely tens of tok/s, so far more correct answers per minute.",
   "ref": null,
-  "runs": [],
+  "runs": [
+   "bench qwen38-27b-ollama"
+  ],
   "lossy": false,
-  "date": "2026-10-18",
-  "conclusion": "Ready and queued in the lab app (bench qwen38-27b-ollama: exact + native, normal + terse), after the skip-0.4 re-run, when the machine has been quiet for 2 min. glm_bench.py compare puts it next to GLM: correct answers, waiting time, correct per minute.",
+  "date": "2026-10-22",
+  "conclusion": "Done: 96 answers, published as bench qwen38-27b-ollama. Terse with thinking off: 24/24 correct at 15.9 tok/s, 0.5 s median answer. Native (thinking on): 24/24 normal at 24.7 tok/s (5.8 s median), 23/24 terse. Normal with thinking off and 128 tokens: 18/24, 10 answers cut off. On this 24-question bench it matches GLM-5.3 int4 (24/24 terse) about 30x faster, and Gemma 4 26B / E4B match it faster still; the bench is too easy to show the intelligence gap (published 45 vs 34). Busy machine, single runs.",
   "tradeoffs": "",
-  "verdict": "not run",
+  "verdict": "measured",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/13-small-models.md",
    "https://artificialanalysis.ai/models/comparisons/qwen3-8-27b-vs-qwen3-6-35b-a3b"
