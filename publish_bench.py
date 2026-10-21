@@ -21,7 +21,7 @@ LABELS = {'exact': 'exact', 'native': 'Ollama defaults (thinking on)', 'd030': '
 def engine_info(meta):
     if meta.get('backend') == 'ollama':
         return dict(engine='Ollama', model=meta['ollama_model'], ollama_version=meta.get('ollama_version'))
-    return dict(engine='Colibri', model='GLM-5.3 int4', colibri_commit=meta.get('colibri_commit'))
+    return dict(engine='Colibri', model=meta.get('model_label', 'GLM-5.3 int4'), colibri_commit=meta.get('colibri_commit'))
 
 
 def update_manifest(name, info, n_answers):
@@ -34,6 +34,9 @@ def update_manifest(name, info, n_answers):
     # one table across every published bench: the trade-off between quality and waiting
     rows = glm_bench.compare(type('A', (), {'names': ','.join(b['name'] for b in m['benches']), 'out': 'published',
                                             'colibri_label': 'GLM-5.3 int4'})())
+    models = {b['name']: b['model'] for b in m['benches']}
+    for row in rows:
+        row['model'] = models[row['bench']]
     (ROOT / 'site' / 'data' / 'bench-compare.json').write_text(json.dumps(dict(labels=LABELS, rows=rows), ensure_ascii=False, indent=1) + '\n')
 
 

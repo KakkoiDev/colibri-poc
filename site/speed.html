@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Latest benchmark speeds · GLM lab</title>
+<style>body{font:16px system-ui;max-width:1100px;margin:32px auto;padding:16px;color:#17212b;background:#f8fafc}a{color:#1255a2}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:12px;border-bottom:1px solid #ccd3dc}button{font:inherit;cursor:pointer}td:first-child{overflow-wrap:anywhere}input{padding:8px;width:95%;max-width:450px}.table{overflow:auto}</style>
+<main><a href="index.html">Performance story</a> · <a href="bench.html">Answer quality</a>
+<h1>Latest speed runs</h1><p>Saved runs update automatically. Busy machine; individual runs can be noisy. Lossy settings change output. Failed runs remain visible.</p>
+<label>Filter runs <input id="filter" type="search"></label><p id="status" role="status">Loading…</p>
+<div class="table"><table><thead><tr><th>Run</th><th><button id="sort">Speed ↓ (tokens/s)</button></th><th>Prompt read (s)</th><th>RAM (GB)</th><th>Result</th><th>Settings</th></tr></thead><tbody id="rows"></tbody></table></div></main>
+<script>
+let data=[],desc=true;const $=id=>document.getElementById(id);
+function render(){const rows=data.filter(r=>JSON.stringify(r).toLowerCase().includes($('filter').value.toLowerCase())).sort((a,b)=>{let x=Number.parseFloat(a.tok_s),y=Number.parseFloat(b.tok_s);return (Number.isFinite(x)?(Number.isFinite(y)?(desc?y-x:x-y):-1):1)});$('rows').replaceChildren();for(const r of rows){const tr=document.createElement('tr');for(const value of [r.run,r.tok_s||'—',r.prefill_s||'—',r.rss_gb||'—',r.status,[r.config,r.env].filter(Boolean).join(' · ')]){const td=document.createElement('td');td.textContent=value;tr.append(td)}$('rows').append(tr)}$('status').textContent=rows.length+' saved runs';$('sort').textContent='Speed '+(desc?'↓':'↑')+' (tokens/s)'}
+$('sort').onclick=()=>{desc=!desc;render()};$('filter').oninput=render;
+fetch('data/speed-runs.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error(r.status);return r.json()}).then(d=>{data=d;render()}).catch(()=>{$('status').textContent='Results are not available yet.'});
+</script></html>

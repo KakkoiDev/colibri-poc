@@ -1,0 +1,38 @@
+import importlib.util
+import tempfile
+import unittest
+from pathlib import Path
+
+spec = importlib.util.spec_from_file_location('results_sync', Path(__file__).resolve().parents[1] / 'scripts/lab_results_sync.py')
+sync = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(sync)
+
+
+class PublisherTests(unittest.TestCase):
+    def test_remove_machine_paths(self):
+        self.assertEqual(sync.clean('/Users/alice/Code/model /private/tmp/job'), '~/Code/model <tmp>/job')
+
+    def test_skip_in_progress_json(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / 'answer.json'
+            path.write_text('{"id":')
+            self.assertIsNone(sync.saved_json(path))
+            path.write_text('{"text":"/Users/alice/model"}')
+            self.assertEqual(sync.saved_json(path), {'text': '~/model'})
+
+    def test_snapshot_preserves_published_answer(self):
+        from unittest.mock import patch
+        import json
+        with tempfile.TemporaryDirectory() as temp:
+            source, target = Path(temp) / 'source', Path(temp) / 'target'
+            local = source / 'results/glm-bench-v1'
+            old = target / 'published-results/glm-bench-v1/answers'
+            local.mkdir(parents=True)
+            old.mkdir(parents=True)
+            (target / 'site/data').mkdir(parents=True)
+            answer = dict(id='p', style='normal', config='exact', exit=0)
+            (old / 'p__normal__exact.json').write_text(json.dumps(answer))
+            (local / 'p__normal__exact.json').write_text('{')
+            with patch.object(sync, 'run'):
+                sync.snapshot(source, target)
+            self.assertEqual(json.loads((target / 'results/glm-bench-v1/p__normal__exact.json').read_text()), answer)
