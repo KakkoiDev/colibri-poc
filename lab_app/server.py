@@ -9,7 +9,14 @@ with the safety rules in actions.py. It binds to 127.0.0.1 only; actions need th
 X-Lab-Action header and origin. Remote access additionally requires the configured Tailscale host and identity. Data comes from the same files the lab tools write, so nothing is retyped.
 """
 import argparse, csv, glob, json, os, re, subprocess, sys, time
-from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer as _ThreadingHTTPServer, BaseHTTPRequestHandler
+
+
+class ThreadingHTTPServer(_ThreadingHTTPServer):
+    """The standard server queues only 5 pending connections; macOS resets the rest, and a page that loads several
+    endpoints at once (or the phone through Tailscale) then sees "Load failed". Queue up to 128."""
+    request_queue_size = 128
+    daemon_threads = True
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 

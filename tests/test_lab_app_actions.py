@@ -104,6 +104,14 @@ class HttpTests(unittest.TestCase):
         self.assertEqual(self.post('/api/queue/add', body, {'X-Lab-Action': '1', 'Origin': self.base}), 400)
         self.assertEqual(self.post('/api/nope', {}, {'X-Lab-Action': '1'}), 404)
 
+    def test_many_requests_at_once_are_all_served(self):
+        import concurrent.futures as cf
+        def hit(_):
+            with urllib.request.urlopen(self.base + '/api/settings', timeout=30) as r:
+                return r.status
+        with cf.ThreadPoolExecutor(64) as ex:
+            self.assertEqual(set(ex.map(hit, range(256))), {200})
+
     def test_unknown_api_is_404(self):
         with self.assertRaises(urllib.error.HTTPError) as cm:
             urllib.request.urlopen(self.base + '/api/does-not-exist')
