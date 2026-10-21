@@ -1,0 +1,229 @@
+/* Colibri lab public site: one stylesheet for every page (from the design canvas, project/site.css).
+   Paper theme from Main.dc.html: Source Serif 4, ink on paper, booktabs tables, square corners.
+   Exact = solid ink, lossy ("changes output") = hatched ink. Theme on the root element:
+   data-theme="auto" follows the system, "light" / "dark" force it. */
+.pp{
+  --bg:#FFFFFF; --fg:#111111; --fg-2:#555555; --rule:#111111; --hair:#D6D4CF; --tint:#F4F3EF; --link:#1F4E99;
+  --bad-tint:#F3E6E1; --mark:#111111;
+  --seg-ssd:#111111; --seg-math:#7A7A7A; --seg-att:repeating-linear-gradient(135deg,#111111 0 1.5px,#FFFFFF 1.5px 5px); --seg-oth:#DCDAD4;
+  --hatch:repeating-linear-gradient(135deg,#111111 0 1.5px,transparent 1.5px 5px);
+  color-scheme:light;
+  background:var(--bg); color:var(--fg);
+  font-family:'Source Serif 4','Iowan Old Style',Georgia,serif; font-size:17px; line-height:28px;
+  font-variant-numeric:lining-nums; -webkit-font-smoothing:antialiased;
+}
+.pp[data-theme="dark"]{
+  --bg:#141414; --fg:#ECEAE4; --fg-2:#A9A69F; --rule:#ECEAE4; --hair:#3A3936; --tint:#1D1C1A; --link:#9DB8E8;
+  --bad-tint:#2E2220; --mark:#ECEAE4;
+  --seg-ssd:#ECEAE4; --seg-math:#8E8B85; --seg-att:repeating-linear-gradient(135deg,#ECEAE4 0 1.5px,#141414 1.5px 5px); --seg-oth:#3A3936;
+  --hatch:repeating-linear-gradient(135deg,#ECEAE4 0 1.5px,transparent 1.5px 5px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: dark){
+  .pp[data-theme="auto"]{
+    --bg:#141414; --fg:#ECEAE4; --fg-2:#A9A69F; --rule:#ECEAE4; --hair:#3A3936; --tint:#1D1C1A; --link:#9DB8E8;
+    --bad-tint:#2E2220; --mark:#ECEAE4;
+    --seg-ssd:#ECEAE4; --seg-math:#8E8B85; --seg-att:repeating-linear-gradient(135deg,#ECEAE4 0 1.5px,#141414 1.5px 5px); --seg-oth:#3A3936;
+    --hatch:repeating-linear-gradient(135deg,#ECEAE4 0 1.5px,transparent 1.5px 5px);
+    color-scheme:dark;
+  }
+}
+.pp *,.pp *::before,.pp *::after{box-sizing:border-box}
+.pp a{color:var(--link); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:2px}
+.pp a:focus-visible,.pp button:focus-visible,.pp select:focus-visible,.pp input:focus-visible,.pp summary:focus-visible{outline:2px solid var(--link); outline-offset:2px}
+.pp h1,.pp h2,.pp h3,.pp p,.pp figure,.pp dl,.pp dd,.pp ol,.pp ul{margin:0}
+.pp p{hyphens:auto; text-wrap:pretty}
+.pp code,.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:.82em}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.sc{font-variant:small-caps; letter-spacing:.04em}
+.note{font-size:13px; line-height:19px; color:var(--fg-2)}
+.cap{font-size:14px; line-height:21px}
+.cap b{font-weight:700}
+.hatch{background:var(--hatch); box-shadow:inset 0 0 0 1px var(--fg)}
+.solid{background:var(--fg)}
+.sr{position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* page columns: text pages 760 px, data pages wider only for tables */
+.col-text{width:100%; max-width:760px; margin:0 auto; padding:0 20px}
+.col-wide{width:100%; max-width:1240px; margin:0 auto; padding:0 20px}
+
+/* shared header */
+.sh{border-bottom:1px solid var(--hair); font-size:14px; line-height:20px}
+.sh-in{display:flex; flex-wrap:wrap; align-items:center; gap:8px 28px; padding-top:14px; padding-bottom:12px}
+.sh-name{display:flex; flex-direction:column; color:var(--fg); text-decoration:none}
+.pp a.sh-name{color:var(--fg); text-decoration:none}
+.sh-name strong{font-size:15px; line-height:20px; font-weight:700; letter-spacing:.04em; font-variant:small-caps}
+.sh-name span{font-size:12px; line-height:16px; color:var(--fg-2)}
+.sh-nav{display:flex; gap:4px 22px; flex:1 1 auto; flex-wrap:wrap}
+.pp .sh-nav a{color:var(--fg-2); text-decoration:none; padding:4px 0; border-bottom:1px solid transparent; white-space:nowrap}
+.pp .sh-nav a:hover{color:var(--fg); border-bottom-color:var(--hair)}
+.pp .sh-nav a[aria-current="page"]{color:var(--fg); font-weight:600; border-bottom:2px solid var(--fg)}
+.sh-ext{font-size:11px; margin-left:2px}
+.theme{display:inline-flex; border:1px solid var(--fg-2); margin-left:auto; flex:none}
+.theme button{font:inherit; font-size:12px; line-height:18px; min-height:26px; padding:0 9px; border:0; border-radius:0; background:transparent; color:var(--fg-2); cursor:pointer}
+.theme button + button{border-left:1px solid var(--hair)}
+.theme button[aria-pressed="true"]{background:var(--fg); color:var(--bg)}
+/* below 900 px the links get their own swipeable row, so the switch never wraps under the name */
+@media (max-width:900px){
+  .sh-in{gap:6px 12px; padding-top:12px; padding-bottom:0}
+  .sh-name{flex:1 1 auto}
+  .sh-nav{order:3; flex:1 0 100%; flex-wrap:nowrap; overflow-x:auto; gap:20px; padding-bottom:2px; scrollbar-width:none}
+  .pp .sh-nav a{padding:10px 0 9px}
+  .theme button{min-height:32px}
+}
+
+/* page title block */
+.ptitle{display:flex; flex-direction:column; gap:8px; padding-top:28px}
+.ptitle h1{font-size:clamp(28px,4vw,36px); line-height:1.2; font-weight:600; letter-spacing:-.005em}
+.ptitle .dek{font-size:17px; line-height:27px; color:var(--fg-2); max-width:720px}
+
+/* sections and headings */
+.sec{display:flex; flex-direction:column; gap:14px}
+.sec-h{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+.sec-h h2{font-size:22px; line-height:30px; font-weight:600}
+.sec-h h2 .n{margin-right:12px}
+.sec-h h3{font-size:18px; line-height:26px; font-weight:600}
+.h-small{font-size:15px; line-height:20px; font-weight:700}
+.copy{font:inherit; font-size:12px; line-height:18px; padding:2px 6px; border:1px solid transparent; background:transparent; color:var(--fg-2); cursor:pointer; display:inline-flex; gap:4px; align-items:center}
+.copy:hover{border-color:var(--hair); color:var(--fg)}
+.copy svg{width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:1.6px; stroke-linecap:round; stroke-linejoin:round}
+
+/* notes, caveats */
+.cond{border:1px solid var(--rule); padding:12px 16px; font-size:15px; line-height:24px; display:flex; flex-direction:column; gap:2px}
+.cond strong{font-size:14px}
+.reported{border-top:1px solid var(--hair); border-bottom:1px solid var(--hair); padding:12px 0; display:flex; flex-direction:column; gap:8px}
+
+/* tags */
+.tag{display:inline-flex; align-items:center; gap:5px; font-size:12px; line-height:16px; white-space:nowrap; color:var(--fg)}
+.tag i{display:inline-block; width:10px; height:10px; flex:none}
+.tag-lossy i{background:var(--hatch); box-shadow:inset 0 0 0 1px var(--fg)}
+.tag-exact i{background:var(--fg)}
+.tag-native i{box-shadow:inset 0 0 0 1.5px var(--fg); border-radius:50%}
+
+/* booktabs tables, scrolling inside their box with the first column frozen.
+   Rows are grids sharing one column template (set per table); semantics via role=table/row/cell. */
+.tblbox{overflow-x:auto; position:relative}
+.bt{display:flex; flex-direction:column; min-width:100%; font-size:14px; line-height:20px; border-top:2px solid var(--rule); border-bottom:2px solid var(--rule)}
+.bt-r{display:grid; align-items:start}
+.bt-h{border-bottom:1px solid var(--rule); align-items:end}
+.bt-h .bt-c{font-size:13px; line-height:17px; font-weight:600; white-space:nowrap}
+.bt-c .u{display:block; font-weight:400; color:var(--fg-2)}
+.bt-c{padding:6px 10px; background:var(--bg); min-width:0}
+.bt-r.grp{border-top:1px solid var(--hair)}
+.bt-r.grp-h .bt-c{padding-top:12px; font-size:13px; font-weight:700; font-variant:small-caps; letter-spacing:.04em}
+.bt-r.grp-h{border-top:1px solid var(--rule)}
+.bt .n{text-align:right; font-variant-numeric:tabular-nums lining-nums; white-space:nowrap}
+.bt .best{font-weight:700}
+.bt.freeze .bt-c:first-child{position:sticky; left:0; z-index:1; box-shadow:inset -1px 0 0 var(--hair)}
+.sortb{font:inherit; font-weight:600; color:inherit; padding:0; border:0; background:transparent; cursor:pointer; display:inline-flex; flex-direction:column; text-align:inherit; align-items:inherit}
+.n .sortb{align-items:flex-end}
+.sortb .arrow{font-size:10px; font-weight:400}
+.mini{display:inline-block; width:48px; height:6px; background:var(--tint); vertical-align:middle; margin-left:8px; position:relative}
+.mini b{position:absolute; inset:0 auto 0 0; background:var(--fg)}
+
+/* tabs (real tablist) */
+.tabs{display:flex; gap:0 24px; border-bottom:1px solid var(--hair); overflow-x:auto; scrollbar-width:none}
+.tab{font:inherit; font-size:15px; line-height:20px; padding:10px 0 9px; border:0; border-bottom:2px solid transparent; background:transparent; color:var(--fg-2); cursor:pointer; white-space:nowrap; border-radius:0}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{color:var(--fg); font-weight:600; border-bottom-color:var(--fg)}
+.tab .cnt{font-size:12px; color:var(--fg-2); font-weight:400; margin-left:4px}
+
+/* bench switcher: list beside content on desktop, a select on phones */
+.bwrap{display:flex; flex-wrap:wrap; gap:32px 44px; align-items:flex-start}
+.bnav{flex:1 1 220px; max-width:240px; display:flex; flex-direction:column; gap:14px; font-size:15px; line-height:21px}
+.bmain{flex:999 1 560px; min-width:0; display:flex; flex-direction:column; gap:28px}
+.bnav h2{font-size:13px; line-height:18px; font-weight:700; font-variant:small-caps; letter-spacing:.04em; color:var(--fg-2); border-bottom:1px solid var(--hair); padding-bottom:4px}
+.bnav ul{list-style:none; padding:0; display:flex; flex-direction:column}
+.pp .bnav a{display:flex; justify-content:space-between; gap:8px; padding:6px 8px 6px 10px; color:var(--fg); text-decoration:none; border-left:2px solid transparent}
+.pp .bnav a:hover{background:var(--tint)}
+.pp .bnav a[aria-current="page"]{border-left-color:var(--fg); background:var(--tint); font-weight:600}
+.bnav a .meta{font-size:12px; color:var(--fg-2); font-weight:400; white-space:nowrap}
+.bsel{display:none}
+@media (max-width:860px){
+  .bnav{display:none}
+  .bsel{display:flex}
+}
+
+/* forms */
+.filters{display:flex; flex-wrap:wrap; gap:10px 18px; align-items:flex-end; padding:10px 0; border-top:1px solid var(--hair); border-bottom:1px solid var(--hair)}
+.fld{display:flex; flex-direction:column; gap:3px; font-size:13px; line-height:17px; min-width:0}
+.fld label,.fld .lbl{color:var(--fg-2)}
+.pp select,.pp input[type="search"],.pp input[type="text"]{font:inherit; font-size:15px; line-height:20px; min-height:36px; padding:6px 30px 6px 10px; border:1px solid var(--fg); border-radius:0; background:var(--bg); color:var(--fg); max-width:100%}
+.pp select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,var(--fg) 50%),linear-gradient(135deg,var(--fg) 50%,transparent 50%); background-position:calc(100% - 15px) 16px,calc(100% - 10px) 16px; background-size:5px 5px; background-repeat:no-repeat}
+.pp input[type="search"]{padding-right:10px; min-width:220px}
+.chk{display:inline-flex; gap:8px; align-items:center; font-size:15px; min-height:36px}
+.chk input{width:16px; height:16px; accent-color:var(--fg); margin:0}
+.seg{display:inline-flex; border:1px solid var(--fg)}
+.seg button{font:inherit; font-size:14px; line-height:20px; min-height:34px; padding:0 12px; border:0; background:transparent; color:var(--fg); cursor:pointer; border-radius:0}
+.seg button + button{border-left:1px solid var(--fg)}
+.seg button[aria-pressed="true"]{background:var(--fg); color:var(--bg)}
+.btn{font:inherit; font-size:14px; line-height:20px; min-height:34px; padding:0 12px; border:1px solid var(--fg); background:transparent; color:var(--fg); cursor:pointer; border-radius:0; display:inline-flex; align-items:center; gap:6px}
+.btn:disabled{color:var(--fg-2); border-color:var(--hair); cursor:default}
+.pager{display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; font-size:14px}
+
+/* answers matrix */
+.ax .cell{padding:3px 3px; text-align:center}
+.axb{font:inherit; font-size:13px; line-height:18px; width:100%; min-width:62px; min-height:36px; padding:2px 6px; border:1px solid transparent; background:transparent; color:var(--fg); cursor:pointer; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; border-radius:0}
+.axb:hover{border-color:var(--fg-2)}
+.axb.bad{background:var(--bad-tint)}
+.axb.open{border:2px solid var(--fg)}
+.axb .g{font-size:15px; line-height:18px; font-weight:700}
+.axb .t{font-size:12px; line-height:15px; color:var(--fg-2); font-variant-numeric:tabular-nums}
+.axb .rv{font-size:10px; line-height:12px; font-variant:small-caps; letter-spacing:.04em}
+.ans{border:1px solid var(--rule); padding:14px 16px 16px; display:flex; flex-direction:column; gap:10px; text-align:left; background:var(--bg)}
+.ans-meta{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:14px; line-height:20px; align-items:center}
+.ans pre{margin:0; white-space:pre-wrap; overflow-wrap:anywhere; font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace; font-size:13px; line-height:21px; background:var(--tint); padding:10px 12px; max-height:340px; overflow:auto}
+.review{border-left:0; border-top:1px solid var(--hair); padding-top:8px; font-size:14px; line-height:21px}
+
+/* figures */
+.fig{display:flex; flex-direction:column; gap:10px}
+.plot{position:relative; border-left:1px solid var(--fg); border-bottom:1px solid var(--fg)}
+.plot .gl{position:absolute; left:0; right:0; border-top:1px dashed var(--hair)}
+.plot .gx{position:absolute; top:0; bottom:0; border-left:1px dashed var(--hair)}
+.plot .yl,.plot-out .yl{position:absolute; right:calc(100% + 6px); transform:translateY(50%); font-size:12px; line-height:14px; color:var(--fg-2); white-space:nowrap}
+.plot .xl,.plot-out .xl{position:absolute; top:calc(100% + 4px); transform:translateX(-50%); font-size:12px; line-height:14px; color:var(--fg-2); white-space:nowrap}
+.pt{position:absolute; width:11px; height:11px; transform:translate(-50%,50%)}
+.pt.ex{background:var(--fg); border-radius:50%}
+.pt.ls{background:var(--hatch); box-shadow:inset 0 0 0 1.5px var(--fg)}
+.pt.na{border-radius:50%; box-shadow:inset 0 0 0 2px var(--fg); background:var(--bg)}
+.plab{position:absolute; font-size:12px; line-height:14px; white-space:nowrap; transform:translate(8px,-2px)}
+.legend{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:13px; line-height:18px; color:var(--fg-2)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.legend i{display:inline-block; width:11px; height:11px}
+.hbar{display:grid; grid-template-columns:minmax(150px,200px) 1fr 70px; gap:10px; align-items:center; font-size:14px; line-height:20px}
+.hbar .track{height:14px; background:var(--tint); position:relative}
+.hbar .track b{position:absolute; inset:0 auto 0 0}
+.stack{display:flex; height:10px; width:120px; background:var(--tint)}
+.stack > span{display:block; height:100%}
+@media (max-width:640px){
+  .hbar{grid-template-columns:1fr 64px}
+  .hbar .lab{grid-column:1 / -1}
+}
+
+/* footer */
+.foot{border-top:1px solid var(--hair); padding:16px 0 40px; font-size:13px; line-height:19px; color:var(--fg-2); display:flex; flex-wrap:wrap; gap:6px 20px}
+.hbar .track b.outl{background:var(--bg); box-shadow:inset 0 0 0 1.5px var(--fg)}
+.axb.dim{opacity:.38}
+.bt-r.grp-top{border-top-color:var(--fg-2)}
+
+/* figure 1: numbered model badges and the under-12 strip */
+.badge{display:inline-flex; align-items:center; justify-content:center; min-width:15px; height:15px; padding:0 3px; border:1px solid var(--fg); background:var(--bg); color:var(--fg); font-size:11px; line-height:13px; font-weight:700; font-variant-numeric:tabular-nums}
+.pbadge{position:absolute; z-index:2}
+.plot-out{position:relative; border-left:1px solid var(--fg); border-bottom:1px solid var(--fg); background:repeating-linear-gradient(90deg,var(--hair) 0 4px,transparent 4px 8px) top / 100% 1px no-repeat}
+
+.out-lab{position:absolute; bottom:8px; transform:translateX(10px); display:inline-flex; gap:4px; align-items:center; font-size:12px; line-height:14px; white-space:nowrap}
+.fkey{list-style:none; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(min(250px,100%), 1fr)); gap:6px 24px; font-size:14px; line-height:20px}
+.fkey li{display:flex; gap:8px; align-items:center}
+/* figure 2: prompt reading + generation */
+.seg-read{background:var(--tint); box-shadow:inset 0 0 0 1px var(--fg-2)}
+.legend i.seg-read{background:var(--tint)}
+.hbar-2{grid-template-columns:minmax(150px,200px) 1fr 96px}
+@media (max-width:640px){ .hbar-2{grid-template-columns:1fr 90px} }
+
+/* build additions */
+html,body{margin:0}
+body.pp{min-height:100vh; display:flex; flex-direction:column}
+.plot-out .yl{right:calc(100% + 6px); bottom:8px; transform:none}
+.pp main{flex:1 0 auto}
+.copy.done{color:var(--fg)}
+[hidden]{display:none !important}

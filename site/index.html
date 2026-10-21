@@ -17,13 +17,20 @@
   --b1:#FFFFFF;--b2:#F4F3EF;--b3:#E7E5DF;--b4:#D6D4CF;
   --code:#F4F3EF;--link:#1F4E99;
 }
-@media (prefers-color-scheme:dark){:root{
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#141414;--surface:#141414;--ink:#ECEAE4;--muted:#A9A69F;--line:#3A3936;--soft:#1D1C1A;
   --exact:#ECEAE4;--lossy:#A9A69F;--ghost:#6E6C67;--warn-bg:transparent;--warn-line:#ECEAE4;
   --s1:#ECEAE4;--s2:#BDBAB3;--s3:#8E8B85;--s4:#5E5C58;
   --b1:#141414;--b2:#1D1C1A;--b3:#272623;--b4:#33322F;
   --code:#1D1C1A;--link:#9DB8E8;
 }}
+:root[data-theme="dark"]{
+  --bg:#141414;--surface:#141414;--ink:#ECEAE4;--muted:#A9A69F;--line:#3A3936;--soft:#1D1C1A;
+  --exact:#ECEAE4;--lossy:#A9A69F;--ghost:#6E6C67;--warn-bg:transparent;--warn-line:#ECEAE4;
+  --s1:#ECEAE4;--s2:#BDBAB3;--s3:#8E8B85;--s4:#5E5C58;
+  --b1:#141414;--b2:#1D1C1A;--b3:#272623;--b4:#33322F;
+  --code:#1D1C1A;--link:#9DB8E8;
+}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'Source Serif 4','Iowan Old Style',Georgia,serif;font-size:17px;line-height:28px;-webkit-font-smoothing:antialiased;font-variant-numeric:lining-nums}
 a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:2px}
@@ -98,11 +105,39 @@ svg .lbl{fill:var(--ink);font-weight:600}
 @media (max-width:600px){section{padding:36px 0}.big{font-size:32px}header.top{position:static}
   .chart .plot{overflow-x:auto;-webkit-overflow-scrolling:touch}.chart .plot svg{min-width:520px}
   .chart .plot::after{content:"Scroll sideways to see the whole chart";display:block;font-size:12px;color:var(--muted);margin-top:6px}}
+
+/* shared site header (site.css .sh, in this page's variables) */
+.sh{border-bottom:1px solid var(--line);font-size:14px;line-height:20px;background:var(--bg)}
+.sh .col-wide{width:100%;max-width:1240px;margin:0 auto;padding:0 20px}
+.sh-in{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-top:14px;padding-bottom:12px}
+a.sh-name{display:flex;flex-direction:column;color:var(--ink);text-decoration:none}
+.sh-name strong{font-size:15px;line-height:20px;font-weight:700;letter-spacing:.04em;font-variant:small-caps}
+.sh-name span{font-size:12px;line-height:16px;color:var(--muted)}
+.sh-nav{display:flex;gap:4px 22px;flex:1 1 auto;flex-wrap:wrap}
+.sh-nav a{color:var(--muted);text-decoration:none;padding:4px 0;border-bottom:1px solid transparent;white-space:nowrap}
+.sh-nav a:hover{color:var(--ink);border-bottom-color:var(--line)}
+.sh-nav a[aria-current="page"]{color:var(--ink);font-weight:600;border-bottom:2px solid var(--ink)}
+.sh-ext{font-size:11px;margin-left:2px}
+.theme{display:inline-flex;border:1px solid var(--muted);margin-left:auto;flex:none}
+.theme button{font:inherit;font-size:12px;line-height:18px;min-height:26px;padding:0 9px;border:0;border-radius:0;background:transparent;color:var(--muted);cursor:pointer}
+.theme button + button{border-left:1px solid var(--line)}
+.theme button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+@media (max-width:900px){.sh-in{gap:6px 12px;padding-top:12px;padding-bottom:0}.sh-name{flex:1 1 auto}
+  .sh-nav{order:3;flex:1 0 100%;flex-wrap:nowrap;overflow-x:auto;gap:20px;padding-bottom:2px;scrollbar-width:none}.sh-nav a{padding:10px 0 9px}.theme button{min-height:32px}}
 </style>
+<script src="site.js"></script>
 </head>
-<body><p style="padding:1rem"><a href="findings.html">Interpreting the results: terse answers, expert caching and the Qwen memory experiment</a></p>
-<p style="padding:1rem"><a href="comparison.html">Latest GLM, Gemma and Qwen comparison — 22 October 2026</a></p>
-<p style="padding:1rem"><a href="comparison.html">Latest GLM and Gemma comparison — 22 October 2026</a></p>
+<body>
+<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);document.body.setAttribute('data-theme',t)}}catch(e){}</script>
+<header class="sh">
+<div class="col-wide sh-in">
+<a class="sh-name" href="index.html"><strong>Colibri lab</strong><span>Technical notes · GLM-5.3 and others on a 32 GB Apple M6</span></a>
+<nav class="sh-nav" aria-label="Site">
+<a href="index.html" aria-current="page">Report</a><a href="bench.html">Benchmarks</a><a href="findings.html">Findings</a><a href="speed.html">Speed runs</a><a href="https://github.com/KakkoiDev/colibri-poc">Repository<span class="sh-ext" aria-hidden="true"> ↗</span></a>
+</nav>
+<div class="theme" role="group" aria-label="Colour theme"><button type="button" data-t="auto">Auto</button><button type="button" data-t="light">Light</button><button type="button" data-t="dark">Dark</button></div>
+</div>
+</header>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -112,16 +147,7 @@ svg .lbl{fill:var(--ink);font-weight:600}
   </defs>
 </svg>
 
-<header class="top"><div class="wrap">
-  <strong>GLM-5.3 on an Apple M6</strong>
-  <nav aria-label="Sections">
-    <a href="#exact">Exact</a><a href="#time">Time</a><a href="#ceiling">Ceiling</a><a href="#tradeoff">Trade-off</a>
-    <a href="#bench">Bench</a><a href="bench.html">All answers</a><a href="#failed">Didn't work</a><a href="#log">Log</a><a href="#run">Run it</a><a href="#caveats">Caveats</a>
-  </nav>
-</div></header>
-
 <main>
-<p style="padding:1rem"><a href="speed.html">Latest speed runs ↗</a></p>
 <section id="top"><div class="wrap">
   <span class="badge miss" id="target-badge">Target 5 tok/s: not reached</span>
   <h1 id="title">GLM-5.3 on a 32 GB Apple M6: what we changed and what it cost</h1>
@@ -206,10 +232,9 @@ svg .lbl{fill:var(--ink);font-weight:600}
 </div></section>
 
 <section id="bench"><div class="wrap">
-  <h2><span class="n">6</span>Quality vs speed bench</h2>
-  <p class="muted">Accuracy and total answer time per configuration and prompt style (normal vs "answer as briefly as possible"), on 24 graded prompts. <a href="bench.html"><strong>Open the full bench: every question and answer, with the manual review →</strong></a></p>
-  <figure class="chart" id="chart-f"><figcaption class="cap">Does a terse prompt claw back speed without losing accuracy?</figcaption><div class="plot"></div><p class="foot" id="foot-f"></p></figure>
-  <div class="tbl" id="tbl-bench-wrap" hidden><table id="tbl-bench"><thead><tr><th>Style</th><th>Config</th><th class="num">Correct</th><th class="num">Same text as exact</th><th class="num">Mean answer s</th><th class="num">Mean prefill s</th><th class="num">Mean output tokens</th><th class="num">Mean decode tok/s</th></tr></thead><tbody></tbody></table></div>
+  <h2><span class="n">6</span>Quality against speed</h2>
+  <p id="bench-summary">A graded bench asked 24 fixed questions in two answer styles under every setting. With terse answers, every GLM-5.3 int4 setting answered all 24 correctly, including the lossy ones. With normal answers, exact scored 21 of 24 and skip 0.5 scored 17. Skipping experts sped up generation, but short answers barely got faster: their time is dominated by reading the prompt.</p>
+  <p><a href="bench.html">Every bench, setting and answer, for GLM-5.3 and the other models, is on the Benchmarks page.</a></p>
 </div></section>
 
 <section id="failed"><div class="wrap">
@@ -530,7 +555,6 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
     $('#method').textContent = 'Method: greedy decoding; main prompt "Explain in two sentences why the sky is blue.", plus a code prompt and a 5-question quiz; RAM budget 18 GB, context 1,024, profiler on. Test engines were built from ' +
       D.machine.engine + ' in separate clones. Results are for this Mac only and may not transfer to other machines.';
 
-    renderBench(bench);
   }
 
   function renderLog(data) {
@@ -568,46 +592,24 @@ make -C &lt;colibri&gt;/c clean glm METAL=1</code></pre>
     draw('all');
   }
 
-  function renderBench(rows) {
-    var plot = $('#chart-f .plot');
-    if (!rows || !rows.length) {
-      plot.appendChild(el('div', { class: 'pending' }, 'Bench still running: the chart appears once its summary is published.'));
-      $('#foot-f').textContent = 'The rest of the page does not depend on this data.';
-      return;
-    }
-    var color = { exact: 'var(--exact)', d030: 'var(--s3)', d030t12: 'var(--s3)', d040t12: 'var(--s2)', d050: 'var(--lossy)' };
-    var name = { exact: 'exact', d030: 'skip 0.3', d030t12: 'skip 0.3 · 12 thr', d040t12: 'skip 0.4 · 12 thr', d050: 'skip 0.5' };
-    var maxT = Math.max.apply(null, rows.map(function (r) { return r.answer_s; }));
-    var x1 = Math.ceil(maxT / 50) * 50;
-    var xt = []; for (var t = 0; t <= x1; t += x1 / 5) xt.push(Math.round(t));
-    var legend = el('div', { class: 'legend' });
-    Object.keys(name).forEach(function (k) { var sp = el('span'); sp.appendChild(el('i', { style: 'background:' + color[k] })); sp.appendChild(document.createTextNode(name[k])); legend.appendChild(sp); });
-    legend.appendChild(el('span', {}, '● normal · ▲ terse'));
-    plot.appendChild(legend);
-    plot.appendChild(lineChart({ label: 'Accuracy vs mean answer time per configuration and style', x0: 0, x1: x1, y0: 0, y1: 100,
-      xt: xt, yt: [0, 25, 50, 75, 100], yfmt: function (t) { return t + '%'; }, xlabel: 'mean answer time, s (prompt reading + generation)', ylabel: '% correct',
-      series: [{ line: false, color: 'var(--exact)', pts: rows.map(function (r) {
-        var pct = r.graded ? r.correct / r.graded * 100 : 0;
-        return { x: r.answer_s, y: pct, color: color[r.config] || 'var(--muted)', shape: r.style === 'terse' ? 'tri' : 'dot', r: 6,
-          tip: r.style + ' · ' + (name[r.config] || r.config) + ': ' + r.correct + '/' + r.graded + ' correct, ' + r.answer_s.toFixed(1) + ' s mean answer' };
-      }) }] }));
-    var ff = $('#foot-f');
-    ff.textContent = 'Automatic grades: facts and logic by expected answer, maths by final number, code by running tests; normal answers were capped at 128 tokens. Read by hand, normal exact and skip 0.3 made no real mistakes (their misses were cut-offs and grader errors); skip 0.5 had 2 genuinely bad long answers. ';
-    ff.appendChild(el('a', { href: 'https://github.com/KakkoiDev/colibri-poc/blob/main/published-results/glm-bench-v1/review.md' }, 'Manual review'));
-    ff.appendChild(document.createTextNode('. Skip settings change output.'));
-    $('#tbl-bench-wrap').hidden = false;
-    var tb = $('#tbl-bench tbody');
-    rows.forEach(function (r) {
-      row(tb, [{ t: r.style }, { t: name[r.config] || r.config }, { t: r.correct + '/' + r.graded, cls: 'num' }, { t: r.same_as_exact + '/' + r.ok, cls: 'num' },
-        { t: r.answer_s.toFixed(1), cls: 'num' }, { t: r.prefill_s.toFixed(1), cls: 'num' }, { t: r.output_tokens.toFixed(1), cls: 'num' }, { t: r.decode_tok_s.toFixed(2), cls: 'num' }],
-        r.config !== 'exact' ? 'lossy' : '');
-    });
+  function fillBenchSummary(cmp) {
+    var rows = cmp.rows.filter(function (r) { return r.bench === 'v1'; });
+    var terse = rows.filter(function (r) { return r.style === 'terse'; }), normal = rows.filter(function (r) { return r.style === 'normal'; });
+    var ex = normal.filter(function (r) { return r.config === 'exact'; })[0], d50 = normal.filter(function (r) { return r.config === 'd050'; })[0];
+    if (!terse.length || !ex || !d50) return;
+    var allFull = terse.every(function (r) { return r.correct === r.graded; });
+    var n = Math.max(cmp.rows.map(function (r) { return r.bench; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).length - 1, 0);
+    $('#bench-summary').textContent = 'A graded bench asked 24 fixed questions in two answer styles under every setting. With terse answers, ' +
+      (allFull ? 'every GLM-5.3 int4 setting answered all 24 correctly, including the lossy ones' : 'GLM-5.3 int4 scored ' + terse.map(function (r) { return r.correct; }).join(', ') + ' of 24 across its settings') +
+      '. With normal answers, exact scored ' + ex.correct + ' of ' + ex.graded + ' and skip 0.5 scored ' + d50.correct + '. Skipping experts sped up generation, but short answers barely got faster: their time is dominated by reading the prompt.';
+    $('#bench-summary').nextElementSibling.firstElementChild.textContent = 'Every bench, setting and answer, for GLM-5.3 and ' + n + ' other model and engine combinations, is on the Benchmarks page.';
   }
 
   var getJSON = function (url) { return fetch(url, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(url + ': ' + r.status); return r.json(); }); };
   Promise.all([getJSON('data/glm-performance.json'), getJSON('data/bench-summary.json').catch(function () { return null; }),
                getJSON('data/experiments.json').catch(function () { return null; })])
     .then(function (res) { render(res[0], res[1]); renderLog(res[2]); })
+    .then(function () { return getJSON('data/bench-compare.json').then(fillBenchSummary, function () {}); })
     .catch(function (e) {
       var m = el('div', { class: 'callout', role: 'alert' });
       m.appendChild(el('strong', {}, 'Could not load the page data.'));

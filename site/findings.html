@@ -1,1 +1,187 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Benchmark findings and memory experiments</title><style>body{max-width:900px;margin:32px auto;padding:16px;font:17px/1.6 system-ui;color:#151515}a{color:#164ba0}li{margin-bottom:12px}</style><nav><a href="comparison.html">Model comparison: correctness and tokens/s</a> · <a href="bench.html">All bench answers</a></nav><main><h1>What the results mean: correctness, tokens per second and expert memory</h1><p>Our primary comparison is <strong>generation tokens per second alongside correctness</strong>. Show prompt style, setting, graded count and truncation beside those numbers. Answer time and prompt-reading time remain secondary: they explain responsiveness, but do not replace the generation-throughput comparison. Rates for tiny outputs are noisy; do not compare different prompt styles as an isolated engine speedup.</p><h2>Did terse prompts improve quality?</h2><p>They improved the measured automatic score. Original GLM int4 exact rose from 21/24 normal to 24/24 terse while both averaged 0.41 generation tokens/s. This does not show that the model became generally more capable. Short replies fit the 128-token budget; verbose replies may be cut off. The numeric grader uses the last number, code tests use the first code block, and fact checks look for accepted text. Extra explanations can trigger a failure without proving the core answer was wrong. The prompt-file note incorrectly says first number; the actual grader checks the last. Explanation usefulness is not scored.</p><p>Use terse prompts for direct answers. To test general quality, give both styles enough output budget and independently review the answers, including reasoning. Native Ollama runs also change sampling/thinking and allow 4096 tokens, so they are not a controlled test of wording alone.</p><h2>Why did extra GLM RAM barely help?</h2><p>The 18/22/26 GB budget sweep measured 0.40/0.41/0.42 tokens/s, with expert hits 2.1/2.8/3.6%. Crucially, the RAM26 log still reports a dynamic cache of ONE expert per layer (about 1.6 GB), plus 91 pinned experts (about 1.9 GB). The Metal fast-SSD heuristic explicitly favors OS page cache and says to override capacity with --cap. So these runs did not establish that a substantially larger dynamic expert cache would be useless. RAM budget is not actual retained expert memory. Logical cache misses also do not prove physical SSD reads: OS page cache may serve them.</p><h2>How can we improve caching?</h2><ol><li><strong>Test actual capacity first:</strong> explicit 1/2/4/8 experts per layer, fixed pin set,    no expert skipping, and memory preflight. Skip any unsafe capacity.</li><li><strong>Keep useful experts:</strong> frequency-aware admission or a protected hot set can    prevent one-use experts evicting repeatedly useful ones. Compare against LRU    at the same retained-byte budget. This is a hypothesis, not a measured win.</li><li><strong>Allocate unevenly:</strong> spend memory on layers with the largest avoided read    cost per byte. Pinning already exists; the new experiment improves selection.</li><li><strong>Test prefetch separately:</strong> a correct prediction may hide latency without    improving demand-cache hits. Count useful and wasted reads and total time.</li><li><strong>Keep execution efficient:</strong> avoid duplicate copies and repacking. OLMoE showed    that better cache coverage alone does not remove transfer/packing overhead.</li></ol><p>Preserving selected experts can preserve model computation, but changed kernels may still change numeric output. Choosing different experts because they are in cache is a separate <strong>changes output</strong> experiment, not an exact cache optimization. Judge every proposal by tokens/s plus correctness, with memory and bytes read as diagnostics; a higher hit percentage is not itself success.</p><h2>What is OLMoE?</h2><p><a href="https://huggingface.co/allenai/OLMoE-1B-7B-0125">OLMoE</a> is Allen AI&#x27;s open mixture-of-experts model, approximately 7B total parameters with about 1B active per token. Our 4-bit copy is about 3.9 GB. It is the small testbed used for the resident/streaming experiments. It is not Qwen and those results do not establish a Qwen speedup. OLMoE resident reached 199 median tokens/s versus 28/49/70 for LRU capacities 8/32/64 in the same campaign; some outputs differed.</p><h2>Qwen experiment added: same model, different expert cache sizes</h2><p>The campaign is specified in experiments/qwen-expert-memory.json, and registered as sm-qwen36-a3b-ram-sweep. Use the downloaded Qwen3.6-35B-A3B Colibri int4 weights, not the dense Qwen alias used in the existing quality table. Compare capacities 8/16/32/64/128/256 with unchanged routing, precision, threads and engine, three paired repetitions, the same prompts, and normal/terse grading. Verify all-expert residency from telemetry; 256 or a large RAM budget alone is not proof. Record actual retained bytes, peak memory, demand hits and output changes. Skip profiles that cannot safely fit. First-use and warmed results must stay separate.</p><p><strong>Status: specified, not run.</strong> The isolated Qwen engine build and benchmark adapter are prerequisites. The current Colibri Qwen path is CPU/Vulkan, not Metal; this campaign must not be advertised as a Metal comparison. A RAM cap does not simulate another machine&#x27;s SSD. The GLM explicit-capacity campaign is separately specified in experiments/glm-cache-capacity.json. </p></main></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Findings · Colibri lab</title>
+<meta name="description" content="How to read the benchmark numbers, why terse prompts score higher, why more RAM barely helped GLM-5.3, and the expert-caching experiments that come next.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="site.css">
+<script src="site.js"></script>
+</head>
+<body class="pp" data-theme="auto">
+<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.body.setAttribute('data-theme',t)}catch(e){}</script>
+<header class="sh">
+<div class="col-wide sh-in">
+<a class="sh-name" href="index.html"><strong>Colibri lab</strong><span>Technical notes · GLM-5.3 and others on a 32 GB Apple M6</span></a>
+<nav class="sh-nav" aria-label="Site">
+<a href="index.html">Report</a><a href="bench.html">Benchmarks</a><a href="findings.html" aria-current="page">Findings</a><a href="speed.html">Speed runs</a><a href="https://github.com/KakkoiDev/colibri-poc">Repository<span class="sh-ext" aria-hidden="true"> ↗</span></a>
+</nav>
+<div class="theme" role="group" aria-label="Colour theme"><button type="button" data-t="auto">Auto</button><button type="button" data-t="light">Light</button><button type="button" data-t="dark">Dark</button></div>
+</div>
+</header>
+
+<main class="col-text" style="display:flex;flex-direction:column;gap:40px;padding-bottom:24px">
+<div class="ptitle">
+<p class="sc note">Technical note · updated <span data-f="date">22 October 2026</span></p>
+<h1>What the results mean: correctness, speed and expert memory</h1>
+<p class="dek">How to read the benchmark numbers, why terse prompts score higher, why more RAM barely helped GLM-5.3, and the caching experiments that come next.</p>
+</div>
+
+<nav aria-label="On this page" style="border-top:2px solid var(--rule);border-bottom:1px solid var(--hair);padding:12px 0">
+<ol style="padding-left:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:4px 28px;font-size:15px;line-height:24px">
+<li><a href="#f1">What we compare</a></li>
+<li><a href="#f2">Did terse prompts improve quality?</a></li>
+<li><a href="#f3">Why did extra GLM RAM barely help?</a></li>
+<li><a href="#f4">How could caching improve?</a></li>
+<li><a href="#f5">What is OLMoE?</a></li>
+<li><a href="#f6">Next: Qwen expert-memory experiment</a></li>
+</ol>
+</nav>
+
+<section class="sec" aria-labelledby="f1">
+<div class="sec-h"><h2 id="f1"><span class="n num">1</span>What we compare</h2><span data-copy="#f1" aria-label="Copy link to section 1"></span></div>
+<p>The primary comparison is <strong>generation tokens per second alongside correctness</strong>, always shown with the prompt style, the setting, the number of graded answers and how many were cut off. Answer time and prompt-reading time are secondary: they explain how responsive a setting feels, but do not replace generation throughput. Rates for tiny outputs are noisy, and a change of prompt style is not an engine speed-up.</p>
+<aside class="cond" aria-label="Test conditions"><strong class="sc">Busy machine</strong><span>All timings come from the owner’s everyday 32 GB Apple M6 with other apps running, not a controlled machine. Real performance may be better.</span></aside>
+</section>
+
+<section class="sec" aria-labelledby="f2">
+<div class="sec-h"><h2 id="f2"><span class="n num">2</span>Did terse prompts improve quality?</h2><span data-copy="#f2" aria-label="Copy link to section 2"></span></div>
+<p>They improved the <em>measured automatic score</em>. GLM-5.3 int4, exact, rose from <span data-f="tN">21/24</span> correct with normal answers to <span data-f="tT">24/24</span> with terse answers, while both averaged <span data-f="tTok">0.41</span> generation tokens per second. This does not show that the model became more capable.</p>
+<div class="tblbox">
+<div class="bt" role="table" aria-label="Table 1. GLM-5.3 int4, exact, by answer style" style="min-width:420px">
+<div class="bt-r bt-h" role="row" style="grid-template-columns:1.4fr 1fr 1fr"><div class="bt-c" role="columnheader">Answer style</div><div class="bt-c n" role="columnheader">Correct<span class="u">of 24 graded</span></div><div class="bt-c n" role="columnheader">Speed<span class="u">tok/s, mean</span></div></div>
+<div class="bt-r" role="row" style="grid-template-columns:1.4fr 1fr 1fr"><div class="bt-c" role="rowheader">Normal</div><div class="bt-c n" role="cell" data-f="tN">21/24</div><div class="bt-c n" role="cell" data-f="tTokN">0.41</div></div>
+<div class="bt-r" role="row" style="grid-template-columns:1.4fr 1fr 1fr"><div class="bt-c" role="rowheader">Terse</div><div class="bt-c n best" role="cell" data-f="tT">24/24</div><div class="bt-c n" role="cell" data-f="tTokT">0.41</div></div>
+</div>
+</div>
+<p class="cap"><b>Table 1.</b> Same 24 questions, same setting; only the instruction differs.</p>
+<p>Why the score moves without the model changing:</p>
+<ul id="confounders" style="padding-left:22px;display:flex;flex-direction:column;gap:4px"></ul>
+<p>Use terse prompts for direct answers. To test general quality, give both styles enough output budget and review the answers independently, including the reasoning. Native Ollama runs also change sampling and thinking and allow 4,096 tokens, so they are not a controlled test of wording alone.</p>
+</section>
+
+<section class="sec" aria-labelledby="f3">
+<div class="sec-h"><h2 id="f3"><span class="n num">3</span>Why did extra GLM RAM barely help?</h2><span data-copy="#f3" aria-label="Copy link to section 3"></span></div>
+<p>The <span data-f="budgets">18 / 22 / 26</span> GB budget sweep measured <span data-f="toks">0.4 / 0.41 / 0.42</span> tokens per second, with expert cache hits of <span data-f="hits">2.1 / 2.8 / 3.6</span>%. Generation barely moved.</p>
+<figure class="fig">
+<div id="cache-panels" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:28px 40px"></div>
+<figcaption class="cap"><b>Figure 1.</b> GLM-5.3 int4, exact, at three RAM budgets (horizontal: RAM budget, GB). Left: generation speed. Right: share of expert reads served from the cache. Busy machine, single runs.</figcaption>
+</figure>
+<p>The reason is in the logs. Even at 26 GB, the run reports a dynamic cache of <strong><span data-f="cap">one</span> expert per layer</strong> (about <span data-f="dynGb">1.6</span> GB) plus <span data-f="pinned">91</span> pinned experts (about <span data-f="pinGb">1.9</span> GB). The engine’s fast-SSD heuristic on Metal favours the operating system’s page cache and says to override the capacity with <code>--cap</code>. So these runs did not test a substantially larger expert cache, and they do not show that one would be useless.</p>
+<p>A RAM budget is not the memory actually kept for experts, and a logical cache miss is not proof of a physical SSD read: the page cache may serve it.</p>
+</section>
+
+<section class="sec" aria-labelledby="f4">
+<div class="sec-h"><h2 id="f4"><span class="n num">4</span>How could caching improve?</h2><span data-copy="#f4" aria-label="Copy link to section 4"></span></div>
+<ol style="padding-left:22px;display:flex;flex-direction:column;gap:8px">
+<li><strong>Test actual capacity first.</strong> Explicit 1, 2, 4 and 8 experts per layer, a fixed pin set, no expert skipping, and a memory check before each run. Skip any capacity that is not safe.</li>
+<li><strong>Keep useful experts.</strong> Frequency-aware admission or a protected hot set can stop one-use experts evicting repeatedly useful ones. Compare against LRU at the same retained bytes. A hypothesis, not a measured win.</li>
+<li><strong>Allocate unevenly.</strong> Spend memory on the layers with the largest avoided read cost per byte. Pinning already exists; the experiment improves which experts are chosen.</li>
+<li><strong>Test prefetch separately.</strong> A correct prediction can hide latency without improving cache hits. Count useful and wasted reads, and total time.</li>
+<li><strong>Keep execution efficient.</strong> Avoid duplicate copies and repacking: OLMoE showed that better cache coverage alone does not remove transfer and packing overhead.</li>
+</ol>
+<p>Keeping the experts the model selects preserves its computation, though changed kernels can still change numeric output. Choosing different experts because they are in cache is a separate experiment that <em>changes output</em>, not an exact cache optimization. Judge every proposal by tokens per second and correctness; memory and bytes read are diagnostics, and a higher hit rate is not success on its own.</p>
+</section>
+
+<section class="sec" aria-labelledby="f5">
+<div class="sec-h"><h2 id="f5"><span class="n num">5</span>What is OLMoE?</h2><span data-copy="#f5" aria-label="Copy link to section 5"></span></div>
+<p><a href="https://huggingface.co/allenai/OLMoE-1B-7B-0125">OLMoE</a> is Allen AI’s open mixture-of-experts model: about 7B parameters in total, about 1B active per token. Our 4-bit copy is about 3.9 GB. It is the small testbed for the resident and streaming experiments. It is not Qwen, and its results do not establish a Qwen speed-up.</p>
+<figure class="fig">
+<div id="olmoe" style="display:flex;flex-direction:column;gap:8px;padding:6px 0"></div>
+<figcaption class="cap"><b>Figure 2.</b> OLMoE generation speed, median tokens per second, from the LRU campaign: all 64 experts per layer resident, against LRU caches of 64, 32 and 8 experts per layer. Some outputs differed. <span id="olmoe-other">A separate fixed-slot campaign (8 and 48 experts per layer: 24 and 69 tok/s) is not shown.</span></figcaption>
+</figure>
+</section>
+
+<section class="sec" aria-labelledby="f6">
+<div class="sec-h"><h2 id="f6"><span class="n num">6</span>Next: Qwen expert-memory experiment</h2><span data-copy="#f6" aria-label="Copy link to section 6"></span></div>
+<p style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center"><span class="sc" style="border:1px solid var(--fg);padding:0 8px;font-size:14px;line-height:22px" data-f="qStatus">Specified, not run</span><span class="note" data-f="qWhy">Blocked: needs an isolated Qwen engine build and a benchmark adapter.</span></p>
+<p>Same model, different expert cache sizes: Qwen3.6-35B-A3B in Colibri int4, not the dense Qwen alias in the quality tables. Routing, precision, threads and engine stay fixed, so only the cache changes.</p>
+<div class="tblbox">
+<div class="bt" role="table" aria-label="Table 2. Planned campaign" style="min-width:420px">
+<div class="bt-r bt-h" role="row" style="grid-template-columns:minmax(150px,1fr) 2.4fr"><div class="bt-c" role="columnheader">Planned</div><div class="bt-c" role="columnheader">Value</div></div>
+<div role="rowgroup" id="plan"></div>
+</div>
+</div>
+<p class="cap"><b>Table 2.</b> From <code>experiments/qwen-expert-memory.json</code>. Results will be published once, after the campaign completes.</p>
+<p>The current Colibri Qwen path is CPU and Vulkan, not Metal, so this must not be read as a Metal comparison. A RAM cap does not simulate another machine’s SSD. The GLM explicit-capacity campaign is specified separately in <code>experiments/glm-cache-capacity.json</code>.</p>
+</section>
+
+<footer class="foot">
+<span>Data: <a href="data/findings.json">data/findings.json</a></span>
+<span>Pages are rebuilt from the published data files by automated publishing.</span>
+</footer>
+</main>
+<script>
+/* Numbers and figures from data/findings.json; the prose above stays readable if it fails to load. */
+Site.getJSON('data/findings.json').then(function (F) {
+  var h = Site.h;
+  function set(k, v) { document.querySelectorAll('[data-f="' + k + '"]').forEach(function (e) { e.textContent = v; }); }
+  var READABLE = {
+    'Numeric grader checks last number; explanations with trailing numbers may fail': 'The maths grader checks the last number, so an explanation that ends with another number can fail.',
+    '128-token budget penalizes verbose answers': 'Normal answers have a 128-token budget, so long replies can be cut off before the answer.',
+    'Code grader executes first code block': 'The code grader runs the first code block only.',
+    'Keyword checks do not judge explanation quality': 'Fact checks look for accepted text; they do not judge the explanation.',
+    'No independent repeated quality trials': 'Each question was asked once per setting; there are no independent repeats.'
+  };
+  if (F.date) set('date', new Date(F.date + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }));
+  var t = F.terse && F.terse.glm_int4_exact;
+  if (t) {
+    set('tN', t.normal_correct + '/' + t.graded_per_style); set('tT', t.terse_correct + '/' + t.graded_per_style);
+    set('tTok', t.terse_mean_decode_tok_s); set('tTokN', t.normal_mean_decode_tok_s.toFixed(2)); set('tTokT', t.terse_mean_decode_tok_s.toFixed(2));
+  }
+  Site.fill(document.getElementById('confounders'), (F.terse.confounders || []).map(function (x) { return h('li', { text: READABLE[x] || x }); }));
+  var c = F.glm_cache, e = c.ram26_log_evidence;
+  set('budgets', c.ram_budgets_gb.join(' / ')); set('toks', c.decode_tok_s.join(' / ')); set('hits', c.hit_pct.join(' / '));
+  set('cap', e.dynamic_cap_per_layer === 1 ? 'one' : e.dynamic_cap_per_layer); set('dynGb', e.dynamic_cache_gb); set('pinned', e.pinned_experts); set('pinGb', e.pinned_gb);
+  function panel(title, vals, max, step, unit, alt) {
+    var ticks = []; for (var v = 0; v <= max + 1e-9; v += step) ticks.push(v);
+    return h('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } }, h('h3', { class: 'sc', style: { fontSize: '14px', lineHeight: '20px', fontWeight: '700' }, text: title }),
+      h('div', { class: 'plot', role: 'img', 'aria-label': alt, style: { height: '180px', margin: '4px 0 26px 40px', display: 'grid', gridTemplateColumns: 'repeat(' + vals.length + ', minmax(0, 1fr))', alignItems: 'end', gap: '0 18%', padding: '0 9%' } },
+        ticks.map(function (v) { var pos = (v / max * 100).toFixed(1) + '%'; return [h('span', { class: 'gl', style: { bottom: pos } }), h('span', { class: 'yl', style: { bottom: pos }, text: (Math.round(v * 100) / 100) + unit })]; }),
+        vals.map(function (x, i) {
+          return h('div', { style: { position: 'relative', height: (x / max * 100).toFixed(1) + '%', background: 'var(--fg)' } },
+            h('span', { class: 'num', style: { position: 'absolute', bottom: 'calc(100% + 4px)', left: '50%', transform: 'translateX(-50%)', fontSize: '13px', lineHeight: '16px', whiteSpace: 'nowrap' }, text: x + unit }),
+            h('span', { style: { position: 'absolute', top: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)', fontSize: '12px', lineHeight: '14px', color: 'var(--fg-2)', whiteSpace: 'nowrap' }, text: c.ram_budgets_gb[i] + ' GB' }));
+        })));
+  }
+  var maxTok = Math.max(0.5, Math.ceil(Math.max.apply(null, c.decode_tok_s) * 4) / 4), maxHit = Math.max(5, Math.ceil(Math.max.apply(null, c.hit_pct) / 2.5) * 2.5);
+  Site.fill(document.getElementById('cache-panels'),
+    panel('Generation speed, tok/s', c.decode_tok_s, maxTok, maxTok / 2, '', 'Generation speed at ' + c.ram_budgets_gb.join(', ') + ' GB: ' + c.decode_tok_s.join(', ') + ' tokens per second.'),
+    panel('Expert cache hits, %', c.hit_pct, maxHit, maxHit / 2, '%', 'Expert cache hits at ' + c.ram_budgets_gb.join(', ') + ' GB: ' + c.hit_pct.join(', ') + ' percent.'));
+  var m = F.olmoe && F.olmoe.measurements, lru = m && m.campaigns.filter(function (x) { return /LRU/.test(x.name); })[0];
+  if (lru) {
+    var rows = lru.rows.filter(function (r) { return !/^LFU/.test(r.variant); });
+    var max = Math.max.apply(null, rows.map(function (r) { return r.tok_s; }));
+    Site.fill(document.getElementById('olmoe'), rows.map(function (r) {
+      var lab = r.resident ? 'Resident, all ' + r.experts_per_layer + ' per layer' : 'LRU cache, ' + r.experts_per_layer + ' per layer';
+      return h('div', { class: 'hbar' }, h('span', { class: 'lab', text: lab }), h('span', { class: 'track', 'aria-hidden': 'true' }, h('b', { class: 'solid', style: { width: (r.tok_s / max * 100).toFixed(1) + '%' } })),
+        h('span', { class: 'num', style: { textAlign: 'right' }, text: Math.round(r.tok_s) + ' tok/s' }));
+    }));
+    var fixed = m.campaigns.filter(function (x) { return /Fixed-slot/.test(x.name); })[0];
+    if (fixed) {
+      var fr = fixed.rows.filter(function (r) { return r.experts_per_layer !== 32; }).sort(function (a, b) { return a.experts_per_layer - b.experts_per_layer; });
+      document.getElementById('olmoe-other').textContent = 'A separate fixed-slot campaign (' + fr.map(function (r) { return r.experts_per_layer; }).join(' and ') + ' experts per layer: ' + fr.map(function (r) { return Math.round(r.tok_s); }).join(' and ') + ' tok/s) is not shown.';
+    }
+  }
+  var q = F.qwen_memory, ctl = q.controls;
+  if (q.status) { var blocked = /^blocked:\s*/i.test(q.status); set('qStatus', blocked ? 'Specified, not run' : q.status); if (blocked) set('qWhy', 'Blocked: ' + q.status.replace(/^blocked:\s*/i, '') + '.'); }
+  function list(a) { return a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
+  Site.fill(document.getElementById('plan'), [
+    ['Model', 'Qwen3.6-35B-A3B, Colibri int4 (' + q.model + '); pin revision and SHA256 before the first run'],
+    ['Cache sizes', list(q.capacities_per_layer.map(String)) + ' experts per layer; ' + q.capacities_per_layer[q.capacities_per_layer.length - 1] + ' is the resident baseline, confirmed from telemetry'],
+    ['Fixed', ctl.threads + ' threads, ' + ctl.expert_bits + '-bit experts, temperature ' + ctl.temperature + ', routing ' + ctl.routing + ', context ' + ctl.context + ', ' + ctl.generated_tokens + ' generated tokens'],
+    ['Repeats', ctl.repeats + ' paired repeats; ' + ctl.order],
+    ['Cache state', ctl.cache],
+    ['Prompts', 'The same sky and code prompts and the 24 graded questions, both styles'],
+    ['Measured', 'Generation tok/s, correctness, and whether output matches the resident run; also peak memory, retained expert bytes and cache hits'],
+    ['Safety', 'One GPU job at a time; an isolated engine copy; skip any cache size that fails the memory check']
+  ].map(function (r) {
+    return h('div', { class: 'bt-r grp', role: 'row', style: { gridTemplateColumns: 'minmax(150px, 1fr) 2.4fr' } },
+      h('div', { class: 'bt-c', role: 'rowheader', style: { fontStyle: 'italic' }, text: r[0] }), h('div', { class: 'bt-c', role: 'cell', style: { whiteSpace: 'normal' }, text: r[1] }));
+  }));
+}).catch(function (e) { Site.announce('Could not load the findings data: ' + e.message); });
+</script>
+</body>
+</html>
