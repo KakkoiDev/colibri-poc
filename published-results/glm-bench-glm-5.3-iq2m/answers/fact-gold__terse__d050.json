@@ -1,0 +1,18 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "terse",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 313.95,
+ "prompt_tokens": 29,
+ "prefill_s": 59.6,
+ "output_tokens": 128,
+ "decode_s": 250.67,
+ "decode_tok_s": 0.51,
+ "zeroed_slots": 63459,
+ "hit_pct": 3.2,
+ "text": "Au (79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 — 79 — 46 —",
+ "answer_s": 310.27,
+ "correct": true
+}

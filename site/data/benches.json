@@ -11,7 +11,7 @@
   {
    "name": "glm-5.3-iq2m",
    "file": "bench-glm-5.3-iq2m.json",
-   "answers": 120,
+   "answers": 240,
    "engine": "Colibri",
    "model": "glm-5.3-iq2m",
    "colibri_commit": "16239caafd71588fe6efb12d287f29094060c1b8"

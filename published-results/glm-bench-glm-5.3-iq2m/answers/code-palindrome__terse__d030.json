@@ -1,0 +1,18 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "terse",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 147.53,
+ "prompt_tokens": 47,
+ "prefill_s": 92.9,
+ "output_tokens": 20,
+ "decode_s": 50.7,
+ "decode_tok_s": 0.39,
+ "zeroed_slots": 6755,
+ "hit_pct": 1.6,
+ "text": "```python\ndef is_palindrome(s):\n    return s.lower() == s[::-1]\n```",
+ "answer_s": 143.6,
+ "correct": false
+}

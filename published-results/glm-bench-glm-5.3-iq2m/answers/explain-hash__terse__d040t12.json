@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 313.65,
+ "prompt_tokens": 27,
+ "prefill_s": 31.18,
+ "output_tokens": 128,
+ "decode_s": 278.54,
+ "decode_tok_s": 0.46,
+ "zeroed_slots": 61571,
+ "hit_pct": 2.4,
+ "text": "```python\n# A hash table is a data structure that maps keys to values\n# using a hash function that computes an index from the key\n# and places the entry in a bucket/array of entries.\n# The average time complexity for lookups, insertions, and\n# deletions is O(1) when the hash function distributes keys\n# uniformly across buckets. In the worst case, collisions\n# can degrade performance to O(n), but this is mitigated\n# through collision resolution techniques like chaining\n# (linked lists in buckets) or open addressing (probing\n# for the next free slot). Hash tables",
+ "answer_s": 309.72,
+ "correct": true
+}

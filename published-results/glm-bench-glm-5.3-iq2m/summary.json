@@ -63,5 +63,70 @@
   "prefill_s": 47.48708333333334,
   "output_tokens": 97.0,
   "decode_tok_s": 0.23083333333333333
+ },
+ {
+  "style": "terse",
+  "config": "d030",
+  "runs": 24,
+  "ok": 24,
+  "correct": 23,
+  "graded": 24,
+  "same_as_exact": 18,
+  "answer_s": 114.90541666666667,
+  "prefill_s": 74.08125,
+  "output_tokens": 14.0,
+  "decode_tok_s": 0.3095833333333333
+ },
+ {
+  "style": "terse",
+  "config": "d030t12",
+  "runs": 24,
+  "ok": 24,
+  "correct": 23,
+  "graded": 24,
+  "same_as_exact": 18,
+  "answer_s": 66.50083333333333,
+  "prefill_s": 39.59125,
+  "output_tokens": 14.0,
+  "decode_tok_s": 0.46208333333333335
+ },
+ {
+  "style": "terse",
+  "config": "d040t12",
+  "runs": 24,
+  "ok": 24,
+  "correct": 24,
+  "graded": 24,
+  "same_as_exact": 16,
+  "answer_s": 76.79125,
+  "prefill_s": 39.09791666666667,
+  "output_tokens": 20.083333333333332,
+  "decode_tok_s": 0.5391666666666667
+ },
+ {
+  "style": "terse",
+  "config": "d050",
+  "runs": 24,
+  "ok": 24,
+  "correct": 23,
+  "graded": 24,
+  "same_as_exact": 13,
+  "answer_s": 142.69875,
+  "prefill_s": 74.24791666666667,
+  "output_tokens": 29.5,
+  "decode_tok_s": 0.42
+ },
+ {
+  "style": "terse",
+  "config": "exact",
+  "runs": 24,
+  "ok": 24,
+  "correct": 24,
+  "graded": 24,
+  "same_as_exact": 24,
+  "answer_s": 122.17333333333333,
+  "prefill_s": 74.13208333333334,
+  "output_tokens": 10.541666666666666,
+  "decode_tok_s": 0.19999999999999998
  }
 ]

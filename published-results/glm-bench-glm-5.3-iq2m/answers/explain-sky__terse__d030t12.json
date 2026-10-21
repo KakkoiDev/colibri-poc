@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 91.06,
+ "prompt_tokens": 29,
+ "prefill_s": 34.9,
+ "output_tokens": 24,
+ "decode_s": 52.23,
+ "decode_tok_s": 0.46,
+ "zeroed_slots": 9928,
+ "hit_pct": 1.0,
+ "text": "The sky is blue because molecules in the air scatter blue sunlight more than red, because blue light has a shorter wavelength.",
+ "answer_s": 87.13,
+ "correct": true
+}

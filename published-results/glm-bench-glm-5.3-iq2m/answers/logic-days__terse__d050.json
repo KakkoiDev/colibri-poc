@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "terse",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 77.01,
+ "prompt_tokens": 32,
+ "prefill_s": 69.18,
+ "output_tokens": 1,
+ "decode_s": 4.08,
+ "decode_tok_s": 0.25,
+ "zeroed_slots": 878,
+ "hit_pct": 5.0,
+ "text": "Sunday",
+ "answer_s": 73.26,
+ "correct": true
+}

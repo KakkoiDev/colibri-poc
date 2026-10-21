@@ -1,0 +1,18 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "terse",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 46.59,
+ "prompt_tokens": 31,
+ "prefill_s": 35.32,
+ "output_tokens": 3,
+ "decode_s": 6.97,
+ "decode_tok_s": 0.43,
+ "zeroed_slots": 1204,
+ "hit_pct": 1.3,
+ "text": "Jupiter.",
+ "answer_s": 42.29,
+ "correct": true
+}

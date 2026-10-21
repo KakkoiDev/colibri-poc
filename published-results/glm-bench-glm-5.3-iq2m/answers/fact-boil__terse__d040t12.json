@@ -1,0 +1,18 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "terse",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 311.19,
+ "prompt_tokens": 34,
+ "prefill_s": 37.07,
+ "output_tokens": 128,
+ "decode_s": 270.11,
+ "decode_tok_s": 0.47,
+ "zeroed_slots": 63368,
+ "hit_pct": 2.5,
+ "text": "100 °C (212 °°F, it can only have the boiling point from 0 °F (0 °C, 32 °F, 32 °C) to 100 °C (212 °F, 32 °F, 32 °C, 32 °F, 32 °C, 32 °F, 32 °C, 32 °F, 32 °C, 32 °F, 32 °C, 32 °F, 32 °C, 32 °F, 32 °C, 32 °F, 32 °C, 32",
+ "answer_s": 307.18,
+ "correct": true
+}

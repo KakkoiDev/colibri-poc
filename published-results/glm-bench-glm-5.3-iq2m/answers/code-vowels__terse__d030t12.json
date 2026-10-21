@@ -1,0 +1,18 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "terse",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 107.83,
+ "prompt_tokens": 57,
+ "prefill_s": 57.96,
+ "output_tokens": 29,
+ "decode_s": 46.01,
+ "decode_tok_s": 0.63,
+ "zeroed_slots": 10023,
+ "hit_pct": 1.4,
+ "text": "```python\ndef count_vowels(s):\n    return sum(1 for c in s.lower() if c in 'aeiou')\n```",
+ "answer_s": 103.97,
+ "correct": true
+}
