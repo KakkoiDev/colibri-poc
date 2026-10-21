@@ -854,14 +854,14 @@
    "engine": "Ollama qwen3.8:27b-mlx",
    "style": "normal",
    "config": "exact",
-   "correct": 15,
-   "graded": 20,
-   "median_answer_s": 4.74,
-   "mean_answer_s": 4.253,
-   "median_prefill_s": 0.249,
-   "mean_tok_s": 23.334,
-   "correct_per_min": 10.580766517752176,
-   "truncated": 7
+   "correct": 18,
+   "graded": 24,
+   "median_answer_s": 4.93,
+   "mean_answer_s": 4.46,
+   "median_prefill_s": 0.25,
+   "mean_tok_s": 23.657083333333333,
+   "correct_per_min": 10.089686098654708,
+   "truncated": 10
   },
   {
    "bench": "qwen38-27b-ollama",
@@ -869,13 +869,13 @@
    "engine": "Ollama qwen3.8:27b-mlx",
    "style": "normal",
    "config": "native",
-   "correct": 20,
-   "graded": 20,
-   "median_answer_s": 4.64,
-   "mean_answer_s": 9.3955,
-   "median_prefill_s": 0.121,
-   "mean_tok_s": 24.874000000000002,
-   "correct_per_min": 6.386035868234793,
+   "correct": 24,
+   "graded": 24,
+   "median_answer_s": 5.82,
+   "mean_answer_s": 12.322916666666666,
+   "median_prefill_s": 0.112,
+   "mean_tok_s": 24.736666666666665,
+   "correct_per_min": 4.8689771766694845,
    "truncated": 0
   }
  ]

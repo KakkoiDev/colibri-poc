@@ -1,0 +1,19 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 30.27,
+ "prompt_tokens": 33,
+ "prefill_s": 0.108,
+ "output_tokens": 767,
+ "decode_s": 30.158,
+ "load_s": 0.0,
+ "text": "```python\ndef reverse_words(s):\n    \"\"\"Return the words of s in reverse order, separated by single spaces.\"\"\"\n    return ' '.join(s.split()[::-1])\n```\n\n**How it works:**\n\n| Step | Expression | Result (for `\"the  quick brown fox\"`) |\n|------|-----------|--------------------------------------|\n| Split on whitespace | `s.split()` | `['the', 'quick', 'brown', 'fox']` |\n| Reverse the list | `[::-1]` | `['fox', 'brown', 'quick', 'the']` |\n| Join with single space | `' '.join(...)` | `\"fox brown quick the\"` |\n\n**Why `s.split()` (no argument)?**\n- It splits on *any* run of whitespace (spaces, tabs, newlines), so `\"  hello   world  \"` becomes `['hello', 'world']` — no empty strings.\n- Leading/trailing whitespace is ignored automatically.\n\n**Examples:**\n\n```python\n>>> reverse_words(\"hello world\")\n'world hello'\n\n>>> reverse_words(\"the quick brown fox\")\n'fox brown quick the'\n\n>>> reverse_words(\"  multiple   spaces  here \")\n'here spaces multiple'\n\n>>> reverse_words(\"\")\n''\n\n>>> reverse_words(\"onlyone\")\n'onlyone'\n```\n\n---\n\nIf you'd prefer a more explicit (one-line-per-concept) version, it's equivalent:\n\n```python\ndef reverse_words(s):\n    words = s.split()          # split on whitespace, ignoring extras\n    words.reverse()            # reverse in place\n    return ' '.join(words)     # rejoin with single spaces\n```\n\nBoth versions run in **O(n)** time and **O(n)** space, where *n* is the length of the input string.",
+ "thinking_chars": 1515,
+ "truncated": false,
+ "decode_tok_s": 25.43,
+ "answer_s": 30.27,
+ "correct": true
+}

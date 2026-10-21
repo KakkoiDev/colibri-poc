@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 28.75,
+ "prompt_tokens": 16,
+ "prefill_s": 0.107,
+ "output_tokens": 633,
+ "decode_s": 28.635,
+ "load_s": 0.0,
+ "text": "# Hash Table (Hash Map / Dictionary)\n\nA **hash table** is a data structure that stores data in **key-value pairs** and allows you to look up, insert, and delete entries in (on average) **O(1)** constant time.\n\n## How It Works\n\n1. **Hash function:** You feed a *key* into a hash function, which converts it into a numeric **index** (called a *hash code*).\n   - Example: `\"banana\"` → `3`\n2. **Bucket / Slot:** That index points to a position in an underlying array.\n3. **Store & Retrieve:** The value is placed at (or retrieved from) that position.\n\n```\nKey: \"apple\"  ──► hash(\"apple\") = 2  ──►  array[2] = \"red\"\nKey: \"pear\"   ──► hash(\"pear\")   = 5  ──►  array[5] = \"green\"\n```\n\n## Handling Collisions\n\nDifferent keys can hash to the same index. Two common strategies:\n\n- **Chaining:** Each bucket holds a small linked list (or list) of entries.\n- **Open Addressing:** If a slot is occupied, probe nearby slots (linear probing, quadratic probing, etc.) until a free one is found.\n\n## Key Properties\n\n| Aspect | Detail |\n|---|---|\n| **Average case** | O(1) for insert, lookup, delete |\n| **Worst case** | O(n) if all keys collide into one bucket |\n| **Order** | **No** guaranteed ordering of keys |\n| **Space** | Requires extra space for the array; a *load factor* (entries / slots) controls when the table resizes |\n| **Determinism** | Requires the hash function to be *deterministic* and *evenly distributing* |\n\n## Real-World Names\n\nThe same concept goes by different names in different languages:\n\n- **Python:** `dict`\n- **Java / C#:** `HashMap` / `Dictionary`\n- **JavaScript:** `Object` / `Map`\n- **C++:** `unordered_map`\n- **Rust:** `HashMap`\n\n## Simple Analogy\n\nThink of a **locker system** at a gym: your key (a code) is run through a formula that tells you exactly which locker number to open. You don't scan every locker — you go straight to the one you need.\n\nThat's the core idea behind a hash table: **turn an arbitrary key into an array index instantly**, avoiding the need to search through a list.",
+ "thinking_chars": 340,
+ "truncated": false,
+ "decode_tok_s": 22.11,
+ "answer_s": 28.74,
+ "correct": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 22.21,
+ "prompt_tokens": 18,
+ "prefill_s": 0.108,
+ "output_tokens": 466,
+ "decode_s": 22.098,
+ "load_s": 0.0,
+ "text": "## Why the Sky Is Blue\n\nThe answer comes down to how sunlight interacts with the molecules in Earth's atmosphere, through a process called **Rayleigh scattering**.\n\n**Sunlight is a mix of colors.** What we see as \"white\" sunlight actually contains all the colors of the visible spectrum, each with a different wavelength. Violet and blue light have the *shortest* wavelengths; red and orange have the *longest*.\n\n**The atmosphere scatters short wavelengths more.** As sunlight enters the atmosphere, it collides with tiny gas molecules (mainly nitrogen and oxygen). These molecules are far smaller than the wavelengths of visible light, so they scatter the light in all directions. The key detail: the amount of scattering is inversely proportional to the **fourth power of the wavelength**. That means a 500 nm (blue) wave is scattered roughly **5–6 times more** than a 700 nm (red) wave. So blue light gets redirected across the sky much more than red or orange.\n\n**Why not violet?** Violet light has an even shorter wavelength than blue and is scattered *more* yet. We still perceive the sky as blue for a few reasons:\n\n- Our eyes are more sensitive to blue than to violet.\n- The sun itself emits somewhat less violet light than blue.\n- Some violet is absorbed in the upper atmosphere before it reaches our eyes.\n\n**What happens at sunrise and sunset?** When the sun is near the horizon, its light travels through a much thicker slice of atmosphere. By the time it reaches you, most of the blue and violet has been scattered away, leaving the longer red and orange wavelengths to dominate — giving us sunsets.\n\nSo in short: the sky is blue because the gases in our atmosphere act like a giant, gentle prism that preferentially scatters the short-wavelength blue end of sunlight in every direction, filling the dome above us with that color.",
+ "thinking_chars": 373,
+ "truncated": false,
+ "decode_tok_s": 21.09,
+ "answer_s": 22.21,
+ "correct": true
+}
