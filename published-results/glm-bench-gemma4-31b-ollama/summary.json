@@ -1,0 +1,28 @@
+[
+ {
+  "style": "normal",
+  "config": "exact",
+  "runs": 24,
+  "ok": 24,
+  "correct": 18,
+  "graded": 24,
+  "same_as_exact": 24,
+  "answer_s": 3.094583333333333,
+  "prefill_s": 0.35033333333333333,
+  "output_tokens": 58.166666666666664,
+  "decode_tok_s": 20.18583333333333
+ },
+ {
+  "style": "normal",
+  "config": "native",
+  "runs": 24,
+  "ok": 24,
+  "correct": 23,
+  "graded": 24,
+  "same_as_exact": 8,
+  "answer_s": 21.462500000000002,
+  "prefill_s": 0.34191666666666665,
+  "output_tokens": 409.7083333333333,
+  "decode_tok_s": 21.86583333333333
+ }
+]

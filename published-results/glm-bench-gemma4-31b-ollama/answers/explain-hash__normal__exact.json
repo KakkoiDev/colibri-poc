@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 7.56,
+ "prompt_tokens": 19,
+ "prefill_s": 0.509,
+ "output_tokens": 128,
+ "decode_s": 7.018,
+ "load_s": 0.027,
+ "text": "At its simplest, a **hash table** (or hash map) is a data structure that stores data in **key-value pairs**. \n\nIt is designed for one primary purpose: **extremely fast retrieval.** In a perfect scenario, a hash table can find a specific piece of data almost instantly, regardless of how many millions of items are stored in it.\n\nHere is a detailed breakdown of how it works.\n\n---\n\n### 1. The Core Concept: The Analogy\nImagine a massive library with millions of books. \n* **Without a hash table:** You would have to walk through the aisles and check every",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 18.24,
+ "answer_s": 7.53,
+ "correct": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "fact-ww2",
+ "kind": "fact",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 6.03,
+ "prompt_tokens": 25,
+ "prefill_s": 0.323,
+ "output_tokens": 142,
+ "decode_s": 5.701,
+ "load_s": 0.003,
+ "text": "World War II ended in **1945**.",
+ "thinking_chars": 350,
+ "truncated": false,
+ "decode_tok_s": 24.91,
+ "answer_s": 6.02,
+ "correct": true
+}

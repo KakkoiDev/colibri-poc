@@ -1,0 +1,19 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 4.19,
+ "prompt_tokens": 27,
+ "prefill_s": 0.325,
+ "output_tokens": 89,
+ "decode_s": 3.858,
+ "load_s": 0.004,
+ "text": "Two days after Friday is Sunday.",
+ "thinking_chars": 257,
+ "truncated": false,
+ "decode_tok_s": 23.07,
+ "answer_s": 4.18,
+ "correct": true
+}

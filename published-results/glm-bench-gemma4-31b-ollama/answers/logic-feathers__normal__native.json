@@ -1,0 +1,19 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 18.22,
+ "prompt_tokens": 30,
+ "prefill_s": 0.331,
+ "output_tokens": 319,
+ "decode_s": 17.866,
+ "load_s": 0.004,
+ "text": "They are the **same weight**. \n\nA kilogram is a measure of mass; since both are exactly one kilogram, they weigh the same regardless of the material. The only difference is that a kilogram of feathers would take up much more space (volume) than a kilogram of steel.",
+ "thinking_chars": 984,
+ "truncated": false,
+ "decode_tok_s": 17.86,
+ "answer_s": 18.2,
+ "correct": true
+}

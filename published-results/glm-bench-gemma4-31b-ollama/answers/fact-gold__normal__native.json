@@ -1,0 +1,19 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 4.36,
+ "prompt_tokens": 24,
+ "prefill_s": 0.236,
+ "output_tokens": 86,
+ "decode_s": 4.12,
+ "load_s": 0.003,
+ "text": "The chemical symbol for gold is **Au**.",
+ "thinking_chars": 255,
+ "truncated": false,
+ "decode_tok_s": 20.87,
+ "answer_s": 4.36,
+ "correct": true
+}

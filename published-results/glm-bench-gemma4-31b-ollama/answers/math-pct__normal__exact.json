@@ -1,0 +1,19 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 6.2,
+ "prompt_tokens": 25,
+ "prefill_s": 0.316,
+ "output_tokens": 128,
+ "decode_s": 5.786,
+ "load_s": 0.055,
+ "text": "To find 15% of 240, you can use the following method:\n\n**Method 1: Multiplication**\n1. Convert 15% to a decimal: $0.15$\n2. Multiply by 240: $0.15 \\times 240 = 36$\n\n**Method 2: Mental Math (The 10% + 5% rule)**\n1. Find 10% of 240 (move the decimal one place to the left): **24**\n2. Find 5% of 2",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 22.12,
+ "answer_s": 6.1,
+ "correct": false
+}

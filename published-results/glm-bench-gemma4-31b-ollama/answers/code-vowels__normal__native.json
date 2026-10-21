@@ -1,0 +1,19 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 45.86,
+ "prompt_tokens": 53,
+ "prefill_s": 0.365,
+ "output_tokens": 891,
+ "decode_s": 45.467,
+ "load_s": 0.004,
+ "text": "Here are two ways to do this: a **clear, beginner-friendly version** and a **concise, professional version**.\n\n### Option 1: Clear and Simple (Using a Loop)\nThis version is easy to read and follows the basic logic of iterating through the string.\n\n```python\ndef count_vowels(s):\n    count = 0\n    vowels = \"aeiouAEIOU\"  # Define all possible vowels (both cases)\n    \n    for char in s:\n        if char in vowels:\n            count += 1\n            \n    return count\n\n# Example usage:\nprint(count_vowels(\"Hello World\"))  # Output: 3\nprint(count_vowels(\"Python is Awesome\"))  # Output: 6\n```\n\n---\n\n### Option 2: Concise and Pythonic (Using `sum`)\nThis version uses a **generator expression**. It treats `True` as `1` and `False` as `0`, summing them up to get the total count.\n\n```python\ndef count_vowels(s):\n    vowels = \"aeiou\"\n    return sum(1 for char in s.lower() if char in vowels)\n\n# Example usage:\nprint(count_vowels(\"Hello World\"))  # Output: 3\n```\n\n### Explanation of how it works:\n1.  **`s.lower()`**: By converting the whole string to lowercase first, we only have to check against `\"aeiou\"` instead of both uppercase and lowercase letters.\n2.  **`char in vowels`**: This checks if the current character exists inside the vowel string.\n3.  **`sum(...)`**: We generate a `1` every time the condition is true and add them all together.\n\n**Complexity:**\n*   **Time Complexity:** $O(n)$, where $n$ is the length of the string, because we must look at every character once.\n*   **Space Complexity:** $O(1)$, as the size of the `vowels` reference string remains constant regardless of the input size.",
+ "thinking_chars": 1505,
+ "truncated": false,
+ "decode_tok_s": 19.6,
+ "answer_s": 45.83,
+ "correct": true
+}

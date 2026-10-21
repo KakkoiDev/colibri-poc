@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 98.01,
+ "prompt_tokens": 22,
+ "prefill_s": 0.814,
+ "output_tokens": 1518,
+ "decode_s": 97.158,
+ "load_s": 0.014,
+ "text": "At its simplest, a **hash table** (also known as a hash map) is a data structure that stores data in **key-value pairs**. \n\nIt is designed for one primary purpose: **extremely fast data retrieval.** While a list or array requires you to search through elements one by one to find something, a hash table allows you to jump directly to the data you need.\n\nHere is a detailed breakdown of how it works.\n\n---\n\n### 1. The Core Concept: Key-Value Pairs\nThink of a hash table like a **dictionary**. \n*   **The Key:** The word you are looking up (e.g., \"Apple\").\n*   **The Value:** The definition of that word (e.g., \"A round red fruit\").\n\nIn a program, the key could be a username (string) and the value could be that user's profile data (object).\n\n### 2. How it Works: The \"Magic\" of Hashing\nThe secret to the hash table's speed is the **Hash Function**. \n\nNormally, computers store data in an array (a numbered list). To find a value, you need its index number (like `array[5]`). But how do you turn a word like `\"Apple\"` into a number?\n\n1.  **Input:** You give the **key** (`\"Apple\"`) to the hash function.\n2.  **Processing:** The hash function performs a mathematical operation on the string to turn it into a unique integer (e.g., `\"Apple\"` $\\rightarrow$ `42`).\n3.  **Storage:** The computer stores the value in the array at index `42`.\n4.  **Retrieval:** When you ask for `\"Apple\"` again, the function immediately calculates `42`, and the computer jumps straight to that spot. It doesn't have to look at any other elements.\n\n### 3. The Problem: Collisions\nSometimes, the hash function is not perfect. Two different keys might result in the same number. For example, both `\"Apple\"` and `\"Banana\"` might hash to index `42`. This is called a **Collision**.\n\nThere are two main ways to handle this:\n*   **Chaining:** Instead of storing one value at index 42, the table stores a small **linked list**. If two items land on 42, they just sit in a list together. The computer finds 42, then searches the tiny list for the specific key.\n*   **Open Addressing:** If index 42 is taken, the computer looks for the next available empty spot (index 43, 44, etc.) and puts the data there.\n\n### 4. Performance (Time Complexity)\nThe reason developers love hash tables is their efficiency:\n\n| Operation | Average Time Complexity | Worst Case (Many Collisions) |\n| :--- | :--- | :--- |\n| **Insert** | $O(1)$ (Constant) | $O(n)$ (Linear) |\n| **Delete** | $O(1)$ (Constant) | $O(n)$ (Linear) |\n| **Search** | $O(1)$ (Constant) | $O(n)$ (Linear) |\n\n*$O(1)$ means that no matter how many millions of items are in the table, finding one takes the same amount of time.*\n\n### 5. Real-World Examples\nYou use hash tables every day without realizing it:\n*   **Phone Contacts:** The name is the **key**, and the phone number is the **value**.\n*   **Caching:** Websites store temporary data in a hash table so they don't have to reload the same page from a slow database every time.\n*   **Database Indexing:** Databases use hashing to find a specific row in a table of millions of records instantly.\n\n### Summary Table\n| Feature | Description |\n| :--- | :--- |\n| **Structure** | Array + Hash Function |\n| **Input** | Key $\\rightarrow$ Hash Function $\\rightarrow$ Index $\\rightarrow$ Value |\n| **Strength** | Incredible speed for searching and inserting |\n| **Weakness** | Uses more memory than a simple array; requires a good hash function to avoid collisions |\n| **Common Names** | `HashMap` (Java), `dict` (Python), `Object`/`Map` (JavaScript) |",
+ "thinking_chars": 2110,
+ "truncated": false,
+ "decode_tok_s": 15.62,
+ "answer_s": 97.97,
+ "correct": true
+}

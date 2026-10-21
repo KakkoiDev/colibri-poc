@@ -1,0 +1,19 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 5.83,
+ "prompt_tokens": 50,
+ "prefill_s": 0.353,
+ "output_tokens": 128,
+ "decode_s": 5.462,
+ "load_s": 0.01,
+ "text": "Here are two ways to write this function. The first is the most readable for beginners, and the second is a more concise \"Pythonic\" approach.\n\n### Option 1: Using a simple loop (Beginner Friendly)\nThis approach iterates through every character and checks if it exists in a string of vowels.\n\n```python\ndef count_vowels(s):\n    vowels = \"aeiouAEIOU\"\n    count = 0\n    for char in s:\n        if char in vowels:\n            count += 1\n    return count\n\n# Test cases\nprint(count_v",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 23.43,
+ "answer_s": 5.81,
+ "correct": false
+}
