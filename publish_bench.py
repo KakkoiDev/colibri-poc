@@ -19,6 +19,8 @@ LABELS = {'exact': 'exact', 'native': 'Ollama defaults (thinking on)', 'd030': '
 
 
 def engine_info(meta):
+    if meta.get('backend') == 'openai':
+        return dict(engine='MLX server', model=meta['openai_model'])
     if meta.get('backend') == 'ollama':
         return dict(engine='Ollama', model=meta['ollama_model'], ollama_version=meta.get('ollama_version'))
     return dict(engine='Colibri', model=meta.get('model_label', 'GLM-5.3 int4'), colibri_commit=meta.get('colibri_commit'))

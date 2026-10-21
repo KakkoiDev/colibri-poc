@@ -17,6 +17,59 @@ DEGRADE_ZERO tau=0.300 (zeroed 120 miss slots; top layers: L57:15)
 
 
 class GlmBenchTests(unittest.TestCase):
+    def test_openai_stream_parsing_and_record(self):
+        lines = [b'data: {"choices":[{"delta":{"content":"Can"}}]}\n', b'\n',
+                 b'data: {"choices":[{"delta":{"content":"berra"},"finish_reason":null}]}\n',
+                 b'data: {"choices":[{"delta":{},"finish_reason":"stop"}],"usage":{"prompt_tokens":12,"completion_tokens":3}}\n',
+                 b'data: [DONE]\n']
+        class R:
+            def __enter__(self): return self
+            def __exit__(self, *a): pass
+            def __iter__(self): return iter(lines)
+        sent = []
+        old = gb.urllib.request.urlopen
+        gb.urllib.request.urlopen = lambda req, timeout: (sent.append(json.loads(req.data)), R())[1]
+        try:
+            resp = gb.openai_generate('http://x', 'olmoe', 'Capital?', 64, 5)
+        finally:
+            gb.urllib.request.urlopen = old
+        self.assertEqual(sent[0]['max_tokens'], 64)
+        self.assertEqual(sent[0]['temperature'], 0)
+        self.assertEqual((resp['text'], resp['chunks'], resp['finish_reason']), ('Canberra', 2, 'stop'))
+        rec = gb.openai_record(dict(resp, ttft_s=0.5, total_s=1.5))
+        self.assertEqual((rec['prompt_tokens'], rec['output_tokens'], rec['tokens_from']), (12, 3, 'usage'))
+        self.assertAlmostEqual(rec['decode_s'], 1.0)
+        self.assertAlmostEqual(rec['decode_tok_s'], 2.0)   # 2 tokens after the first, in 1 s
+        self.assertFalse(rec['truncated'])
+        no_usage = gb.openai_record({'text': 'x', 'chunks': 5, 'usage': None, 'ttft_s': 1, 'total_s': 3, 'finish_reason': 'length'})
+        self.assertEqual((no_usage['output_tokens'], no_usage['tokens_from'], no_usage['truncated']), (5, 'stream chunks', True))
+
+    def test_openai_backend_runs_and_refuses_skip_configs(self):
+        with tempfile.TemporaryDirectory() as d:
+            old_root, old_gen = gb.ROOT, gb.openai_generate
+            gb.ROOT = Path(d)
+            shutil.copy(Path(old_root, 'glm-prompts.json'), d)
+            gb.openai_generate = lambda url, model, prompt, ngen, timeout: {
+                'text': 'Canberra.', 'usage': {'prompt_tokens': 9, 'completion_tokens': 3}, 'chunks': 3,
+                'finish_reason': 'stop', 'ttft_s': 0.1, 'total_s': 0.3}
+            try:
+                args = types.SimpleNamespace(name='o', configs='exact', styles='terse', only='fact-capital', ngen=64, ram='18',
+                                             ctx='1024', timeout=5, model='m', coli_dir='~/x', backend='openai',
+                                             openai_model='olmoe', openai_url='http://127.0.0.1:1', ollama_model='', ollama_url='')
+                gb.run(args)
+                out = Path(d, 'results', 'glm-bench-o')
+                rec = json.loads(Path(out, 'fact-capital__terse__exact.json').read_text())
+                self.assertTrue(rec['correct'])
+                self.assertAlmostEqual(rec['answer_s'], 0.3)
+                self.assertEqual(json.loads(Path(out, 'meta.json').read_text())['backend'], 'openai')
+                rows = gb.compare(types.SimpleNamespace(names='o', out='o', colibri_label='GLM'))
+                self.assertEqual((rows[0]['model'], rows[0]['engine']), ('olmoe', 'MLX server olmoe'))
+                args.configs, args.name = 'exact,d030', 'p'
+                with self.assertRaises(SystemExit):
+                    gb.run(args)
+            finally:
+                gb.ROOT, gb.openai_generate = old_root, old_gen
+
     def test_ram_refusal_stops_the_run_and_records_nothing(self):
         with tempfile.TemporaryDirectory() as d:
             old_root, old_run = gb.ROOT, gb.subprocess.run

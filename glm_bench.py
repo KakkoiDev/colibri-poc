@@ -6,6 +6,7 @@ processing, generation, output text and a pass/fail grade.
 
     .venv/bin/python glm_bench.py run --name NAME [--configs exact,d030,d050] [--styles normal,terse]
     .venv/bin/python glm_bench.py run --name NAME --backend ollama --ollama-model qwen3.8:27b-mlx --configs exact
+    .venv/bin/python glm_bench.py run --name NAME --backend openai --openai-url http://127.0.0.1:8771 --openai-model M --configs exact
     .venv/bin/python glm_bench.py report --name NAME
 
 Runs are resumable: a finished (prompt, style, config) is skipped. Every run uses
@@ -81,6 +82,51 @@ def ollama_generate(url, model, prompt, ngen, timeout, cfg='exact'):
         return json.loads(r.read())
 
 
+def openai_generate(url, model, prompt, ngen, timeout):
+    """One streamed /v1/chat/completions request (e.g. mlx_lm.server). Greedy, max_tokens=ngen.
+    Streaming gives the time to the first token, which stands in for prompt reading."""
+    body = json.dumps({'model': model, 'messages': [{'role': 'user', 'content': prompt}], 'temperature': 0,
+                       'max_tokens': ngen, 'stream': True, 'stream_options': {'include_usage': True}}).encode()
+    req = urllib.request.Request(url.rstrip('/') + '/v1/chat/completions', data=body, headers={'Content-Type': 'application/json'})
+    t0, first, parts, chunks, usage, finish = time.time(), None, [], 0, None, None
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        for raw in r:
+            line = raw.decode('utf-8', 'replace').strip()
+            if not line.startswith('data:'):
+                continue
+            data = line[5:].strip()
+            if data == '[DONE]':
+                break
+            ev = json.loads(data)
+            usage = ev.get('usage') or usage
+            for ch in ev.get('choices') or []:
+                piece = (ch.get('delta') or {}).get('content') or ''
+                if piece:
+                    first = first or time.time()
+                    parts.append(piece)
+                    chunks += 1
+                finish = ch.get('finish_reason') or finish
+    end = time.time()
+    return {'text': ''.join(parts), 'usage': usage, 'chunks': chunks, 'finish_reason': finish, 'max_tokens': ngen,
+            'ttft_s': round((first or end) - t0, 3), 'total_s': round(end - t0, 3)}
+
+
+def openai_record(resp):
+    """Map a streamed reply to the bench's fields. Prompt reading = time to first token; generation =
+    the rest. Token counts come from the server's usage, else from the number of streamed chunks."""
+    u = resp.get('usage') or {}
+    out = u.get('completion_tokens') or resp.get('chunks') or 0
+    decode_s = max(resp['total_s'] - resp['ttft_s'], 0.0)
+    rec = dict(prompt_tokens=u.get('prompt_tokens'), output_tokens=out, prefill_s=resp['ttft_s'], decode_s=round(decode_s, 3),
+               text=(resp.get('text') or '').strip(),
+               # mlx_lm.server can report "stop" at the limit, so a reply that used every allowed token counts as cut off
+               truncated=resp.get('finish_reason') == 'length' or bool(resp.get('max_tokens') and out >= resp['max_tokens']),
+               tokens_from='usage' if u.get('completion_tokens') else 'stream chunks')
+    # the first token arrives with prompt reading, so the rate is over the remaining tokens
+    rec['decode_tok_s'] = round((out - 1) / decode_s, 2) if out > 1 and decode_s > 0 else None
+    return rec
+
+
 def first_code_block(text):
     m = re.search(r'```(?:python|py)?\s*\n(.*?)(?:```|$)', text, re.S)  # unclosed when cut by --ngen
     if m:
@@ -130,20 +176,28 @@ def run(args):
     coli = Path(args.coli_dir).expanduser() / 'c' / 'coli'
     configs = args.configs.split(',')
     ollama = args.backend == 'ollama'
+    openai = args.backend == 'openai'
+    if openai and (configs != ['exact'] or not args.openai_model):
+        raise SystemExit('the openai backend needs --openai-model and --configs exact (greedy, thinking is whatever the server does)')
     if ollama and (not set(configs) <= set(OLLAMA_CONFIGS) or not args.ollama_model):
         raise SystemExit(f'the ollama backend needs --ollama-model and configs from {sorted(OLLAMA_CONFIGS)} (skip settings are Colibri-only)')
     styles = args.styles.split(',')
     items = [p for p in spec['prompts'] if not args.only or p['id'] in args.only.split(',')]
     meta = out_dir / 'meta.json'
     if not meta.exists():
-        engine = ({'backend': 'ollama', 'ollama_model': args.ollama_model, 'ollama_url': args.ollama_url,
+        engine = ({'backend': 'openai', 'openai_model': getattr(args, 'openai_label', '') or args.openai_model,
+                   'openai_request_model': args.openai_model, 'openai_url': args.openai_url,
+                   'openai_options': {'temperature': 0, 'max_tokens': args.ngen, 'stream': True},
+                   'timing_note': 'prefill_s = time to first streamed token (includes request overhead); decode_s = the rest'} if openai else
+                  {'backend': 'ollama', 'ollama_model': args.ollama_model, 'ollama_url': args.ollama_url,
                    'ollama_version': subprocess.run(['ollama', '--version'], capture_output=True, text=True).stdout.strip(),
                    'ollama_configs': {c: OLLAMA_CONFIGS[c] for c in configs},
                    'ollama_ps': subprocess.run(['ollama', 'ps'], capture_output=True, text=True).stdout.strip()} if ollama else
                   {'backend': 'colibri', 'colibri_commit': subprocess.run(['git', '-C', str(coli.parent.parent), 'rev-parse', 'HEAD'],
                                                                           capture_output=True, text=True).stdout.strip()})
         meta.write_text(json.dumps({'started': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
-                                    **engine, 'base_env': {} if ollama else BASE_ENV, 'configs': {} if ollama else {c: CONFIGS[c] for c in configs},
+                                    **engine, 'base_env': {} if ollama or openai else BASE_ENV,
+                                    'configs': {} if ollama or openai else {c: CONFIGS[c] for c in configs},
                                     'styles': {s: spec['styles'][s] for s in styles},
                                     'ram': args.ram, 'ctx': args.ctx, 'ngen': args.ngen}, indent=1))
     total = len(items) * len(styles) * len(configs)
@@ -169,16 +223,17 @@ def run(args):
                         if old.exists():
                             old.replace(archive / old.name)
                 prompt = item['prompt'] + spec['styles'][style]
-                if ollama:
+                if ollama or openai:
                     t0 = time.time()
                     try:
-                        resp, code = ollama_generate(args.ollama_url, args.ollama_model, prompt, args.ngen, args.timeout, cfg), 0
+                        resp, code = (openai_generate(args.openai_url, args.openai_model, prompt, args.ngen, args.timeout) if openai
+                                      else ollama_generate(args.ollama_url, args.ollama_model, prompt, args.ngen, args.timeout, cfg)), 0
                     except Exception as e:  # server down, timeout: recorded as a failed run, like a crashed engine
                         resp, code = {'error': str(e)}, 1
                     wall = time.time() - t0
                     (out_dir / f'{key}.log').write_text(json.dumps(resp, ensure_ascii=False, indent=1))
                     rec = dict(id=item['id'], kind=item['kind'], style=style, config=cfg, exit=code,
-                               wall_s=round(wall, 2), **(ollama_record(resp) if code == 0 else {}))
+                               wall_s=round(wall, 2), **((openai_record(resp) if openai else ollama_record(resp)) if code == 0 else {}))
                     rec['answer_s'] = round(rec['prefill_s'] + rec['decode_s'], 2) if code == 0 else None
                     rec['correct'] = grade(item, rec.get('text'))
                     res_path.write_text(json.dumps(rec, ensure_ascii=False, indent=1))
@@ -245,8 +300,8 @@ def compare(args):
     for name in args.names.split(','):
         out_dir = ROOT / 'results' / f'glm-bench-{name}'
         meta = json.loads((out_dir / 'meta.json').read_text()) if (out_dir / 'meta.json').exists() else {}
-        engine = f"Ollama {meta['ollama_model']}" if meta.get('backend') == 'ollama' else 'Colibri'
-        model = meta.get('ollama_model') or args.colibri_label
+        engine = {'ollama': f"Ollama {meta.get('ollama_model')}", 'openai': f"MLX server {meta.get('openai_model')}"}.get(meta.get('backend'), 'Colibri')
+        model = meta.get('ollama_model') or meta.get('openai_model') or args.colibri_label
         groups = {}
         for f in sorted(out_dir.glob('*__*.json')):
             r = json.loads(f.read_text())
@@ -290,7 +345,10 @@ def main():
     r.add_argument('--timeout', type=int, default=1200)
     r.add_argument('--model', default='~/colibri-models/glm-5.3')
     r.add_argument('--coli-dir', default='~/Code/colibri')
-    r.add_argument('--backend', choices=['colibri', 'ollama'], default='colibri')
+    r.add_argument('--backend', choices=['colibri', 'ollama', 'openai'], default='colibri')
+    r.add_argument('--openai-model', default='')
+    r.add_argument('--openai-url', default='http://127.0.0.1:8771')
+    r.add_argument('--openai-label', default='', help='model name shown in results (default: --openai-model)')
     r.add_argument('--ollama-model', default='')
     r.add_argument('--ollama-url', default='http://127.0.0.1:11434')
     p = sub.add_parser('report')
