@@ -25,6 +25,10 @@ class ManifestTests(unittest.TestCase):
         self.assertEqual(got['gemma4-26b-ollama'], ('Gemma 4 26B', 'Ollama, fully in RAM'))
         self.assertEqual(got['olmoe-mlx'], ('OLMoE 1B-7B (4-bit)', 'MLX, fully in RAM'))
         self.assertEqual(got['mystery-ollama'], ('mystery:7b', 'Ollama, fully in RAM'), 'unknown models fall back to their id')
+        subs = {r['name']: r['sub'] for r in pb.with_titles(ROWS)}
+        self.assertEqual(subs['glm-5.3-iq2m'], 'GGUF IQ2_M, read in place')
+        self.assertEqual(subs['glm-5.3-mtp'], 'Colibri int4 g64 + int8 MTP head')
+        self.assertEqual(subs['qwen38-27b-ollama'], 'Ollama qwen3.8:27b-mlx')
 
     def test_order_is_the_tab_order(self):
         names = [r['name'] for r in pb.with_titles(ROWS)]

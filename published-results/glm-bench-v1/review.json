@@ -64,7 +64,7 @@
   }
  },
  "notes": [
-  "Skip 0.4 (12 threads), normal style: 14 of 24 answers so far; 10 were refused for lack of free RAM (Ollama held ~25 GB) and are queued to re-run on a quiet machine.",
+  "Skip 0.4 (12 threads), normal style: 10 of its 24 answers were first refused for lack of free RAM (Ollama held ~25 GB); they were re-run on a quiet machine on 2026-10-19, so all 24 are real answers.",
   "Runs during round 2 overlapped with the 3-bit GGUF download: quality is unaffected, answer times may be slower (see results notes)."
  ]
 }

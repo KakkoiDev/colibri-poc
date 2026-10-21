@@ -1,0 +1,18 @@
+{
+ "name": "Artificial Analysis Intelligence Index",
+ "version": "v4.3.2",
+ "source": "https://artificialanalysis.ai/models",
+ "fetched": "2026-10-18",
+ "rows": [
+  {
+   "model": "GLM-5.3",
+   "listed_as": "GLM-5.3 (Max)",
+   "score": 45
+  },
+  {
+   "model": "Qwen3.8-27B",
+   "listed_as": "Qwen3.8 27B (Xhigh)",
+   "score": 34
+  }
+ ]
+}

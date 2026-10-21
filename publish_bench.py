@@ -40,6 +40,7 @@ def with_titles(rows):
     catalog = [m for m in json.loads((ROOT / 'models' / 'catalog.json').read_text())['models']]
     order = {m['id']: i for i, m in enumerate(catalog)}
     names = {m['id']: re.sub(r'\s*\(.*\)$', '', m['name']).replace(' g64', '') for m in catalog}
+    formats = {m['id']: re.sub(r'\s*\(.*\)$', '', m.get('format', '')) for m in catalog}
     out = []
     for r in rows:
         cid = 'glm-5.3-int4' if r['name'] == 'v1' else r.get('model')
@@ -47,7 +48,8 @@ def with_titles(rows):
             title = names.get(cid, r.get('model'))
         else:
             title = TITLES.get(r.get('model')) or TITLES.get(Path(str(r.get('model'))).name) or r.get('model')
-        out.append(dict(r, title=title, group=GROUPS.get(r.get('engine'), r.get('engine'))))
+        sub = formats.get(cid) if r.get('engine') == 'Colibri' else f"{r.get('engine')} {Path(str(r.get('model'))).name}"
+        out.append(dict(r, title=title, sub=sub or r.get('model'), group=GROUPS.get(r.get('engine'), r.get('engine'))))
     groups = list(GROUPS.values())
     def key(r):
         g = groups.index(r['group']) if r['group'] in groups else len(groups)
@@ -56,11 +58,25 @@ def with_titles(rows):
     return sorted(out, key=key)
 
 
+EXTERNAL = {'GLM-5.3 (Max)': 'GLM-5.3', 'Qwen3.8 27B (Xhigh)': 'Qwen3.8-27B'}   # published scores for models benched here
+
+
+def write_external(path=None):
+    """site/data/external-scores.json: the published intelligence scores of the models benched here, with their source.
+    Reported by others; the page labels them so."""
+    aa = json.loads((ROOT / 'models' / 'external-benchmarks.json').read_text())['aa_index']
+    rows = [dict(model=EXTERNAL[r['model']], listed_as=r['model'], score=r['score']) for r in aa['rows'] if r['model'] in EXTERNAL]
+    out = dict(name=aa['name'], version=aa['version'], source=aa['source'],
+               fetched=json.loads((ROOT / 'models' / 'external-benchmarks.json').read_text()).get('fetched'), rows=rows)
+    Path(path or ROOT / 'site' / 'data' / 'external-scores.json').write_text(json.dumps(out, ensure_ascii=False, indent=1) + '\n')
+
+
 def rewrite_manifest(path=None):
     path = Path(path or ROOT / 'site' / 'data' / 'benches.json')
     m = json.loads(path.read_text())
     m['benches'] = with_titles(m['benches'])
     path.write_text(json.dumps(m, ensure_ascii=False, indent=1) + '\n')
+    write_external()
 
 
 def update_manifest(name, info, n_answers):
@@ -70,6 +86,7 @@ def update_manifest(name, info, n_answers):
     m['benches'].append(dict(name=name, file=f'bench-{name}.json', answers=n_answers, **info))
     m['benches'] = with_titles(m['benches'])   # title, group and tab order (GLM v1 first)
     path.write_text(json.dumps(m, ensure_ascii=False, indent=1) + '\n')
+    write_external()
     # one table across every published bench: the trade-off between quality and waiting
     rows = glm_bench.compare(type('A', (), {'names': ','.join(b['name'] for b in m['benches']), 'out': 'published',
                                             'colibri_label': 'GLM-5.3 int4'})())
