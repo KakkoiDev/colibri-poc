@@ -11,6 +11,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 LABEL = 'dev.kakkoi.glm-lab-results'
@@ -112,6 +113,36 @@ def sync():
             run(['git', 'fetch', 'origin', 'main'])
 
 
+def completed_jobs():
+    jobs = saved_json(ROOT / 'results/lab-app/jobs.json') or {'jobs': []}
+    return {str(job['id']) for job in jobs['jobs']
+            if job.get('kind') in {'bench', 'suite', 'planned', 'quiet'}
+            and job.get('status') in {'done', 'failed', 'finished'}}
+
+
+def check_completions():
+    state = ROOT / 'results/lab-app/published-jobs.json'
+    current = completed_jobs()
+    previous = saved_json(state)
+    if previous is None:
+        # Installation starts from now; do not republish historical jobs.
+        state.parent.mkdir(parents=True, exist_ok=True)
+        state.write_text(json.dumps(sorted(current)))
+        return
+    if current - set(previous):
+        sync()  # Advance the checkpoint only after a successful push/no-op.
+        state.write_text(json.dumps(sorted(set(previous) | current)))
+
+
+def watch():
+    while True:
+        try:
+            check_completions()
+        except Exception as error:
+            print('Results publishing will retry:', error, flush=True)
+        time.sleep(15)
+
+
 def install(remove=False):
     plist = Path.home() / 'Library/LaunchAgents' / (LABEL + '.plist')
     domain = 'gui/' + str(os.getuid())
@@ -122,20 +153,23 @@ def install(remove=False):
     logs = ROOT / 'results/lab-app/publisher.log'
     logs.parent.mkdir(parents=True, exist_ok=True)
     env = {k: os.environ[k] for k in ('HOME', 'PATH', 'SSH_AUTH_SOCK') if k in os.environ}
-    config = dict(Label=LABEL, ProgramArguments=[sys.executable, str(Path(__file__).resolve()), 'once'],
-                  WorkingDirectory=str(ROOT), EnvironmentVariables=env, StartInterval=300,
+    config = dict(Label=LABEL, ProgramArguments=[sys.executable, str(Path(__file__).resolve()), 'watch'],
+                  WorkingDirectory=str(ROOT), EnvironmentVariables=env, KeepAlive=True,
                   RunAtLoad=True, StandardOutPath=str(logs), StandardErrorPath=str(logs))
     plist.parent.mkdir(parents=True, exist_ok=True)
+    check_completions()
     plist.write_bytes(plistlib.dumps(config))
     run(['launchctl', 'bootstrap', domain, str(plist)])
-    print('Automatic public results publishing enabled: every five minutes at login.')
+    print('Automatic public results publishing enabled: after benchmark jobs finish.')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['once', 'install', 'uninstall'])
+    parser.add_argument('command', choices=['once', 'watch', 'install', 'uninstall'])
     args = parser.parse_args()
     if args.command == 'once':
         sync()
+    elif args.command == 'watch':
+        watch()
     else:
         install(args.command == 'uninstall')

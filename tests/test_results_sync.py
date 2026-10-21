@@ -36,3 +36,28 @@ class PublisherTests(unittest.TestCase):
             with patch.object(sync, 'run'):
                 sync.snapshot(source, target)
             self.assertEqual(json.loads((target / 'results/glm-bench-v1/p__normal__exact.json').read_text()), answer)
+
+    def test_only_job_completion_triggers_publish(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as temp:
+            with patch.object(sync, 'ROOT', Path(temp)), patch.object(sync, 'completed_jobs', return_value={'old'}) as jobs, patch.object(sync, 'sync') as publish:
+                sync.check_completions()
+                sync.check_completions()
+                publish.assert_not_called()
+                jobs.return_value = {'old', 'new'}
+                sync.check_completions()
+                sync.check_completions()
+                publish.assert_called_once()
+
+    def test_failed_push_keeps_completion_pending(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as temp:
+            with patch.object(sync, 'ROOT', Path(temp)), patch.object(sync, 'completed_jobs', return_value=set()) as jobs, patch.object(sync, 'sync') as publish:
+                sync.check_completions()
+                jobs.return_value = {'new'}
+                publish.side_effect = RuntimeError('offline')
+                with self.assertRaises(RuntimeError):
+                    sync.check_completions()
+                publish.side_effect = None
+                sync.check_completions()
+                self.assertEqual(publish.call_count, 2)
