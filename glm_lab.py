@@ -40,7 +40,7 @@ PROMPTS = {'sky': 'Explain in two sentences why the sky is blue.',
 BEST = {'USAGE_SAVE': '0', 'KVSAVE': '0', 'COLI_TEMP': '0', 'PROF': '1', 'COLI_METAL': '1', 'PIPE': '1', 'DIRECT': '1',
         'COLI_METAL_RESSET': '1', 'COLI_METAL_SPIN': '1', 'OMP_NUM_THREADS': '12'}
 DEFAULT_REF = {'sky': 'r2-p0-sky-exact', 'code': 'r2-p0-code-exact'}
-CATEGORIES = ['build', 'gpu', 'threads', 'io', 'cache', 'memory', 'prompt', 'backend', 'lossy-routing', 'model-format', 'small-models']
+CATEGORIES = ['build', 'gpu', 'threads', 'io', 'cache', 'memory', 'prompt', 'backend', 'lossy-routing', 'model-format', 'small-models', 'prefill', 'engine', 'engine-defaults', 'method']
 
 
 def load_registry():
@@ -295,7 +295,7 @@ def run_planned(ids=None, hold_lock=True):
                 built[key] = build_engine(plan)
             if not built[key]:
                 continue
-        kw = dict(coli_dir=str(engine_dir(plan)), model=plan.get('model', '~/colibri-models/glm-5.3'))
+        kw = dict(coli_dir=str(engine_dir(plan)), model=plan.get('model', '~/colibri-models/glm-5.3'), ram=plan.get('ram', 18))
         run = f"x-{e['id']}"
         execute(run, plan.get('prompt', 'sky'), plan.get('ngen', 24), plan.get('env', {}), **kw)
         e['runs'] = [run]
