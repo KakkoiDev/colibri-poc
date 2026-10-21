@@ -6,47 +6,9 @@
    "answers": 240,
    "engine": "Colibri",
    "model": "GLM-5.3 int4",
-   "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850"
-  },
-  {
-   "name": "gemma4-26b-ollama",
-   "file": "bench-gemma4-26b-ollama.json",
-   "answers": 96,
-   "engine": "Ollama",
-   "model": "gemma4:26b",
-   "ollama_version": "ollama version is 0.40.6"
-  },
-  {
-   "name": "gemma4-31b-ollama",
-   "file": "bench-gemma4-31b-ollama.json",
-   "answers": 96,
-   "engine": "Ollama",
-   "model": "gemma4:31b-mlx",
-   "ollama_version": "ollama version is 0.40.6"
-  },
-  {
-   "name": "gemma4-e4b-ollama",
-   "file": "bench-gemma4-e4b-ollama.json",
-   "answers": 96,
-   "engine": "Ollama",
-   "model": "gemma4:e4b-mlx",
-   "ollama_version": "ollama version is 0.40.6"
-  },
-  {
-   "name": "glm-5.3-iq2m",
-   "file": "bench-glm-5.3-iq2m.json",
-   "answers": 240,
-   "engine": "Colibri",
-   "model": "glm-5.3-iq2m",
-   "colibri_commit": "16239caafd71588fe6efb12d287f29094060c1b8"
-  },
-  {
-   "name": "glm-5.3-iq3xxs",
-   "file": "bench-glm-5.3-iq3xxs.json",
-   "answers": 240,
-   "engine": "Colibri",
-   "model": "glm-5.3-iq3xxs",
-   "colibri_commit": "16239caafd71588fe6efb12d287f29094060c1b8"
+   "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850",
+   "title": "GLM-5.3 int4",
+   "group": "GLM-5.3 on Colibri"
   },
   {
    "name": "glm-5.3-mtp",
@@ -54,7 +16,59 @@
    "answers": 240,
    "engine": "Colibri",
    "model": "glm-5.3-mtp",
-   "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850"
+   "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850",
+   "title": "GLM-5.3 int4 + int8 MTP head",
+   "group": "GLM-5.3 on Colibri"
+  },
+  {
+   "name": "glm-5.3-iq3xxs",
+   "file": "bench-glm-5.3-iq3xxs.json",
+   "answers": 240,
+   "engine": "Colibri",
+   "model": "glm-5.3-iq3xxs",
+   "colibri_commit": "16239caafd71588fe6efb12d287f29094060c1b8",
+   "title": "GLM-5.3 UD-IQ3_XXS",
+   "group": "GLM-5.3 on Colibri"
+  },
+  {
+   "name": "glm-5.3-iq2m",
+   "file": "bench-glm-5.3-iq2m.json",
+   "answers": 240,
+   "engine": "Colibri",
+   "model": "glm-5.3-iq2m",
+   "colibri_commit": "16239caafd71588fe6efb12d287f29094060c1b8",
+   "title": "GLM-5.3 UD-IQ2_M",
+   "group": "GLM-5.3 on Colibri"
+  },
+  {
+   "name": "gemma4-26b-ollama",
+   "file": "bench-gemma4-26b-ollama.json",
+   "answers": 96,
+   "engine": "Ollama",
+   "model": "gemma4:26b",
+   "ollama_version": "ollama version is 0.40.6",
+   "title": "Gemma 4 26B",
+   "group": "Ollama, fully in RAM"
+  },
+  {
+   "name": "gemma4-31b-ollama",
+   "file": "bench-gemma4-31b-ollama.json",
+   "answers": 96,
+   "engine": "Ollama",
+   "model": "gemma4:31b-mlx",
+   "ollama_version": "ollama version is 0.40.6",
+   "title": "Gemma 4 31B",
+   "group": "Ollama, fully in RAM"
+  },
+  {
+   "name": "gemma4-e4b-ollama",
+   "file": "bench-gemma4-e4b-ollama.json",
+   "answers": 96,
+   "engine": "Ollama",
+   "model": "gemma4:e4b-mlx",
+   "ollama_version": "ollama version is 0.40.6",
+   "title": "Gemma 4 E4B",
+   "group": "Ollama, fully in RAM"
   },
   {
    "name": "gpt-oss-20b-ollama",
@@ -62,7 +76,9 @@
    "answers": 96,
    "engine": "Ollama",
    "model": "gpt-oss:20b",
-   "ollama_version": "ollama version is 0.40.6"
+   "ollama_version": "ollama version is 0.40.6",
+   "title": "gpt-oss 20B",
+   "group": "Ollama, fully in RAM"
   },
   {
    "name": "qwen38-27b-ollama",
@@ -70,7 +86,9 @@
    "answers": 96,
    "engine": "Ollama",
    "model": "qwen3.8:27b-mlx",
-   "ollama_version": "ollama version is 0.40.6"
+   "ollama_version": "ollama version is 0.40.6",
+   "title": "Qwen3.8-27B",
+   "group": "Ollama, fully in RAM"
   }
  ]
 }

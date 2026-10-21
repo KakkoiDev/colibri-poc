@@ -1,6 +1,7 @@
 """Publish a quality bench for sharing: path-free copies plus one JSON the website reads.
 
     .venv/bin/python publish_bench.py v1
+    .venv/bin/python publish_bench.py --manifest     # only refresh titles, groups and order in benches.json
 
 Writes published-results/glm-bench-<name>/ (summary.json, report.md, answers/*.json),
 site/data/bench-<name>.json (summary, every answer, and the manual review from
@@ -8,7 +9,7 @@ published-results/glm-bench-<name>/review.json) and adds the bench to
 site/data/benches.json, the list the bench page reads, and site/data/bench-compare.json
 (every published bench in one table: correct answers, waiting time, correct per minute). Raw logs stay local in results/.
 """
-import glob, json, os, sys
+import glob, json, os, re, sys
 from pathlib import Path
 
 import glm_bench
@@ -26,12 +27,48 @@ def engine_info(meta):
     return dict(engine='Colibri', model=meta.get('model_label', 'GLM-5.3 int4'), colibri_commit=meta.get('colibri_commit'))
 
 
+GROUPS = {'Colibri': 'GLM-5.3 on Colibri', 'Ollama': 'Ollama, fully in RAM', 'MLX server': 'MLX, fully in RAM'}
+TITLES = {  # display names for models the catalog does not name; anything else falls back to its id
+    'gemma4:26b': 'Gemma 4 26B', 'gemma4:31b-mlx': 'Gemma 4 31B', 'gemma4:e4b-mlx': 'Gemma 4 E4B',
+    'qwen3.8:27b-mlx': 'Qwen3.8-27B', 'gpt-oss:20b': 'gpt-oss 20B', 'olmoe-1b-7b-4bit': 'OLMoE 1B-7B (4-bit)',
+}
+
+
+def with_titles(rows):
+    """benches.json rows with a display `title` and `group`, in tab order: GLM on Colibri (v1 first, then catalog
+    order), then Ollama and MLX models by title. The website reads both fields; a new bench needs no HTML edit."""
+    catalog = [m for m in json.loads((ROOT / 'models' / 'catalog.json').read_text())['models']]
+    order = {m['id']: i for i, m in enumerate(catalog)}
+    names = {m['id']: re.sub(r'\s*\(.*\)$', '', m['name']).replace(' g64', '') for m in catalog}
+    out = []
+    for r in rows:
+        cid = 'glm-5.3-int4' if r['name'] == 'v1' else r.get('model')
+        if r.get('engine') == 'Colibri':
+            title = names.get(cid, r.get('model'))
+        else:
+            title = TITLES.get(r.get('model')) or TITLES.get(Path(str(r.get('model'))).name) or r.get('model')
+        out.append(dict(r, title=title, group=GROUPS.get(r.get('engine'), r.get('engine'))))
+    groups = list(GROUPS.values())
+    def key(r):
+        g = groups.index(r['group']) if r['group'] in groups else len(groups)
+        cid = 'glm-5.3-int4' if r['name'] == 'v1' else r.get('model')
+        return (g, order.get(cid, len(order)) if r.get('engine') == 'Colibri' else 0, r['title'].lower())
+    return sorted(out, key=key)
+
+
+def rewrite_manifest(path=None):
+    path = Path(path or ROOT / 'site' / 'data' / 'benches.json')
+    m = json.loads(path.read_text())
+    m['benches'] = with_titles(m['benches'])
+    path.write_text(json.dumps(m, ensure_ascii=False, indent=1) + '\n')
+
+
 def update_manifest(name, info, n_answers):
     path = ROOT / 'site' / 'data' / 'benches.json'
     m = json.loads(path.read_text()) if path.exists() else {'benches': []}
     m['benches'] = [b for b in m['benches'] if b['name'] != name]
     m['benches'].append(dict(name=name, file=f'bench-{name}.json', answers=n_answers, **info))
-    m['benches'].sort(key=lambda b: (b['name'] != 'v1', b['name']))   # the first GLM bench stays the default
+    m['benches'] = with_titles(m['benches'])   # title, group and tab order (GLM v1 first)
     path.write_text(json.dumps(m, ensure_ascii=False, indent=1) + '\n')
     # one table across every published bench: the trade-off between quality and waiting
     rows = glm_bench.compare(type('A', (), {'names': ','.join(b['name'] for b in m['benches']), 'out': 'published',
@@ -74,4 +111,7 @@ def main(name):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1] if len(sys.argv) > 1 else 'v1')
+    if sys.argv[1:] == ['--manifest']:
+        rewrite_manifest()
+    else:
+        main(sys.argv[1] if len(sys.argv) > 1 else 'v1')

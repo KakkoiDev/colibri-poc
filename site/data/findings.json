@@ -53,7 +53,109 @@
  },
  "olmoe": {
   "description": "Allen AI open mixture-of-experts model; approximately 7B total / 1B active parameters; small caching testbed, not Qwen",
-  "source": "https://huggingface.co/allenai/OLMoE-1B-7B-0125"
+  "source": "https://huggingface.co/allenai/OLMoE-1B-7B-0125",
+  "measurements": {
+   "model": "OLMoE-1B-7B-0125-Instruct, 4-bit (MLX), 64 experts per layer, 16 layers, on the M6 GPU",
+   "metric": "median decode tokens per second (generation only)",
+   "summary": "Keeping every expert in memory: 199 tok/s. Streaming experts through a cache: 28 to 70 tok/s with LRU, and 86 tok/s even when all 64 per layer are cached, because loading and packing cost time on every token. For a model that fits in RAM, keep it resident.",
+   "campaigns": [
+    {
+     "id": "20261017T165844.803566Z",
+     "name": "LRU expert streaming sweep",
+     "source": "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/08-expert-streaming.md",
+     "protocol": "3 rounds, 5 prompts, up to 64 generated tokens, greedy, identical prefill chunks",
+     "rows": [
+      {
+       "variant": "Resident (all experts in memory)",
+       "experts_per_layer": 64,
+       "resident": true,
+       "tok_s": 199.0,
+       "peak_gpu_gb": 4.644
+      },
+      {
+       "variant": "LRU 64 per layer",
+       "experts_per_layer": 64,
+       "resident": false,
+       "tok_s": 69.53,
+       "peak_gpu_gb": 4.499
+      },
+      {
+       "variant": "LRU 32 per layer",
+       "experts_per_layer": 32,
+       "resident": false,
+       "tok_s": 48.58,
+       "peak_gpu_gb": 2.77
+      },
+      {
+       "variant": "LFU 32 per layer",
+       "experts_per_layer": 32,
+       "resident": false,
+       "tok_s": 48.08,
+       "peak_gpu_gb": 2.779
+      },
+      {
+       "variant": "LRU 8 per layer",
+       "experts_per_layer": 8,
+       "resident": false,
+       "tok_s": 28.38,
+       "peak_gpu_gb": 1.495
+      }
+     ],
+     "note": "Streaming outputs differed from resident on one prompt at generated token 36."
+    },
+    {
+     "id": "20261017T170136.134210Z",
+     "name": "Packed cache, all 64 per layer",
+     "source": "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/08-expert-streaming.md",
+     "protocol": "3 rounds, up to 128 generated tokens, paired with a resident baseline",
+     "rows": [
+      {
+       "variant": "Resident (paired baseline)",
+       "experts_per_layer": 64,
+       "resident": true,
+       "tok_s": 195.49
+      },
+      {
+       "variant": "Packed cache, 64 per layer",
+       "experts_per_layer": 64,
+       "resident": false,
+       "tok_s": 86.38
+      }
+     ],
+     "note": "Paired ratio 0.442. Once every layer is full, the long prompt decoded at 142.28 vs 141.07 tok/s resident: the cost is filling the cache, not using it. Output tokens differed."
+    },
+    {
+     "id": "20261017T171558.896165Z",
+     "name": "Fixed-slot cache screen",
+     "source": "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/09-two-track-experiments.md",
+     "protocol": "2 rounds, 5 prompts, up to 32 generated tokens (a screen, not a controlled comparison)",
+     "rows": [
+      {
+       "variant": "Fixed slots, 48 per layer",
+       "experts_per_layer": 48,
+       "resident": false,
+       "tok_s": 68.63,
+       "retained_expert_gb": 2.718
+      },
+      {
+       "variant": "Fixed slots, LRU 32 per layer",
+       "experts_per_layer": 32,
+       "resident": false,
+       "tok_s": 46.11,
+       "retained_expert_gb": 1.812
+      },
+      {
+       "variant": "Fixed slots, 8 per layer",
+       "experts_per_layer": 8,
+       "resident": false,
+       "tok_s": 23.73,
+       "retained_expert_gb": 0.453
+      }
+     ],
+     "note": "No resident row in this campaign; fixed-slot outputs differed from resident tokens."
+    }
+   ]
+  }
  },
  "qwen_memory": {
   "id": "qwen36-expert-memory",
