@@ -1,0 +1,18 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "terse",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 84.06,
+ "prompt_tokens": 39,
+ "prefill_s": 42.53,
+ "output_tokens": 26,
+ "decode_s": 37.45,
+ "decode_tok_s": 0.69,
+ "zeroed_slots": 11342,
+ "hit_pct": 2.9,
+ "text": "```python\ndef factorial(n):\n    return 1 if n < 2 else n * factorial(n - 1)\n```",
+ "answer_s": 79.98,
+ "correct": true
+}
