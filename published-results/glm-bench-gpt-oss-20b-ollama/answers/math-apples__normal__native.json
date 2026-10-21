@@ -1,0 +1,19 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 4.95,
+ "prompt_tokens": 91,
+ "prefill_s": 0.182,
+ "output_tokens": 187,
+ "decode_s": 4.761,
+ "load_s": 0.001,
+ "text": "You started with 12 apples, gave away 5, and then bought 8 more:\n\n\\[\n12 \\;-\\; 5 \\;=\\; 7 \\quad\\text{(apples after giving away)}\n\\]\n\\[\n7 \\;+\\; 8 \\;=\\; 15 \\quad\\text{(apples after buying)}\n\\]\n\nSo you now have **15 apples**.",
+ "thinking_chars": 340,
+ "truncated": false,
+ "decode_tok_s": 39.28,
+ "answer_s": 4.94,
+ "correct": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 13.29,
+ "prompt_tokens": 88,
+ "prefill_s": 0.181,
+ "output_tokens": 513,
+ "decode_s": 13.106,
+ "load_s": 0.001,
+ "text": "Each of Sally’s brothers sees **two sisters**.  \nLet the total number of sisters in the family be \\(S\\).\n\n- For each brother the number of sisters he has is \\(S\\).\n- We’re told that each brother has exactly 2 sisters, so  \n\n\\[\nS = 2\n\\]\n\nSo there are two sisters in the family. One of those sisters is Sally herself, and the other is a different sister.  \nThe question asks: **“How many sisters does Sally have?”**  \nWe count only her *other* sisters, not herself.\n\n\\[\n\\text{Sally’s sisters} = S - 1 = 2 - 1 = 1\n\\]\n\n\\[\n\\boxed{1}\n\\]",
+ "thinking_chars": 1454,
+ "truncated": false,
+ "decode_tok_s": 39.14,
+ "answer_s": 13.29,
+ "correct": true
+}

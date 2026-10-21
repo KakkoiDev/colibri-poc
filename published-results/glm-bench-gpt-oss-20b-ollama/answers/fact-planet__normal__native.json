@@ -1,0 +1,19 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 3.53,
+ "prompt_tokens": 77,
+ "prefill_s": 0.177,
+ "output_tokens": 132,
+ "decode_s": 3.344,
+ "load_s": 0.001,
+ "text": "The largest planet in our Solar System is **Jupiter**. It has a diameter of about 142,000 km, more than 11 times the diameter of Earth, and its mass is roughly 1,300 times that of Earth. Its enormous size makes it the heaviest planet in the Solar System as well.",
+ "thinking_chars": 276,
+ "truncated": false,
+ "decode_tok_s": 39.47,
+ "answer_s": 3.52,
+ "correct": true
+}

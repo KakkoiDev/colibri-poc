@@ -1,0 +1,19 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 2.12,
+ "prompt_tokens": 71,
+ "prefill_s": 0.173,
+ "output_tokens": 77,
+ "decode_s": 1.942,
+ "load_s": 0.001,
+ "text": "15 % of 240 is \\(0.15 \\times 240 = 36\\).",
+ "thinking_chars": 130,
+ "truncated": false,
+ "decode_tok_s": 39.65,
+ "answer_s": 2.11,
+ "correct": true
+}

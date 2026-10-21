@@ -1,0 +1,19 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.46,
+ "prompt_tokens": 92,
+ "prefill_s": 0.187,
+ "output_tokens": 128,
+ "decode_s": 3.269,
+ "load_s": 0.001,
+ "text": "",
+ "thinking_chars": 451,
+ "truncated": true,
+ "decode_tok_s": 39.16,
+ "answer_s": 3.46,
+ "correct": false
+}

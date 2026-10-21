@@ -1,0 +1,19 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 2.42,
+ "prompt_tokens": 97,
+ "prefill_s": 0.186,
+ "output_tokens": 88,
+ "decode_s": 2.233,
+ "load_s": 0.001,
+ "text": "yes",
+ "thinking_chars": 209,
+ "truncated": false,
+ "decode_tok_s": 39.41,
+ "answer_s": 2.42,
+ "correct": true
+}

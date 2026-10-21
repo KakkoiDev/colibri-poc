@@ -1,0 +1,19 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 25.0,
+ "prompt_tokens": 74,
+ "prefill_s": 0.174,
+ "output_tokens": 961,
+ "decode_s": 24.819,
+ "load_s": 0.001,
+ "text": "**Why the sky looks blue – the physics in a nutshell**\n\n1. **Sunlight is a mix of all visible colours**  \n   Sunlight (or any bright white light) contains photons with wavelengths from about 400 nm (violet/blue) to 700 nm (red).  \n\n2. **The atmosphere is a scattering medium**  \n   When these photons hit the molecules and tiny particles that fill the air (mainly nitrogen, oxygen, argon, plus a few percent of CO₂ and water vapour), they don’t just pass straight through. They are scattered in all directions.\n\n3. **Rayleigh scattering dominates for gas molecules**  \n   The key process is *Rayleigh scattering*, named after Lord Rayleigh. The scattering cross‑section for a molecule is inversely proportional to the fourth power of the wavelength:\n\n   \\[\n   \\sigma \\propto \\frac{1}{\\lambda^4}\n   \\]\n\n   This means that photons with shorter wavelengths (blue, violet) are scattered roughly \\( (700/400)^4 \\approx 15\\) times more than the red photons.  \n\n4. **Our eyes are more sensitive to blue than violet**  \n   The human eye is less sensitive to pure violet light, and the upper atmosphere absorbs a bit of the shortest wavelengths, so the net result is that we see a blue sky.\n\n5. **Geometry of the light path matters**  \n   • **High noon** – The sun is overhead. Light travels a short distance through the air, scattering blue in all directions, giving the sky its classic blue colour.  \n   • **Sunrise/sunset** – The sun is near the horizon. Light must pass through a much longer column of air. By the time it reaches us, most of the blue photons have already been scattered out of the direct path, leaving the longer‑wavelength red and orange photons, so the sky turns reddish.  \n\n6. **Why the sky isn’t pure blue all the time**  \n   • **Aerosols and larger particles** cause *Mie scattering*, which is less wavelength‑dependent and tends to make the sky whiter or grey, especially in polluted or humid air.  \n   • Clouds, haze, and dust add extra scattering or absorption, altering the sky’s colour.  \n\n7. **The “blue” we see is really scattered light from many angles**  \n   Even when you’re looking in a direction away from the sun, you’re seeing light that has been scattered by countless molecules into your line of sight. That scattered light is enriched in short wavelengths, so the sky looks blue.\n\n**Quick summary**  \nThe sky is blue because sunlight contains all colours, but the air’s tiny gas molecules preferentially scatter short‑wavelength (blue) light by Rayleigh scattering. The scattered blue light reaches our eyes from every direction, colouring the sky. As the path through the atmosphere gets longer (sunrise/sunset) or if larger particles dominate (cloudy, hazy air), the blue is removed or diluted, and other colours become visible.",
+ "thinking_chars": 1672,
+ "truncated": false,
+ "decode_tok_s": 38.72,
+ "answer_s": 24.99,
+ "correct": true
+}

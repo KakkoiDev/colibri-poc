@@ -1,0 +1,19 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 10.92,
+ "prompt_tokens": 102,
+ "prefill_s": 0.191,
+ "output_tokens": 417,
+ "decode_s": 10.723,
+ "load_s": 0.001,
+ "text": "Here’s a concise, easy‑to‑read implementation that works for any string:\n\n```python\ndef count_vowels(s: str) -> int:\n    \"\"\"\n    Return the number of vowels (a, e, i, o, u) in the given string, case‑insensitively.\n\n    Parameters\n    ----------\n    s : str\n        The string to examine.\n\n    Returns\n    -------\n    int\n        The total count of vowels in `s`.\n\n    Examples\n    --------\n    >>> count_vowels('Hello, World!')\n    3\n    >>> count_vowels('Python')\n    1\n    >>> count_vowels('bcd')\n    0\n    \"\"\"\n    vowels = set('aeiou')\n    return sum(1 for ch in s.lower() if ch in vowels)\n```\n\n### How it works\n1. **Normalize case** – `s.lower()` converts the entire string to lowercase, so we only have to check against lowercase vowels.\n2. **Set lookup** – `vowels` is a `set` of the five vowel characters; set membership tests (`ch in vowels`) are O(1).\n3. **Sum comprehension** – For each character that is a vowel we add `1`; `sum` aggregates the total.\n\nThis function is efficient, clear, and handles any string you pass to it.",
+ "thinking_chars": 590,
+ "truncated": false,
+ "decode_tok_s": 38.89,
+ "answer_s": 10.91,
+ "correct": true
+}

@@ -57,6 +57,14 @@
    "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850"
   },
   {
+   "name": "gpt-oss-20b-ollama",
+   "file": "bench-gpt-oss-20b-ollama.json",
+   "answers": 48,
+   "engine": "Ollama",
+   "model": "gpt-oss:20b",
+   "ollama_version": "ollama version is 0.40.6"
+  },
+  {
    "name": "qwen38-27b-ollama",
    "file": "bench-qwen38-27b-ollama.json",
    "answers": 40,

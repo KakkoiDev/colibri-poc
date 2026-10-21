@@ -1,0 +1,19 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.46,
+ "prompt_tokens": 85,
+ "prefill_s": 0.181,
+ "output_tokens": 128,
+ "decode_s": 3.274,
+ "load_s": 0.001,
+ "text": "Here’s a compact, well‑documented implementation that does exactly what you asked for:\n\n```python\ndef",
+ "thinking_chars": 495,
+ "truncated": true,
+ "decode_tok_s": 39.1,
+ "answer_s": 3.46,
+ "correct": false
+}

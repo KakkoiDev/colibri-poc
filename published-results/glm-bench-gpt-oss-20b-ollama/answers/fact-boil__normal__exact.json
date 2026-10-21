@@ -1,0 +1,19 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.43,
+ "prompt_tokens": 75,
+ "prefill_s": 0.174,
+ "output_tokens": 128,
+ "decode_s": 3.251,
+ "load_s": 0.001,
+ "text": "At standard atmospheric pressure (sea level, 1 atm), pure water boils",
+ "thinking_chars": 422,
+ "truncated": true,
+ "decode_tok_s": 39.37,
+ "answer_s": 3.42,
+ "correct": false
+}
