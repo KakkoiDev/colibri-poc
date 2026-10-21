@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 2.49,
+ "prompt_tokens": 37,
+ "prefill_s": 0.03,
+ "output_tokens": 249,
+ "decode_s": 2.457,
+ "load_s": 0.0,
+ "text": "A data structure that stores data (usually key-value pairs) in an array using a hash function. This function maps the key to an index, allowing for extremely fast (average $O(1)$) lookups, insertions, and deletions.",
+ "thinking_chars": 777,
+ "truncated": false,
+ "decode_tok_s": 101.34,
+ "answer_s": 2.49,
+ "correct": true
+}

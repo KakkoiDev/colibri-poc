@@ -24,5 +24,31 @@
   "prefill_s": 0.029208333333333333,
   "output_tokens": 504.5416666666667,
   "decode_tok_s": 111.5575
+ },
+ {
+  "style": "terse",
+  "config": "exact",
+  "runs": 24,
+  "ok": 24,
+  "correct": 24,
+  "graded": 24,
+  "same_as_exact": 24,
+  "answer_s": 0.17916666666666667,
+  "prefill_s": 0.03854166666666667,
+  "output_tokens": 11.541666666666666,
+  "decode_tok_s": 52.24791666666667
+ },
+ {
+  "style": "terse",
+  "config": "native",
+  "runs": 24,
+  "ok": 24,
+  "correct": 24,
+  "graded": 24,
+  "same_as_exact": 19,
+  "answer_s": 1.2770833333333333,
+  "prefill_s": 0.039125,
+  "output_tokens": 140.375,
+  "decode_tok_s": 82.10625
  }
 ]

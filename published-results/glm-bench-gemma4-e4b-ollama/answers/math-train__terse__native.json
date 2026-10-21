@@ -1,0 +1,19 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 0.95,
+ "prompt_tokens": 55,
+ "prefill_s": 0.048,
+ "output_tokens": 128,
+ "decode_s": 0.902,
+ "load_s": 0.0,
+ "text": "150",
+ "thinking_chars": 290,
+ "truncated": false,
+ "decode_tok_s": 141.91,
+ "answer_s": 0.95,
+ "correct": true
+}

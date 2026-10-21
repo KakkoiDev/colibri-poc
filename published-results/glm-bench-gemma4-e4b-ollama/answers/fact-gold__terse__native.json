@@ -1,0 +1,19 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 0.11,
+ "prompt_tokens": 39,
+ "prefill_s": 0.03,
+ "output_tokens": 1,
+ "decode_s": 0.075,
+ "load_s": 0.0,
+ "text": "Au",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 13.33,
+ "answer_s": 0.1,
+ "correct": true
+}
