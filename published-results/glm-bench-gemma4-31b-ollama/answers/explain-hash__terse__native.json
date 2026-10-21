@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 36.78,
+ "prompt_tokens": 37,
+ "prefill_s": 0.335,
+ "output_tokens": 613,
+ "decode_s": 36.419,
+ "load_s": 0.013,
+ "text": "A data structure that maps keys to values using a hash function for fast retrieval.\n\n```python\nhash_table = {\"key\": \"value\"}\n```",
+ "thinking_chars": 2306,
+ "truncated": false,
+ "decode_tok_s": 16.83,
+ "answer_s": 36.75,
+ "correct": true
+}

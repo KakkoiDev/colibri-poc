@@ -1,0 +1,19 @@
+{
+ "id": "fact-capital",
+ "kind": "fact",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 5.97,
+ "prompt_tokens": 38,
+ "prefill_s": 0.324,
+ "output_tokens": 99,
+ "decode_s": 5.631,
+ "load_s": 0.01,
+ "text": "Canberra",
+ "thinking_chars": 356,
+ "truncated": false,
+ "decode_tok_s": 17.58,
+ "answer_s": 5.96,
+ "correct": true
+}

@@ -249,6 +249,36 @@
    "truncated": 0
   },
   {
+   "bench": "gemma4-31b-ollama",
+   "model": "gemma4:31b-mlx",
+   "engine": "Ollama gemma4:31b-mlx",
+   "style": "terse",
+   "config": "exact",
+   "correct": 24,
+   "graded": 24,
+   "median_answer_s": 0.54,
+   "mean_answer_s": 1.0062499999999999,
+   "median_prefill_s": 0.335,
+   "mean_tok_s": 14.617916666666666,
+   "correct_per_min": 59.62732919254659,
+   "truncated": 0
+  },
+  {
+   "bench": "gemma4-31b-ollama",
+   "model": "gemma4:31b-mlx",
+   "engine": "Ollama gemma4:31b-mlx",
+   "style": "terse",
+   "config": "native",
+   "correct": 24,
+   "graded": 24,
+   "median_answer_s": 7.48,
+   "mean_answer_s": 10.754166666666668,
+   "median_prefill_s": 0.332,
+   "mean_tok_s": 21.39708333333333,
+   "correct_per_min": 5.579232855482371,
+   "truncated": 0
+  },
+  {
    "bench": "glm-5.3-iq2m",
    "model": "glm-5.3-iq2m",
    "engine": "Colibri",

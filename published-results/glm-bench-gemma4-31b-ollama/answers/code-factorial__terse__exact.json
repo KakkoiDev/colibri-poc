@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 1.59,
+ "prompt_tokens": 48,
+ "prefill_s": 0.337,
+ "output_tokens": 30,
+ "decode_s": 1.235,
+ "load_s": 0.009,
+ "text": "```python\ndef factorial(n):\n    return 1 if n == 0 else n * factorial(n - 1)\n```",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 24.29,
+ "answer_s": 1.57,
+ "correct": true
+}
