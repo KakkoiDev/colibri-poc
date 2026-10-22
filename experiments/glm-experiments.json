@@ -1652,12 +1652,16 @@
   "change": "One OLMoE-1B-7B 4-bit copy (models/olmoe-1b-7b-4bit, MLX, ~4 GB in memory) behind mlx_lm.server; 24-question bench in both styles; then 1, 4 and 10 concurrent requests",
   "hypothesis": "Resident OLMoE decodes ~199 tok/s for one request. Decoding is memory-bound, so one copy serving a batch should give far more total tokens per second than one request, with each request somewhat slower: e.g. 10 parallel answers at several hundred tok/s in total. Running 10 separate copies would cost ~10x the memory (~46 GB peak, more than this Mac has) for no gain. The open question is quality: OLMoE (1B active) is far weaker than the models benched so far, so its correct-answer rate decides whether the throughput is useful.",
   "ref": null,
-  "runs": [],
+  "runs": [
+   "glm-bench-olmoe-mlx",
+   "olmoe-concurrency-terse-20261022T1231",
+   "olmoe-concurrency-normal-20261022T1234"
+  ],
   "lossy": false,
   "date": "2026-10-22",
-  "verdict": "not run",
-  "conclusion": "Planned: needs the two harness pieces listed under plan_outline before it can run unattended.",
-  "tradeoffs": "Batching raises total throughput but slows each answer and raises peak memory (KV cache per request); single-request latency must be reported next to total tok/s.",
+  "verdict": "measured",
+  "conclusion": "Quiet machine (21.8 GB free at start), one mlx_lm.server process, prompt cache off, 3 repeats per level. Quality on the 24-question bench: 17/24 normal (18 of 24 answers hit the 128-token cap), 12/24 terse: it often answers maths and logic with code instead of the number, and misses plain facts. Gemma 4 E4B scores 24/24 terse, Qwen3.8-27B 24/24. Throughput, normal answers (up to 128 tokens): 1 request 166 tok/s; 4 at once 240 tok/s in total (61 per request, p95 2.4 s); 10 at once 326 tok/s in total (33 per request, p95 4.1 s). Terse: 147 / 205 / 278 tok/s total. Peak server memory (footprint incl. GPU) 4.0 GB alone, 4.6 GB at 4, 5.7-6.1 GB at 10, versus ~4 GB per extra copy. So batching roughly doubles total throughput at 10 requests, far from 10x: each decode step must read the union of the experts the batch selected, and with 10 sequences that approaches all 64 experts per layer. Outputs change under batching (normal: 74/96 identical at 4, 177/240 at 10) but the correct-answer rate does not (68/96 and 170/240 = 71%). The first attempt failed at 10 clients (connection resets) and is kept as *-failed; the rerun needed 0 retries.",
+  "tradeoffs": "Batching trades single-request speed (166 -> 33 tok/s) for total throughput (166 -> 326 tok/s). OLMoE is too weak on this bench to be useful on its own, at any throughput.",
   "plan_outline": {
    "model": "models/olmoe-1b-7b-4bit (mlx-community/OLMoE-1B-7B-0125-Instruct-4bit, revision in model.lock.json)",
    "server": ".venv/bin/python -m mlx_lm.server --model models/olmoe-1b-7b-4bit --host 127.0.0.1 --port 8771 (one process = one copy; it batches concurrent requests)",
@@ -1685,7 +1689,8 @@
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/09-two-track-experiments.md",
    "https://huggingface.co/allenai/OLMoE-1B-7B-0125",
-   "https://github.com/ml-explore/mlx-lm"
+   "https://github.com/ml-explore/mlx-lm",
+   "https://github.com/KakkoiDev/colibri-poc/tree/main/published-results/olmoe-concurrency-20261022"
   ]
  }
 ]

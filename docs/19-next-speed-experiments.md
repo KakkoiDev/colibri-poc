@@ -110,3 +110,25 @@ small-model track (`sm-qwen36-a3b-*`, needs the Qwen bench adapter).
 Success rule, unchanged: a setting is better only if tok/s rises by 10% or more on a
 repeat, and, if it changes output, it keeps quality on the bench (v2 once it exists).
 Only the owner marks a setting usable.
+
+## Result: OLMoE serving several requests at once (`sm-olmoe-concurrent`, 2026-10-22)
+
+One OLMoE-1B-7B 4-bit copy behind `mlx_lm.server` (prompt cache off), quiet machine, 3 repeats.
+Raw summaries: [published-results/olmoe-concurrency-20261022](../published-results/olmoe-concurrency-20261022/).
+
+| Requests at once | Total tok/s (normal) | Per request tok/s | p95 answer time | Total tok/s (terse) | Peak memory |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 166 | 166 | 0.8 s | 147 | 4.0-4.2 GB |
+| 4 | 240 | 61 | 2.4 s | 205 | 4.6 GB |
+| 10 | 326 | 33 | 4.1 s | 278 | 5.7-6.1 GB |
+
+- **Ten answers at once: yes, from one copy, at about twice the total speed, not ten times.**
+  Each decode step reads the experts all sequences selected; with 10 sequences that is close
+  to every expert, so the step costs almost as much as running the model densely. Ten
+  separate copies would need ~40 GB and compete for the same memory bandwidth.
+- **Quality is the problem.** OLMoE scores 17/24 normal and 12/24 terse on our bench (it
+  often answers maths with code, misses plain facts). Gemma 4 E4B gets 24/24 terse at
+  52 tok/s, Qwen3.8-27B 24/24 at 16 tok/s. For many cheap parallel answers, a batched
+  Gemma 4 E4B is the candidate to measure next, not OLMoE.
+- Batched outputs differ from single ones (177/240 identical at 10) while the correct rate
+  stays at 71%, so batching changes wording, not measured accuracy.
