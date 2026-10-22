@@ -2298,5 +2298,25 @@
   "config": "RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0",
   "env": "COLI_POLICY=balanced",
   "status": "ok"
+ },
+ {
+  "run": "x-policy-experimental-fast",
+  "backend": "metal",
+  "omp_threads": "12",
+  "prompt_tokens": "17",
+  "prefill_s": "24.95",
+  "decode_tokens": "48",
+  "decode_s": "122.12",
+  "tok_s": "0.39",
+  "hit_pct": "2.0",
+  "rss_gb": "9.83",
+  "zeroed_slots": "",
+  "io_pct": "76",
+  "matmul_pct": "12",
+  "attn_pct": "11",
+  "other_pct": "2",
+  "config": "RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0",
+  "env": "COLI_POLICY=experimental-fast",
+  "status": "ok"
  }
 ]
