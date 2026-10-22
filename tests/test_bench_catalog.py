@@ -21,6 +21,15 @@ class BenchCatalogTests(unittest.TestCase):
         bc._done = self.old_done
         self.tmp.cleanup()
 
+    def test_concurrency_option_queues_validated_model_job(self):
+        job = bc.jobs_for(['concurrency:qwen3.8:27b-mlx:terse'])[0]
+        self.assertEqual(job['kind'], 'concurrency')
+        argv, title = a.build_command(job['kind'], job['args'])
+        self.assertIn('model_concurrency.py', argv)
+        self.assertIn('qwen3.8:27b-mlx', argv)
+        with self.assertRaises(a.ActionError):
+            a.build_command('concurrency', dict(ollama_model='not-installed'))
+
     def test_ollama_names_match_the_queued_bench(self):
         self.assertEqual(bc.ollama_bench_name('qwen3.8:27b-mlx'), 'qwen38-27b-ollama')
         self.assertEqual(bc.ollama_bench_name('gpt-oss:20b'), 'gpt-oss-20b-ollama')

@@ -100,6 +100,12 @@ def run_level(args, items, n, single_text):
                        correct=glm_bench.grade(item, rec['text']))
             with lock:
                 recs.append(rec)
+                if getattr(args, 'output', None):
+                    progress = dict(done=len(recs), total=n*k, clients=n, repeat=getattr(args, 'repeat', 1))
+                    path = Path(args.output) / 'progress.json'
+                    tmp = path.with_suffix('.tmp')
+                    tmp.write_text(json.dumps(progress))
+                    tmp.replace(path)
 
     t0 = time.time()
     with ThreadPoolExecutor(max_workers=n) as pool:
@@ -131,6 +137,7 @@ def main():
     levels = [int(x) for x in a.levels.split(',')]
     out = ROOT / 'results' / f"olmoe-concurrency-{a.name or time.strftime('%Y%m%dT%H%M%S')}"
     out.mkdir(parents=True, exist_ok=True)
+    a.output = str(out)
 
     one(a, items[0]['prompt'])                                   # warm-up, discarded
     single_text = {}
@@ -139,6 +146,7 @@ def main():
 
     rows, log = [], (out / 'requests.jsonl').open('w')
     for rep in range(a.repeats):
+        a.repeat = rep + 1
         for n in (levels if rep % 2 == 0 else levels[::-1]):
             sampler = RssSampler(a.server_pid)
             sampler.start()
@@ -150,6 +158,7 @@ def main():
             rows.append(s)
             for r in recs:
                 log.write(json.dumps(dict(r, level=n, repeat=rep + 1), ensure_ascii=False) + '\n')
+            log.flush()
             print(f"N={n:>2} repeat {rep + 1}: {s['total_tok_s']} tok/s total, {s['retries']} retries, {s['per_request_tok_s']} per request, "
                   f"p50 {s['p50_latency_s']} s, p95 {s['p95_latency_s']} s, memory {s['peak_rss_gb']} GB, same {s['same_as_single']}", flush=True)
     log.close()

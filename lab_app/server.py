@@ -220,6 +220,8 @@ def estimate_item(item):
                 per = (60 if c == 'native' else 20) if args.get('ollama_model') else mean_answer_s(st, c, 90 if st == 'terse' else 180)  # Ollama answers in seconds
                 total += max(0, n_prompts - have) * per
         return round(total)
+    if kind == 'concurrency':
+        return 90 * 60   # full 24 questions x 1/4/10 clients x 3 repeats; model dependent
     if kind == 'quiet':
         flags = args.get('flags', [])
         if 'experiments-only' in flags:
@@ -285,6 +287,12 @@ def jobs():
                        detail=f"configs {', '.join(prog['configs'])} · styles {', '.join(prog['styles'])}"
                               + (f" · next: {prog['current'].replace('__', ' · ')}" if prog['current'] else ''),
                        progress=prog, gpu=True)
+        elif 'model_concurrency.py' in cmd and is_python(cmd):
+            match = next((r for r in concurrency_results()['campaigns'] if r.get('pid') == p['pid']), {})
+            prog = match.get('progress')
+            job = dict(kind='Parallel requests', title='Concurrency on ' + arg(cmd, '--model', ''),
+                       detail=(f"{prog['clients']} clients · repeat {prog['repeat']}/3 · {prog['done']}/{prog['total']} answers" if prog else 'Loading model and recording single-request references'),
+                       progress=dict(done=prog['done'], total=prog['total']) if prog else None, gpu=True)
         elif 'glm_quiet.py run' in cmd and is_python(cmd):
             job = dict(kind='Quiet run', title='Quiet-machine rerun', detail=short(cmd), gpu=True)
         elif re.search(r'glm_lab\.py (try|run-planned)', cmd) and is_python(cmd):
@@ -761,6 +769,8 @@ def run_matrix():
     def ids_of(kind, a):
         if kind == 'suite':
             return [f"suite:{a.get('bench')}:{a.get('model')}"]
+        if kind == 'concurrency':
+            return [f"concurrency:{a.get('ollama_model')}:{a.get('style', 'terse')}"]
         if kind == 'planned':
             return [f"planned:{a.get('id')}"]
         if kind == 'quiet':
@@ -806,6 +816,7 @@ def run_matrix():
             return dict(base, state='partial', result=f"{i['done']}/{i['total']} answered")
         return dict(base, state='failed' if failed else 'ready' if i['group'] in ('quiet', 'planned') else 'never')
 
+    columns.append(dict(id='q:concurrency', title='Parallel 1/4/10', group='Quality', lossy=False))
     rows, hidden = [], []
     for g in groups:
         if g['kind'] != 'model':
@@ -820,6 +831,11 @@ def run_matrix():
                 cv = cover.get(mid, {}).get(k, {})
                 cells[k] = cell(f'suite:{k}:{mid}', cv.get('detail') if cv.get('status') == 'done' else None, failed=cv.get('status') == 'failed')
         for st in ('normal', 'terse'):
+            if g['engine'] == 'Ollama':
+                last = next((x for x in concurrency_results()['campaigns'] if x.get('model') == mid and x.get('style') == st and x.get('summary')), None)
+                scores = last['summary']['by_level'] if last else []
+                best = max(scores, key=lambda x: x['total_tok_s']) if scores else None
+                cells[f'q:concurrency:{st}'] = cell(f'concurrency:{mid}:{st}', best and f"{best['total_tok_s']:.1f} total tok/s", best and f"{best.get('correct_count', '?')}/{best.get('graded_count', '?')} correct · {best['level']} clients")
             for c in settings:
                 cid = f'quality:{mid}:{c}:{st}' if g['engine'] == 'Colibri' else f'ollama:{mid}:{c}:{st}'
                 i = by_id.get(cid)
@@ -960,6 +976,24 @@ def run_output(run):
 
 # ---------- HTTP ----------
 
+def concurrency_results():
+    campaigns = []
+    for folder in sorted((ROOT / 'results').glob('olmoe-concurrency-*'), reverse=True):
+        try:
+            meta = json.loads((folder / 'meta.json').read_text())
+        except (OSError, ValueError):
+            continue
+        record = dict(name=folder.name, model=meta.get('model', {}).get('name'), style=meta.get('style'),
+                      profile=meta.get('profile'), pid=meta.get('campaign_pid'))
+        for filename, key in [('summary.json', 'summary'), ('progress.json', 'progress'), ('failure.json', 'failure')]:
+            try:
+                record[key] = json.loads((folder / filename).read_text())
+            except (OSError, ValueError):
+                pass
+        campaigns.append(record)
+    return dict(campaigns=campaigns)
+
+
 API = {
     '/api/now': lambda q: now(),
     '/api/models': lambda q: models(),
@@ -968,6 +1002,7 @@ API = {
     '/api/not-run': lambda q: not_run(),
     '/api/run-matrix': lambda q: run_matrix(),
     '/api/bench': lambda q: bench_detail(q.get('name', [''])[0]),
+    '/api/concurrency': lambda q: concurrency_results(),
     '/api/runs': lambda q: dict(runs=runs_table()),
     '/api/run-output': lambda q: dict(text=run_output(q.get('run', [''])[0])),
     '/api/experiments': lambda q: experiments(),

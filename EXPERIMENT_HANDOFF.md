@@ -411,3 +411,27 @@ system-wide setting. All present reads must remain labelled OS cache uncontrolle
 Relevant existing docs: docs/07-experiment-round-two.md and
  docs/08-expert-streaming.md. Existing unit tests and benchmark snapshots are
 useful references; inspect implementation rather than assuming this note is exact.
+
+
+## 22 October: installed-model concurrency campaign
+
+Added `model_concurrency.py`, reusing `olmoe_concurrency.py`. Dashboard Run matrix
+has **Parallel 1/4/10**, Results has **Parallel requests**. Eight jobs queued for
+gemma4:26b, gemma4:26b-mlx, gpt-oss:20b and qwen3.8:27b-mlx, normal + terse.
+Native thinking, temperature zero, 4096 context/output, three repeats, every client
+sends all 24 graded prompts. One model at a time, `.bench.lock`. No Ollama settings
+changed. Initial `/api/ps` was empty. Wrapper unloads only its own model afterward.
+
+Jobs and queue persist in results/lab-app. Results: results/olmoe-concurrency-*
+(meta.json, progress.json, requests.jsonl, summary.json/report.md or failure.json).
+Do not queue duplicates or interrupt running tests. Finish auditing the model
+identity, grade counts, truncation, total/per-request tokens/s, generation-window
+overlap and process-tree footprint. Smoke tests have fewer than 24 prompts and
+are excluded from publication. Qwen one-question smoke: 20.8 total tok/s at 1 client
+vs 21.49 at 4; no generation overlap, suggesting queueing, not a batching gain.
+This is NOT the full benchmark result.
+
+Completed dashboard jobs auto-publish through scripts/lab_results_sync.py; data is
+site/data/concurrency.json, public view site/concurrency.html. Registry entry
+sm-installed-20-30b-concurrent currently says running: update it after all eight
+finish, including failures. This does not test partial expert residency.

@@ -75,6 +75,20 @@ def snapshot(source, target):
             (dst / path.name).write_text(clean(path.read_text()))
         # Public, machine-readable complete speed table, alongside the curated story.
         (target / 'site/data/speed-runs.json').write_text(json.dumps(list(merged.values()), indent=1) + '\n')
+    concurrency = []
+    for folder in sorted((source / 'results').glob('olmoe-concurrency-*')):
+        summary = saved_json(folder / 'summary.json')
+        if not summary or summary.get('prompts') != 24 or not summary.get('campaign_metadata'):
+            continue
+        dest = target / 'published-results' / folder.name
+        dest.mkdir(parents=True, exist_ok=True)
+        for filename in ('summary.json', 'report.md', 'meta.json', 'requests.jsonl'):
+            path = folder / filename
+            if path.exists():
+                (dest / filename).write_text(clean(path.read_text()))
+        concurrency.append(dict(name=folder.name, **summary))
+    if concurrency:
+        (target / 'site/data/concurrency.json').write_text(json.dumps(concurrency, indent=1) + '\n')
     run([sys.executable, 'glm_lab.py', 'log'], target)
     # Failed rows have undefined means; browsers require strict JSON nulls.
     for path in (target / 'site/data').glob('*.json'):
@@ -116,7 +130,7 @@ def sync():
 def completed_jobs():
     jobs = saved_json(ROOT / 'results/lab-app/jobs.json') or {'jobs': []}
     return {str(job['id']) for job in jobs['jobs']
-            if job.get('kind') in {'bench', 'suite', 'planned', 'quiet'}
+            if job.get('kind') in {'bench', 'suite', 'planned', 'quiet', 'concurrency'}
             and job.get('status') in {'done', 'failed', 'finished'}}
 
 

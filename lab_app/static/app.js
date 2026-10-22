@@ -421,8 +421,8 @@
     return f;
   }
   function screenResults(main, tab) {
-    tab = tab === 'speed' || tab === 'coverage' ? tab : 'quality';
-    return Promise.all([api('/api/benches'), api('/api/runs'), api('/api/models')]).then(function (res) {
+    tab = tab === 'parallel' || tab === 'speed' || tab === 'coverage' ? tab : 'quality';
+    return Promise.all([api('/api/benches'), api('/api/runs'), api('/api/models'), api('/api/concurrency')]).then(function (res) {
       var d = res[0], runs = res[1].runs, models = res[2].models;
       var benchModel = {};
       models.forEach(function (m) { benchModel[m.id] = m.name; (m.bench_names || []).forEach(function (n) { benchModel[n] = m.name; }); });
@@ -439,13 +439,28 @@
             answer_s: s.answer_s, prefill_s: s.prefill_s, tokens: s.output_tokens, tok_s: s.decode_tok_s, runs: s.runs });
         });
       });
-      var tabs = h('nav', { class: 'tabs', 'aria-label': 'Result views' }, [['quality', 'Answer quality', quality.length], ['speed', 'Speed runs', runs.length], ['coverage', 'Coverage', d.models.length]].map(function (t) {
+      var tabs = h('nav', { class: 'tabs', 'aria-label': 'Result views' }, [['quality', 'Answer quality', quality.length], ['speed', 'Speed runs', runs.length], ['coverage', 'Coverage', d.models.length], ['parallel', 'Parallel requests', (res[3].campaigns || []).length]].map(function (t) {
         return h('a', { class: 'tab', href: '#results' + (t[0] === 'quality' ? '' : '/' + t[0]), 'aria-current': t[0] === tab ? 'page' : null }, t[1], h('span', { class: 'count', text: t[2] }));
       }));
-      var body = tab === 'quality' ? qualityView(quality, d) : tab === 'speed' ? speedView(runs) : coverageView(d);
+      var body = tab === 'parallel' ? concurrencyView(res[3].campaigns || []) : tab === 'quality' ? qualityView(quality, d) : tab === 'speed' ? speedView(runs) : coverageView(d);
       put(main, header('Results', 'Measured values from saved benchmark runs. Every number is a single run on this Mac unless marked otherwise.',
         h('a', { class: 'btn', href: '#dashboard', text: 'Run a benchmark' })), tabs, body);
     });
+  }
+
+  function concurrencyView(campaigns) {
+    var box = h('div', { class: 'stack' }, h('p', { class: 'hint', text: 'One model, multiple clients. Total tokens/s includes all requests and waiting; per-request rate includes latency. Decode speed comes separately from server telemetry. Overlapping output streams are evidence of overlap, not proof of GPU batching. Memory sums the server process tree.' }));
+    if (!campaigns.length) box.appendChild(h('p', { text: 'No parallel-request tests yet. Select Parallel 1/4/10 in Run benchmarks.' }));
+    campaigns.forEach(function (c) {
+      var rows = c.summary ? c.summary.by_level : [], table = h('table', { class: 'table' },
+        h('caption', { text: c.model + ' · ' + c.style + ' · ' + c.profile }),
+        h('thead', {}, h('tr', {}, ['Clients', 'Total tokens/s', 'Correct', 'Mean decode tokens/s', 'Per request tokens/s', 'p95 seconds', 'Peak GB', 'Output overlap', 'Cut off'].map(function (x) { return h('th', { scope: 'col', text: x }); }))),
+        h('tbody', {}, rows.map(function (x) { return h('tr', {}, [x.level, x.total_tok_s, x.correct_count + '/' + x.graded_count, f2(x.mean_decode_tok_s, 2), x.per_request_tok_s, x.p95_latency_s, x.peak_rss_gb, x.overlapping_generation_observed ? 'observed' : 'not observed', x.truncated].map(function (v) { return h('td', { text: String(v) }); })); })));
+      box.appendChild(card([h('h2', { text: c.model }), h('p', { class: 'hint', text: c.name + (c.summary ? ' · ' + c.summary.prompts + ' prompts · ' + c.summary.repeats + ' repeats' + (c.summary.prompts < 24 ? ' · SMOKE TEST ONLY' : '') : '') }),
+        c.failure ? h('p', { text: 'Failed: ' + c.failure.error }) : !c.summary ? h('p', { text: c.progress ? 'In progress: ' + c.progress.done + '/' + c.progress.total + ' answers, ' + c.progress.clients + ' clients, repeat ' + c.progress.repeat : 'Preparing references' }) : null,
+        h('div', { class: 'table-scroll' }, table)]));
+    });
+    return box;
   }
 
   function qualityView(rows, d) {

@@ -21,7 +21,7 @@ STATE = ROOT / 'results' / 'lab-app'
 LOGS = STATE / 'logs'
 PY = str(ROOT / '.venv' / 'bin' / 'python')
 SAFE = re.compile(r'^[A-Za-z0-9._-]{1,80}$')
-GPU_KINDS = {'planned', 'bench', 'quiet', 'suite'}
+GPU_KINDS = {'planned', 'bench', 'quiet', 'suite', 'concurrency'}
 SUITE_BENCHES = {'speed', 'threads', 'ram'}
 QUIET_FLAGS = {'ram-sweep', 'skip-original', 'experiments-only', 'skip-experiments'}
 _lock = threading.RLock()
@@ -138,6 +138,12 @@ def build_command(kind, args):
             argv.append('--rerun')
             again = ' · run again'
         return argv, f"Quality bench {name}{label}: {', '.join(configs)} · {', '.join(styles)}{again}"
+    if kind == 'concurrency':
+        model = args.get('ollama_model', '')
+        style, profile = args.get('style', 'terse'), args.get('profile', 'native')
+        if model not in ollama_models() or style not in _styles() or profile not in {'native', 'direct'}:
+            raise ActionError('Choose an installed model, known style and native/direct profile')
+        return [PY, 'model_concurrency.py', '--model', model, '--style', style, '--profile', profile], f'Concurrency on {model} · {style} · {profile} · 1/4/10 clients, 3 repeats'
     if kind == 'quiet':
         flags = args.get('flags') or []
         if any(f not in QUIET_FLAGS for f in flags):

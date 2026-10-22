@@ -3090,6 +3090,31 @@
     "output": "n/a"
    },
    "effects": []
+  },
+  {
+   "id": "sm-installed-20-30b-concurrent",
+   "title": "Every installed 20–30B package: shared-model 1/4/10-client concurrency",
+   "category": "small-models",
+   "date": "2026-10-22",
+   "change": "Existing OLMoE concurrency harness adapted to Ollama streaming; gemma4:26b, gemma4:26b-mlx, gpt-oss:20b, qwen3.8:27b-mlx; normal and terse; 3 repeats",
+   "hypothesis": "Check whether the existing serving path increases aggregate tokens/s without reducing graded correctness or multiplying model weights in RAM.",
+   "ref": null,
+   "runs": [],
+   "lossy": false,
+   "verdict": "running",
+   "conclusion": "Eight dashboard jobs queued. One model at a time. Each level sends 24 prompts per client, native thinking, temperature zero, 4096-token output budget and 4096 context. First job started; results remain pending.",
+   "tradeoffs": "Aggregate tokens/s includes all wall time, not pure decode; decode telemetry recorded separately. Physical footprint sums daemon and descendants and can double-count shared pages. Overlapping streams do not prove GPU batching. No server settings changed.",
+   "sources": [],
+   "campaign": {
+    "result_glob": "results/olmoe-concurrency-*",
+    "public_data": "site/data/concurrency.json",
+    "public_page": "site/concurrency.html",
+    "docs": "docs/19-model-concurrency.md"
+   },
+   "metrics": {
+    "measured": false
+   },
+   "effects": []
   }
  ]
 }

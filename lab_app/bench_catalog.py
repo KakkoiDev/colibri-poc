@@ -87,6 +87,11 @@ def items():
                                  quiet=True, done=d, total=N_PROMPTS,
                                  setting=c, style=st))
 
+        for st in styles:
+            out.append(_item(f'concurrency:{om}:{st}', gid, f'Parallel requests · {st}',
+                'One shared model; 1, 4 and 10 clients, 3 repeats; correctness, total tokens/s and memory. Native thinking, temperature zero, 4096-token budget.',
+                dict(kind='concurrency', args=dict(ollama_model=om, style=st, profile='native')), quiet=False, style=st))
+
     # 3. Quiet runs on the main model
     groups.append(dict(id='quiet', title='Quiet runs (main model)', engine='Colibri', note='need ≥ 20 GB free for 2 min', kind='flat'))
     for flags, title, what in [([], 'Full quiet run', 'original engine + key cases + planned experiments'),
