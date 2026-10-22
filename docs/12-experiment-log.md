@@ -11,7 +11,7 @@ Target: **5.0 tok/s**. Best exact: **0.46 tok/s** (Metal exact: 6 threads instea
 
 Memory is not judged: peak RSS varied 6.2-9.3 GB between two runs with identical settings, so it reflects what macOS kept resident rather than the setting.
 
-Verdicts: confirmed 1, failed 1, improves 20, inconclusive 1, measured 2, no clear change 23, not run 24, reference 1, worse 10.
+Verdicts: confirmed 1, failed 1, improves 22, inconclusive 1, measured 2, no clear change 27, not run 15, reference 1, worse 13.
 
 ```mermaid
 flowchart LR
@@ -92,17 +92,17 @@ flowchart LR
 |---|---|---|---:|---|---|---|---|
 | **2 cache slots per layer (RAM 20 GB)** | no clear change | 0.43 → 0.44 | +2% | 23.6 → 23.9 | identical | — | c12-combo-cap2-r20 |
 | **Override Metal cap=1 and measure useful GLM cache capacity** | not run | — → — | — | — → — | — | — | — |
-| **Expert cache: 2 slots per layer (exact)** | not run | — → — | — | — → — | — | — | — |
-| **Expert cache: 4 slots per layer (exact)** | not run | — → — | — | — → — | — | — | — |
-| **Stack: 4 cache slots + skip < 0.5 + 12 threads** *(changes output)* | not run | — → — | — | — → — | — | — | — |
-| **Re-pin hot experts every 64 tokens (skip < 0.5)** *(changes output)* | not run | — → — | — | — → — | — | — | — |
+| **Expert cache: 2 slots per layer (exact)** | worse | 0.44 → 0.39 | -11% | 23.5 → 25.4 | n/a | generation -11% | x-cache-cap2-exact |
+| **Expert cache: 4 slots per layer (exact)** | no clear change | 0.44 → 0.40 | -9% | 23.5 → 25.0 | n/a | — | x-cache-cap4-exact |
+| **Stack: 4 cache slots + skip < 0.5 + 12 threads** *(changes output)* | improves | 1.87 → 2.12 | +14% | 23.5 → 24.7 | changed | generation +14%; output changed | x-cache-cap4-skip050, x-cache-cap4-skip050-r2 |
+| **Re-pin hot experts every 64 tokens (skip < 0.5)** *(changes output)* | no clear change | 1.70 → 1.77 | +4% | 32.5 → 34.8 | n/a | — | x-repin-skip050 |
 
 - **2 cache slots per layer (RAM 20 GB)** (`cache-2-slots`): change `--ram 20, CAP=2`. Why: Doubling the expert cache should raise the hit rate. Result: Hit rate 2% to 4%; too small to matter. A useful cache needs tens of GB. Reference: `c9-best-combo`.
 - **Override Metal cap=1 and measure useful GLM cache capacity** (`glm-explicit-cache-capacity`): change `Explicit capacities 1/2/4/8 with fixed pins and routing; safety-preflight every case`. Why: Explicit capacity overrides the Metal fast-SSD cap=1 heuristic and makes larger RAM budgets retain more useful experts Result: Not run. Current RAM26 log still reports cap=1/layer and ~1.9 GB pinned. See experiments/glm-cache-capacity.json. Tradeoffs: Larger caches compete with KV, GPU buffers and OS page cache; hit rate alone is not the objective.
-- **Expert cache: 2 slots per layer (exact)** (`cache-cap2-exact`): change `CAP=2 CAP_RAISE=0, RAM 22 GB`. Why: The Metal fast-SSD default keeps 1 slot per layer, so extra RAM sat unused (hit 2-4%). Two slots should raise hits and tok/s if experts repeat between tokens. Result: Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`. Reference: `r2-p0-sky-exact`.
-- **Expert cache: 4 slots per layer (exact)** (`cache-cap4-exact`): change `CAP=4 CAP_RAISE=0, RAM 26 GB (needs a quiet machine)`. Why: About 6.6 GB of dynamic expert cache; the projected peak stays under 26 GB. If hit rate rises without slowing the loop, this is a lossless gain. Result: Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`. Reference: `r2-p0-sky-exact`.
-- **Stack: 4 cache slots + skip < 0.5 + 12 threads** (`cache-cap4-skip050`): change `CAP=4 CAP_RAISE=0 + DEGRADE_TAU=0.50, RAM 26 GB`. Why: With skipping, half the time is still SSD reads (io 50%) and hits are 36%. Skipping already favours cached experts, so a larger cache should compound. Result: Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`. Reference: `r2-k-sky-skip050-t12`.
-- **Re-pin hot experts every 64 tokens (skip < 0.5)** (`repin-skip050`): change `REPIN=64 + DEGRADE_TAU=0.50`. Why: Pins are chosen once at start; re-pinning follows the experts this prompt actually uses. Lossless on its own; tested with skipping because that is the everyday setting. Result: Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`. Reference: `r2-k-code-skip050-t12`.
+- **Expert cache: 2 slots per layer (exact)** (`cache-cap2-exact`): change `CAP=2 CAP_RAISE=0, RAM 22 GB`. Why: The Metal fast-SSD default keeps 1 slot per layer, so extra RAM sat unused (hit 2-4%). Two slots should raise hits and tok/s if experts repeat between tokens. Result:  Reference: `r2-p0-sky-exact`.
+- **Expert cache: 4 slots per layer (exact)** (`cache-cap4-exact`): change `CAP=4 CAP_RAISE=0, RAM 26 GB (needs a quiet machine)`. Why: About 6.6 GB of dynamic expert cache; the projected peak stays under 26 GB. If hit rate rises without slowing the loop, this is a lossless gain. Result:  Reference: `r2-p0-sky-exact`.
+- **Stack: 4 cache slots + skip < 0.5 + 12 threads** (`cache-cap4-skip050`): change `CAP=4 CAP_RAISE=0 + DEGRADE_TAU=0.50, RAM 26 GB`. Why: With skipping, half the time is still SSD reads (io 50%) and hits are 36%. Skipping already favours cached experts, so a larger cache should compound. Result:  Reference: `r2-k-sky-skip050-t12`.
+- **Re-pin hot experts every 64 tokens (skip < 0.5)** (`repin-skip050`): change `REPIN=64 + DEGRADE_TAU=0.50`. Why: Pins are chosen once at start; re-pinning follows the experts this prompt actually uses. Lossless on its own; tested with skipping because that is the everyday setting. Result:  Reference: `r2-k-code-skip050-t12`.
 
 ## memory
 
@@ -164,9 +164,9 @@ flowchart LR
 | **Stack: MTP head + skip < 0.5 + 12 threads** *(changes output)* | worse | 1.87 → 1.69 | -10% | 23.5 → 25.5 | changed | output changed | x-mtp-int8-skip050 |
 | **Stack: 2-bit GGUF + skip < 0.5 + 12 threads** *(changes output)* | worse | 1.87 → 0.73 | -61% | 23.5 → 21.2 | changed | generation -61%; output changed | x-gguf-iq2m-skip050 |
 | **Stack: 3-bit GGUF + skip < 0.5 + 12 threads** *(changes output)* | worse | 1.87 → 0.64 | -66% | 23.5 → 23.5 | changed | generation -66%; output changed | x-gguf-iq3xxs-skip050 |
-| **Cache-aware routing on top of skip < 0.5** *(changes output)* | not run | — → — | — | — → — | — | — | — |
-| **Cache-aware routing + 4 cache slots, no skipping** *(changes output)* | not run | — → — | — | — → — | — | — | — |
-| **Skip < 0.6 with 12 threads** *(changes output)* | not run | — → — | — | — → — | — | — | — |
+| **Cache-aware routing on top of skip < 0.5** *(changes output)* | no clear change | 1.87 → 1.89 | +1% | 23.5 → 24.9 | identical | — | x-cache-route-skip050 |
+| **Cache-aware routing + 4 cache slots, no skipping** *(changes output)* | no clear change | 0.44 → 0.41 | -7% | 23.5 → 24.5 | n/a | — | x-cache-route-cap4 |
+| **Skip < 0.6 with 12 threads** *(changes output)* | improves | 1.87 → 2.13 | +14% | 23.5 → 25.1 | changed | generation +14%; output changed | x-skip060-t12, x-skip060-t12-r2 |
 
 - **Skip missed experts below weight 0.03** (`skip-0.03`): change `DEGRADE_ZERO=1 DEGRADE_TAU=0.03`. Why: Skipping low-weight experts that are not in RAM avoids SSD reads. Result: Skipped almost nothing; identical text. Tradeoffs: Changes output; needs quality checks. Reference: `l0-exact-48`.
 - **Skip missed experts below weight 0.05** (`skip-0.05`): change `DEGRADE_ZERO=1 DEGRADE_TAU=0.05`. Why: Skipping low-weight experts that are not in RAM avoids SSD reads. Result: Skipped almost nothing; identical text. Tradeoffs: Changes output; needs quality checks. Reference: `l0-exact-48`.
@@ -188,9 +188,9 @@ flowchart LR
 - **Stack: MTP head + skip < 0.5 + 12 threads** (`mtp-int8-skip050`): change `int8 MTP head + DEGRADE_ZERO=1 DEGRADE_TAU=0.50`. Why: In lossy mode each forward is dominated by attention and overhead, not SSD, so fewer forwards per token (MTP) should compound with skipping. Result: 1.69 tok/s vs 1.87 for skip 0.5 without the head (-10%). With skipping, the head adds work instead of saving it. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise. Reference: `r2-k-sky-skip050-t12`.
 - **Stack: 2-bit GGUF + skip < 0.5 + 12 threads** (`gguf-iq2m-skip050`): change `UD-IQ2_M GGUF + DEGRADE_ZERO=1 DEGRADE_TAU=0.50`. Why: Fewer bytes per expert and fewer experts read should multiply; tests how far the stack goes before compute dominates. Result: 0.73 tok/s vs 1.87 int4 skip 0.5. SSD share is only 12%: attention takes 66% of the time, about 0.9 s per token, 4-5x int4 attention. The GGUF path is attention-bound, not read-bound. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise. Reference: `r2-k-sky-skip050-t12`.
 - **Stack: 3-bit GGUF + skip < 0.5 + 12 threads** (`gguf-iq3xxs-skip050`): change `UD-IQ3_XXS GGUF + DEGRADE_ZERO=1 DEGRADE_TAU=0.50`. Why: The best-quality low-bit file with the best lossy stack on top. Result: 0.64 tok/s vs 1.87 int4 skip 0.5; attention 65% of the time. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise. Reference: `r2-k-sky-skip050-t12`.
-- **Cache-aware routing on top of skip < 0.5** (`cache-route-skip050`): change `CACHE_ROUTE=1 ROUTE_J=2 ROUTE_M=12 + DEGRADE_TAU=0.50`. Why: Instead of zeroing missing experts, substitute a cached runner-up beyond the top-2 ranks. Same reads saved, less lost signal than skipping: may allow the speed of a higher skip threshold at the quality of a lower one. Result: Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`. Reference: `r2-k-sky-skip050-t12`.
-- **Cache-aware routing + 4 cache slots, no skipping** (`cache-route-cap4`): change `CACHE_ROUTE=1 ROUTE_J=2 ROUTE_M=16 + CAP=4, RAM 26 GB`. Why: A bigger cache gives the router more cached alternatives; without zeroing, quality may stay closer to exact than skip 0.5 while reads fall. Result: Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`. Reference: `r2-p0-sky-exact`.
-- **Skip < 0.6 with 12 threads** (`skip060-t12`): change `DEGRADE_TAU=0.60`. Why: Skip 0.7 reached ~1.98 tok/s at 2 threads with grammar errors in an early test; 0.6 may be the last threshold before visible damage. Speed now, quality on the hard bench. Result: Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`. Reference: `r2-k-sky-skip050-t12`.
+- **Cache-aware routing on top of skip < 0.5** (`cache-route-skip050`): change `CACHE_ROUTE=1 ROUTE_J=2 ROUTE_M=12 + DEGRADE_TAU=0.50`. Why: Instead of zeroing missing experts, substitute a cached runner-up beyond the top-2 ranks. Same reads saved, less lost signal than skipping: may allow the speed of a higher skip threshold at the quality of a lower one. Result:  Reference: `r2-k-sky-skip050-t12`.
+- **Cache-aware routing + 4 cache slots, no skipping** (`cache-route-cap4`): change `CACHE_ROUTE=1 ROUTE_J=2 ROUTE_M=16 + CAP=4, RAM 26 GB`. Why: A bigger cache gives the router more cached alternatives; without zeroing, quality may stay closer to exact than skip 0.5 while reads fall. Result:  Reference: `r2-p0-sky-exact`.
+- **Skip < 0.6 with 12 threads** (`skip060-t12`): change `DEGRADE_TAU=0.60`. Why: Skip 0.7 reached ~1.98 tok/s at 2 threads with grammar errors in an early test; 0.6 may be the last threshold before visible damage. Speed now, quality on the hard bench. Result:  Reference: `r2-k-sky-skip050-t12`.
 
 ## model-format
 
@@ -254,11 +254,11 @@ flowchart LR
 
 | Experiment | Verdict | tok/s (ref → new) | Change | Prompt reading s (ref → new) | Output | Effects | Runs |
 |---|---|---|---:|---|---|---|---|
-| **Engine policy "balanced"** *(changes output)* | not run | — → — | — | — → — | — | — | — |
-| **Engine policy "experimental-fast"** *(changes output)* | not run | — → — | — | — → — | — | — | — |
+| **Engine policy "balanced"** *(changes output)* | worse | 0.44 → 0.39 | -11% | 23.5 → 24.9 | n/a | generation -11% | x-policy-balanced |
+| **Engine policy "experimental-fast"** *(changes output)* | worse | 0.44 → 0.39 | -11% | 23.5 → 24.9 | n/a | generation -11% | x-policy-experimental-fast |
 
-- **Engine policy "balanced"** (`policy-balanced`): change `COLI_POLICY=balanced`. Why: Colibri ships quality / balanced / experimental-fast policies; we only ever measured the default (quality). A free check of what the engine authors consider safe speed-ups. Result: Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`. Reference: `r2-p0-sky-exact`.
-- **Engine policy "experimental-fast"** (`policy-experimental-fast`): change `COLI_POLICY=experimental-fast`. Why: Upper bound of the engine's own speed presets; quality must be checked on the hard bench. Result: Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`. Reference: `r2-p0-sky-exact`.
+- **Engine policy "balanced"** (`policy-balanced`): change `COLI_POLICY=balanced`. Why: Colibri ships quality / balanced / experimental-fast policies; we only ever measured the default (quality). A free check of what the engine authors consider safe speed-ups. Result:  Reference: `r2-p0-sky-exact`.
+- **Engine policy "experimental-fast"** (`policy-experimental-fast`): change `COLI_POLICY=experimental-fast`. Why: Upper bound of the engine's own speed presets; quality must be checked on the hard bench. Result:  Reference: `r2-p0-sky-exact`.
 
 ## method
 

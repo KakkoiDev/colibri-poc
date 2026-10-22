@@ -1319,12 +1319,13 @@
   "change": "CAP=2 CAP_RAISE=0, RAM 22 GB",
   "hypothesis": "The Metal fast-SSD default keeps 1 slot per layer, so extra RAM sat unused (hit 2-4%). Two slots should raise hits and tok/s if experts repeat between tokens.",
   "ref": "r2-p0-sky-exact",
-  "runs": [],
+  "runs": [
+   "x-cache-cap2-exact"
+  ],
   "lossy": false,
   "date": "2026-10-22",
-  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "conclusion": "",
   "tradeoffs": "",
-  "verdict": "not run",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
   ],
@@ -1336,7 +1337,8 @@
     "CAP": "2",
     "CAP_RAISE": "0"
    },
-   "ref": "r2-p0-sky-exact"
+   "ref": "r2-p0-sky-exact",
+   "note": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`."
   }
  },
  {
@@ -1346,12 +1348,13 @@
   "change": "CAP=4 CAP_RAISE=0, RAM 26 GB (needs a quiet machine)",
   "hypothesis": "About 6.6 GB of dynamic expert cache; the projected peak stays under 26 GB. If hit rate rises without slowing the loop, this is a lossless gain.",
   "ref": "r2-p0-sky-exact",
-  "runs": [],
+  "runs": [
+   "x-cache-cap4-exact"
+  ],
   "lossy": false,
   "date": "2026-10-22",
-  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "conclusion": "",
   "tradeoffs": "",
-  "verdict": "not run",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
   ],
@@ -1363,7 +1366,8 @@
     "CAP": "4",
     "CAP_RAISE": "0"
    },
-   "ref": "r2-p0-sky-exact"
+   "ref": "r2-p0-sky-exact",
+   "note": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`."
   }
  },
  {
@@ -1373,12 +1377,14 @@
   "change": "CAP=4 CAP_RAISE=0 + DEGRADE_TAU=0.50, RAM 26 GB",
   "hypothesis": "With skipping, half the time is still SSD reads (io 50%) and hits are 36%. Skipping already favours cached experts, so a larger cache should compound.",
   "ref": "r2-k-sky-skip050-t12",
-  "runs": [],
+  "runs": [
+   "x-cache-cap4-skip050",
+   "x-cache-cap4-skip050-r2"
+  ],
   "lossy": true,
   "date": "2026-10-22",
-  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "conclusion": "",
   "tradeoffs": "",
-  "verdict": "not run",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
   ],
@@ -1392,7 +1398,8 @@
     "CAP": "4",
     "CAP_RAISE": "0"
    },
-   "ref": "r2-k-sky-skip050-t12"
+   "ref": "r2-k-sky-skip050-t12",
+   "note": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`."
   }
  },
  {
@@ -1402,12 +1409,13 @@
   "change": "CACHE_ROUTE=1 ROUTE_J=2 ROUTE_M=12 + DEGRADE_TAU=0.50",
   "hypothesis": "Instead of zeroing missing experts, substitute a cached runner-up beyond the top-2 ranks. Same reads saved, less lost signal than skipping: may allow the speed of a higher skip threshold at the quality of a lower one.",
   "ref": "r2-k-sky-skip050-t12",
-  "runs": [],
+  "runs": [
+   "x-cache-route-skip050"
+  ],
   "lossy": true,
   "date": "2026-10-22",
-  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "conclusion": "",
   "tradeoffs": "",
-  "verdict": "not run",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md",
    "https://github.com/JustVugg/colibri/blob/main/docs/env-vars.md"
@@ -1422,7 +1430,8 @@
     "ROUTE_J": "2",
     "ROUTE_M": "12"
    },
-   "ref": "r2-k-sky-skip050-t12"
+   "ref": "r2-k-sky-skip050-t12",
+   "note": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`."
   }
  },
  {
@@ -1432,12 +1441,13 @@
   "change": "CACHE_ROUTE=1 ROUTE_J=2 ROUTE_M=16 + CAP=4, RAM 26 GB",
   "hypothesis": "A bigger cache gives the router more cached alternatives; without zeroing, quality may stay closer to exact than skip 0.5 while reads fall.",
   "ref": "r2-p0-sky-exact",
-  "runs": [],
+  "runs": [
+   "x-cache-route-cap4"
+  ],
   "lossy": true,
   "date": "2026-10-22",
-  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "conclusion": "",
   "tradeoffs": "",
-  "verdict": "not run",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
   ],
@@ -1452,7 +1462,8 @@
     "CAP": "4",
     "CAP_RAISE": "0"
    },
-   "ref": "r2-p0-sky-exact"
+   "ref": "r2-p0-sky-exact",
+   "note": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`."
   }
  },
  {
@@ -1462,12 +1473,13 @@
   "change": "REPIN=64 + DEGRADE_TAU=0.50",
   "hypothesis": "Pins are chosen once at start; re-pinning follows the experts this prompt actually uses. Lossless on its own; tested with skipping because that is the everyday setting.",
   "ref": "r2-k-code-skip050-t12",
-  "runs": [],
+  "runs": [
+   "x-repin-skip050"
+  ],
   "lossy": true,
   "date": "2026-10-22",
-  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "conclusion": "",
   "tradeoffs": "",
-  "verdict": "not run",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
   ],
@@ -1479,7 +1491,8 @@
     "DEGRADE_TAU": "0.50",
     "REPIN": "64"
    },
-   "ref": "r2-k-code-skip050-t12"
+   "ref": "r2-k-code-skip050-t12",
+   "note": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`."
   }
  },
  {
@@ -1489,12 +1502,13 @@
   "change": "COLI_POLICY=balanced",
   "hypothesis": "Colibri ships quality / balanced / experimental-fast policies; we only ever measured the default (quality). A free check of what the engine authors consider safe speed-ups.",
   "ref": "r2-p0-sky-exact",
-  "runs": [],
+  "runs": [
+   "x-policy-balanced"
+  ],
   "lossy": true,
   "date": "2026-10-22",
-  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "conclusion": "",
   "tradeoffs": "",
-  "verdict": "not run",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
   ],
@@ -1504,7 +1518,8 @@
    "env": {
     "COLI_POLICY": "balanced"
    },
-   "ref": "r2-p0-sky-exact"
+   "ref": "r2-p0-sky-exact",
+   "note": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`."
   }
  },
  {
@@ -1514,12 +1529,13 @@
   "change": "COLI_POLICY=experimental-fast",
   "hypothesis": "Upper bound of the engine's own speed presets; quality must be checked on the hard bench.",
   "ref": "r2-p0-sky-exact",
-  "runs": [],
+  "runs": [
+   "x-policy-experimental-fast"
+  ],
   "lossy": true,
   "date": "2026-10-22",
-  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "conclusion": "",
   "tradeoffs": "",
-  "verdict": "not run",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
   ],
@@ -1529,7 +1545,8 @@
    "env": {
     "COLI_POLICY": "experimental-fast"
    },
-   "ref": "r2-p0-sky-exact"
+   "ref": "r2-p0-sky-exact",
+   "note": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`."
   }
  },
  {
@@ -1539,12 +1556,14 @@
   "change": "DEGRADE_TAU=0.60",
   "hypothesis": "Skip 0.7 reached ~1.98 tok/s at 2 threads with grammar errors in an early test; 0.6 may be the last threshold before visible damage. Speed now, quality on the hard bench.",
   "ref": "r2-k-sky-skip050-t12",
-  "runs": [],
+  "runs": [
+   "x-skip060-t12",
+   "x-skip060-t12-r2"
+  ],
   "lossy": true,
   "date": "2026-10-22",
-  "conclusion": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`.",
+  "conclusion": "",
   "tradeoffs": "",
-  "verdict": "not run",
   "sources": [
    "https://github.com/KakkoiDev/colibri-poc/blob/main/docs/19-next-speed-experiments.md"
   ],
@@ -1555,7 +1574,8 @@
     "DEGRADE_ZERO": "1",
     "DEGRADE_TAU": "0.60"
    },
-   "ref": "r2-k-sky-skip050-t12"
+   "ref": "r2-k-sky-skip050-t12",
+   "note": "Planned: runs in the quiet run (`make glm-quiet`) or `glm_lab.py run-planned`."
   }
  },
  {
