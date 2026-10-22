@@ -2218,5 +2218,25 @@
   "config": "RAM_GB=26.0 CTX=1024 | expert cache cap 3/layer (up to 4.8 GB) | pinned 91 (1.9 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0",
   "env": "DEGRADE_ZERO=1 DEGRADE_TAU=0.50 CAP=4 CAP_RAISE=0",
   "status": "ok"
+ },
+ {
+  "run": "x-cache-route-skip050",
+  "backend": "metal",
+  "omp_threads": "12",
+  "prompt_tokens": "17",
+  "prefill_s": "24.88",
+  "decode_tokens": "48",
+  "decode_s": "25.46",
+  "tok_s": "1.89",
+  "hit_pct": "35.8",
+  "rss_gb": "11.22",
+  "zeroed_slots": "23163",
+  "io_pct": "50",
+  "matmul_pct": "7",
+  "attn_pct": "35",
+  "other_pct": "7",
+  "config": "RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=1",
+  "env": "DEGRADE_ZERO=1 DEGRADE_TAU=0.50 CACHE_ROUTE=1 ROUTE_J=2 ROUTE_M=12",
+  "status": "ok"
  }
 ]
