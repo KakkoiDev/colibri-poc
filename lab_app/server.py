@@ -216,7 +216,7 @@ def estimate_item(item):
         total = 0.0
         for st in args.get('styles', []):
             for c in args.get('configs', []):
-                have = len(glob.glob(str(folder / f'*__{st}__{c}.json')))
+                have = 0 if args.get('rerun') else len(glob.glob(str(folder / f'*__{st}__{c}.json')))
                 per = (60 if c == 'native' else 20) if args.get('ollama_model') else mean_answer_s(st, c, 90 if st == 'terse' else 180)  # Ollama answers in seconds
                 total += max(0, n_prompts - have) * per
         return round(total)
@@ -747,6 +747,95 @@ def not_run():
                 quiet_threshold_gb=glm_quiet.QUIET_FREE_GB, quiet_hold_s=QUIET_HOLD_S)
 
 
+RUN_STD = [('speed', 'Speed'), ('threads', 'Threads'), ('ram', 'RAM')]
+
+
+def run_matrix():
+    """The Run screen: installed models x benches, each cell with its last result or why it cannot run, the catalog id
+    to queue it (a finished quality bench queues as "run again"), and where it stands in the queue."""
+    sys.path.insert(0, str(ROOT))
+    import glm_bench, glm_quiet
+    groups, items = bench_catalog.items()
+    by_id = {i['id']: i for i in items}
+    # every queued or running lab job -> the catalog ids it covers
+    def ids_of(kind, a):
+        if kind == 'suite':
+            return [f"suite:{a.get('bench')}:{a.get('model')}"]
+        if kind == 'planned':
+            return [f"planned:{a.get('id')}"]
+        if kind == 'quiet':
+            return ['quiet:' + ('+'.join(a.get('flags', [])) or 'full')]
+        if kind == 'bench':
+            return [i['id'] for i in items if i['kind'] == 'bench' and i['job']['args']['name'] == a.get('name')
+                    and i['job']['args'].get('ollama_model') == a.get('ollama_model') and i['style'] in a.get('styles', [])
+                    and i['setting'] in a.get('configs', [])]
+        return []
+    pos, running = {}, set()
+    for n, q in enumerate(actions.queue_state()['items'], 1):
+        for cid in ids_of(q['kind'], q['args']):
+            pos.setdefault(cid, n)
+    for j in actions.jobs_state()['jobs']:
+        if j.get('status') == 'running' and actions._alive(j.get('pid', 0)):
+            running.update(ids_of(j['kind'], j.get('args', {})))
+    b = benches()
+    summary = {r['name']: {(x['style'], x['config']): x for x in r['summary']} for r in b['results']}
+    started = {r['name']: (r.get('started') or '')[:10] for r in b['results']}
+    cover = {m['id']: m.get('coverage') or {} for m in b['models']}
+    labels = {'exact': 'exact', 'd030': 'skip 0.3', 'd050': 'skip 0.5', 'd030t12': 'skip 0.3 · 12 thr', 'd040t12': 'skip 0.4 · 12 thr',
+              'native': 'Ollama defaults'}
+    settings = list(glm_bench.CONFIGS) + [c for c in glm_bench.OLLAMA_CONFIGS if c not in glm_bench.CONFIGS]
+    columns = [dict(id=k, title=t, group='Standard') for k, t in RUN_STD] + \
+              [dict(id='q:' + c, title=labels.get(c, c), group='Quality', lossy=c not in ('exact', 'native'), setting=c) for c in settings]
+
+    def cell(cid, result=None, sub=None, date=None, failed=False):
+        i = by_id.get(cid)
+        if not i:
+            return None
+        args = dict(i['job']['args'], rerun=True) if i.get('complete') else i['job']['args']
+        base = dict(id=cid, est_s=estimate_item(dict(kind=i['kind'], args=args)), lossy=i['lossy'], title=i['title'])
+        if cid in running:
+            return dict(base, state='running')
+        if cid in pos:
+            return dict(base, state='queued', queue_pos=pos[cid])
+        if not i['available']:
+            needs, model, _ = plain_needs(i['why_not'])
+            return dict(base, state='blocked', why=needs, needs_model=model)
+        if result:
+            return dict(base, state='done', result=result, sub=sub, date=date)
+        if i.get('total') and i.get('done'):
+            return dict(base, state='partial', result=f"{i['done']}/{i['total']} answered")
+        return dict(base, state='failed' if failed else 'ready' if i['group'] in ('quiet', 'planned') else 'never')
+
+    rows, hidden = [], []
+    for g in groups:
+        if g['kind'] != 'model':
+            continue
+        if g.get('install'):
+            hidden.append(dict(id=g['id'], title=g['title']))
+            continue
+        cells = {}
+        mid = g['id'].split(':', 1)[1]
+        if g['engine'] == 'Colibri':
+            for k, _ in RUN_STD:
+                cv = cover.get(mid, {}).get(k, {})
+                cells[k] = cell(f'suite:{k}:{mid}', cv.get('detail') if cv.get('status') == 'done' else None, failed=cv.get('status') == 'failed')
+        for st in ('normal', 'terse'):
+            for c in settings:
+                cid = f'quality:{mid}:{c}:{st}' if g['engine'] == 'Colibri' else f'ollama:{mid}:{c}:{st}'
+                i = by_id.get(cid)
+                if not i:
+                    continue
+                sm = summary.get(i['job']['args']['name'], {}).get((st, c)) if i.get('complete') else None
+                cells[f'q:{c}:{st}'] = cell(cid, sm and f"{sm['correct']}/{sm['graded']}", sm and sm.get('decode_tok_s') and f"{sm['decode_tok_s']:.2f} tok/s",
+                                           started.get(i['job']['args']['name']))
+        rows.append(dict(id=g['id'], title=g['title'], engine=g['engine'], main=g.get('main'), note=g.get('note'),
+                         cells={k: v for k, v in cells.items() if v}))
+    rows.sort(key=lambda r: (not r['main'], r['engine'] != 'Colibri', r['title']))
+    extra = [dict(id=i['id'], title=i['title'], what=i['what'], group=i['group'], cell=cell(i['id'])) for i in items if i['group'] in ('quiet', 'planned')]
+    return dict(columns=columns, rows=rows, not_installed=hidden, extra=extra, styles=['normal', 'terse'],
+                quiet_threshold_gb=glm_quiet.QUIET_FREE_GB, quiet_hold_s=QUIET_HOLD_S)
+
+
 def gpu_status():
     js, holders = jobs()
     busy = bool(holders) or any(j.get('gpu') for j in js)
@@ -877,6 +966,7 @@ API = {
     '/api/benches': lambda q: benches(),
     '/api/bench-catalog': lambda q: bench_catalog_view(),
     '/api/not-run': lambda q: not_run(),
+    '/api/run-matrix': lambda q: run_matrix(),
     '/api/bench': lambda q: bench_detail(q.get('name', [''])[0]),
     '/api/runs': lambda q: dict(runs=runs_table()),
     '/api/run-output': lambda q: dict(text=run_output(q.get('run', [''])[0])),

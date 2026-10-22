@@ -32,8 +32,10 @@ def ollama_bench_name(model):
 
 
 def _item(id, group, title, what, job, quiet, available=True, why='', done=None, total=None, lossy=False, setting=None, style=None):
+    # a finished quality bench stays available: queueing it again measures it afresh (glm_bench --rerun)
     return dict(id=id, group=group, title=title, what=what, kind=job['kind'], job=job, only_when_quiet=quiet,
-                available=available, why_not=why or None, done=done, total=total, lossy=lossy, setting=setting, style=style)
+                available=available, why_not=why or None, done=done, total=total, complete=bool(total) and done >= total,
+                lossy=lossy, setting=setting, style=style)
 
 
 def items():
@@ -62,13 +64,12 @@ def items():
         for st in styles:
             for c in glm_bench.CONFIGS:
                 d = _done(name, st, c) if not why else 0
-                full = d >= N_PROMPTS
                 args = dict(name=name, configs=[c], styles=[st])
                 if not m.get('owner_model'):
                     args['model'] = m['id']
                 out.append(_item(f"quality:{m['id']}:{c}:{st}", gid, f"Quality · {labels.get(c, c)} · {st}",
                                  f'{N_PROMPTS} graded prompts, results in glm-bench-{name}', dict(kind='bench', args=args),
-                                 quiet=True, available=not why and not full, why=why or ('complete' if full else ''),
+                                 quiet=True, available=not why, why=why,
                                  done=d, total=N_PROMPTS, lossy=c != 'exact', setting=c, style=st))
 
     # 2. Ollama models installed on this Mac: the quality bench, exact and as normally run
@@ -80,11 +81,10 @@ def items():
         for st in styles:
             for c in glm_bench.OLLAMA_CONFIGS:
                 d = _done(name, st, c)
-                full = d >= N_PROMPTS
                 out.append(_item(f'ollama:{om}:{c}:{st}', gid, f"Quality · {labels.get(c, c)} · {st}",
                                  f'{N_PROMPTS} graded prompts through Ollama, results in glm-bench-{name}',
                                  dict(kind='bench', args=dict(name=name, configs=[c], styles=[st], ollama_model=om)),
-                                 quiet=True, available=not full, why='complete' if full else '', done=d, total=N_PROMPTS,
+                                 quiet=True, done=d, total=N_PROMPTS,
                                  setting=c, style=st))
 
     # 3. Quiet runs on the main model
@@ -108,7 +108,7 @@ def items():
 
 
 def presets(all_items):
-    ok = [i for i in all_items if i['available']]
+    ok = [i for i in all_items if i['available'] and not i['complete']]   # presets fill gaps; running again is a choice per item
     ids = lambda pred: [i['id'] for i in ok if pred(i)]
     owner = next((m['id'] for m in actions._catalog().values() if m.get('owner_model')), None)
     p = [dict(id='everyday-terse', title='Main model: exact + everyday setting, terse',
@@ -136,8 +136,8 @@ def jobs_for(ids):
     for i in chosen:
         j = i['job']
         if j['kind'] == 'bench':
-            a = j['args']
-            key = (a['name'], a['styles'][0], a.get('model'), a.get('ollama_model'))
+            a = dict(j['args'], rerun=True) if i['complete'] else j['args']
+            key = (a['name'], a['styles'][0], a.get('model'), a.get('ollama_model'), i['complete'])
             if key in merged:
                 merged[key]['args']['configs'].append(a['configs'][0])
                 continue

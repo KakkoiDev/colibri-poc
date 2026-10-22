@@ -434,3 +434,48 @@ details.x[open] > summary{margin-bottom:var(--s2)}
 .nr-state{display:flex; flex-direction:column; gap:3px; align-items:flex-start}
 .nr-sum{cursor:pointer; font-size:14px; font-weight:600; min-height:32px; display:flex; align-items:center; gap:8px}
 @media (max-width:700px){ .nr{grid-template-columns:minmax(0, 1fr) auto} .nr-state{grid-column:1; flex-direction:row; flex-wrap:wrap; gap:6px 10px; align-items:center} .nr-act{grid-column:2; grid-row:1 / span 2; align-self:center} }
+
+/* Run matrix (Run benchmarks): installed models x benches, select cells, Run */
+.mx-wrap{overflow-x:auto; border-top:2px solid var(--fg); border-bottom:2px solid var(--fg)}
+.mx{border-collapse:collapse; width:100%; min-width:860px; font-size:13px}
+.mx th,.mx td{border-bottom:1px solid var(--line); padding:0; text-align:left; vertical-align:top}
+.mx thead th{font-weight:600; font-size:12px; line-height:16px; padding:6px 8px; border-bottom:1px solid var(--fg)}
+.mx thead .mx-grp{font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--fg-2); border-bottom:1px solid var(--line)}
+.mx .mx-model{position:sticky; left:0; z-index:1; background:var(--surface); min-width:160px; max-width:200px; border-right:1px solid var(--line)}
+.mx thead .mx-model{z-index:2}
+.mx .mx-col{padding:0; min-width:84px}
+.mx-head{all:unset; box-sizing:border-box; display:flex; flex-direction:column; gap:1px; width:100%; padding:6px 8px; cursor:pointer}
+.mx-head:hover:not(:disabled){background:var(--surface-2)}
+.mx-head:disabled{cursor:default}
+.mx-head:focus-visible,.mx-c button:focus-visible{outline:2px solid var(--fg); outline-offset:-2px}
+.mx thead .mx-head{flex-direction:row; align-items:baseline; gap:4px}
+.mx-name{font-weight:600; font-size:13px; line-height:18px; overflow-wrap:anywhere}
+.mx-lossy{font-weight:700; color:var(--warn)}
+.mx-c button,.mx-c > div{all:unset; box-sizing:border-box; display:flex; flex-direction:column; gap:1px; width:100%; min-height:52px; padding:6px 8px; cursor:pointer}
+.mx-c > div{cursor:default}
+.mx-c button:hover{background:var(--surface-2)}
+.mx-top{font-size:13px; line-height:18px; font-weight:600; white-space:nowrap}
+.mx-sub{font-size:11px; line-height:15px; color:var(--fg-2); overflow-wrap:anywhere}
+.mx-c.is-blocked .mx-sub{display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.mx-c.is-never .mx-top,.mx-c.is-partial .mx-top{color:var(--fg-2); font-weight:400; font-style:italic}
+.mx-c.is-failed .mx-top{color:var(--bad)}
+.mx-c.is-queued .mx-top,.mx-c.is-running .mx-top{color:var(--ok)}
+.mx-c.is-blocked .mx-top{color:var(--fg-2); font-weight:400}
+.mx-c.sel{background:var(--accent-bg); box-shadow:inset 0 0 0 2px var(--fg)}
+.mx-pick{font-size:11px; line-height:15px; font-weight:700}
+.mx-na{color:var(--fg-2); padding:6px 8px !important; text-align:center !important}
+.mx-why{padding:10px 8px !important; color:var(--fg-2); font-size:13px}
+.seg{display:inline-flex; border:1px solid var(--fg)}
+.seg button{all:unset; cursor:pointer; padding:3px 10px; font-size:13px; line-height:20px}
+.seg button[aria-pressed="true"]{background:var(--fg); color:var(--bg)}
+.seg button:focus-visible{outline:2px solid var(--link); outline-offset:1px}
+.xtra{display:grid; grid-template-columns:repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap:6px 16px}
+.xtra-i{display:flex; gap:8px; align-items:flex-start; font-size:13px; line-height:18px; cursor:pointer}
+.xtra-i.off{cursor:default; color:var(--fg-2)}
+.xtra-i input{margin-top:2px}
+.run-bar{position:sticky; bottom:0; z-index:3; display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; justify-content:space-between;
+  margin:0 -20px -16px; padding:10px 20px; background:var(--surface); border-top:1px solid var(--line)}
+.run-bar.on{border-top:2px solid var(--fg); background:var(--surface-2)}
+.run-bar select{max-width:100%}
+.live-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(min(360px, 100%), 1fr)); gap:var(--s4); align-items:start}
+@media (max-width:600px){ .mx .mx-model{min-width:128px; max-width:140px} .run-bar{margin:0 -16px -16px; padding:10px 16px} .run-bar .row{width:100%} .run-bar select{flex:1 1 100%} }

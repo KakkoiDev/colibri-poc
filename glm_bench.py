@@ -164,6 +164,22 @@ def grade(item, text):
     return None
 
 
+def rerun_archive(out_dir, keys):
+    """Run again: move the saved answers of these cases to attempts/rerun-<time>/ (kept, never deleted), so the run
+    measures them afresh instead of skipping them as done."""
+    dest = out_dir / 'attempts' / f'rerun-{time.strftime("%Y%m%dT%H%M%S")}'
+    moved = 0
+    for key in keys:
+        for old in (out_dir / f'{key}.json', out_dir / f'{key}.log'):
+            if old.exists():
+                dest.mkdir(parents=True, exist_ok=True)
+                old.replace(dest / old.name)
+                moved += old.suffix == '.json'
+    if moved:
+        print(f'Run again: {moved} saved answers moved to {dest.relative_to(ROOT)}', flush=True)
+    return moved
+
+
 def run(args):
     spec = json.loads((ROOT / 'glm-prompts.json').read_text())
     out_dir = ROOT / 'results' / f'glm-bench-{args.name}'
@@ -200,6 +216,8 @@ def run(args):
                                     'configs': {} if ollama or openai else {c: CONFIGS[c] for c in configs},
                                     'styles': {s: spec['styles'][s] for s in styles},
                                     'ram': args.ram, 'ctx': args.ctx, 'ngen': args.ngen}, indent=1))
+    if getattr(args, 'rerun', False):
+        rerun_archive(out_dir, [f"{i['id']}__{st}__{c}" for st in styles for i in items for c in configs])
     total = len(items) * len(styles) * len(configs)
     done = 0
     for style in styles:          # finish one style across all prompts before the next
@@ -351,6 +369,7 @@ def main():
     r.add_argument('--openai-label', default='', help='model name shown in results (default: --openai-model)')
     r.add_argument('--ollama-model', default='')
     r.add_argument('--ollama-url', default='http://127.0.0.1:11434')
+    r.add_argument('--rerun', action='store_true', help='measure cases again: saved answers move to attempts/rerun-<time>/')
     p = sub.add_parser('report')
     p.add_argument('--name', required=True)
     c = sub.add_parser('compare')

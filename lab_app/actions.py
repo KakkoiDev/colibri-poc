@@ -133,7 +133,11 @@ def build_command(kind, args):
             m = _runnable_model(args['model'])
             argv += ['--model', '~/' + m['path'], '--coli-dir', m['coli_dir']]
             label = f" on {m['name']}"
-        return argv, f"Quality bench {name}{label}: {', '.join(configs)} · {', '.join(styles)}"
+        again = ''
+        if args.get('rerun') is True:
+            argv.append('--rerun')
+            again = ' · run again'
+        return argv, f"Quality bench {name}{label}: {', '.join(configs)} · {', '.join(styles)}{again}"
     if kind == 'quiet':
         flags = args.get('flags') or []
         if any(f not in QUIET_FLAGS for f in flags):
