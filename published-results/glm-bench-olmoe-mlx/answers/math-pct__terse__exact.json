@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.22,
+ "prompt_tokens": 35,
+ "output_tokens": 30,
+ "prefill_s": 0.058,
+ "decode_s": 0.158,
+ "text": "```python\nnum = 240\npercentage = 15\nresult = num * (percentage / 100)\nprint(result)\n```",
+ "truncated": false,
+ "tokens_from": "usage",
+ "decode_tok_s": 183.54,
+ "answer_s": 0.22,
+ "correct": false
+}

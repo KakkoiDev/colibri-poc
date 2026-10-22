@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.48,
+ "prompt_tokens": 47,
+ "output_tokens": 79,
+ "prefill_s": 0.054,
+ "decode_s": 0.429,
+ "text": "```python\ndef count_sisters():\n    num_brothers = 3\n    sisters_per_brother = 2\n    total_sisters = num_brothers * sisters_per_brother\n    return total_sisters\n\nprint(count_sisters())\n```\n\nThe output will be \\(6\\), indicating Sally has 6 sisters.",
+ "truncated": false,
+ "tokens_from": "usage",
+ "decode_tok_s": 181.82,
+ "answer_s": 0.48,
+ "correct": false
+}

@@ -32,7 +32,7 @@ def summarize(records, wall_s):
     lat = [r['latency_s'] for r in records]
     single = [r['tokens'] / r['latency_s'] for r in records if r['latency_s'] > 0]
     same = [r['same_as_single'] for r in records if r['same_as_single'] is not None]
-    return dict(requests=len(records), tokens=tokens, wall_s=round(wall_s, 3),
+    return dict(requests=len(records), tokens=tokens, wall_s=round(wall_s, 3), retries=sum(r.get('retries', 0) for r in records),
                 total_tok_s=round(tokens / wall_s, 2) if wall_s > 0 else None,
                 per_request_tok_s=round(sum(single) / len(single), 2) if single else None,
                 p50_latency_s=round(percentile(lat, 50), 3) if lat else None,
@@ -65,11 +65,25 @@ class RssSampler(threading.Thread):
             self.stop.wait(self.every)
 
 
-def one(args, prompt):
-    r = glm_bench.openai_generate(args.url, args.model, prompt, args.ngen, args.timeout)
+def refused(e):
+    """True for a connection reset or refused before the request started: mlx_lm.server is a
+    ThreadingHTTPServer whose listen backlog is 5, so a burst of 10 connections can overflow it."""
+    reason = getattr(e, 'reason', e)
+    return isinstance(reason, (ConnectionResetError, ConnectionRefusedError))
+
+
+def one(args, prompt, tries=8):
+    for k in range(tries):
+        try:
+            r = glm_bench.openai_generate(args.url, args.model, prompt, args.ngen, args.timeout)
+            break
+        except OSError as e:          # URLError is an OSError
+            if not refused(e) or k == tries - 1:
+                raise
+            time.sleep(0.05 * 2 ** k)
     u = r.get('usage') or {}
     return dict(latency_s=r['total_s'], ttft_s=r['ttft_s'], tokens=u.get('completion_tokens') or r['chunks'], text=r['text'].strip(),
-                finish=r['finish_reason'])
+                finish=r['finish_reason'], retries=k)
 
 
 def run_level(args, items, n, single_text):
@@ -136,7 +150,7 @@ def main():
             rows.append(s)
             for r in recs:
                 log.write(json.dumps(dict(r, level=n, repeat=rep + 1), ensure_ascii=False) + '\n')
-            print(f"N={n:>2} repeat {rep + 1}: {s['total_tok_s']} tok/s total, {s['per_request_tok_s']} per request, "
+            print(f"N={n:>2} repeat {rep + 1}: {s['total_tok_s']} tok/s total, {s['retries']} retries, {s['per_request_tok_s']} per request, "
                   f"p50 {s['p50_latency_s']} s, p95 {s['p95_latency_s']} s, memory {s['peak_rss_gb']} GB, same {s['same_as_single']}", flush=True)
     log.close()
 
@@ -146,12 +160,13 @@ def main():
         rs = [r for r in rows if r['level'] == n]
         by_level[n] = dict(level=n, total_tok_s=med([r['total_tok_s'] for r in rs]), per_request_tok_s=med([r['per_request_tok_s'] for r in rs]),
                            p50_latency_s=med([r['p50_latency_s'] for r in rs]), p95_latency_s=med([r['p95_latency_s'] for r in rs]),
-                           peak_rss_gb=max(r['peak_rss_gb'] for r in rs), same_as_single=[r['same_as_single'] for r in rs],
+                           peak_rss_gb=max(r['peak_rss_gb'] for r in rs), retries=sum(r['retries'] for r in rs), same_as_single=[r['same_as_single'] for r in rs],
                            correct=[r['correct'] for r in rs])
     summary = dict(started=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), url=a.url, model=a.model, style=a.style, ngen=a.ngen,
                    prompts=len(items), repeats=a.repeats, levels=levels, runs=rows, by_level=list(by_level.values()),
                    note='Median over repeats. total_tok_s = generated tokens of all requests / wall time of the level. '
-                        'Each client sends every prompt once, in a rotated order; one warm-up request discarded.')
+                        'Each client sends every prompt once, in a rotated order; one warm-up request discarded. '
+                        'Connections reset before a request started (server backlog of 5) are retried and counted; latency is the successful attempt.')
     (out / 'summary.json').write_text(json.dumps(summary, indent=1))
     lines = ['| Requests at once | Total tok/s | Per request tok/s | p50 latency s | p95 latency s | Peak server memory GB | Same as single | Correct |',
              '|---:|---:|---:|---:|---:|---:|---|---|']

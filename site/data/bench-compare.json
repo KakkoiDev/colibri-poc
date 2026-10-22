@@ -907,6 +907,36 @@
    "mean_tok_s": 23.452916666666667,
    "correct_per_min": 17.005545286506468,
    "truncated": 0
+  },
+  {
+   "bench": "olmoe-mlx",
+   "model": "olmoe-1b-7b-4bit",
+   "engine": "MLX server olmoe-1b-7b-4bit",
+   "style": "normal",
+   "config": "exact",
+   "correct": 17,
+   "graded": 24,
+   "median_answer_s": 0.76,
+   "mean_answer_s": 0.6704166666666667,
+   "median_prefill_s": 0.053,
+   "mean_tok_s": 179.98791666666668,
+   "correct_per_min": 63.393412057178374,
+   "truncated": 18
+  },
+  {
+   "bench": "olmoe-mlx",
+   "model": "olmoe-1b-7b-4bit",
+   "engine": "MLX server olmoe-1b-7b-4bit",
+   "style": "terse",
+   "config": "exact",
+   "correct": 12,
+   "graded": 24,
+   "median_answer_s": 0.23,
+   "mean_answer_s": 0.2808333333333333,
+   "median_prefill_s": 0.057,
+   "mean_tok_s": 183.03625,
+   "correct_per_min": 106.82492581602374,
+   "truncated": 2
   }
  ]
 }

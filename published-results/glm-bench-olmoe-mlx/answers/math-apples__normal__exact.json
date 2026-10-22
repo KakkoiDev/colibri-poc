@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.77,
+ "prompt_tokens": 34,
+ "output_tokens": 128,
+ "prefill_s": 0.059,
+ "decode_s": 0.708,
+ "text": "Let's break down the problem step by step:\n\n1. You start with 12 apples.\n2. You give away 5 apples.\n3. You then buy 8 more apples.\n\nWe'll calculate the final number of apples using Python to ensure accuracy.\n\nLet's write the code to solve this.\n```python\n# Initial number of apples\ninitial_apples = 12\n\n# Apples given away\napples_given_away = 5\n\n# Apples bought\napples_bought = 8\n\n# Calculate the final number of apples\nfinal_apples = initial",
+ "truncated": true,
+ "tokens_from": "usage",
+ "decode_tok_s": 179.38,
+ "answer_s": 0.77,
+ "correct": false
+}

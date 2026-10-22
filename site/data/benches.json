@@ -98,6 +98,16 @@
    "title": "Qwen3.8-27B",
    "group": "Ollama, fully in RAM",
    "sub": "Ollama qwen3.8:27b-mlx"
+  },
+  {
+   "name": "olmoe-mlx",
+   "file": "bench-olmoe-mlx.json",
+   "answers": 48,
+   "engine": "MLX server",
+   "model": "olmoe-1b-7b-4bit",
+   "title": "OLMoE 1B-7B (4-bit)",
+   "sub": "MLX server olmoe-1b-7b-4bit",
+   "group": "MLX, fully in RAM"
   }
  ]
 }

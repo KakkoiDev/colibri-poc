@@ -1,0 +1,18 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.78,
+ "prompt_tokens": 23,
+ "output_tokens": 128,
+ "prefill_s": 0.041,
+ "decode_s": 0.742,
+ "text": "The largest planet in our solar system is Jupiter. It is a gas giant with a mass about two-thirds of all the other planets in the solar system combined and is about 11 times the mass of Earth. Jupiter is also the fastest-spinning planet in our solar system, completing a rotation in about 10 hours. Its large size and composition of hydrogen and helium make it the most massive planet and the most influential in terms of gravitational pull in the solar system, except for the Sun itself.\n\nHere are some key points about Jupiter:\n\n**Composition:**\n- Composed mainly of hydrogen and helium, with traces of",
+ "truncated": true,
+ "tokens_from": "usage",
+ "decode_tok_s": 171.16,
+ "answer_s": 0.78,
+ "correct": true
+}

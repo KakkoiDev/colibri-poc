@@ -1,0 +1,18 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.77,
+ "prompt_tokens": 53,
+ "output_tokens": 128,
+ "prefill_s": 0.054,
+ "decode_s": 0.719,
+ "text": "Here is a Python function that counts the number of vowels in a given string:\n\n```python\ndef count_vowels(s):\n    vowels = 'aeiouAEIOU'\n    count = 0\n    for char in s:\n        if char in vowels:\n            count += 1\n    return count\n\n# Example usage:\nprint(count_vowels(\"Hello, World!\"))  # Output: 5\nprint(count_vowels(\"Python\"))  # Output: 2\nprint(count_vowels(\"Assignment\"))",
+ "truncated": true,
+ "tokens_from": "usage",
+ "decode_tok_s": 176.63,
+ "answer_s": 0.77,
+ "correct": true
+}
