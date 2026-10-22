@@ -2158,5 +2158,25 @@
   "config": "RAM_GB=22.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 53 (1.1 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0",
   "env": "CAP=2 CAP_RAISE=0",
   "status": "ok"
+ },
+ {
+  "run": "x-cache-cap4-exact",
+  "backend": "metal",
+  "omp_threads": "12",
+  "prompt_tokens": "17",
+  "prefill_s": "25.00",
+  "decode_tokens": "48",
+  "decode_s": "120.28",
+  "tok_s": "0.40",
+  "hit_pct": "5.8",
+  "rss_gb": "9.28",
+  "zeroed_slots": "",
+  "io_pct": "75",
+  "matmul_pct": "12",
+  "attn_pct": "11",
+  "other_pct": "2",
+  "config": "RAM_GB=26.0 CTX=1024 | expert cache cap 2/layer (up to 3.2 GB) | pinned 91 (1.9 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0",
+  "env": "CAP=4 CAP_RAISE=0",
+  "status": "ok"
  }
 ]
