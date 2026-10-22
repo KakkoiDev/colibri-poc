@@ -1,0 +1,272 @@
+[
+ {
+  "name": "olmoe-concurrency-gemma4-26b-native-terse-20261022T221811",
+  "started": "2026-10-22T15:49:45Z",
+  "url": "http://127.0.0.1:11434",
+  "model": "gemma4:26b",
+  "style": "terse",
+  "ngen": 4096,
+  "prompts": 24,
+  "repeats": 3,
+  "levels": [
+   1,
+   4,
+   10
+  ],
+  "runs": [
+   {
+    "requests": 24,
+    "tokens": 13322,
+    "wall_s": 189.981,
+    "retries": 0,
+    "total_tok_s": 70.12,
+    "per_request_tok_s": 69.34,
+    "p50_latency_s": 2.975,
+    "p95_latency_s": 23.874,
+    "p50_ttft_s": 0.094,
+    "same_as_single": "21/24",
+    "level": 1,
+    "repeat": 1,
+    "peak_rss_gb": 24.03,
+    "correct": "23/24"
+   },
+   {
+    "requests": 96,
+    "tokens": 53534,
+    "wall_s": 723.461,
+    "retries": 0,
+    "total_tok_s": 74.0,
+    "per_request_tok_s": 18.73,
+    "p50_latency_s": 28.127,
+    "p95_latency_s": 71.878,
+    "p50_ttft_s": 16.902,
+    "same_as_single": "88/96",
+    "level": 4,
+    "repeat": 1,
+    "peak_rss_gb": 24.03,
+    "correct": "92/96"
+   },
+   {
+    "requests": 240,
+    "tokens": 147222,
+    "wall_s": 1961.727,
+    "retries": 0,
+    "total_tok_s": 75.05,
+    "per_request_tok_s": 8.24,
+    "p50_latency_s": 81.102,
+    "p95_latency_s": 132.57,
+    "p50_ttft_s": 73.878,
+    "same_as_single": "219/240",
+    "level": 10,
+    "repeat": 1,
+    "peak_rss_gb": 24.03,
+    "correct": "226/240"
+   },
+   {
+    "requests": 240,
+    "tokens": 148862,
+    "wall_s": 2040.542,
+    "retries": 0,
+    "total_tok_s": 72.95,
+    "per_request_tok_s": 7.79,
+    "p50_latency_s": 83.617,
+    "p95_latency_s": 134.228,
+    "p50_ttft_s": 77.933,
+    "same_as_single": "220/240",
+    "level": 10,
+    "repeat": 2,
+    "peak_rss_gb": 24.03,
+    "correct": "226/240"
+   },
+   {
+    "requests": 96,
+    "tokens": 56735,
+    "wall_s": 777.645,
+    "retries": 0,
+    "total_tok_s": 72.96,
+    "per_request_tok_s": 18.76,
+    "p50_latency_s": 28.438,
+    "p95_latency_s": 76.516,
+    "p50_ttft_s": 18.433,
+    "same_as_single": "88/96",
+    "level": 4,
+    "repeat": 2,
+    "peak_rss_gb": 24.03,
+    "correct": "92/96"
+   },
+   {
+    "requests": 24,
+    "tokens": 13804,
+    "wall_s": 190.741,
+    "retries": 0,
+    "total_tok_s": 72.37,
+    "per_request_tok_s": 70.07,
+    "p50_latency_s": 3.245,
+    "p95_latency_s": 23.711,
+    "p50_ttft_s": 0.1,
+    "same_as_single": "22/24",
+    "level": 1,
+    "repeat": 2,
+    "peak_rss_gb": 24.03,
+    "correct": "23/24"
+   },
+   {
+    "requests": 24,
+    "tokens": 13945,
+    "wall_s": 194.02,
+    "retries": 0,
+    "total_tok_s": 71.87,
+    "per_request_tok_s": 70.53,
+    "p50_latency_s": 3.071,
+    "p95_latency_s": 26.697,
+    "p50_ttft_s": 0.086,
+    "same_as_single": "22/24",
+    "level": 1,
+    "repeat": 3,
+    "peak_rss_gb": 24.02,
+    "correct": "23/24"
+   },
+   {
+    "requests": 96,
+    "tokens": 55281,
+    "wall_s": 791.152,
+    "retries": 0,
+    "total_tok_s": 69.87,
+    "per_request_tok_s": 18.04,
+    "p50_latency_s": 30.633,
+    "p95_latency_s": 84.974,
+    "p50_ttft_s": 17.794,
+    "same_as_single": "88/96",
+    "level": 4,
+    "repeat": 3,
+    "peak_rss_gb": 24.02,
+    "correct": "92/96"
+   },
+   {
+    "requests": 240,
+    "tokens": 147527,
+    "wall_s": 2012.495,
+    "retries": 0,
+    "total_tok_s": 73.31,
+    "per_request_tok_s": 7.99,
+    "p50_latency_s": 82.6,
+    "p95_latency_s": 129.027,
+    "p50_ttft_s": 76.678,
+    "same_as_single": "220/240",
+    "level": 10,
+    "repeat": 3,
+    "peak_rss_gb": 24.03,
+    "correct": "226/240"
+   }
+  ],
+  "by_level": [
+   {
+    "level": 1,
+    "total_tok_s": 71.87,
+    "per_request_tok_s": 70.07,
+    "p50_latency_s": 3.071,
+    "p95_latency_s": 23.874,
+    "peak_rss_gb": 24.03,
+    "retries": 0,
+    "same_as_single": [
+     "21/24",
+     "22/24",
+     "22/24"
+    ],
+    "correct": [
+     "23/24",
+     "23/24",
+     "23/24"
+    ],
+    "truncated": 3,
+    "correct_count": 69,
+    "graded_count": 72,
+    "mean_decode_tok_s": 70.26740044494863,
+    "overlapping_generation_observed": false
+   },
+   {
+    "level": 4,
+    "total_tok_s": 72.96,
+    "per_request_tok_s": 18.73,
+    "p50_latency_s": 28.438,
+    "p95_latency_s": 76.516,
+    "peak_rss_gb": 24.03,
+    "retries": 0,
+    "same_as_single": [
+     "88/96",
+     "88/96",
+     "88/96"
+    ],
+    "correct": [
+     "92/96",
+     "92/96",
+     "92/96"
+    ],
+    "truncated": 12,
+    "correct_count": 276,
+    "graded_count": 288,
+    "mean_decode_tok_s": 71.12600546062059,
+    "overlapping_generation_observed": false
+   },
+   {
+    "level": 10,
+    "total_tok_s": 73.31,
+    "per_request_tok_s": 7.99,
+    "p50_latency_s": 82.6,
+    "p95_latency_s": 132.57,
+    "peak_rss_gb": 24.03,
+    "retries": 0,
+    "same_as_single": [
+     "219/240",
+     "220/240",
+     "220/240"
+    ],
+    "correct": [
+     "226/240",
+     "226/240",
+     "226/240"
+    ],
+    "truncated": 42,
+    "correct_count": 678,
+    "graded_count": 720,
+    "mean_decode_tok_s": 72.25595116108526,
+    "overlapping_generation_observed": false
+   }
+  ],
+  "note": "Median over repeats. total_tok_s = generated tokens of all requests / wall time of the level. Each client sends every prompt once, in a rotated order; one warm-up request discarded. Connections reset before a request started (server backlog of 5) are retried and counted; latency is the successful attempt.",
+  "campaign_metadata": {
+   "campaign_pid": 32924,
+   "model": {
+    "name": "gemma4:26b",
+    "model": "gemma4:26b",
+    "modified_at": "2026-10-10T17:47:30.663074979+09:00",
+    "size": 16147120890,
+    "digest": "d4fa84e5dfc115676f0892591ba522dd75b254fbc1bde861339c3cf8d45c7809",
+    "details": {
+     "parent_model": "",
+     "format": "safetensors",
+     "family": "",
+     "families": null,
+     "parameter_size": "",
+     "quantization_level": "",
+     "runner": "mlx"
+    },
+    "capabilities": [
+     "completion",
+     "vision",
+     "tools",
+     "thinking"
+    ]
+   },
+   "profile": "native",
+   "style": "terse",
+   "levels": "1,4,10",
+   "repeats": 3,
+   "server_pid": 912,
+   "temperature": 0,
+   "num_ctx": 4096,
+   "num_predict": 4096,
+   "note": "Existing Ollama settings; no parallelism reconfiguration. One model at a time. Native keeps model default thinking with temperature zero. Footprint sums daemon and descendants; shared pages may be counted more than once. Requests in flight are not proof of GPU batching."
+  }
+ }
+]
