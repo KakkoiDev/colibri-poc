@@ -292,7 +292,7 @@ def jobs():
             prog = match.get('progress')
             job = dict(kind='Parallel requests', title='Concurrency on ' + arg(cmd, '--model', ''),
                        detail=(f"{prog['clients']} clients · repeat {prog['repeat']}/3 · {prog['done']}/{prog['total']} answers" if prog else 'Loading model and recording single-request references'),
-                       progress=dict(done=prog['done'], total=prog['total']) if prog else None, gpu=True)
+                       progress=dict(done=prog.get('overall_done', prog['done']), total=prog.get('overall_total', prog['total'])) if prog else None, gpu=True)
         elif 'glm_quiet.py run' in cmd and is_python(cmd):
             job = dict(kind='Quiet run', title='Quiet-machine rerun', detail=short(cmd), gpu=True)
         elif re.search(r'glm_lab\.py (try|run-planned)', cmd) and is_python(cmd):
@@ -816,7 +816,7 @@ def run_matrix():
             return dict(base, state='partial', result=f"{i['done']}/{i['total']} answered")
         return dict(base, state='failed' if failed else 'ready' if i['group'] in ('quiet', 'planned') else 'never')
 
-    columns.append(dict(id='q:concurrency', title='Parallel 1/4/10', group='Quality', lossy=False))
+    columns.insert(len(RUN_STD), dict(id='q:concurrency', title='Parallel 1/4/10', group='Quality', lossy=False))
     rows, hidden = [], []
     for g in groups:
         if g['kind'] != 'model':
@@ -990,6 +990,14 @@ def concurrency_results():
                 record[key] = json.loads((folder / filename).read_text())
             except (OSError, ValueError):
                 pass
+        if record.get('progress'):
+            levels = [int(x) for x in meta.get('levels', '1,4,10').split(',')]
+            progress = record['progress']
+            order = levels if progress['repeat'] % 2 else levels[::-1]
+            before = sum(order[:order.index(progress['clients'])])
+            questions = progress['total'] // progress['clients']
+            progress['overall_done'] = ((progress['repeat'] - 1) * sum(levels) + before) * questions + progress['done']
+            progress['overall_total'] = sum(levels) * questions * meta.get('repeats', 3)
         campaigns.append(record)
     return dict(campaigns=campaigns)
 
