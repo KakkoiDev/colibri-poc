@@ -19,8 +19,8 @@
    "model": "glm-5.3-mtp",
    "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850",
    "title": "GLM-5.3 int4 + int8 MTP head",
-   "group": "GLM-5.3 on Colibri",
-   "sub": "Colibri int4 g64 + int8 MTP head"
+   "sub": "Colibri int4 g64 + int8 MTP head",
+   "group": "GLM-5.3 on Colibri"
   },
   {
    "name": "glm-5.3-iq3xxs",
@@ -30,8 +30,8 @@
    "model": "glm-5.3-iq3xxs",
    "colibri_commit": "16239caafd71588fe6efb12d287f29094060c1b8",
    "title": "GLM-5.3 UD-IQ3_XXS",
-   "group": "GLM-5.3 on Colibri",
-   "sub": "GGUF IQ3_XXS, read in place"
+   "sub": "GGUF IQ3_XXS, read in place",
+   "group": "GLM-5.3 on Colibri"
   },
   {
    "name": "glm-5.3-iq2m",
@@ -41,8 +41,8 @@
    "model": "glm-5.3-iq2m",
    "colibri_commit": "16239caafd71588fe6efb12d287f29094060c1b8",
    "title": "GLM-5.3 UD-IQ2_M",
-   "group": "GLM-5.3 on Colibri",
-   "sub": "GGUF IQ2_M, read in place"
+   "sub": "GGUF IQ2_M, read in place",
+   "group": "GLM-5.3 on Colibri"
   },
   {
    "name": "gemma4-26b-ollama",
@@ -52,8 +52,8 @@
    "model": "gemma4:26b",
    "ollama_version": "ollama version is 0.40.6",
    "title": "Gemma 4 26B",
-   "group": "Ollama, fully in RAM",
-   "sub": "Ollama gemma4:26b"
+   "sub": "Ollama gemma4:26b",
+   "group": "Ollama, fully in RAM"
   },
   {
    "name": "gemma4-31b-ollama",
@@ -63,8 +63,8 @@
    "model": "gemma4:31b-mlx",
    "ollama_version": "ollama version is 0.40.6",
    "title": "Gemma 4 31B",
-   "group": "Ollama, fully in RAM",
-   "sub": "Ollama gemma4:31b-mlx"
+   "sub": "Ollama gemma4:31b-mlx",
+   "group": "Ollama, fully in RAM"
   },
   {
    "name": "gemma4-e4b-ollama",
@@ -74,8 +74,8 @@
    "model": "gemma4:e4b-mlx",
    "ollama_version": "ollama version is 0.40.6",
    "title": "Gemma 4 E4B",
-   "group": "Ollama, fully in RAM",
-   "sub": "Ollama gemma4:e4b-mlx"
+   "sub": "Ollama gemma4:e4b-mlx",
+   "group": "Ollama, fully in RAM"
   },
   {
    "name": "gpt-oss-20b-ollama",
@@ -85,8 +85,8 @@
    "model": "gpt-oss:20b",
    "ollama_version": "ollama version is 0.40.6",
    "title": "gpt-oss 20B",
-   "group": "Ollama, fully in RAM",
-   "sub": "Ollama gpt-oss:20b"
+   "sub": "Ollama gpt-oss:20b",
+   "group": "Ollama, fully in RAM"
   },
   {
    "name": "qwen38-27b-ollama",
@@ -96,8 +96,8 @@
    "model": "qwen3.8:27b-mlx",
    "ollama_version": "ollama version is 0.40.6",
    "title": "Qwen3.8-27B",
-   "group": "Ollama, fully in RAM",
-   "sub": "Ollama qwen3.8:27b-mlx"
+   "sub": "Ollama qwen3.8:27b-mlx",
+   "group": "Ollama, fully in RAM"
   },
   {
    "name": "olmoe-mlx",
