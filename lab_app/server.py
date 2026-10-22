@@ -8,7 +8,7 @@ It shows what is running, models, benches and coverage, runs, experiments and re
 with the safety rules in actions.py. It binds to 127.0.0.1 only; actions need the app's own
 X-Lab-Action header and origin. Remote access additionally requires the configured Tailscale host and identity. Data comes from the same files the lab tools write, so nothing is retyped.
 """
-import argparse, csv, glob, json, os, re, subprocess, sys, time
+import argparse, csv, glob, json, os, re, subprocess, sys, threading, time
 from http.server import ThreadingHTTPServer as _ThreadingHTTPServer, BaseHTTPRequestHandler
 
 
@@ -518,9 +518,30 @@ def bench_detail(name):
         text=r.get('text')) for r in recs])
 
 
+_log_lock = threading.Lock()
+
+
+def sync_experiment_log():
+    """Regenerate the experiment log when the registry is newer than it, so a result or plan recorded by any tool
+    shows here at once (the page once said "not run" for experiments that had run)."""
+    reg, out = ROOT / 'experiments' / 'glm-experiments.json', ROOT / 'site' / 'data' / 'experiments.json'
+    try:
+        if out.exists() and out.stat().st_mtime >= reg.stat().st_mtime:
+            return
+        with _log_lock:
+            if out.exists() and out.stat().st_mtime >= reg.stat().st_mtime:
+                return
+            import glm_lab, contextlib, io
+            with contextlib.redirect_stdout(io.StringIO()):
+                glm_lab.build()
+    except Exception as ex:   # never break the page over the log; it is regenerated on the next request
+        print('experiment log refresh failed:', ex, flush=True)
+
+
 def experiments():
     """The published experiment log, plus for each experiment not yet run: `status` (ready / needs / idea), what it
     still needs, and an estimated time, so the page can say what each one is and whether it can start."""
+    sync_experiment_log()
     data = read_json(ROOT / 'site' / 'data' / 'experiments.json', {'entries': []})
     try:
         import glm_lab
@@ -636,6 +657,72 @@ def bench_catalog_view():
         i['est_s'] = estimate_item(dict(kind=i['kind'], args=i['job']['args']))
     return dict(groups=groups, items=items, presets=bench_catalog.presets(items), styles=list(json.loads((ROOT / 'glm-prompts.json').read_text())['styles']),
                 quiet_threshold_gb=machine()['quiet_threshold_gb'], quiet_hold_s=QUIET_HOLD_S)
+
+
+NEW_DAYS = 2   # 'new' = added since yesterday
+BENCH_CATALOG_ID = {'speed': 'suite:speed:{m}', 'threads': 'suite:threads:{m}', 'ram': 'suite:ram:{m}',
+                    'quality': 'quality:{m}:exact:terse', 'quiet': 'quiet:skip-original'}
+
+
+def not_run():
+    """Everything that has not run on this setup yet, newest first: experiments never run, and standard benches an
+    installed model has never had. Each says whether it can start (ready / queued / needs / idea) and how to queue it."""
+    import datetime
+    cutoff = (datetime.date.today() - datetime.timedelta(days=NEW_DAYS)).isoformat()
+    exps = []
+    for e in experiments().get('entries', []):
+        if e.get('verdict') != 'not run':
+            continue
+        exps.append(dict(id=e['id'], title=e['title'], why=e.get('hypothesis'), lossy=bool(e.get('lossy')), date=e.get('date'),
+                         new=(e.get('date') or '') >= cutoff, status='queued' if e.get('queued') else e.get('status', 'idea'),
+                         needs=e.get('needs'), est_s=e.get('est_s'), queue={'kind': 'planned', 'args': {'id': e['id']}}))
+    order = {'ready': 0, 'queued': 1, 'needs': 2, 'idea': 3}
+    exps.sort(key=lambda x: (order.get(x['status'], 9), not x['new'], -int((x['date'] or '0').replace('-', '') or 0), x['title']))
+    items = {i['id']: i for i in bench_catalog.items()[1]}
+    queued_ids = set()
+    for q in actions.queue_state()['items']:
+        if q['kind'] == 'suite':
+            queued_ids.add(BENCH_CATALOG_ID[q['args']['bench']].format(m=q['args']['model']))
+        elif q['kind'] == 'quiet':
+            queued_ids.add('quiet:' + ('+'.join(q['args'].get('flags', [])) or 'full'))
+    suite = {b['id']: b for b in json.loads((ROOT / 'benches' / 'suite.json').read_text())['benches']}
+    rows = []
+    for m in benches().get('models', []):
+        if not m.get('installed'):
+            continue
+        for bid, c in (m.get('coverage') or {}).items():
+            if c.get('status') not in ('missing', 'failed'):
+                continue
+            if bid == 'quiet' and not m.get('owner_model'):
+                continue
+            cid = BENCH_CATALOG_ID.get(bid, '').format(m=m['id'])
+            it = items.get(cid)
+            if cid in queued_ids or c.get('status') == 'queued':
+                status, needs = 'queued', None
+            elif it and it.get('available'):
+                status, needs = 'ready', None
+            else:
+                status, needs = 'needs', (it or {}).get('why_not') or m.get('suite_note') or 'the bench tools cannot run this model yet'
+            rows.append(dict(id=cid or bid + ':' + m['id'], title=suite.get(bid, {}).get('name', bid) + ' on ' + m['name'], why=suite.get(bid, {}).get('what'),
+                                status=status, needs=needs, est_s=estimate_item(dict(kind=it['kind'], args=it['job']['args'])) if it else None,
+                                failed=c.get('status') == 'failed', queue={'selection': cid} if it else None))
+    # benches a model cannot run for one shared reason become a single row
+    merged, seen = [], {}
+    for r in rows:
+        model = r['title'].split(' on ', 1)[1]
+        if r['status'] == 'needs':
+            key = (model, r['needs'])
+            if key in seen:
+                seen[key]['names'].append(r['title'].split(' on ', 1)[0]); continue
+            r = dict(r, names=[r['title'].split(' on ', 1)[0]], model=model); seen[key] = r
+        merged.append(r)
+    for r in merged:
+        if len(r.get('names', [])) > 1:
+            r['title'] = 'Standard benches on ' + r['model'] + ' (' + ', '.join(n.lower() for n in r['names']) + ')'
+            r['why'] = 'The standard set every model gets, so models are comparable.'
+    rows = sorted(merged, key=lambda x: (order.get(x['status'], 9), x['title']))
+    counts = {k: sum(1 for x in exps + rows if x['status'] == k) for k in order}
+    return dict(experiments=exps, benches=rows, counts=counts, new=sum(1 for x in exps if x['new']), new_days=NEW_DAYS)
 
 
 def gpu_status():
@@ -767,6 +854,7 @@ API = {
     '/api/models': lambda q: models(),
     '/api/benches': lambda q: benches(),
     '/api/bench-catalog': lambda q: bench_catalog_view(),
+    '/api/not-run': lambda q: not_run(),
     '/api/bench': lambda q: bench_detail(q.get('name', [''])[0]),
     '/api/runs': lambda q: dict(runs=runs_table()),
     '/api/run-output': lambda q: dict(text=run_output(q.get('run', [''])[0])),

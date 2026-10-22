@@ -1144,6 +1144,56 @@
   // One workflow: choose a model, choose a benchmark, choose when it may start, queue it.
   // Then the live column shows what runs now, the queue in order, and what just finished.
   var launchChoice = { model: '', item: '', schedule: 'ready', front: false, pending: false, last: null };
+  /* "Not run yet": every experiment and standard bench that has never run on this setup, newest first, with whether
+     it can start and a way to queue it. Loaded on its own so a slow answer never holds up the rest of the page. */
+  function drawNotRun(box) {
+    return api('/api/not-run').then(function (d) {
+      var all = d.experiments.concat(d.benches);
+      var ready = all.filter(function (x) { return x.status === 'ready'; });
+      function queueOne(x) {
+        if (x.queue && x.queue.selection) return post('/api/queue/add-selection', { ids: [x.queue.selection], only_when_quiet: true });
+        return post('/api/queue/add', { kind: x.queue.kind, args: x.queue.args, only_when_quiet: true });
+      }
+      function refresh() { drawNotRun(box); }
+      var STATE = { ready: ['st-waiting', 'Ready'], queued: ['st-queued', 'Queued'], needs: ['st-blocked', 'Needs something'], idea: ['st-missing', 'Idea'] };
+      function row(x) {
+        var st = STATE[x.status] || STATE.idea;
+        return h('li', { class: 'nr-row' },
+          h('div', { class: 'stack', style: 'gap:2px;min-width:0' },
+            h('div', { class: 'row', style: 'gap:6px' }, h('strong', { text: x.title }), x.new ? h('span', { class: 'pill badge-warn', text: 'new' }) : null, x.lossy ? lossyTag() : null, x.failed ? h('span', { class: 'tag', text: 'failed last time' }) : null),
+            x.why ? h('span', { class: 'hint nr-why', text: x.why }) : null,
+            x.needs && x.status !== 'ready' && x.status !== 'queued' ? h('span', { class: 'hint', text: 'Needs: ' + x.needs }) : null),
+          h('div', { class: 'stack nr-side' }, h('span', { class: 'chip ' + st[0], style: 'align-self:flex-end', text: st[1] }),
+            x.est_s && (x.status === 'ready' || x.status === 'queued') ? h('span', { class: 'hint num', text: '~' + dur(x.est_s) }) : null,
+            x.status === 'ready' && x.queue ? h('button', { type: 'button', class: 'btn btn-sm', text: 'Queue', onclick: function (ev) {
+              ev.target.disabled = true; queueOne(x).then(function () { toast('Queued: ' + x.title + ' (starts when the machine is quiet)'); refresh(); }, function (er) { ev.target.disabled = false; toast(er.message, true); });
+            } }) : null));
+      }
+      var now = all.filter(function (x) { return x.status === 'ready' || x.status === 'queued'; });
+      var needs = all.filter(function (x) { return x.status === 'needs'; });
+      var ideas = all.filter(function (x) { return x.status === 'idea'; });
+      var total = ready.reduce(function (a, x) { return a + (x.est_s || 0); }, 0);
+      var c = d.counts;
+      fill(box, all.length ? h('section', { class: 'card pad stack', 'aria-labelledby': 'nr-h' },
+        h('div', { class: 'card-head' },
+          h('div', { class: 'stack', style: 'gap:2px' }, h('h2', { id: 'nr-h', text: 'Not run yet' }),
+            h('span', { class: 'hint', text: [c.ready ? c.ready + ' ready' : '', c.queued ? c.queued + ' queued' : '', c.needs ? c.needs + ' need something' : '', c.idea ? c.idea + ' ideas' : '']
+              .filter(Boolean).join(' · ') + (d.new ? ' · ' + d.new + ' new since yesterday' : '') })),
+          h('div', { class: 'row' }, h('a', { href: '#experiments', text: 'All experiments' }),
+            h('button', { type: 'button', class: 'btn btn-primary btn-sm', disabled: ready.length ? null : '', text: ready.length ? 'Queue all ready (' + ready.length + ', ~' + dur(total) + ')' : 'Nothing ready to queue',
+              onclick: function (ev) {
+                ev.target.disabled = true;
+                ready.reduce(function (pr, x) { return pr.then(function () { return queueOne(x); }); }, Promise.resolve())
+                  .then(function () { toast('Queued ' + ready.length + ' (~' + dur(total) + '); they run one after another when the machine is quiet.'); refresh(); }, function (er) { toast(er.message, true); refresh(); });
+              } }))),
+        now.length ? h('ul', { class: 'nr-list' }, now.map(row)) : null,
+        needs.length ? [h('h3', { class: 'eyebrow', text: 'Needs something first' }), h('ul', { class: 'nr-list' }, needs.map(row))] : null,
+        ideas.length ? h('details', { class: 'x' }, h('summary', { text: ideas.length + ' ideas that need a download, hardware or code before they can run' }), h('ul', { class: 'nr-list' }, ideas.map(row))) : null)
+        : h('p', { class: 'hint', text: 'Every experiment and standard bench has run on this setup.' }));
+    }, function () { /* the rest of the dashboard does not depend on this card */ });
+  }
+  function fill(el) { el.textContent = ''; for (var i = 1; i < arguments.length; i++) put(el, arguments[i]); }
+
   function screenDashboard(main) {
     var requestedHash = location.hash;
     return Promise.all([api('/api/bench-catalog'), api('/api/now'), api('/api/queue')]).then(function (res) {
@@ -1369,8 +1419,10 @@
         h('div', { class: 'step' }, h('span', { class: 'step-n', 'aria-hidden': 'true', text: '3' }), h('div', { class: 'field' }, h('span', { class: 'field-label', 'aria-hidden': 'true', text: 'When may it start?' }), when, frontLabel)),
         plan, submit, result);
       var fin = h('div');
+      var notRun = h('div', { id: 'not-run' });
       put(main, header('Run benchmarks', 'Choose a model and a benchmark, then queue it. Jobs run one at a time, in order.'),
-        tiles, h('div', { class: 'split' }, form, live), fin);
+        tiles, notRun, h('div', { class: 'split' }, form, live), fin);
+      drawNotRun(notRun);
       drawChoices(); renderLive();
       timer = setInterval(function () { if (main.isConnected && !document.querySelector('.scrim') && !document.querySelector('#live-jobs details[open]')) refreshLive(); }, 5000);
     });

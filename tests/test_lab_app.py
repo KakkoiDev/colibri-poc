@@ -70,5 +70,37 @@ class LabAppTests(unittest.TestCase):
         self.assertNotIn('start_runner', src)  # the queue never runs in the demo
 
 
+
+
+class NotRunTests(unittest.TestCase):
+    """The dashboard's "Not run yet" card: every never-run experiment and missing bench, with a state and a way to queue."""
+    def test_every_item_has_a_state_and_ready_ones_can_be_queued(self):
+        d = s.not_run()
+        self.assertEqual(set(d), {'experiments', 'benches', 'counts', 'new', 'new_days'})
+        items = d['experiments'] + d['benches']
+        self.assertTrue(items)
+        for x in items:
+            self.assertIn(x['status'], ('ready', 'queued', 'needs', 'idea'), x['title'])
+            if x['status'] == 'ready':
+                self.assertTrue(x['queue'], x['title'])
+            if x['status'] in ('needs', 'idea'):
+                self.assertTrue(x.get('needs'), x['title'] + ' says what it is waiting for')
+        self.assertEqual(sum(d['counts'].values()), len(items))
+        states = [x['status'] for x in d['experiments']]
+        self.assertEqual(states, sorted(states, key=['ready', 'queued', 'needs', 'idea'].index), 'ready first, ideas last')
+
+    def test_the_log_is_regenerated_when_the_registry_is_newer(self):
+        import os, time
+        reg, out = s.ROOT / 'experiments' / 'glm-experiments.json', s.ROOT / 'site' / 'data' / 'experiments.json'
+        old = out.stat().st_mtime
+        os.utime(out, (old - 3600, old - 3600))   # pretend the log is older than the registry
+        try:
+            s.sync_experiment_log()
+            self.assertGreaterEqual(out.stat().st_mtime, reg.stat().st_mtime)
+        finally:
+            if out.stat().st_mtime < reg.stat().st_mtime:
+                os.utime(out, (old, old))
+
+
 if __name__ == '__main__':
     unittest.main()

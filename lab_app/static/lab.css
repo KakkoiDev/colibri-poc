@@ -417,3 +417,10 @@ details.x[open] > summary{margin-bottom:var(--s2)}
 .cell-setting{display:flex; flex-direction:column; align-items:flex-start; gap:4px; white-space:nowrap}
 @media (max-width:600px){ .cell-name{min-width:120px; max-width:150px} }
 @media (max-width:600px){ .tab{padding:var(--s2)} .tab .count{display:none} }
+
+/* "Not run yet" card on the dashboard */
+.nr-list{list-style:none; margin:0; padding:0}
+.nr-row{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--s3); align-items:start; padding:var(--s3) 0; border-top:1px solid var(--line)}
+.nr-why{display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; white-space:normal}
+.nr-side{gap:4px; align-items:flex-end; text-align:right}
+@media (max-width:600px){ .nr-row{grid-template-columns:1fr} .nr-side{align-items:flex-start; text-align:left} .nr-side .chip{align-self:flex-start !important} }

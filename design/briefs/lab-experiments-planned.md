@@ -52,3 +52,22 @@ Each entry: `id`, `title`, `category`, `change`, `hypothesis`, `lossy`, `verdict
   tries, why, and whether it can start now.
 - Ready experiments can be queued one by one or all at once.
 - Nothing about finished experiments gets harder to read.
+
+## Built ahead of the canvas (2026-10-22): "Not run yet" on the home page
+
+The owner asked to find the never-run tests easily, so a first version was built without
+waiting for the canvas (please redraw it; it should match whatever you do for Experiments):
+
+- A **Not run yet** card on Run benchmarks, between the status tiles and the launch form.
+- It lists every experiment that has never run **and** every standard bench an installed
+  model has never had, in one list: ready and queued first, then "Needs something first",
+  then ideas behind a disclosure. Items added since yesterday carry a **new** badge.
+- Each item: title, one-line why (two lines max), "changes output" tag, state chip (Ready /
+  Queued / Needs something / Idea), estimated time, and **Queue** when ready; "Needs: …"
+  says what is missing.
+- Header: counts ("9 queued · 2 need something · 15 ideas · 15 new since yesterday"),
+  a link to All experiments and **Queue all ready (n, ~time)**. Everything queued from it
+  waits for a quiet machine.
+- Data: `GET /api/not-run` → `experiments[]` and `benches[]` with `title`, `why`, `status`,
+  `needs`, `est_s`, `new`, `lossy`, `queue`; `counts`; `new`. Benches that one model cannot
+  run for the same reason are merged into one row.
