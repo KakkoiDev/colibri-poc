@@ -71,3 +71,13 @@ waiting for the canvas (please redraw it; it should match whatever you do for Ex
 - Data: `GET /api/not-run` → `experiments[]` and `benches[]` with `title`, `why`, `status`,
   `needs`, `est_s`, `new`, `lossy`, `queue`; `counts`; `new`. Benches that one model cannot
   run for the same reason are merged into one row.
+
+## Built from the canvas (2026-10-22)
+
+Experiments (Not run yet / Done) and the home card now follow the redrawn boards. Server
+additions the boards asked for: `needs` in words (a missing model reads as its name and
+download size), `needs_model` and `prep_cmd` for the Models link, `queue_pos` ("number N
+in line"), `kind` on home-card items, and `quiet_threshold_gb` / `quiet_hold_s`. Queue all
+asks first when the batch is over an hour or more than ten items. Both screens use one
+wording: everything queued from them waits for a quiet machine (≥ 20 GB free for 2 min),
+then runs one at a time.

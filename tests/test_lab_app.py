@@ -76,7 +76,7 @@ class NotRunTests(unittest.TestCase):
     """The dashboard's "Not run yet" card: every never-run experiment and missing bench, with a state and a way to queue."""
     def test_every_item_has_a_state_and_ready_ones_can_be_queued(self):
         d = s.not_run()
-        self.assertEqual(set(d), {'experiments', 'benches', 'counts', 'new', 'new_days'})
+        self.assertEqual(set(d), {'experiments', 'benches', 'counts', 'new', 'new_days', 'quiet_threshold_gb', 'quiet_hold_s'})
         items = d['experiments'] + d['benches']
         self.assertTrue(items)
         for x in items:
@@ -85,9 +85,31 @@ class NotRunTests(unittest.TestCase):
                 self.assertTrue(x['queue'], x['title'])
             if x['status'] in ('needs', 'idea'):
                 self.assertTrue(x.get('needs'), x['title'] + ' says what it is waiting for')
+                self.assertNotIn('config.json', x['needs'], 'needs is in words, not a file path')
+            self.assertIn(x['kind'], ('experiment', 'standard bench'))
         self.assertEqual(sum(d['counts'].values()), len(items))
         states = [x['status'] for x in d['experiments']]
         self.assertEqual(states, sorted(states, key=['ready', 'queued', 'needs', 'idea'].index), 'ready first, ideas last')
+
+    def test_a_missing_model_reads_as_its_name_with_a_link_to_models(self):
+        text, model, prep = s.plain_needs('missing ~/colibri-models/glm-5.3-iq2m/config.json; prepare with: make glm-prep-iq2m')
+        self.assertEqual(model, 'glm-5.3-iq2m')
+        self.assertEqual(prep, 'make glm-prep-iq2m')
+        self.assertTrue(text.startswith('GLM-5.3 UD-IQ2_M'), text)
+        self.assertNotIn('~/', text)
+        self.assertEqual(s.plain_needs('needs an external NVMe drive.'), ('An external NVMe drive.', None, None))
+
+    def test_queued_items_know_their_place_in_line(self):
+        from unittest import mock
+        planned = [e['id'] for e in s.experiments()['entries'] if e.get('status') in ('ready', 'needs')]
+        self.assertTrue(planned)
+        items = [{'kind': 'suite', 'args': {'bench': 'speed', 'model': 'm'}}, {'kind': 'planned', 'args': {'id': planned[0]}}]
+        with mock.patch.object(s.actions, 'queue_state', return_value={'paused': False, 'items': items}):
+            got = {e['id']: e for e in s.experiments()['entries']}
+        self.assertTrue(got[planned[0]]['queued'])
+        self.assertEqual(got[planned[0]]['queue_pos'], 2)
+        for i in planned[1:]:
+            self.assertIsNone(got[i]['queue_pos'])
 
     def test_the_log_is_regenerated_when_the_registry_is_newer(self):
         import os, time

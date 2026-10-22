@@ -538,6 +538,26 @@ def sync_experiment_log():
         print('experiment log refresh failed:', ex, flush=True)
 
 
+def plain_needs(text):
+    """Readiness text in words, plus the catalog model it waits for and the command that prepares it:
+    'missing ~/colibri-models/glm-5.3-iq2m/config.json; prepare with: make glm-prep-iq2m'
+    -> ('GLM-5.3 UD-IQ2_M (2-bit GGUF), not downloaded yet (about 239 GB)', 'glm-5.3-iq2m', 'make glm-prep-iq2m')."""
+    if not text:
+        return text, None, None
+    prep = re.search(r'make (glm-prep-[\w-]+)', text)
+    prep = prep and 'make ' + prep.group(1)
+    models = catalog()
+    model = next((m for m in models if prep and m.get('prep') == prep), None) or \
+        next((m for m in models if re.search(re.escape(m['path']) + r'(/|\s|$)', text)), None)
+    if model and text.startswith('missing '):
+        size = f" (about {model['size_gb']} GB)" if model.get('size_gb') else ''
+        text = f"{model['name']}, not downloaded yet{size}"
+    else:
+        text = re.sub(r'^(needs |Not run[.:] ?|Planned[:,] )', '', text).strip()
+        text = text[:1].upper() + text[1:]
+    return text, model and model['id'], prep or (model or {}).get('prep')
+
+
 def experiments():
     """The published experiment log, plus for each experiment not yet run: `status` (ready / needs / idea), what it
     still needs, and an estimated time, so the page can say what each one is and whether it can start."""
@@ -548,17 +568,18 @@ def experiments():
         reg = {e['id']: e for e in glm_lab.load_registry()}
     except Exception:
         return data
-    queued = {i['args'].get('id') for i in actions.queue_state()['items'] if i['kind'] == 'planned'}
+    queued = {i['args'].get('id'): n for n, i in enumerate(actions.queue_state()['items'], 1) if i['kind'] == 'planned'}
     for e in data.get('entries', []):
         if e.get('verdict') != 'not run':
             continue
         r = reg.get(e['id'], {})
         if not r.get('plan'):
-            e.update(status='idea', needs=(r.get('conclusion') or '').removeprefix('Planned: ').removeprefix('Not run: ') or None)
+            needs, model, prep = plain_needs((r.get('conclusion') or '').removeprefix('Planned: ').removeprefix('Not run: ') or None)
+            e.update(status='idea', needs=needs, needs_model=model, prep_cmd=prep)
         else:
-            why = glm_lab.readiness(r)
-            e.update(status='needs' if why else 'ready', needs=why, est_s=estimate_item({'kind': 'planned', 'args': {'id': e['id']}}),
-                     queued=e['id'] in queued)
+            needs, model, prep = plain_needs(glm_lab.readiness(r))
+            e.update(status='needs' if needs else 'ready', needs=needs, needs_model=model, prep_cmd=prep,
+                     est_s=estimate_item({'kind': 'planned', 'args': {'id': e['id']}}), queued=e['id'] in queued, queue_pos=queued.get(e['id']))
     return data
 
 
@@ -668,6 +689,7 @@ def not_run():
     """Everything that has not run on this setup yet, newest first: experiments never run, and standard benches an
     installed model has never had. Each says whether it can start (ready / queued / needs / idea) and how to queue it."""
     import datetime
+    import glm_quiet
     cutoff = (datetime.date.today() - datetime.timedelta(days=NEW_DAYS)).isoformat()
     exps = []
     for e in experiments().get('entries', []):
@@ -675,16 +697,17 @@ def not_run():
             continue
         exps.append(dict(id=e['id'], title=e['title'], why=e.get('hypothesis'), lossy=bool(e.get('lossy')), date=e.get('date'),
                          new=(e.get('date') or '') >= cutoff, status='queued' if e.get('queued') else e.get('status', 'idea'),
-                         needs=e.get('needs'), est_s=e.get('est_s'), queue={'kind': 'planned', 'args': {'id': e['id']}}))
+                         needs=e.get('needs'), needs_model=e.get('needs_model'), prep_cmd=e.get('prep_cmd'), est_s=e.get('est_s'),
+                         queue_pos=e.get('queue_pos'), kind='experiment', queue={'kind': 'planned', 'args': {'id': e['id']}}))
     order = {'ready': 0, 'queued': 1, 'needs': 2, 'idea': 3}
     exps.sort(key=lambda x: (order.get(x['status'], 9), not x['new'], -int((x['date'] or '0').replace('-', '') or 0), x['title']))
     items = {i['id']: i for i in bench_catalog.items()[1]}
-    queued_ids = set()
-    for q in actions.queue_state()['items']:
+    queued_ids = {}
+    for n, q in enumerate(actions.queue_state()['items'], 1):
         if q['kind'] == 'suite':
-            queued_ids.add(BENCH_CATALOG_ID[q['args']['bench']].format(m=q['args']['model']))
+            queued_ids[BENCH_CATALOG_ID[q['args']['bench']].format(m=q['args']['model'])] = n
         elif q['kind'] == 'quiet':
-            queued_ids.add('quiet:' + ('+'.join(q['args'].get('flags', [])) or 'full'))
+            queued_ids['quiet:' + ('+'.join(q['args'].get('flags', [])) or 'full')] = n
     suite = {b['id']: b for b in json.loads((ROOT / 'benches' / 'suite.json').read_text())['benches']}
     rows = []
     for m in benches().get('models', []):
@@ -703,8 +726,9 @@ def not_run():
                 status, needs = 'ready', None
             else:
                 status, needs = 'needs', (it or {}).get('why_not') or m.get('suite_note') or 'the bench tools cannot run this model yet'
+            needs, model, prep = plain_needs(needs)
             rows.append(dict(id=cid or bid + ':' + m['id'], title=suite.get(bid, {}).get('name', bid) + ' on ' + m['name'], why=suite.get(bid, {}).get('what'),
-                                status=status, needs=needs, est_s=estimate_item(dict(kind=it['kind'], args=it['job']['args'])) if it else None,
+                                status=status, needs=needs, needs_model=model, prep_cmd=prep, queue_pos=queued_ids.get(cid), kind='standard bench', est_s=estimate_item(dict(kind=it['kind'], args=it['job']['args'])) if it else None,
                                 failed=c.get('status') == 'failed', queue={'selection': cid} if it else None))
     # benches a model cannot run for one shared reason become a single row
     merged, seen = [], {}
@@ -722,7 +746,8 @@ def not_run():
             r['why'] = 'The standard set every model gets, so models are comparable.'
     rows = sorted(merged, key=lambda x: (order.get(x['status'], 9), x['title']))
     counts = {k: sum(1 for x in exps + rows if x['status'] == k) for k in order}
-    return dict(experiments=exps, benches=rows, counts=counts, new=sum(1 for x in exps if x['new']), new_days=NEW_DAYS)
+    return dict(experiments=exps, benches=rows, counts=counts, new=sum(1 for x in exps if x['new']), new_days=NEW_DAYS,
+                quiet_threshold_gb=glm_quiet.QUIET_FREE_GB, quiet_hold_s=QUIET_HOLD_S)
 
 
 def gpu_status():

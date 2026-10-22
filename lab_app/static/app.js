@@ -630,53 +630,157 @@
     });
   }
 
+  /* Not-run helpers shared by Experiments and the home card. Everything queued from either waits for a quiet machine. */
+  function about(s) { return s == null ? '' : s >= 3600 ? 'about ' + (s / 3600).toFixed(1).replace('.0', '') + ' h' : 'about ' + Math.max(1, Math.round(s / 60)) + ' min'; }
+  function newBadge() { return h('span', { class: 'new-badge', text: 'new' }); }
+  function quietHint(d) {
+    return 'Everything queued from here waits for a quiet machine (≥ ' + ((d && d.quiet_threshold_gb) || 20) + ' GB free for ' +
+      Math.round(((d && d.quiet_hold_s) || 120) / 60) + ' min), then runs one at a time, after anything already queued.';
+  }
+  function queueNotRun(x) {
+    if (x.queue && x.queue.selection) return post('/api/queue/add-selection', { ids: [x.queue.selection], only_when_quiet: true });
+    return post('/api/queue/add', { kind: 'planned', args: { id: x.id }, only_when_quiet: true });
+  }
+  // Queue several in order; a long batch (over an hour or more than ten items) asks first.
+  function queueAllNotRun(list, d, done) {
+    var total = list.reduce(function (a, x) { return a + (x.est_s || 0); }, 0);
+    var ask = total > 3600 || list.length > 10 ? confirmDialog({ eyebrow: 'Queue all ready', title: 'Queue ' + list.length + ' items, ' + about(total) + '?',
+      sub: quietHint(d), confirm: 'Queue ' + list.length,
+      rows: [['Items', list.length + ' (' + list.map(function (x) { return x.title; }).slice(0, 3).join(', ') + (list.length > 3 ? ', …' : '') + ')'],
+             ['Time', about(total) + ' of GPU time in all'], ['Changes later', 'remove any of them from Queue and logs']] }) : Promise.resolve(true);
+    return ask.then(function (ok) {
+      if (!ok) return done(false);
+      return list.reduce(function (pr, x) { return pr.then(function () { return queueNotRun(x); }); }, Promise.resolve())
+        .then(function () { toast('Queued ' + list.length + ' (' + about(total) + '). They start when the machine is quiet.', false, ['#queue', 'View queue']); done(true); },
+              function (er) { toast(er.message, true); done(true); });
+    });
+  }
+  function prepLink(x, label) {
+    return x.needs_model || x.prep_cmd ? h('a', { class: 'btn btn-sm', href: '#install', text: label || 'Models' }) : null;
+  }
+
+  // ---------- Experiments: not run yet (ready / needs / ideas) and done ----------
+  var VTXT = { improves: ['v-improves', '▲ improves'], worse: ['v-worse', '▼ worse'], failed: ['v-failed', '✗ failed'], 'no clear change': ['v-same', '= no clear change'] };
+  var DONE_COLS = 'minmax(260px, 2.6fr) 150px 140px 90px 100px 100px';
+  var expTab = 'notrun';
   function screenExperiments(main) {
-    return api('/api/experiments').then(function (d) {
-      var groups = {
-        Planned: function (e) { return e.verdict === 'not run' && (e.status === 'ready' || e.status === 'needs'); },
-        Done: function (e) { return e.metrics && e.metrics.measured; },
-        'Ideas not run': function (e) { return (e.verdict === 'not run' && e.status === 'idea') || e.verdict === 'in progress'; },
-        All: function () { return true; }
-      };
-      var ready = d.entries.filter(function (e) { return e.status === 'ready' && !e.queued; });
-      var tab = d.entries.some(function (e) { return e.status === 'ready' || e.status === 'needs'; }) ? 'Planned' : 'Done', body = h('div', { class: 'stack' }), tabs = h('div', { class: 'tabs', role: 'tablist' });
-      function draw() {
-        tabs.textContent = ''; body.textContent = '';
-        Object.keys(groups).forEach(function (g) {
-          var n = d.entries.filter(groups[g]).length;
-          tabs.appendChild(h('button', { class: 'tab', role: 'tab', 'aria-selected': g === tab ? 'true' : 'false', onclick: function () { tab = g; draw(); } }, g, h('span', { class: 'count', text: n })));
-        });
-        var rows = d.entries.filter(groups[tab]);
-        body.appendChild(table(['Experiment', 'Category', 'Verdict', { t: 'tok/s (ref → new)', n: 1 }, { t: 'Change', n: 1 }, 'Output', 'Details'], rows.map(function (e) {
-          var m = e.metrics || {};
-          var tags = h('div', { class: 'row' }, e.lossy ? lossyTag() : null, e.everyday ? h('span', { class: 'tag tag-usable', text: 'everyday · by owner' }) : e.usable ? h('span', { class: 'tag tag-usable', text: 'usable · by owner' }) : null);
+    return Promise.all([api('/api/experiments'), api('/api/not-run')]).then(function (res) {
+      var d = res[0], nr = res[1];
+      var notRun = d.entries.filter(function (e) { return e.verdict === 'not run' && e.status; });
+      var done = d.entries.filter(function (e) { return e.verdict !== 'not run'; }).sort(function (a, b) { return (b.date || '').localeCompare(a.date || ''); });
+      var ready = notRun.filter(function (e) { return e.status === 'ready'; })
+        .sort(function (a, b) { return (!!b.queued - !!a.queued) || (a.queue_pos || 0) - (b.queue_pos || 0); });   // queued in line order first
+      var needs = notRun.filter(function (e) { return e.status === 'needs'; });
+      var ideas = notRun.filter(function (e) { return e.status === 'idea'; });
+      var toQueue = ready.filter(function (e) { return !e.queued; });
+      var newIds = {};
+      nr.experiments.forEach(function (x) { if (x.new) newIds[x.id] = 1; });
+      var body = h('div'), tabs = h('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Experiments' });
+
+      function titleLine(e, size) {
+        return h('div', { class: 'row', style: 'gap:6px 10px' }, h('h3', { class: 'xtitle', id: 'x-' + e.id, style: size ? 'font-size:' + size + 'px' : null, text: e.title }),
+          newIds[e.id] ? newBadge() : null, e.lossy ? h('span', { class: 'tag tag-lossy', text: size ? 'changes output' : 'changes output, check quality after' }) : null);
+      }
+      function why(e, clamp) { return e.hypothesis ? h('p', { class: clamp ? 'clamp2' : null, style: 'font-size:14px;line-height:21px' }, h('span', { class: 'muted', text: 'Why: ' }), e.hypothesis) : null; }
+      function setting(e) {
+        return h('p', { class: 'hint', style: 'overflow-wrap:anywhere' }, e.change ? ['Setting ', h('span', { class: 'mono', style: 'font-size:11px', text: e.change }), ' · '] : null,
+          (e.category || '').replace(/-/g, ' '), ' · ', h('span', { class: 'mono', style: 'font-size:11px', text: e.id }));
+      }
+      function readyRow(e) {
+        return h('article', { class: 'xrow', 'aria-labelledby': 'x-' + e.id }, h('div', { class: 'xmain' }, titleLine(e), why(e), setting(e)),
+          h('div', { class: 'xside' },
+            h('div', { class: 'row', style: 'gap:8px' }, h('span', { class: 'chip ' + (e.queued ? 'st-queued' : 'st-done'), text: e.queued ? 'queued' : 'ready' }), h('span', { class: 'hint num', text: about(e.est_s) })),
+            e.queued ? h('span', { class: 'hint' }, (e.queue_pos ? 'Queued, number ' + e.queue_pos + ' in line. ' : 'Queued. '), h('a', { href: '#queue', text: 'Open queue' }))
+              : h('div', { class: 'row', style: 'gap:6px' },
+                h('button', { type: 'button', class: 'btn btn-sm btn-primary', 'aria-label': 'Queue ' + e.title, text: 'Queue', onclick: function (ev) {
+                  ev.target.disabled = true;
+                  queueNotRun(e).then(function () { toast('Queued: ' + e.title + '. It starts when the machine is quiet.', false, ['#queue', 'View queue']); route(); },
+                    function (er) { ev.target.disabled = false; toast(er.message, true); });
+                } }),
+                h('button', { type: 'button', class: 'btn btn-sm', 'aria-label': 'Run now: ' + e.title, text: 'Run now', onclick: function () { runOrQueue('planned', { id: e.id }, e.title, false); } }))));
+      }
+      function needsRow(e) {
+        return h('article', { class: 'xrow', 'aria-labelledby': 'x-' + e.id }, h('div', { class: 'xmain' }, titleLine(e), why(e), setting(e)),
+          h('div', { class: 'xside' },
+            h('div', { class: 'row', style: 'gap:8px' }, h('span', { class: 'chip st-blocked', text: 'needs something' }), h('span', { class: 'hint num', text: about(e.est_s) })),
+            h('p', { style: 'font-size:13px;line-height:19px;overflow-wrap:anywhere' }, h('strong', { text: 'Needs: ' }), e.needs),
+            e.needs_model || e.prep_cmd ? h('div', { class: 'stack', style: 'gap:4px' }, prepLink(e, 'Prepare it in Models'),
+              e.prep_cmd ? h('span', { class: 'hint' }, 'or in a terminal: ', h('span', { class: 'mono', style: 'font-size:11px', text: e.prep_cmd })) : null) : null));
+      }
+      function ideaRow(e) {
+        var long = (e.needs || '').length > 140;
+        return h('article', { class: 'xrow', style: 'padding:12px 0', 'aria-labelledby': 'x-' + e.id },
+          h('div', { class: 'xmain' }, titleLine(e, 15), why(e, true),
+            h('p', { class: 'hint' }, h('span', { class: 'mono', style: 'font-size:11px', text: e.id }), ' · ' + (e.category || '').replace(/-/g, ' '))),
+          h('div', { class: 'xside' }, h('span', { class: 'chip st-idea', text: 'idea' }),
+            e.needs ? h('p', { class: 'clamp2', style: 'font-size:13px;line-height:19px' }, h('strong', { text: 'Waiting for: ' }), e.needs) : null,
+            long ? h('details', { class: 'hint' }, h('summary', { style: 'cursor:pointer', text: 'Full note' }), h('p', { style: 'padding-top:4px;font-size:13px;line-height:19px;color:var(--fg)', text: e.needs })) : null,
+            prepLink(e)));
+      }
+      function group(id, chipCls, chipText, title, items, right, hint, rowFn) {
+        return h('section', { class: 'stack', style: 'gap:4px', 'aria-labelledby': id },
+          h('div', { class: 'grp-h' }, h('h2', { id: id }, h('span', { class: 'chip ' + chipCls, style: 'vertical-align:3px;margin-right:8px', text: chipText }), title, h('span', { class: 'count num', text: items.length })), right),
+          hint ? h('p', { class: 'hint', style: 'padding-top:4px', text: hint }) : null,
+          items.length ? items.map(rowFn) : h('p', { class: 'hint', style: 'padding:14px 0', text: 'None right now.' }));
+      }
+      function drawNotRun() {
+        var total = toQueue.reduce(function (a, e) { return a + (e.est_s || 0); }, 0);
+        var qAll = h('button', { type: 'button', class: 'btn btn-primary', disabled: toQueue.length ? null : '',
+          text: toQueue.length ? 'Queue all ready (' + toQueue.length + ', ' + about(total) + ')' : 'All ready experiments are queued',
+          onclick: function (ev) { ev.target.disabled = true; queueAllNotRun(toQueue, nr, function (didQueue) { if (didQueue) route(); else ev.target.disabled = false; }); } });
+        var nNew = notRun.filter(function (e) { return newIds[e.id]; }).length;
+        return h('div', { class: 'stack', style: 'gap:30px' },
+          h('p', { style: 'font-size:15px;line-height:23px;max-width:760px' },
+            notRun.length + ' experiments have never run: ' + ready.length + ' ready (' + (ready.length - toQueue.length) + ' queued), ' + needs.length + ' need' + (needs.length === 1 ? 's' : '') +
+            ' something first, ' + ideas.length + ' are ideas. ' + nNew + ' were added in the last ' + nr.new_days + ' days. ',
+            h('a', { href: '#experiments', 'data-jump': 'g-ready', text: 'Ready' }), ' · ', h('a', { href: '#experiments', 'data-jump': 'g-needs', text: 'Needs something' }), ' · ',
+            h('a', { href: '#experiments', 'data-jump': 'g-ideas', text: 'Ideas' })),
+          group('g-ready', 'st-done', 'ready', 'Ready to run ', ready, qAll, quietHint(nr) + ' The quiet run also picks up ready experiments.', readyRow),
+          group('g-needs', 'st-blocked', 'needs something', 'Needs something first ', needs, null, null, needsRow),
+          group('g-ideas', 'st-idea', 'idea', 'Ideas ', ideas, h('span', { class: 'hint', text: 'Not runnable unattended yet: each says what it is waiting for.' }), null, ideaRow),
+          h('p', { class: 'hint' }, 'Standard benches that an installed model has never had are listed on ', h('a', { href: '#dashboard', text: 'Run benchmarks › Not run yet' }), '.'));
+      }
+      function drawDone() {
+        var head = h('div', { class: 'tr', role: 'row', style: 'grid-template-columns:' + DONE_COLS },
+          [['Experiment'], ['Verdict'], ['tok/s, ref → new', 1], ['Change', 1], ['Output'], ['Date']].map(function (c) {
+            return h('div', { class: 'th', role: 'columnheader', style: c[1] ? 'text-align:right' : null, text: c[0] });
+          }));
+        var rows = done.map(function (e) {
+          var m = e.metrics || {}, v = VTXT[e.verdict] || ['v-pending', e.verdict];
           var det = h('details', { class: 'x' }, h('summary', { text: 'Why and result' }),
             h('dl', { class: 'kv', style: 'font-size:13px' }, [['Change', e.change], ['Why', e.hypothesis], ['Result', e.conclusion || (e.effects || []).join('; ')], ['Tradeoffs', e.tradeoffs], ['Reference', e.ref], ['Runs', (e.runs || []).join(', ')]]
-              .filter(function (x) { return x[1]; }).map(function (x) { return [h('dt', { text: x[0] }), h('dd', { text: x[1] })]; })),
-            (e.sources || []).map(function (s) { return h('p', { class: 'hint' }, h('a', { href: s, target: '_blank', rel: 'noopener', text: s })); }));
-          var acts = e.status === 'ready' && !e.queued ? h('div', { class: 'row' },
-            h('button', { type: 'button', class: 'btn btn-sm', onclick: function () { runOrQueue('planned', { id: e.id }, e.title, false); }, text: 'Run now' }),
-            h('button', { type: 'button', class: 'btn btn-sm', onclick: function () { runOrQueue('planned', { id: e.id }, e.title, true); }, text: 'Queue' })) : null;
-          var notRun = e.verdict === 'not run' && e.status;
-          var state = !notRun ? verdict(e.verdict)
-            : e.status === 'ready' ? h('div', { class: 'stack', style: 'gap:2px' }, h('span', { class: 'chip ' + (e.queued ? 'st-queued' : 'st-waiting'), style: 'align-self:flex-start', text: e.queued ? 'Queued' : 'Ready' }), e.est_s ? h('span', { class: 'hint', text: '~' + dur(e.est_s) }) : null)
-            : h('div', { class: 'stack', style: 'gap:2px' }, h('span', { class: 'chip ' + (e.status === 'needs' ? 'st-blocked' : 'st-missing'), style: 'align-self:flex-start', text: e.status === 'needs' ? 'Needs something' : 'Idea' }), e.needs ? h('span', { class: 'hint', text: e.needs }) : null);
-          return h('tr', { class: e.lossy ? 'lossy' : null }, td(h('div', { class: 'stack', style: 'gap:2px;min-width:220px' }, h('strong', { text: e.title }),
-              notRun && e.hypothesis ? h('span', { class: 'hint', style: 'white-space:normal', text: e.hypothesis }) : null, h('span', { class: 'hint mono', text: e.id }), tags, acts)),
-            td(e.category), td(state, 'wrap'), td(m.measured ? f2(m.ref_tok_s) + ' → ' + f2(m.tok_s) : '—', 'n'),
-            td(m.speed_change_pct == null ? '—' : (m.speed_change_pct > 0 ? '+' : '') + Math.round(m.speed_change_pct) + '%', 'n'), td(m.measured ? m.output : '—'), td(det, 'wrap'));
-        })));
+              .filter(function (x) { return x[1]; }).map(function (x) { return [h('dt', { text: x[0] }), h('dd', { text: x[1] })]; })));
+          return h('div', { class: 'tr' + (e.lossy ? ' lossy' : ''), role: 'row', style: 'grid-template-columns:' + DONE_COLS },
+            h('div', { class: 'td stack', role: 'rowheader', style: 'gap:2px' },
+              h('span', { class: 'row', style: 'gap:4px 8px' }, h('strong', { text: e.title }), e.lossy ? lossyTag() : null,
+                e.everyday ? h('span', { class: 'tag tag-usable', text: 'everyday · by owner' }) : e.usable ? h('span', { class: 'tag tag-usable', text: 'usable · by owner' }) : null),
+              h('span', { class: 'mono muted', style: 'font-size:11px', text: e.id }), det),
+            h('div', { class: 'td', role: 'cell' }, h('span', { class: 'verdict ' + v[0], text: v[1] })),
+            h('div', { class: 'td num', role: 'cell', style: 'text-align:right', text: m.tok_s == null ? '—' : (m.ref_tok_s == null ? '' : f2(m.ref_tok_s) + ' → ') + f2(m.tok_s) }),
+            h('div', { class: 'td num', role: 'cell', style: 'text-align:right', text: m.speed_change_pct == null ? '—' : (m.speed_change_pct > 0 ? '+' : '') + Math.round(m.speed_change_pct) + '%' }),
+            h('div', { class: 'td', role: 'cell', text: m.output && m.output !== 'n/a' ? m.output : '—' }),
+            h('div', { class: 'td num muted', role: 'cell', text: e.date || '' }));
+        });
+        return h('div', { class: 'stack', style: 'gap:10px' },
+          h('p', { class: 'hint', text: 'Verdicts compare each run with its reference run; changes under about 10% are noise on this busy machine.' }),
+          h('div', { style: 'overflow-x:auto' }, h('div', { class: 'tbl', role: 'table', 'aria-label': 'Finished experiments', style: 'min-width:860px' }, head, rows)));
       }
-      var total = ready.reduce(function (a, e) { return a + (e.est_s || 0); }, 0);
-      var queueAll = h('div', { class: 'stack', style: 'gap:4px;align-items:flex-end' },
-        h('button', { type: 'button', class: 'btn btn-primary', disabled: ready.length ? null : '', text: ready.length ? 'Queue all ready (' + ready.length + ')' : 'All ready experiments are queued',
-          onclick: function (ev) {
-            ev.target.disabled = true;
-            ready.reduce(function (pr, e) { return pr.then(function () { return post('/api/queue/add', { kind: 'planned', args: { id: e.id }, only_when_quiet: true }); }); }, Promise.resolve())
-              .then(function () { toast('Queued ' + ready.length + ' experiments (~' + dur(total) + '); they start one after another when the machine is quiet.'); route(); }, function (er) { toast(er.message, true); route(); });
-          } }),
-        h('span', { class: 'hint', text: ready.length ? '~' + dur(total) + ' in total · each waits for a quiet machine' : 'Ideas need a download, hardware or code before they can run.' }));
-      put(main, header('Experiments', 'Every experiment: finished ones with their result, planned ones with what they try and whether they can start. Changes under ~10% are noise.', queueAll), tabs, body);
+      function draw() {
+        fill(tabs, [['notrun', 'Not run yet', notRun.length], ['done', 'Done', done.length]].map(function (t) {
+          return h('button', { type: 'button', class: 'tab', role: 'tab', 'aria-selected': t[0] === expTab ? 'true' : 'false', onclick: function () { expTab = t[0]; draw(); } },
+            t[1], h('span', { class: 'count num', text: t[2] }));
+        }));
+        fill(body, expTab === 'done' ? drawDone() : drawNotRun());
+      }
+      // in-page jumps; the hash stays the route
+      body.addEventListener('click', function (ev) {
+        var a = ev.target.closest('a[data-jump]');
+        if (!a) return;
+        ev.preventDefault();
+        var t = document.getElementById(a.getAttribute('data-jump'));
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      put(main, header('Experiments', 'Ideas to make GLM-5.3 faster on this Mac: what each one tries, and whether it can run.'), tabs, body);
       draw();
     });
   }
@@ -1149,46 +1253,56 @@
   function drawNotRun(box) {
     return api('/api/not-run').then(function (d) {
       var all = d.experiments.concat(d.benches);
-      var ready = all.filter(function (x) { return x.status === 'ready'; });
-      function queueOne(x) {
-        if (x.queue && x.queue.selection) return post('/api/queue/add-selection', { ids: [x.queue.selection], only_when_quiet: true });
-        return post('/api/queue/add', { kind: x.queue.kind, args: x.queue.args, only_when_quiet: true });
-      }
-      function refresh() { drawNotRun(box); }
-      var STATE = { ready: ['st-waiting', 'Ready'], queued: ['st-queued', 'Queued'], needs: ['st-blocked', 'Needs something'], idea: ['st-missing', 'Idea'] };
-      function row(x) {
-        var st = STATE[x.status] || STATE.idea;
-        return h('li', { class: 'nr-row' },
-          h('div', { class: 'stack', style: 'gap:2px;min-width:0' },
-            h('div', { class: 'row', style: 'gap:6px' }, h('strong', { text: x.title }), x.new ? h('span', { class: 'pill badge-warn', text: 'new' }) : null, x.lossy ? lossyTag() : null, x.failed ? h('span', { class: 'tag', text: 'failed last time' }) : null),
-            x.why ? h('span', { class: 'hint nr-why', text: x.why }) : null,
-            x.needs && x.status !== 'ready' && x.status !== 'queued' ? h('span', { class: 'hint', text: 'Needs: ' + x.needs }) : null),
-          h('div', { class: 'stack nr-side' }, h('span', { class: 'chip ' + st[0], style: 'align-self:flex-end', text: st[1] }),
-            x.est_s && (x.status === 'ready' || x.status === 'queued') ? h('span', { class: 'hint num', text: '~' + dur(x.est_s) }) : null,
-            x.status === 'ready' && x.queue ? h('button', { type: 'button', class: 'btn btn-sm', text: 'Queue', onclick: function (ev) {
-              ev.target.disabled = true; queueOne(x).then(function () { toast('Queued: ' + x.title + ' (starts when the machine is quiet)'); refresh(); }, function (er) { ev.target.disabled = false; toast(er.message, true); });
-            } }) : null));
-      }
-      var now = all.filter(function (x) { return x.status === 'ready' || x.status === 'queued'; });
+      var ready = all.filter(function (x) { return x.status === 'ready' || x.status === 'queued'; })
+        .sort(function (a, b) { return (b.status === 'queued') - (a.status === 'queued') || (a.queue_pos || 0) - (b.queue_pos || 0) || (!!b.new - !!a.new); });
+      var toQueue = ready.filter(function (x) { return x.status === 'ready' && x.queue; });
       var needs = all.filter(function (x) { return x.status === 'needs'; });
       var ideas = all.filter(function (x) { return x.status === 'idea'; });
-      var total = ready.reduce(function (a, x) { return a + (x.est_s || 0); }, 0);
+      var nNew = all.filter(function (x) { return x.new; }).length;
+      var total = toQueue.reduce(function (a, x) { return a + (x.est_s || 0); }, 0);
+      function refresh() { drawNotRun(box); }
+      function titleLine(x) {
+        return h('span', { class: 'row', style: 'gap:4px 8px' }, h('strong', { style: 'font-size:15px;line-height:21px', text: x.title }), x.new ? newBadge() : null,
+          x.lossy ? lossyTag() : null, x.failed ? h('span', { class: 'tag', text: 'failed last time' }) : null, h('span', { class: 'hint', text: x.kind }));
+      }
+      function readyRow(x) {
+        var q = x.status === 'queued';
+        return h('div', { class: 'nr', role: 'listitem' },
+          h('div', { class: 'stack', style: 'gap:3px;min-width:0' }, titleLine(x), x.why ? h('span', { class: 'clamp2', style: 'font-size:13px;line-height:19px;color:var(--fg-2)', text: x.why }) : null),
+          h('div', { class: 'nr-state' }, h('span', { class: 'chip ' + (q ? 'st-queued' : 'st-done'), text: q ? 'queued' : 'ready' }), h('span', { class: 'hint num', text: about(x.est_s) })),
+          h('div', { class: 'nr-act' }, q ? h('a', { href: '#queue', class: 'hint', text: x.queue_pos ? '#' + x.queue_pos + ' in queue' : 'in queue' })
+            : x.queue ? h('button', { type: 'button', class: 'btn btn-sm btn-primary', style: 'min-height:34px', 'aria-label': 'Queue ' + x.title, text: 'Queue', onclick: function (ev) {
+              ev.target.disabled = true;
+              queueNotRun(x).then(function () { toast('Queued: ' + x.title + '. It starts when the machine is quiet.', false, ['#queue', 'View queue']); refresh(); },
+                function (er) { ev.target.disabled = false; toast(er.message, true); });
+            } }) : null));
+      }
+      function needsRow(x) {
+        return h('div', { class: 'nr', role: 'listitem' },
+          h('div', { class: 'stack', style: 'gap:3px;min-width:0' }, titleLine(x), h('span', { class: 'clamp2', style: 'font-size:13px;line-height:19px' }, h('strong', { text: 'Needs: ' }), x.needs)),
+          h('div', { class: 'nr-state' }, h('span', { class: 'chip st-blocked', text: 'needs something' }), h('span', { class: 'hint num', text: about(x.est_s) })),
+          h('div', { class: 'nr-act' }, prepLink(x)));
+      }
       var c = d.counts;
-      fill(box, all.length ? h('section', { class: 'card pad stack', 'aria-labelledby': 'nr-h' },
-        h('div', { class: 'card-head' },
-          h('div', { class: 'stack', style: 'gap:2px' }, h('h2', { id: 'nr-h', text: 'Not run yet' }),
-            h('span', { class: 'hint', text: [c.ready ? c.ready + ' ready' : '', c.queued ? c.queued + ' queued' : '', c.needs ? c.needs + ' need something' : '', c.idea ? c.idea + ' ideas' : '']
-              .filter(Boolean).join(' · ') + (d.new ? ' · ' + d.new + ' new since yesterday' : '') })),
-          h('div', { class: 'row' }, h('a', { href: '#experiments', text: 'All experiments' }),
-            h('button', { type: 'button', class: 'btn btn-primary btn-sm', disabled: ready.length ? null : '', text: ready.length ? 'Queue all ready (' + ready.length + ', ~' + dur(total) + ')' : 'Nothing ready to queue',
-              onclick: function (ev) {
-                ev.target.disabled = true;
-                ready.reduce(function (pr, x) { return pr.then(function () { return queueOne(x); }); }, Promise.resolve())
-                  .then(function () { toast('Queued ' + ready.length + ' (~' + dur(total) + '); they run one after another when the machine is quiet.'); refresh(); }, function (er) { toast(er.message, true); refresh(); });
-              } }))),
-        now.length ? h('ul', { class: 'nr-list' }, now.map(row)) : null,
-        needs.length ? [h('h3', { class: 'eyebrow', text: 'Needs something first' }), h('ul', { class: 'nr-list' }, needs.map(row))] : null,
-        ideas.length ? h('details', { class: 'x' }, h('summary', { text: ideas.length + ' ideas that need a download, hardware or code before they can run' }), h('ul', { class: 'nr-list' }, ideas.map(row))) : null)
+      fill(box, all.length ? h('section', { class: 'card stack', style: 'padding:16px 20px 6px;gap:10px', 'aria-labelledby': 'nr-h' },
+        h('div', { class: 'row between', style: 'gap:10px 16px;align-items:flex-start' },
+          h('div', { class: 'stack', style: 'gap:2px;min-width:0' }, h('h2', { id: 'nr-h', style: 'font-size:19px;line-height:26px;font-weight:600', text: 'Not run yet' }),
+            h('p', { class: 'hint num', style: 'font-size:13px', text: c.ready + ' ready · ' + c.queued + ' queued · ' + c.needs + ' need something · ' + c.idea + ' ideas · ' + nNew + ' new since yesterday' })),
+          h('div', { class: 'row', style: 'gap:8px 14px' }, h('a', { href: '#experiments', style: 'font-size:14px', text: 'All experiments' }),
+            h('button', { type: 'button', class: 'btn btn-primary', disabled: toQueue.length ? null : '',
+              text: toQueue.length ? 'Queue all ready (' + toQueue.length + ', ' + about(total) + ')' : 'Everything ready is queued',
+              onclick: function (ev) { ev.target.disabled = true; queueAllNotRun(toQueue, d, function (didQueue) { if (didQueue) refresh(); else ev.target.disabled = false; }); } }))),
+        h('p', { class: 'hint', text: quietHint(d) }),
+        ready.length ? h('div', { role: 'list', 'aria-label': 'Ready to run' }, ready.map(readyRow)) : null,
+        needs.length ? [h('h3', { class: 'eyebrow', style: 'padding-top:10px', text: 'Needs something first · ' + needs.length }),
+          h('div', { role: 'list', 'aria-label': 'Needs something first' }, needs.map(needsRow))] : null,
+        ideas.length ? h('details', { style: 'border-top:1px solid var(--line);padding:10px 0' },
+          h('summary', { class: 'nr-sum' }, h('span', { class: 'chip st-idea', text: 'idea' }), 'Ideas · ' + ideas.length, h('span', { class: 'hint', style: 'font-weight:400', text: 'not runnable unattended yet' })),
+          ideas.map(function (x) {
+            return h('div', { class: 'stack', style: 'padding:8px 0;border-top:1px solid var(--line);gap:2px' },
+              h('span', { class: 'row', style: 'gap:4px 8px' }, h('strong', { style: 'font-size:14px', text: x.title }), x.new ? newBadge() : null),
+              x.needs ? h('span', { class: 'clamp2 hint', style: 'font-size:13px;line-height:18px', text: 'Waiting for: ' + x.needs }) : null);
+          })) : null)
         : h('p', { class: 'hint', text: 'Every experiment and standard bench has run on this setup.' }));
     }, function () { /* the rest of the dashboard does not depend on this card */ });
   }
