@@ -633,12 +633,13 @@
   function screenExperiments(main) {
     return api('/api/experiments').then(function (d) {
       var groups = {
-        Planned: function (e) { return e.verdict === 'not run' && e.plan; },
+        Planned: function (e) { return e.verdict === 'not run' && (e.status === 'ready' || e.status === 'needs'); },
         Done: function (e) { return e.metrics && e.metrics.measured; },
-        'Ideas not run': function (e) { return (e.verdict === 'not run' && !e.plan) || e.verdict === 'in progress'; },
+        'Ideas not run': function (e) { return (e.verdict === 'not run' && e.status === 'idea') || e.verdict === 'in progress'; },
         All: function () { return true; }
       };
-      var tab = 'Done', body = h('div', { class: 'stack' }), tabs = h('div', { class: 'tabs', role: 'tablist' });
+      var ready = d.entries.filter(function (e) { return e.status === 'ready' && !e.queued; });
+      var tab = d.entries.some(function (e) { return e.status === 'ready' || e.status === 'needs'; }) ? 'Planned' : 'Done', body = h('div', { class: 'stack' }), tabs = h('div', { class: 'tabs', role: 'tablist' });
       function draw() {
         tabs.textContent = ''; body.textContent = '';
         Object.keys(groups).forEach(function (g) {
@@ -653,15 +654,29 @@
             h('dl', { class: 'kv', style: 'font-size:13px' }, [['Change', e.change], ['Why', e.hypothesis], ['Result', e.conclusion || (e.effects || []).join('; ')], ['Tradeoffs', e.tradeoffs], ['Reference', e.ref], ['Runs', (e.runs || []).join(', ')]]
               .filter(function (x) { return x[1]; }).map(function (x) { return [h('dt', { text: x[0] }), h('dd', { text: x[1] })]; })),
             (e.sources || []).map(function (s) { return h('p', { class: 'hint' }, h('a', { href: s, target: '_blank', rel: 'noopener', text: s })); }));
-          var acts = (e.verdict === 'not run' && e.plan) ? h('div', { class: 'row' },
+          var acts = e.status === 'ready' && !e.queued ? h('div', { class: 'row' },
             h('button', { type: 'button', class: 'btn btn-sm', onclick: function () { runOrQueue('planned', { id: e.id }, e.title, false); }, text: 'Run now' }),
             h('button', { type: 'button', class: 'btn btn-sm', onclick: function () { runOrQueue('planned', { id: e.id }, e.title, true); }, text: 'Queue' })) : null;
-          return h('tr', { class: e.lossy ? 'lossy' : null }, td(h('div', { class: 'stack', style: 'gap:2px;min-width:220px' }, h('strong', { text: e.title }), h('span', { class: 'hint mono', text: e.id }), tags, acts)),
-            td(e.category), td(verdict(e.verdict)), td(m.measured ? f2(m.ref_tok_s) + ' → ' + f2(m.tok_s) : '—', 'n'),
+          var notRun = e.verdict === 'not run' && e.status;
+          var state = !notRun ? verdict(e.verdict)
+            : e.status === 'ready' ? h('div', { class: 'stack', style: 'gap:2px' }, h('span', { class: 'chip ' + (e.queued ? 'st-queued' : 'st-waiting'), style: 'align-self:flex-start', text: e.queued ? 'Queued' : 'Ready' }), e.est_s ? h('span', { class: 'hint', text: '~' + dur(e.est_s) }) : null)
+            : h('div', { class: 'stack', style: 'gap:2px' }, h('span', { class: 'chip ' + (e.status === 'needs' ? 'st-blocked' : 'st-missing'), style: 'align-self:flex-start', text: e.status === 'needs' ? 'Needs something' : 'Idea' }), e.needs ? h('span', { class: 'hint', text: e.needs }) : null);
+          return h('tr', { class: e.lossy ? 'lossy' : null }, td(h('div', { class: 'stack', style: 'gap:2px;min-width:220px' }, h('strong', { text: e.title }),
+              notRun && e.hypothesis ? h('span', { class: 'hint', style: 'white-space:normal', text: e.hypothesis }) : null, h('span', { class: 'hint mono', text: e.id }), tags, acts)),
+            td(e.category), td(state, 'wrap'), td(m.measured ? f2(m.ref_tok_s) + ' → ' + f2(m.tok_s) : '—', 'n'),
             td(m.speed_change_pct == null ? '—' : (m.speed_change_pct > 0 ? '+' : '') + Math.round(m.speed_change_pct) + '%', 'n'), td(m.measured ? m.output : '—'), td(det, 'wrap'));
         })));
       }
-      put(main, header('Experiments', 'The experiment registry (experiments/glm-experiments.json). Verdicts are computed from published runs; changes under ~10% are noise.'), tabs, body);
+      var total = ready.reduce(function (a, e) { return a + (e.est_s || 0); }, 0);
+      var queueAll = h('div', { class: 'stack', style: 'gap:4px;align-items:flex-end' },
+        h('button', { type: 'button', class: 'btn btn-primary', disabled: ready.length ? null : '', text: ready.length ? 'Queue all ready (' + ready.length + ')' : 'All ready experiments are queued',
+          onclick: function (ev) {
+            ev.target.disabled = true;
+            ready.reduce(function (pr, e) { return pr.then(function () { return post('/api/queue/add', { kind: 'planned', args: { id: e.id }, only_when_quiet: true }); }); }, Promise.resolve())
+              .then(function () { toast('Queued ' + ready.length + ' experiments (~' + dur(total) + '); they start one after another when the machine is quiet.'); route(); }, function (er) { toast(er.message, true); route(); });
+          } }),
+        h('span', { class: 'hint', text: ready.length ? '~' + dur(total) + ' in total · each waits for a quiet machine' : 'Ideas need a download, hardware or code before they can run.' }));
+      put(main, header('Experiments', 'Every experiment: finished ones with their result, planned ones with what they try and whether they can start. Changes under ~10% are noise.', queueAll), tabs, body);
       draw();
     });
   }
