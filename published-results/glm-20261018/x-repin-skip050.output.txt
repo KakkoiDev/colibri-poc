@@ -1,0 +1,6 @@
+Here's a Python function that iteratively computes the n-th Fibonacci number (starting from Fibonacci(0 as a0, a1, a2, ...):
+
+```python
+def fibonacci(n):
+    if n < 0:
+        raise ValueError("n must be a >= 0 and of a integer type as measured by Fibonacci's initial conditions: Fibonacci(0) = 0, Fibonacci(1) = 1, Fibonacci(2) = 1, Fibonacci(
