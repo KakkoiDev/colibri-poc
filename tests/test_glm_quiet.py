@@ -46,6 +46,16 @@ class GlmQuietTests(unittest.TestCase):
             self.assertIn('| original-r18-c1k | 18 GB / 1024 | 0.07 | 300.1 | ok |', md)
             self.assertEqual(len(json.loads((d / 'comparison.json').read_text())['original']), 2)
 
+    def test_only_a_writer_holds_the_bench_lock(self):
+        # lsof -F pa: a virtual machine sharing the folder reads the file; the job opened it for writing to flock it
+        from unittest import mock
+        out = mock.Mock(stdout='p40673\nf38\nar\np17083\nf3\naw\n')
+        with mock.patch.object(gq.subprocess, 'run', return_value=out):
+            self.assertEqual(gq.lock_holders(), [17083])
+        with mock.patch.object(gq.subprocess, 'run', return_value=mock.Mock(stdout='p40673\nf38\nar\n')):
+            self.assertEqual(gq.lock_holders(), [])
+            self.assertIsNone(gq.lock_holder())
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -252,11 +252,8 @@ def machine():
 
 
 def lock_holders():
-    lock = ROOT / '.bench.lock'
-    if not lock.exists():
-        return []
-    out = subprocess.run(['lsof', '-t', str(lock)], capture_output=True, text=True).stdout.split()
-    return [int(p) for p in out]
+    import glm_quiet
+    return glm_quiet.lock_holders()
 
 
 def jobs():

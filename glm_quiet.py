@@ -71,12 +71,23 @@ def conditions():
                 top_memory_apps=[dict(name=n, rss_gb=round(r / 1e6, 2)) for r, n in rows[:8]])
 
 
-def lock_holder():
+def lock_holders():
+    """PIDs of the jobs holding .bench.lock. Jobs open it for writing to flock it; a process that only reads it (a
+    virtual machine sharing this folder, Spotlight) holds nothing and must not stall the queue."""
     p = ROOT / '.bench.lock'
     if not p.exists():
-        return None
-    out = subprocess.run(['lsof', '-t', str(p)], capture_output=True, text=True).stdout.split()
-    return out or None
+        return []
+    pids, pid = set(), None
+    for line in subprocess.run(['lsof', '-F', 'pa', str(p)], capture_output=True, text=True).stdout.split():
+        if line[0] == 'p':
+            pid = int(line[1:])
+        elif line[0] == 'a' and line[1:] in ('w', 'u'):
+            pids.add(pid)
+    return sorted(pids)
+
+
+def lock_holder():
+    return [str(p) for p in lock_holders()] or None
 
 
 def check(args, quiet=False):
