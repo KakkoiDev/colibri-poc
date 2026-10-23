@@ -20717,8 +20717,13 @@
   },
   {
    "path": "lab-app/logs/20261023T205018-concurrency-f4ad9204.log",
-   "bytes": 183,
-   "sha256": "0178b51b6b6af4535ca25570a1140773ba720e119b82106ed4df5edeee682384"
+   "bytes": 683,
+   "sha256": "fb3961b3f3b387e89a9ea77f2a71fe1e87373c9037b65bf08665897d582299eb"
+  },
+  {
+   "path": "lab-app/logs/20261023T205321-concurrency-a09ecad0.log",
+   "bytes": 189,
+   "sha256": "2781f43dd79e86d16075cd3b1c4d98c966931ae0642248fc29f24e87cc159398"
   },
   {
    "path": "olmoe-concurrency-gemma4-26b-mlx-native-normal-20261023T151822/failure.json",
@@ -20902,13 +20907,23 @@
   },
   {
    "path": "parallel-bench-20261023T205018-32046/server.log",
-   "bytes": 33794,
-   "sha256": "9c3c3fe649c042055fd48cb30221843e09dd6a9677a83a94180e9e11959c43b6"
+   "bytes": 454578,
+   "sha256": "b8d5c7eb389b21df369919d3a80938e8c3170c9d3b5b91711dfd43a38764a070"
   },
   {
    "path": "parallel-bench-20261023T205018-32046/summary.json",
-   "bytes": 305,
-   "sha256": "fb204330342455797d5715ee8e09cfdc1ecb1c3abfa4afc54ef8bcd42d452dc1"
+   "bytes": 241517,
+   "sha256": "b213a7e474a6d340ea6d7a01e95bc636cd1b17e2318217f65c51ece4bf4b1529"
+  },
+  {
+   "path": "parallel-bench-20261023T205321-32485/server.log",
+   "bytes": 3535,
+   "sha256": "698cc0a4df9bec00aa569df8ea187c56cf44e7b02eb20944bd5f08304c98bd58"
+  },
+  {
+   "path": "parallel-bench-20261023T205321-32485/summary.json",
+   "bytes": 264,
+   "sha256": "2585c5c65c7797ee1ad269b4830c50df8aaf9420cd47476bab5677fb41176f98"
   },
   {
    "path": "parallel-smoke-20261023/capacity.py",

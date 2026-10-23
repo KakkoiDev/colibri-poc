@@ -1,0 +1,17 @@
+time=2026-10-23T20:53:21.170+09:00 level=INFO source=routes.go:2450 msg="server config" env="map[HTTPS_PROXY: HTTP_PROXY: LLAMA_ARG_FIT: LLAMA_ARG_FIT_TARGET: NO_PROXY: OLLAMA_CONTEXT_LENGTH:0 OLLAMA_CREATE_REMOTE:false OLLAMA_DEBUG:INFO OLLAMA_DEBUG_LOG_REQUESTS:false OLLAMA_EDITOR: OLLAMA_FLASH_ATTENTION:false OLLAMA_GO_TEMPLATE:true OLLAMA_GPU_OVERHEAD:0 OLLAMA_HOST:http://127.0.0.1:55038 OLLAMA_IGPU_ENABLE: OLLAMA_KEEP_ALIVE:5m0s OLLAMA_KV_CACHE_TYPE: OLLAMA_LLM_LIBRARY: OLLAMA_LOAD_TIMEOUT:5m0s OLLAMA_MAX_LOADED_MODELS:1 OLLAMA_MAX_QUEUE:512 OLLAMA_MAX_TRANSFER_STREAMS:4 OLLAMA_MODELS:~/models/ollama OLLAMA_NOHISTORY:false OLLAMA_NOPRUNE:true OLLAMA_NO_CLOUD:false OLLAMA_NUM_PARALLEL:16 OLLAMA_ORIGINS:[http://localhost https://localhost http://localhost:* https://localhost:* http://127.0.0.1 https://127.0.0.1 http://127.0.0.1:* https://127.0.0.1:* http://0.0.0.0 https://0.0.0.0 http://0.0.0.0:* https://0.0.0.0:* app://* file://* tauri://* vscode-webview://* vscode-file://*] OLLAMA_REMOTES:[ollama.com] OLLAMA_SCHED_SPREAD:false http_proxy: https_proxy: no_proxy:]"
+time=2026-10-23T20:53:21.170+09:00 level=INFO source=routes.go:2452 msg="Ollama cloud disabled: false"
+time=2026-10-23T20:53:21.183+09:00 level=INFO source=routes.go:2512 msg="Listening on 127.0.0.1:55038 (version 0.40.7)"
+time=2026-10-23T20:53:21.183+09:00 level=INFO source=runner.go:60 msg="discovering available GPUs..."
+time=2026-10-23T20:53:21.324+09:00 level=INFO source=types.go:32 msg="inference compute" id=0 filter_id=0 library=Metal compute=0.0 name=MTL0 description="Apple M6" libdirs="" driver=0.0 pci_id="" type=iGPU total="25.0 GiB" available="25.0 GiB"
+time=2026-10-23T20:53:21.324+09:00 level=INFO source=routes.go:2562 msg="vram-based default context" total_vram="25.0 GiB" default_num_ctx=32768
+[GIN] 2026/10/23 - 20:53:21 | 200 |      30.084µs |       127.0.0.1 | GET      "/api/version"
+time=2026-10-23T20:53:21.330+09:00 level=INFO source=sched.go:658 msg="system memory" total="32.0 GiB" free="26.3 GiB" free_swap="0 B"
+time=2026-10-23T20:53:21.330+09:00 level=INFO source=sched.go:665 msg="gpu memory" id=0 library=Metal available="24.5 GiB" free="25.0 GiB" minimum="512.0 MiB" overhead="0 B"
+time=2026-10-23T20:53:21.330+09:00 level=INFO source=client.go:508 msg="starting mlx runner subprocess" model=qwen3.8:27b-mlx port=55044
+time=2026-10-23T20:53:21.331+09:00 level=INFO source=images.go:428 msg="template selection" model=registry.ollama.ai/library/qwen3.8:27b-mlx selected=renderer_parser renderer=qwen3.8 parser=qwen3.5 go_template=null chat_template=null harmony=null renderer_parser="[completion vision tools thinking]"
+time=2026-10-23T20:53:21.331+09:00 level=INFO source=sched.go:782 msg="loaded runners" count=1
+time=2026-10-23T20:53:21.356+09:00 level=INFO source=server.go:46 msg="MLX engine initialized" "MLX version"=0.32.3-96-gbebd642 device=gpu
+time=2026-10-23T20:53:21.428+09:00 level=INFO source=model_recommendations.go:177 msg="model recommendations cache sleep scheduled" wait=4h15m59.557295481s consecutive_failures=0
+time=2026-10-23T20:53:21.525+09:00 level=INFO source=model.go:137 msg="Model architecture" arch=Qwen3_5ForConditionalGeneration
+time=2026-10-23T20:53:21.659+09:00 level=INFO source=runner.go:285 msg="Loaded tensors from manifest" count=2017
+time=2026-10-23T20:53:25.668+09:00 level=INFO source=grammar.go:79 msg="Structured output initialized" library=xgrammar version=v0.2.7 vocab_size=248320 path=/Applications/Ollama.app/Contents/Resources/mlx_metal_v4/libollama_xgrammar.dylib
