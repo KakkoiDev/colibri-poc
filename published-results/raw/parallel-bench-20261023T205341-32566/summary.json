@@ -1,0 +1,14 @@
+{
+  "model": "qwen3.8:27b-mlx",
+  "digest": "5642e97495e1a088883805981563dcdc4a040c2f53388b7a41d1f24d3622cf7e",
+  "status": "running",
+  "phase": "capability",
+  "style": "normal",
+  "thinking": false,
+  "parallel_slots": 16,
+  "stress": [],
+  "busy_machine": true,
+  "engine": {
+    "version": "0.40.7"
+  }
+}

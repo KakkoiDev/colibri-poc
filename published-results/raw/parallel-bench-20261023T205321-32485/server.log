@@ -15,3 +15,56 @@ time=2026-10-23T20:53:21.428+09:00 level=INFO source=model_recommendations.go:17
 time=2026-10-23T20:53:21.525+09:00 level=INFO source=model.go:137 msg="Model architecture" arch=Qwen3_5ForConditionalGeneration
 time=2026-10-23T20:53:21.659+09:00 level=INFO source=runner.go:285 msg="Loaded tensors from manifest" count=2017
 time=2026-10-23T20:53:25.668+09:00 level=INFO source=grammar.go:79 msg="Structured output initialized" library=xgrammar version=v0.2.7 vocab_size=248320 path=/Applications/Ollama.app/Contents/Resources/mlx_metal_v4/libollama_xgrammar.dylib
+time=2026-10-23T20:53:27.300+09:00 level=INFO source=runner.go:331 msg="Starting HTTP server" host=127.0.0.1 port=55044
+time=2026-10-23T20:53:27.334+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=226.333µs status="200 OK"
+time=2026-10-23T20:53:27.334+09:00 level=INFO source=client.go:112 msg="mlx runner is ready" port=55044
+time=2026-10-23T20:53:27.334+09:00 level=INFO source=prefix_cache.go:151 msg="cache miss" total=35 matched=0 cached=0 left=35
+time=2026-10-23T20:53:27.582+09:00 level=INFO source=pipeline.go:228 msg="Prompt processing progress" processed=34 total=35
+[GIN] 2026/10/23 - 20:53:29 | 200 |  8.383499708s |       127.0.0.1 | POST     "/api/chat"
+time=2026-10-23T20:53:29.708+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=POST path=/v1/completions took=2.374209958s status="200 OK"
+time=2026-10-23T20:53:29.724+09:00 level=INFO source=speculate_stats.go:62 msg="speculative decode stats" iterations=18 drafted=16 accepted=14 acceptance=0.88 avg_draft=0.89 max_draft=2 avg_accepted=0.78 depth_over_time="0.0/0 0.0/0 1.0/1 1.0/1 1.0/1 1.0/1 1.5/2 1.3/2"
+time=2026-10-23T20:53:29.727+09:00 level=INFO source=pipeline.go:110 msg=memory peak="17.54 GiB" held="17.22 GiB"
+time=2026-10-23T20:53:29.727+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=13.18375ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:29 | 200 |   13.473541ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:29.727+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=12.833µs status="200 OK"
+time=2026-10-23T20:53:29.727+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=29.417µs status="200 OK"
+time=2026-10-23T20:53:29.727+09:00 level=INFO source=prefix_cache.go:151 msg="cache hit" total=35 matched=34 cached=30 left=5
+time=2026-10-23T20:53:29.830+09:00 level=INFO source=pipeline.go:228 msg="Prompt processing progress" processed=4 total=5
+time=2026-10-23T20:53:30.374+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.0565ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:30 | 200 |   52.317959ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:31.076+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=50.973292ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:31 | 200 |   51.117542ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:31.648+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.045042ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:31 | 200 |   52.197083ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:32.309+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.025042ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:32 | 200 |   52.167333ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:32.950+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=50.152667ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:32 | 200 |      50.294ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:33.545+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.03725ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:33 | 200 |     52.1955ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:34.136+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.034666ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:34 | 200 |   52.224667ms |       127.0.0.1 | GET      "/api/ps"
+[GIN] 2026/10/23 - 20:53:34 | 200 |     4.537618s |       127.0.0.1 | POST     "/api/chat"
+time=2026-10-23T20:53:34.252+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=POST path=/v1/completions took=4.524998292s status="200 OK"
+time=2026-10-23T20:53:34.252+09:00 level=INFO source=speculate_stats.go:62 msg="speculative decode stats" iterations=33 drafted=109 accepted=95 acceptance=0.87 avg_draft=3.30 max_draft=5 avg_accepted=2.88 depth_over_time="2.0/2 2.2/3 3.0/3 3.0/3 3.5/4 4.0/4 4.0/4 4.4/5"
+time=2026-10-23T20:53:34.263+09:00 level=INFO source=pipeline.go:110 msg=memory peak="18.32 GiB" held="17.39 GiB"
+time=2026-10-23T20:53:34.263+09:00 level=INFO source=prefix_cache.go:151 msg="cache miss" total=35 matched=4 cached=0 left=35
+time=2026-10-23T20:53:34.494+09:00 level=INFO source=pipeline.go:228 msg="Prompt processing progress" processed=34 total=35
+time=2026-10-23T20:53:34.768+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.035125ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:34 | 200 |   52.266042ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:35.352+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.022667ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:35 | 200 |   52.210042ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:35.925+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.021291ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:35 | 200 |   52.167584ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:36.477+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.040959ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:36 | 200 |   52.177875ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:37.147+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.032541ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:37 | 200 |   52.163208ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:37.737+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.024833ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:37 | 200 |   52.145167ms |       127.0.0.1 | GET      "/api/ps"
+time=2026-10-23T20:53:38.289+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=GET path=/v1/status took=52.018583ms status="200 OK"
+[GIN] 2026/10/23 - 20:53:38 | 200 |   52.133417ms |       127.0.0.1 | GET      "/api/ps"
+[GIN] 2026/10/23 - 20:53:38 | 200 |  8.988105583s |       127.0.0.1 | POST     "/api/chat"
+time=2026-10-23T20:53:38.703+09:00 level=INFO source=server.go:252 msg=ServeHTTP method=POST path=/v1/completions took=8.975299042s status="200 OK"
+[GIN] 2026/10/23 - 20:53:38 | 200 |     134.334µs |       127.0.0.1 | POST     "/api/generate"
+time=2026-10-23T20:53:38.707+09:00 level=INFO source=client.go:151 msg="stopping mlx runner subprocess" pid=32489
