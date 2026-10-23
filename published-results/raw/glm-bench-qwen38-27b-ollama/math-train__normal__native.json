@@ -1,0 +1,19 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 13.24,
+ "prompt_tokens": 33,
+ "prefill_s": 0.257,
+ "output_tokens": 120,
+ "decode_s": 5.468,
+ "load_s": 7.504,
+ "text": "**150 km**\n\nUsing the formula:\n\n$$\\text{Distance} = \\text{Speed} \\times \\text{Time} = 60 \\, \\text{km/h} \\times 2.5 \\, \\text{h} = 150 \\, \\text{km}$$",
+ "thinking_chars": 138,
+ "truncated": false,
+ "decode_tok_s": 21.95,
+ "answer_s": 5.72,
+ "correct": true
+}

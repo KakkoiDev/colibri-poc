@@ -1,0 +1,99 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.69s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 24 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Write a Python function factorial(n) that returns n factorial for a non-negative integer n.<|assistant|><think></think>PROFILO PREFILL (33.67s):
+PROFILE: expert-disk 189.056s service / 21.568s wait | expert-matmul 5.517s | attention 3.749s (including kvb 0.513s) | lm_head 0.006s | other 2.832s
+ATTENTION: projection/RoPE 1.147s | score-softmax-value 0.035s | output projection 2.054s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.040s | residual P2P 0.000s / 0 hop | orchestration 2.792s
+METAL: blocchi GPU 228 | fallback CPU 0 | expert su GPU 6775 | setup 0.04s gpu-wall 4.94s (kernel 5.53s) scatter 0.01s
+METAL-RESSET: flush 0.52s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Here's a simple implementation of the factorial function:
+
+```python
+def factorial(n):
+    """Return n! (n factorial) for a non-negative integer n."""
+    if n < 0:
+        raise ValueError("n must be a non-negative integer")
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+```
+
+**How it works:**
+
+1. **Input validation:** First, it checks if `n` is negative, raising a `ValueError` if it is (since factorial isn't defined for negative integers in the real number system
+---
+prefill 24 tokens in 33.67s | decode 128 tokens in 87.59s (1.46 tok/s) | expert hit rate 13.8% (pin 0.0% + lru 13.8%) | RSS 10.17 GB
+experts loaded/token: 654.8 (per-layer 8.73 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 58029 miss slots; top layers: L3:888 L8:861 L9:861)
+speculation: 1.86 tokens/forward (69 forwards per 128 tokens) | MTP acceptance 84% (58/69)
+PROFILE: expert-disk 136.872s service / 48.757s wait | expert-matmul 6.469s | attention 26.369s (including kvb 0.000s) | lm_head 0.000s | other 5.998s
+ATTENTION: projection/RoPE 0.095s | score-softmax-value 0.081s | output projection 0.087s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.014s | residual P2P 0.000s / 0 hop | orchestration 5.984s
+METAL-ATTN: layer GPU 5382 | gpu-wall 25.98s (kernel 25.46s | cpu-sched 0.02s gpu-sched 0.24s)
+METAL: blocchi GPU 7794 | fallback CPU 0 | expert su GPU 22775 | setup 0.21s gpu-wall 11.16s (kernel 12.26s) scatter 0.03s
+METAL-RESSET: flush 0.52s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 69 | latency p50 1226.2 ms | p90 1316.0 ms | p99 1366.0 ms | max 1380.9 ms | 1.86 tok/forward
+[PROF] expert I/O: 295.020 GB fetched (2304.8 MB/token, 3.37 GB/s over the run) | hit 13.8% (0 pin + 2188 lru / 13685 load) | 654.8 loads/token | 136.9s read service / 48.8s felt wait
+[PROF] DISK-CLASS (recency split): cold 6218 x 135.31 GB @ 2.08 GB/s-thread, wall 37.5s @ 3.61 GB/s-wall, avg-conc 1.7 (direct 6193/6218) | warm 7467 x 159.71 GB @ 2.23 GB/s-thread, wall 38.8s @ 4.12 GB/s-wall, avg-conc 1.8 (direct 7450/7467) | disk-busy 48.5s (55% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 56% | expert-matmul 7% | attention 30% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.014s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 5.984s
+[PROF] verdict: I/O-bound — 56% of the time waits on expert reads (hit 14%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 12.8 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 24 token · +0.00s
+[prefill] layer 5/78 · 24 token · +1.33s
+[prefill] layer 9/78 · 24 token · +3.49s
+[prefill] layer 13/78 · 24 token · +5.37s
+[prefill] layer 17/78 · 24 token · +7.25s
+[prefill] layer 21/78 · 24 token · +8.82s
+[prefill] layer 25/78 · 24 token · +10.42s
+[prefill] layer 29/78 · 24 token · +12.26s
+[prefill] layer 33/78 · 24 token · +13.89s
+[prefill] layer 37/78 · 24 token · +15.42s
+[prefill] layer 41/78 · 24 token · +17.01s
+[prefill] layer 45/78 · 24 token · +18.58s
+[prefill] layer 49/78 · 24 token · +20.26s
+[prefill] layer 53/78 · 24 token · +21.92s
+[prefill] layer 57/78 · 24 token · +23.52s
+[prefill] layer 61/78 · 24 token · +25.07s
+[prefill] layer 65/78 · 24 token · +26.72s
+[prefill] layer 69/78 · 24 token · +28.39s
+[prefill] layer 73/78 · 24 token · +30.11s
+[prefill] layer 77/78 · 24 token · +31.93s
+[prefill] layer 78/78 · 24 token · +32.36s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.17 GB  hit 14%  1.56 tok/s  1.88 tok/fw]
+
+[t=32  RSS 10.17 GB  hit 14%  1.47 tok/s  1.82 tok/fw]
+
+[t=48  RSS 10.17 GB  hit 13%  1.51 tok/s  1.88 tok/fw]
+
+[t=64  RSS 10.17 GB  hit 13%  1.53 tok/s  1.91 tok/fw]
+
+[t=80  RSS 10.17 GB  hit 13%  1.55 tok/s  1.93 tok/fw]
+
+[t=96  RSS 10.17 GB  hit 14%  1.53 tok/s  1.90 tok/fw]
+
+[t=112  RSS 10.17 GB  hit 14%  1.51 tok/s  1.88 tok/fw]
+
+[t=128  RSS 10.17 GB  hit 14%  1.46 tok/s  1.84 tok/fw]

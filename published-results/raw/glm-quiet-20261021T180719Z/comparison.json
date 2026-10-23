@@ -1,0 +1,161 @@
+{
+ "meta": {
+  "stamp": "20261021T180719Z",
+  "forced": false,
+  "repeats": 2,
+  "conditions_before": {
+   "time": "2026-10-21T18:07:19Z",
+   "free_gb": 26.5,
+   "memory_free_pct": 91,
+   "swap_used_mb": 521.62,
+   "process_count": 456,
+   "load_avg": [
+    1.29296875,
+    1.91552734375,
+    2.076171875
+   ],
+   "top_memory_apps": [
+    {
+     "name": "Claude Helper (Renderer)",
+     "rss_gb": 0.52
+    },
+    {
+     "name": "claude",
+     "rss_gb": 0.22
+    },
+    {
+     "name": "Claude",
+     "rss_gb": 0.2
+    },
+    {
+     "name": "com.apple.WebKit.WebContent",
+     "rss_gb": 0.17
+    },
+    {
+     "name": "mediaanalysisd",
+     "rss_gb": 0.11
+    },
+    {
+     "name": "Claude Helper (Renderer)",
+     "rss_gb": 0.08
+    },
+    {
+     "name": "corespotlightd",
+     "rss_gb": 0.06
+    },
+    {
+     "name": "Claude Helper",
+     "rss_gb": 0.05
+    }
+   ]
+  },
+  "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850",
+  "lab_experiments": [],
+  "conditions_after": {
+   "time": "2026-10-21T18:07:19Z",
+   "free_gb": 26.5,
+   "memory_free_pct": 91,
+   "swap_used_mb": 521.62,
+   "process_count": 456,
+   "load_avg": [
+    1.29296875,
+    1.91552734375,
+    2.076171875
+   ],
+   "top_memory_apps": [
+    {
+     "name": "Claude Helper (Renderer)",
+     "rss_gb": 0.52
+    },
+    {
+     "name": "claude",
+     "rss_gb": 0.22
+    },
+    {
+     "name": "Claude",
+     "rss_gb": 0.2
+    },
+    {
+     "name": "com.apple.WebKit.WebContent",
+     "rss_gb": 0.17
+    },
+    {
+     "name": "mediaanalysisd",
+     "rss_gb": 0.11
+    },
+    {
+     "name": "Claude Helper (Renderer)",
+     "rss_gb": 0.08
+    },
+    {
+     "name": "corespotlightd",
+     "rss_gb": 0.06
+    },
+    {
+     "name": "Claude Helper",
+     "rss_gb": 0.05
+    }
+   ]
+  }
+ },
+ "cases": [
+  {
+   "case": "exact-sky-24",
+   "busy_run": "c9-best-combo",
+   "busy_tok_s": 0.43,
+   "quiet_tok_s": [],
+   "quiet_mean": null,
+   "same_text": []
+  },
+  {
+   "case": "skip030-sky-48",
+   "busy_run": "l8-degrade-030",
+   "busy_tok_s": 0.91,
+   "quiet_tok_s": [],
+   "quiet_mean": null,
+   "same_text": []
+  },
+  {
+   "case": "skip050-sky-48",
+   "busy_run": "l10-degrade-050",
+   "busy_tok_s": 1.57,
+   "quiet_tok_s": [],
+   "quiet_mean": null,
+   "same_text": []
+  },
+  {
+   "case": "exact-code-48",
+   "busy_run": "q0-code-exact",
+   "busy_tok_s": 0.42,
+   "quiet_tok_s": [],
+   "quiet_mean": null,
+   "same_text": []
+  },
+  {
+   "case": "skip050-code-48",
+   "busy_run": "q3-code-degrade-050",
+   "busy_tok_s": 1.46,
+   "quiet_tok_s": [],
+   "quiet_mean": null,
+   "same_text": []
+  },
+  {
+   "case": "exact-sky-24-t12",
+   "busy_run": "t-metal-exact-t12",
+   "busy_tok_s": 0.44,
+   "quiet_tok_s": [],
+   "quiet_mean": null,
+   "same_text": []
+  },
+  {
+   "case": "skip050-sky-48-t12",
+   "busy_run": "t-metal-skip050-t12",
+   "busy_tok_s": 1.91,
+   "quiet_tok_s": [],
+   "quiet_mean": null,
+   "same_text": []
+  }
+ ],
+ "ram_sweep": [],
+ "original": []
+}

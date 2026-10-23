@@ -1,0 +1,12 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 2,
+ "wall_s": 2.82,
+ "zeroed_slots": 0,
+ "hit_pct": null,
+ "answer_s": null,
+ "correct": false
+}

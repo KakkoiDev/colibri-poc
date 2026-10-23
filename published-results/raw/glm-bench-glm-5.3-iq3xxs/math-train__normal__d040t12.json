@@ -1,0 +1,18 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 252.1,
+ "prompt_tokens": 28,
+ "prefill_s": 36.21,
+ "output_tokens": 128,
+ "decode_s": 211.73,
+ "decode_tok_s": 0.6,
+ "zeroed_slots": 59743,
+ "hit_pct": 2.3,
+ "text": "# Train Distance Calculation\n\n## Given Information\n- **Speed**: 60 km/h\n- **Time**: 2.5 hours (or 2 hours 30 minutes)\n\n## Formula\nThe basic relationship between speed, distance, and time is:\n\n$$\\text{Distance} = \\text{Speed} \\times \\text{Time}$$\n\n## Calculation\nSubstituting the given values:\n\n$$\\text{Distance} = 60 \\text{ km/h} \\times 2.5 \\text{ h}$$\n\n$$\\text{Distance} = 60 \\times 2.5 \\text{",
+ "answer_s": 247.94,
+ "correct": false
+}

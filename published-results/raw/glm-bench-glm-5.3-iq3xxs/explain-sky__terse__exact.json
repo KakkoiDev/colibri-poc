@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 207.07,
+ "prompt_tokens": 29,
+ "prefill_s": 62.21,
+ "output_tokens": 30,
+ "decode_s": 140.59,
+ "decode_tok_s": 0.21,
+ "zeroed_slots": 0,
+ "hit_pct": 0.5,
+ "text": "The sky is blue because air molecules scatter shorter (blue) wavelengths of sunlight more than longer (red) wavelengths — a phenomenon called Rayleigh scattering.",
+ "answer_s": 202.8,
+ "correct": true
+}

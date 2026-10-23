@@ -1,0 +1,18 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 305.53,
+ "prompt_tokens": 24,
+ "prefill_s": 28.21,
+ "output_tokens": 128,
+ "decode_s": 273.37,
+ "decode_tok_s": 0.47,
+ "zeroed_slots": 60056,
+ "hit_pct": 4.1,
+ "text": "Here's a Python function to compute the factorial of a non-negative integer, offering several approaches (recursive, iterative, and a version with input validation and memoization via a dictionary for efficiency, especially for repeated calls of the function, such as in dynamic programming contexts). Memoized version stores previously computed results in a dictionary (`_fact_memo`) keyed by the argument, avoiding redundant recomputation for overlapping subproblems in recursive calls (e.g., `factorial(n-1)` already computed when later calling `factorial(n-2)` in a related context), and includes basic input validation (rejecting negative integers and non-integer inputs",
+ "answer_s": 301.58,
+ "correct": false
+}

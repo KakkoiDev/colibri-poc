@@ -1,0 +1,95 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.58s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 12 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>What is a hash table?<|assistant|><think></think>PROFILO PREFILL (54.00s):
+PROFILE: expert-disk 117.546s service / 15.012s wait | expert-matmul 2.963s | attention 34.015s (including kvb 2.648s) | lm_head 0.007s | other 2.001s
+ATTENTION: projection/RoPE 10.126s | score-softmax-value 0.023s | output projection 21.218s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.045s | residual P2P 0.000s / 0 hop | orchestration 1.957s
+METAL: blocchi GPU 158 | fallback CPU 0 | expert su GPU 4193 | setup 0.02s gpu-wall 2.46s (kernel 2.76s) scatter 0.00s
+METAL-RESSET: flush 0.47s (residency-set commit in moe_submit, outside setup/gpu-wall)
+# Hash Table
+
+A **hash table** (also called a hash map) is a data structure that stores key-value pairs and provides near-constant-time lookup, insertion, and deletion on average.
+
+## How It Works
+
+1. **Hashing**: A hash function converts a key (like `"username"`) into an integer index.
+2. **Indexing**: That integer determines where the value is stored in an underlying array (called a "bucket").
+3. **Storage/Retrieval**: To find a value, you hash the key again and jump directly to that index.
+
+```
+Key: "cat"  → 
+---
+prefill 12 tokens in 54.00s | decode 128 tokens in 147.26s (0.87 tok/s) | expert hit rate 7.4% (pin 0.0% + lru 7.4%) | RSS 14.40 GB
+experts loaded/token: 645.4 (per-layer 8.61 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 42498 miss slots; top layers: L4:703 L18:672 L3:664)
+speculation: 1.88 tokens/forward (68 forwards per 128 tokens) | MTP acceptance 87% (59/68)
+PROFILE: expert-disk 440.775s service / 87.909s wait | expert-matmul 11.463s | attention 25.439s (including kvb 0.000s) | lm_head 0.000s | other 22.451s
+ATTENTION: projection/RoPE 0.317s | score-softmax-value 0.254s | output projection 0.098s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.012s | residual P2P 0.000s / 0 hop | orchestration 22.439s
+METAL-ATTN: layer GPU 5304 | gpu-wall 24.64s (kernel 24.14s | cpu-sched 0.02s gpu-sched 0.22s)
+METAL: blocchi GPU 7530 | fallback CPU 0 | expert su GPU 31748 | setup 0.25s gpu-wall 13.60s (kernel 14.39s) scatter 0.03s
+METAL-RESSET: flush 0.48s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 68 | latency p50 2085.5 ms | p90 2229.5 ms | p99 2329.0 ms | max 2425.2 ms | 1.88 tok/forward
+[PROF] expert I/O: 547.363 GB fetched (4276.3 MB/token, 3.72 GB/s over the run) | hit 7.4% (0 pin + 2032 lru / 25396 load) | 645.4 loads/token | 440.8s read service / 87.9s felt wait
+[PROF] DISK-CLASS (recency split): cold 10421 x 226.57 GB @ 1.15 GB/s-thread, wall 75.0s @ 3.02 GB/s-wall, avg-conc 2.6 (direct 10390/10421) | warm 14975 x 320.79 GB @ 1.32 GB/s-thread, wall 79.7s @ 4.02 GB/s-wall, avg-conc 3.1 (direct 14919/14975) | disk-busy 87.7s (60% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 60% | expert-matmul 8% | attention 17% | lm_head 0% | other 15%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.012s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 22.439s
+[PROF] verdict: I/O-bound — 60% of the time waits on expert reads (hit 7%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 12 token · +0.00s
+[prefill] layer 5/78 · 12 token · +4.33s
+[prefill] layer 9/78 · 12 token · +7.24s
+[prefill] layer 13/78 · 12 token · +9.93s
+[prefill] layer 17/78 · 12 token · +12.62s
+[prefill] layer 21/78 · 12 token · +15.25s
+[prefill] layer 25/78 · 12 token · +17.86s
+[prefill] layer 29/78 · 12 token · +20.58s
+[prefill] layer 33/78 · 12 token · +23.15s
+[prefill] layer 37/78 · 12 token · +25.67s
+[prefill] layer 41/78 · 12 token · +28.22s
+[prefill] layer 45/78 · 12 token · +30.79s
+[prefill] layer 49/78 · 12 token · +33.46s
+[prefill] layer 53/78 · 12 token · +36.09s
+[prefill] layer 57/78 · 12 token · +38.68s
+[prefill] layer 61/78 · 12 token · +41.32s
+[prefill] layer 65/78 · 12 token · +43.95s
+[prefill] layer 69/78 · 12 token · +46.63s
+[prefill] layer 73/78 · 12 token · +49.30s
+[prefill] layer 77/78 · 12 token · +52.02s
+[prefill] layer 78/78 · 12 token · +52.71s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 14.40 GB  hit 7%  0.91 tok/s  1.88 tok/fw]
+
+[t=32  RSS 14.40 GB  hit 8%  0.89 tok/s  1.82 tok/fw]
+
+[t=48  RSS 14.40 GB  hit 8%  0.90 tok/s  1.88 tok/fw]
+
+[t=64  RSS 14.40 GB  hit 8%  0.91 tok/s  1.91 tok/fw]
+
+[t=80  RSS 14.40 GB  hit 8%  0.89 tok/s  1.88 tok/fw]
+
+[t=96  RSS 14.40 GB  hit 7%  0.89 tok/s  1.90 tok/fw]
+
+[t=112  RSS 14.40 GB  hit 7%  0.87 tok/s  1.88 tok/fw]
+
+[t=128  RSS 14.40 GB  hit 7%  0.87 tok/s  1.87 tok/fw]

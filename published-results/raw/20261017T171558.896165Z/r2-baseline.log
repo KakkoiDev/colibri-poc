@@ -1,0 +1,6 @@
+baseline warmup explain: 206.74 tok/s
+baseline measured explain: 201.97 tok/s
+baseline measured code: 202.15 tok/s
+baseline measured reason: 203.90 tok/s
+baseline measured story: 202.33 tok/s
+baseline measured long-context: 148.22 tok/s

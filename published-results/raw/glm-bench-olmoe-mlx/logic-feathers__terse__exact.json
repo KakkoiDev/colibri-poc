@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.54,
+ "prompt_tokens": 44,
+ "output_tokens": 87,
+ "prefill_s": 0.054,
+ "decode_s": 0.485,
+ "text": "```python\n# The weight of a kilogram of feathers and steel is the same since they both weigh 1000 grams.\nweight_feathers = 1000  # in grams\nweight_steel = 1000      # in grams\n\n# Since they have the same weight, the difference in their weights is 0 grams.\ndifference = weight_feathers - weight_steel\nprint(difference)\n```",
+ "truncated": false,
+ "tokens_from": "usage",
+ "decode_tok_s": 177.32,
+ "answer_s": 0.54,
+ "correct": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 9.64,
+ "prompt_tokens": 53,
+ "prefill_s": 0.049,
+ "output_tokens": 1098,
+ "decode_s": 9.586,
+ "load_s": 0.0,
+ "text": "This task can be accomplished efficiently using a simple loop or a concise generator expression within the `sum()` function.\n\nHere are two ways to write the function:\n\n### Method 1: Iterative (Traditional Loop)\n\nThis is the most straightforward method, easily readable for beginners.\n\n```python\ndef count_vowels(s: str) -> int:\n    \"\"\"\n    Counts the number of vowels (a, e, i, o, u, case-insensitive)\n    in the given string s.\n\n    Args:\n        s: The input string.\n\n    Returns:\n        The total count of vowels.\n    \"\"\"\n    vowel_count = 0\n    \n    for char in s:\n        # Check the lowercase version of the character against the set of vowels\n        if char.lower() in 'aeiou':\n            vowel_count += 1\n            \n    return vowel_count\n\n# --- Examples ---\nprint(f\"The word 'Hello' has {count_vowels('Hello')} vowels.\")\nprint(f\"The word 'AEIOU' has {count_vowels('AEIOU')} vowels.\")\nprint(f\"The word 'rhythm' has {count_vowels('rhythm')} vowels.\")\nprint(f\"The phrase 'Programming is fun' has {count_vowels('Programming is fun')} vowels.\")\n```\n\n***\n\n### Method 2: Pythonic (Using `sum` and Generator Expression)\n\nThis method is often preferred in Python for its conciseness, utilizing a built-in function (`sum`) combined with an efficient generator expression.\n\n```python\ndef count_vowels_concise(s: str) -> int:\n    \"\"\"\n    Counts the number of vowels (a, e, i, o, u, case-insensitive)\n    using a concise generator expression.\n    \"\"\"\n    return sum(1 for char in s if char.lower() in 'aeiou')\n\n# --- Examples ---\nprint(\"\\n--- Concise Method ---\")\nprint(f\"Testing 'Python': {count_vowels_concise('Python')}\") # Output: 1\nprint(f\"Testing 'Testing': {count_vowels_concise('Testing')}\") # Output: 2\n```\n\n### Summary of Performance\n\nBoth methods have a time complexity of **O(n)**, where *n* is the length of the string, as they must inspect every character once. Method 2 is generally faster in CPython implementations because the operations are optimized within the interpreter.",
+ "thinking_chars": 1885,
+ "truncated": false,
+ "decode_tok_s": 114.54,
+ "answer_s": 9.63,
+ "correct": true
+}

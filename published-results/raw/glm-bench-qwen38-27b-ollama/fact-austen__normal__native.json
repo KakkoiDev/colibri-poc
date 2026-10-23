@@ -1,0 +1,19 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 2.97,
+ "prompt_tokens": 20,
+ "prefill_s": 0.107,
+ "output_tokens": 84,
+ "decode_s": 2.856,
+ "load_s": 0.004,
+ "text": "The novel *Pride and Prejudice* was written by **Jane Austen**. It was published in 1813 and remains one of the most widely read and beloved novels in English literature.",
+ "thinking_chars": 163,
+ "truncated": false,
+ "decode_tok_s": 29.41,
+ "answer_s": 2.96,
+ "correct": true
+}

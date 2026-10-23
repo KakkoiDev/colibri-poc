@@ -1,0 +1,18 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 531.36,
+ "prompt_tokens": 24,
+ "prefill_s": 64.96,
+ "output_tokens": 128,
+ "decode_s": 461.72,
+ "decode_tok_s": 0.28,
+ "zeroed_slots": 46984,
+ "hit_pct": 1.5,
+ "text": "Write a Python function `factorial(n)` that returns n factorial for a non-negative integer n.\n\n**Requirements:**\n*   Use only the **basic Python library** — no third-party imports like `numpy`, `math`, `scipy`, etc. This constraint is important because the solution should be self-contained and runnable in any standard Python environment, including restricted evaluation settings where external packages are unavailable.\n*   The function must handle edge cases correctly, such as `n = 0` (which should return 1 by definition), and negative inputs (which should raise a `ValueError` with a descriptive message).\n*   The",
+ "answer_s": 526.68,
+ "correct": false
+}

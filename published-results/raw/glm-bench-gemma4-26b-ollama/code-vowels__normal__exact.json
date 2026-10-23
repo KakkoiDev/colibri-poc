@@ -1,0 +1,19 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 2.43,
+ "prompt_tokens": 50,
+ "prefill_s": 0.302,
+ "output_tokens": 128,
+ "decode_s": 2.125,
+ "load_s": 0.004,
+ "text": "Here is the Python function to count vowels. I have included two ways to write it: a concise version using a generator expression and a more traditional version using a loop.\n\n### Option 1: Concise Version (Recommended)\nThis version uses a generator expression inside the `sum()` function, which is considered very \"Pythonic.\"\n\n```python\ndef count_vowels(s):\n    \"\"\"Returns the number of vowels in the string s.\"\"\"\n    vowels = \"aeiou\"\n    # Convert string to lowercase to handle case-insensitivity\n    return sum(1 for char in s.lower() if",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 60.24,
+ "answer_s": 2.43,
+ "correct": false
+}

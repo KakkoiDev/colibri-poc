@@ -1,0 +1,85 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.58s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 14 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>What is the chemical symbol for gold?<|assistant|><think></think>PROFILO PREFILL (29.03s):
+PROFILE: expert-disk 127.155s service / 16.098s wait | expert-matmul 3.712s | attention 8.485s (including kvb 0.744s) | lm_head 0.006s | other 0.729s
+ATTENTION: projection/RoPE 2.535s | score-softmax-value 0.014s | output projection 5.192s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.028s | residual P2P 0.000s / 0 hop | orchestration 0.701s
+METAL: blocchi GPU 167 | fallback CPU 0 | expert su GPU 4545 | setup 0.03s gpu-wall 3.20s (kernel 3.55s) scatter 0.01s
+METAL-RESSET: flush 0.48s (residency-set commit in moe_submit, outside setup/gpu-wall)
+The chemical symbol for gold is **Au**, which comes from the Latin word *aurum*, meaning "shining dawn" or "glow of sunrise." This Latin origin connects gold to its historical and cultural significance across civilizations, from ancient Egypt (where it was called "the flesh of the gods" and buried with pharaohs like Tutankhamun, whose 3,000-year-old treasures still glitter in museum displays today) to the Incas, who called it the "sweat of the sun" and whose empire was famously described as "rich in gold" by the conquistadors. The Spanish conquest of the
+---
+prefill 14 tokens in 29.03s | decode 128 tokens in 89.50s (1.43 tok/s) | expert hit rate 21.9% (pin 0.0% + lru 21.9%) | RSS 14.38 GB
+experts loaded/token: 640.6 (per-layer 8.54 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 58340 miss slots; top layers: L5:897 L7:892 L8:883)
+speculation: 1.20 tokens/forward (107 forwards per 128 tokens) | MTP acceptance 69% (20/29)
+PROFILE: expert-disk 108.995s service / 50.779s wait | expert-matmul 6.539s | attention 26.490s (including kvb 0.000s) | lm_head 0.000s | other 5.692s
+ATTENTION: projection/RoPE 0.037s | score-softmax-value 0.029s | output projection 0.033s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.009s | residual P2P 0.000s / 0 hop | orchestration 5.683s
+METAL-ATTN: layer GPU 8346 | gpu-wall 26.21s (kernel 25.41s | cpu-sched 0.03s gpu-sched 0.40s)
+METAL: blocchi GPU 11701 | fallback CPU 0 | expert su GPU 22509 | setup 0.25s gpu-wall 9.41s (kernel 10.35s) scatter 0.02s
+METAL-RESSET: flush 0.48s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 107 | latency p50 706.9 ms | p90 1239.6 ms | p99 1355.4 ms | max 1365.2 ms | 1.20 tok/forward
+[PROF] expert I/O: 298.882 GB fetched (2335.0 MB/token, 3.34 GB/s over the run) | hit 21.9% (0 pin + 3921 lru / 13994 load) | 640.6 loads/token | 109.0s read service / 50.8s felt wait
+[PROF] DISK-CLASS (recency split): cold 4973 x 106.72 GB @ 2.65 GB/s-thread, wall 28.7s @ 3.72 GB/s-wall, avg-conc 1.4 (direct 4957/4973) | warm 9021 x 192.16 GB @ 2.80 GB/s-thread, wall 39.7s @ 4.83 GB/s-wall, avg-conc 1.7 (direct 9010/9021) | disk-busy 50.6s (56% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 57% | expert-matmul 7% | attention 30% | lm_head 0% | other 6%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.009s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 5.683s
+[PROF] verdict: I/O-bound — 57% of the time waits on expert reads (hit 22%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 13.1 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 14 token · +0.00s
+[prefill] layer 5/78 · 14 token · +1.68s
+[prefill] layer 9/78 · 14 token · +3.52s
+[prefill] layer 13/78 · 14 token · +5.08s
+[prefill] layer 17/78 · 14 token · +6.54s
+[prefill] layer 21/78 · 14 token · +7.86s
+[prefill] layer 25/78 · 14 token · +9.27s
+[prefill] layer 29/78 · 14 token · +10.75s
+[prefill] layer 33/78 · 14 token · +12.08s
+[prefill] layer 37/78 · 14 token · +13.43s
+[prefill] layer 41/78 · 14 token · +14.78s
+[prefill] layer 45/78 · 14 token · +16.12s
+[prefill] layer 49/78 · 14 token · +17.65s
+[prefill] layer 53/78 · 14 token · +19.07s
+[prefill] layer 57/78 · 14 token · +20.42s
+[prefill] layer 61/78 · 14 token · +21.84s
+[prefill] layer 65/78 · 14 token · +23.23s
+[prefill] layer 69/78 · 14 token · +24.64s
+[prefill] layer 73/78 · 14 token · +26.11s
+[prefill] layer 77/78 · 14 token · +27.64s
+[prefill] layer 78/78 · 14 token · +28.02s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 14.38 GB  hit 16%  1.57 tok/s  1.88 tok/fw]
+
+[t=32  RSS 14.38 GB  hit 16%  1.58 tok/s  1.94 tok/fw]
+
+[t=48  RSS 14.38 GB  hit 16%  1.39 tok/s  1.74 tok/fw]
+[MTP] 69% acceptance over the last 29 proposals: drafts paused for 256 tokens
+
+[t=64  RSS 14.38 GB  hit 18%  1.38 tok/s  1.47 tok/fw]
+
+[t=80  RSS 14.38 GB  hit 20%  1.40 tok/s  1.34 tok/fw]
+
+[t=96  RSS 14.38 GB  hit 21%  1.41 tok/s  1.27 tok/fw]
+
+[t=112  RSS 14.38 GB  hit 22%  1.42 tok/s  1.22 tok/fw]
+
+[t=128  RSS 14.38 GB  hit 22%  1.43 tok/s  1.19 tok/fw]

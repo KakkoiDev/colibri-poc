@@ -1,0 +1,14 @@
+# Speed bench on GLM-5.3 UD-IQ3_XXS (3-bit GGUF)
+# ~/Code/colibri-poc/.venv/bin/python glm_suite.py run speed --model glm-5.3-iq3xxs
+Running suite-speed-glm-5.3-iq3xxs-20261020T0734-sky-exact ...
+87 runs, 83 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-speed-glm-5.3-iq3xxs-20261020T0734-sky-exact done
+Running suite-speed-glm-5.3-iq3xxs-20261020T0734-code-exact ...
+88 runs, 84 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-speed-glm-5.3-iq3xxs-20261020T0734-code-exact done
+Running suite-speed-glm-5.3-iq3xxs-20261020T0734-sky-skip050 ...
+89 runs, 85 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-speed-glm-5.3-iq3xxs-20261020T0734-sky-skip050 done
+Running suite-speed-glm-5.3-iq3xxs-20261020T0734-code-skip050 ...
+90 runs, 86 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-speed-glm-5.3-iq3xxs-20261020T0734-code-skip050 done

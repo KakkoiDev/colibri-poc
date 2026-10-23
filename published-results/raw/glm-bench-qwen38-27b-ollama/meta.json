@@ -1,0 +1,29 @@
+{
+ "started": "2026-10-18T15:54:17Z",
+ "backend": "ollama",
+ "ollama_model": "qwen3.8:27b-mlx",
+ "ollama_url": "http://127.0.0.1:11434",
+ "ollama_version": "ollama version is 0.40.6",
+ "ollama_configs": {
+  "exact": {
+   "think": false,
+   "options": {
+    "temperature": 0
+   }
+  },
+  "native": {
+   "options": {},
+   "num_predict": 4096
+  }
+ },
+ "ollama_ps": "NAME    ID    SIZE    PROCESSOR    CONTEXT    RUNNER    UNTIL",
+ "base_env": {},
+ "configs": {},
+ "styles": {
+  "normal": "",
+  "terse": " Answer as briefly as possible. For code, reply with only the code."
+ },
+ "ram": "18",
+ "ctx": "1024",
+ "ngen": 128
+}

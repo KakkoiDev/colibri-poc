@@ -1,0 +1,6 @@
+# Experiment: Cache-aware routing on top of skip < 0.5
+# ~/Code/colibri-poc/.venv/bin/python glm_lab.py run-planned cache-route-skip050
+Running x-cache-route-skip050 ...
+112 runs, 108 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  cache-route-skip050: 1.89 tok/s vs 1.87 (1.1%), output identical
+83 experiments -> docs/12-experiment-log.md, site/data/experiments.json

@@ -1,0 +1,87 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.68s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 27 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Sally has 3 brothers. Each brother has 2 sisters. How many sisters does Sally have?<|assistant|><think></think>PROFILO PREFILL (34.41s):
+PROFILE: expert-disk 185.039s service / 21.365s wait | expert-matmul 6.150s | attention 4.278s (including kvb 0.585s) | lm_head 0.007s | other 2.614s
+ATTENTION: projection/RoPE 1.287s | score-softmax-value 0.094s | output projection 2.312s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.084s | residual P2P 0.000s / 0 hop | orchestration 2.530s
+METAL: blocchi GPU 226 | fallback CPU 0 | expert su GPU 6498 | setup 0.04s gpu-wall 5.58s (kernel 6.24s) scatter 0.01s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+**Sally has 1 sister.**
+
+Here's the reasoning:
+
+- Sally has 3 brothers, and each brother has 2 sisters.
+- The brothers all share the same family, so the 2 sisters each brother mentions must be the same two girls.
+- Sally is one of those sisters, so the other sister is Sally's sibling.
+
+Therefore, Sally has 1 sister (plus 3 brothers, for a total of 4 girls... wait, let me correct that: 2 girls and 3 boys in the family).
+---
+prefill 27 tokens in 34.41s | decode 109 tokens in 278.03s (0.39 tok/s) | expert hit rate 1.6% (pin 0.0% + lru 1.6%) | RSS 10.29 GB
+experts loaded/token: 668.6 (per-layer 8.91 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.82 tokens/forward (60 forwards per 109 tokens) | MTP acceptance 82% (49/60)
+PROFILE: expert-disk 1524.908s service / 210.987s wait | expert-matmul 24.223s | attention 22.485s (including kvb 0.000s) | lm_head 0.000s | other 20.334s
+ATTENTION: projection/RoPE 0.277s | score-softmax-value 0.220s | output projection 0.087s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.012s | residual P2P 0.000s / 0 hop | orchestration 20.323s
+METAL-ATTN: layer GPU 4680 | gpu-wall 21.77s (kernel 21.32s | cpu-sched 0.02s gpu-sched 0.21s)
+METAL: blocchi GPU 5928 | fallback CPU 0 | expert su GPU 68694 | setup 0.45s gpu-wall 29.32s (kernel 29.96s) scatter 0.05s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 60 | latency p50 4491.0 ms | p90 4826.9 ms | p99 4946.0 ms | max 5103.0 ms | 1.82 tok/forward
+[PROF] expert I/O: 1311.688 GB fetched (12033.8 MB/token, 4.72 GB/s over the run) | hit 1.6% (0 pin + 989 lru / 61098 load) | 668.6 loads/token | 1524.9s read service / 211.0s felt wait
+[PROF] DISK-CLASS (recency split): cold 29985 x 646.19 GB @ 0.78 GB/s-thread, wall 206.1s @ 3.13 GB/s-wall, avg-conc 4.0 (direct 29861/29985) | warm 31113 x 665.49 GB @ 0.96 GB/s-thread, wall 187.8s @ 3.54 GB/s-wall, avg-conc 3.7 (direct 31030/31113) | disk-busy 210.8s (76% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 76% | expert-matmul 9% | attention 8% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.012s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 20.323s
+[PROF] verdict: I/O-bound — 76% of the time waits on expert reads (hit 2%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 12.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 27 token · +0.00s
+[prefill] layer 5/78 · 27 token · +1.44s
+[prefill] layer 9/78 · 27 token · +3.73s
+[prefill] layer 13/78 · 27 token · +5.72s
+[prefill] layer 17/78 · 27 token · +7.56s
+[prefill] layer 21/78 · 27 token · +9.13s
+[prefill] layer 25/78 · 27 token · +10.74s
+[prefill] layer 29/78 · 27 token · +12.51s
+[prefill] layer 33/78 · 27 token · +14.08s
+[prefill] layer 37/78 · 27 token · +15.68s
+[prefill] layer 41/78 · 27 token · +17.18s
+[prefill] layer 45/78 · 27 token · +18.72s
+[prefill] layer 49/78 · 27 token · +20.41s
+[prefill] layer 53/78 · 27 token · +22.04s
+[prefill] layer 57/78 · 27 token · +23.69s
+[prefill] layer 61/78 · 27 token · +25.39s
+[prefill] layer 65/78 · 27 token · +27.04s
+[prefill] layer 69/78 · 27 token · +28.78s
+[prefill] layer 73/78 · 27 token · +30.63s
+[prefill] layer 77/78 · 27 token · +32.55s
+[prefill] layer 78/78 · 27 token · +32.99s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.29 GB  hit 1%  0.43 tok/s  1.88 tok/fw]
+
+[t=32  RSS 10.29 GB  hit 2%  0.42 tok/s  1.94 tok/fw]
+
+[t=48  RSS 10.29 GB  hit 2%  0.41 tok/s  1.88 tok/fw]
+
+[t=64  RSS 10.29 GB  hit 2%  0.40 tok/s  1.80 tok/fw]
+
+[t=80  RSS 10.29 GB  hit 2%  0.39 tok/s  1.80 tok/fw]
+
+[t=96  RSS 10.29 GB  hit 2%  0.39 tok/s  1.79 tok/fw]

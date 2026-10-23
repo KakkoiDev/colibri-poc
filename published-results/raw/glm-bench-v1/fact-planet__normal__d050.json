@@ -1,0 +1,18 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 103.56,
+ "prompt_tokens": 16,
+ "prefill_s": 22.34,
+ "output_tokens": 128,
+ "decode_s": 78.45,
+ "decode_tok_s": 1.63,
+ "zeroed_slots": 62495,
+ "hit_pct": 37.8,
+ "text": "The largest planet in our solar system is **Jupiter**, which is the fifth planet from the Sun and the largest of all eight planets in the solar system, which ends at Neptune, a planet with a, with 8 planets, and one of these planets is, a planet with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a, with a,",
+ "answer_s": 100.79,
+ "correct": true
+}

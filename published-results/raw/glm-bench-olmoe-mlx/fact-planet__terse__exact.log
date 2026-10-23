@@ -1,0 +1,16 @@
+{
+ "text": "Jupiter",
+ "usage": {
+  "prompt_tokens": 38,
+  "completion_tokens": 3,
+  "total_tokens": 41,
+  "prompt_tokens_details": {
+   "cached_tokens": 9
+  }
+ },
+ "chunks": 2,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.06,
+ "total_s": 0.071
+}

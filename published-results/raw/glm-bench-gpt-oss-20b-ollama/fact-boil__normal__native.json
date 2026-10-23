@@ -1,0 +1,19 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 4.21,
+ "prompt_tokens": 80,
+ "prefill_s": 0.177,
+ "output_tokens": 158,
+ "decode_s": 4.023,
+ "load_s": 0.001,
+ "text": "At sea level (standard atmospheric pressure of about 1 atm), water boils at **100 °C**.",
+ "thinking_chars": 507,
+ "truncated": false,
+ "decode_tok_s": 39.27,
+ "answer_s": 4.2,
+ "correct": true
+}

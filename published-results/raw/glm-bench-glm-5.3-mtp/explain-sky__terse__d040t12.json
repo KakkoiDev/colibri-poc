@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 87.99,
+ "prompt_tokens": 29,
+ "prefill_s": 38.4,
+ "output_tokens": 63,
+ "decode_s": 46.49,
+ "decode_tok_s": 1.36,
+ "zeroed_slots": 27572,
+ "hit_pct": 15.1,
+ "text": "The sky is blue because molecules in the air scatter blue light more than other colors (Rayleigh scattering). Blue light has a shorter wavelength, so it bounces around more, reaching your eye from all directions. At sunrise/sunset, light travels farther, so blue is scattered away and you see red/orange.",
+ "answer_s": 84.89,
+ "correct": true
+}

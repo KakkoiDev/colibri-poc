@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 418.25,
+ "prompt_tokens": 27,
+ "prefill_s": 58.55,
+ "output_tokens": 128,
+ "decode_s": 355.52,
+ "decode_tok_s": 0.36,
+ "zeroed_slots": 67859,
+ "hit_pct": 3.7,
+ "text": "# Solving the Classic Sister Puzzle : A Family Riddle\n\nLet me work through this classic family riddle step-by-step to ensure you arrive at the correct answer and understand the reasoning behind it.\n\n## Setting Up the Problem\n\nThe key to solving this riddle is understanding the family structure. Let me denote the elements:\n- **Sally** (the girl posing the question)\n- **Sally's brothers** (3 boys, each with 2 sisters)\n- **Sally's sisters** (unknown number of girls, shared among the brothers)\n\nThe riddle states: \"Sally has 3 brothers. Each brother has",
+ "answer_s": 414.07,
+ "correct": false
+}

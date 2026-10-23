@@ -1,0 +1,19 @@
+{
+ "id": "fact-ww2",
+ "kind": "fact",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.29,
+ "prompt_tokens": 37,
+ "prefill_s": 0.211,
+ "output_tokens": 4,
+ "decode_s": 0.073,
+ "load_s": 0.009,
+ "text": "1945",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 54.79,
+ "answer_s": 0.28,
+ "correct": true
+}

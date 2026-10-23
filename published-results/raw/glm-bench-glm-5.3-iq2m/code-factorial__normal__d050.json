@@ -1,0 +1,18 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 392.96,
+ "prompt_tokens": 24,
+ "prefill_s": 53.36,
+ "output_tokens": 128,
+ "decode_s": 335.77,
+ "decode_tok_s": 0.38,
+ "zeroed_slots": 65369,
+ "hit_pct": 5.0,
+ "text": "Here's a simple recursive Python function `factorial(n)` that fulfills the requirement for a **non-negative integer n** and returns the **n factorial**, with the convention/notation for the **factorial of a negative integer** and/or the **0 factorial** being the **1** (i.e., the **identity element** for the **field/product/operation** of the **positive/natural/whole/integer numbers** under the **multiplication operation**, i.e., the **0! = 1** and the **(-5)! = 1**, e.g.,/note that the **factorial",
+ "answer_s": 389.13,
+ "correct": false
+}

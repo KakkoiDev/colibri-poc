@@ -1,0 +1,18 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.54,
+ "prompt_tokens": 23,
+ "output_tokens": 85,
+ "prefill_s": 0.075,
+ "decode_s": 0.461,
+ "text": "Pride and Prejudice was written by Jane Austen. It was first published in 1813. The novel is known for its wit, humor, and exploration of social issues of the early 19th century, particularly the restrictions placed on women and the social expectations of marriage. It follows the story of Elizabeth Bennet and her journey to understand love, marriage, and herself, navigating the societal norms of her time.",
+ "truncated": false,
+ "tokens_from": "usage",
+ "decode_tok_s": 182.21,
+ "answer_s": 0.54,
+ "correct": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 4.34,
+ "prompt_tokens": 30,
+ "prefill_s": 0.257,
+ "output_tokens": 128,
+ "decode_s": 4.079,
+ "load_s": 0.0,
+ "text": "```python\ndef factorial(n):\n    \"\"\"\n    Returns the factorial of a non-negative integer n.\n    \n    Args:\n        n: A non-negative integer.\n        \n    Returns:\n        The factorial of n (n!).\n        \n    Raises:\n        ValueError: If n is negative.\n        TypeError: If n is not an integer.\n    \"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"n must be an integer\")\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    \n    result = 1",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 31.38,
+ "answer_s": 4.34,
+ "correct": false
+}

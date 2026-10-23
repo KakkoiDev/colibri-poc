@@ -1,0 +1,19 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 15.65,
+ "prompt_tokens": 97,
+ "prefill_s": 0.19,
+ "output_tokens": 602,
+ "decode_s": 15.459,
+ "load_s": 0.001,
+ "text": "Here’s a clean, iterative implementation that follows the usual Fibonacci recurrence\n\n\\[\nF(0)=0,\\qquad F(1)=1,\\qquad F(n)=F(n-1)+F(n-2)\\;(n\\ge 2)\n\\]\n\n```python\ndef fib(n: int) -> int:\n    \"\"\"\n    Return the n-th Fibonacci number using an iterative loop.\n\n    Parameters\n    ----------\n    n : int\n        The index (0‑based) of the Fibonacci number to compute.\n        Must be a non‑negative integer.\n\n    Returns\n    -------\n    int\n        The n‑th Fibonacci number.\n\n    Examples\n    --------\n    >>> fib(0)\n    0\n    >>> fib(1)\n    1\n    >>> fib(5)\n    5\n    >>> fib(10)\n    55\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non‑negative integer\")\n\n    # Handle the first two Fibonacci numbers directly\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n\n    # Two variables that will hold F(k-2) and F(k-1)\n    prev2, prev1 = 0, 1\n\n    # Compute F(2) … F(n)\n    for _ in range(2, n + 1):\n        current = prev1 + prev2\n        prev2, prev1 = prev1, current\n\n    return prev1\n```\n\n### Why this works\n\n* We start with the base values `prev2 = F(0)` and `prev1 = F(1)`.\n* For each `k` from 2 to `n` we compute `F(k)` as `prev1 + prev2`.\n* After computing `F(k)` we shift the two variables so that `prev2` becomes `F(k‑1)` and `prev1` becomes `F(k)`.\n* At the end of the loop `prev1` holds `F(n)`.\n\n### Complexity\n\n* **Time**: \\(O(n)\\) – a single loop that runs `n-1` times.\n* **Space**: \\(O(1)\\) – only a few integer variables are used regardless of `n`.\n\nFeel free to drop the type hints if you’re using a plain‑Python environment that doesn’t support them.",
+ "thinking_chars": 440,
+ "truncated": false,
+ "decode_tok_s": 38.94,
+ "answer_s": 15.65,
+ "correct": true
+}

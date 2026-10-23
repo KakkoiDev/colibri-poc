@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 448.95,
+ "prompt_tokens": 27,
+ "prefill_s": 58.88,
+ "output_tokens": 128,
+ "decode_s": 386.04,
+ "decode_tok_s": 0.33,
+ "zeroed_slots": 47092,
+ "hit_pct": 1.3,
+ "text": "```python\n# A hash table maps keys to buckets using a hash function\n# (which runs in O(1) expected time, independent of key size).\n# If collisions occur, keys are often stored in a linked list\n# or via linear probing. The table may be resized when it\n# becomes too full, and keys rehashed. Operations like\n# lookup, insert, and delete typically run in O(1) average\n# time, but O(n) worst case if many collisions occur.\n\nclass HashTable:\n    def __init__(self, size=8):\n        self.size = size\n        self.b",
+ "answer_s": 444.92,
+ "correct": true
+}

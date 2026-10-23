@@ -1,0 +1,29 @@
+# Concurrency on gemma4:26b-mlx · normal · native · 1/4/10 clients, 3 repeats
+# ~/Code/colibri-poc/.venv/bin/python model_concurrency.py --model gemma4:26b-mlx --style normal --profile native
+N= 1 repeat 1: 49.5 tok/s total, 0 retries, 51.94 per request, p50 3.173 s, p95 25.435 s, memory 24.02 GB, same 14/24
+Traceback (most recent call last):
+  File "~/Code/colibri-poc/model_concurrency.py", line 140, in <module>
+    main()
+  File "~/Code/colibri-poc/model_concurrency.py", line 113, in main
+    harness.main()
+  File "~/Code/colibri-poc/olmoe_concurrency.py", line 153, in main
+    recs, wall = run_level(a, items, n, single_text)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~/Code/colibri-poc/olmoe_concurrency.py", line 112, in run_level
+    list(pool.map(client, range(n)))
+  File "~/.local/share/uv/python/cpython-3.12.15-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~/.local/share/uv/python/cpython-3.12.15-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "~/.local/share/uv/python/cpython-3.12.15-macos-aarch64-none/lib/python3.12/concurrent/futures/_base.py", line 451, in result
+    self._condition.wait(timeout)
+  File "~/.local/share/uv/python/cpython-3.12.15-macos-aarch64-none/lib/python3.12/threading.py", line 355, in wait
+    waiter.acquire()
+  File "~/Code/colibri-poc/model_concurrency.py", line 111, in <lambda>
+    signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~/Code/colibri-poc/model_concurrency.py", line 111, in <genexpr>
+    signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))
+KeyboardInterrupt

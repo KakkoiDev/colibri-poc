@@ -3,7 +3,7 @@ name: Deploy GLM performance page
 on:
   push:
     branches: [main]
-    paths: ['site/**', 'published-results/glm-bench-*/summary.json', '.github/workflows/pages.yml']
+    paths: ['site/**', 'published-results/**', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -28,6 +28,10 @@ jobs:
           if [ -f published-results/glm-bench-v1/summary.json ]; then
             cp published-results/glm-bench-v1/summary.json site/data/bench-summary.json
           fi
+      - name: Include benchmark evidence archive
+        run: |
+          mkdir -p site/archive
+          cp -R published-results/. site/archive/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

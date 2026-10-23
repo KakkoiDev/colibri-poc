@@ -1,0 +1,85 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.32s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 14 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>What is the largest ocean on Earth?<|assistant|><think></think>PROFILO PREFILL (60.22s):
+PROFILE: expert-disk 112.352s service / 14.186s wait | expert-matmul 3.526s | attention 40.174s (including kvb 3.138s) | lm_head 0.007s | other 2.333s
+ATTENTION: projection/RoPE 11.990s | score-softmax-value 0.030s | output projection 25.015s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.052s | residual P2P 0.000s / 0 hop | orchestration 2.280s
+METAL: blocchi GPU 166 | fallback CPU 0 | expert su GPU 4479 | setup 0.03s gpu-wall 2.85s (kernel 3.20s) scatter 0.01s
+METAL-RESSET: flush 0.64s (residency-set commit in moe_submit, outside setup/gpu-wall)
+The largest ocean on Earth is the **Pacific Ocean**, which is bounded by the continents of Asia and Australia on the west, and the Americas on the east. It stretches from the Arctic Ocean in the north (the Bering Sea is a part of it near Alaska and Russia) to the Southern Ocean in the south (the Southern Ocean is a distinct body of water that surrounds Antarctica and extends to the 60 degrees south latitude line, and the Drake Passage and Scotia Sea are parts of it near South America, and the Tasman Sea and Coral Sea are parts of it near Australia and New Zealand, and the Pacific Ocean extends to the Tas
+---
+prefill 14 tokens in 60.22s | decode 128 tokens in 82.99s (1.54 tok/s) | expert hit rate 34.4% (pin 0.0% + lru 34.4%) | RSS 12.55 GB
+experts loaded/token: 609.4 (per-layer 8.12 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 64140 miss slots; top layers: L8:907 L3:901 L9:899)
+speculation: 1.02 tokens/forward (126 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 39.602s service / 31.439s wait | expert-matmul 4.701s | attention 24.985s (including kvb 0.000s) | lm_head 0.000s | other 21.868s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.006s | residual P2P 0.000s / 0 hop | orchestration 21.861s
+METAL-ATTN: layer GPU 9828 | gpu-wall 24.73s (kernel 23.91s | cpu-sched 0.05s gpu-sched 0.38s)
+METAL: blocchi GPU 12175 | fallback CPU 0 | expert su GPU 17799 | setup 0.26s gpu-wall 7.20s (kernel 7.58s) scatter 0.02s
+METAL-RESSET: flush 0.64s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 126 | latency p50 637.1 ms | p90 697.4 ms | p99 1147.4 ms | max 1189.9 ms | 1.02 tok/forward
+[PROF] expert I/O: 185.519 GB fetched (1449.4 MB/token, 2.24 GB/s over the run) | hit 34.4% (0 pin + 4583 lru / 8737 load) | 609.4 loads/token | 39.6s read service / 31.4s felt wait
+[PROF] DISK-CLASS (recency split): cold 2917 x 61.94 GB @ 4.56 GB/s-thread, wall 12.6s @ 4.92 GB/s-wall, avg-conc 1.1 (direct 2907/2917) | warm 5820 x 123.58 GB @ 4.75 GB/s-thread, wall 21.7s @ 5.70 GB/s-wall, avg-conc 1.2 (direct 5793/5820) | disk-busy 31.3s (38% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 38% | expert-matmul 6% | attention 30% | lm_head 0% | other 26%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.006s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 21.861s
+[PROF] verdict: I/O-bound — 38% of the time waits on expert reads (hit 34%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 12.3 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 14 token · +0.00s
+[prefill] layer 5/78 · 14 token · +5.07s
+[prefill] layer 9/78 · 14 token · +8.32s
+[prefill] layer 13/78 · 14 token · +11.39s
+[prefill] layer 17/78 · 14 token · +14.37s
+[prefill] layer 21/78 · 14 token · +17.29s
+[prefill] layer 25/78 · 14 token · +20.26s
+[prefill] layer 29/78 · 14 token · +23.23s
+[prefill] layer 33/78 · 14 token · +26.13s
+[prefill] layer 37/78 · 14 token · +29.08s
+[prefill] layer 41/78 · 14 token · +31.94s
+[prefill] layer 45/78 · 14 token · +34.85s
+[prefill] layer 49/78 · 14 token · +37.83s
+[prefill] layer 53/78 · 14 token · +40.81s
+[prefill] layer 57/78 · 14 token · +43.71s
+[prefill] layer 61/78 · 14 token · +46.67s
+[prefill] layer 65/78 · 14 token · +49.62s
+[prefill] layer 69/78 · 14 token · +52.58s
+[prefill] layer 73/78 · 14 token · +55.62s
+[prefill] layer 77/78 · 14 token · +58.68s
+[prefill] layer 78/78 · 14 token · +59.43s
+
+[t=16  RSS 12.55 GB  hit 34%  1.57 tok/s  1.00 tok/fw]
+
+[t=32  RSS 12.55 GB  hit 33%  1.56 tok/s  1.00 tok/fw]
+
+[t=48  RSS 12.55 GB  hit 34%  1.56 tok/s  1.00 tok/fw]
+
+[t=64  RSS 12.55 GB  hit 33%  1.55 tok/s  1.00 tok/fw]
+
+[t=80  RSS 12.55 GB  hit 33%  1.53 tok/s  1.00 tok/fw]
+
+[t=96  RSS 12.55 GB  hit 34%  1.54 tok/s  1.01 tok/fw]
+
+[t=112  RSS 12.55 GB  hit 34%  1.54 tok/s  1.01 tok/fw]
+
+[t=128  RSS 12.55 GB  hit 34%  1.54 tok/s  1.01 tok/fw]

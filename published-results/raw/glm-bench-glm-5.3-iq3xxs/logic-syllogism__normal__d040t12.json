@@ -1,0 +1,18 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 189.85,
+ "prompt_tokens": 36,
+ "prefill_s": 40.44,
+ "output_tokens": 88,
+ "decode_s": 145.31,
+ "decode_tok_s": 0.61,
+ "zeroed_slots": 38506,
+ "hit_pct": 3.1,
+ "text": "Yes. If all bloops are razzies (all bloops ∈ razzies) and all razzies are lazzies (all razzies ∈ lazzies), then all bloops are lazzies (all bloops ∈ lazzies). This is a classic example of the transitive property of logic, which states that if A ⊆ B and B ⊆ C, then A ⊆ C.",
+ "answer_s": 185.75,
+ "correct": true
+}

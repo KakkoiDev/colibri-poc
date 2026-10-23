@@ -1,0 +1,112 @@
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 3.46s | resident dense: 14457.58 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 36 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Write a Python function fib(n) that returns the n-th Fibonacci number iteratively, with fib(0)=0 and fib(1)=1.<|assistant|><think></think>PROFILO PREFILL (74.08s):
+PROFILE: expert-disk 134.015s service / 17.081s wait | expert-matmul 32.481s | attention 20.130s (including kvb 4.839s) | lm_head 0.091s | other 4.298s
+ATTENTION: projection/RoPE 3.028s | score-softmax-value 0.165s | output projection 12.099s
+P0-EXEC: routed CPU 32.477s / 3.03 GB/s (21880 row) | routed GPU critical 0.000s | router 0.135s | residual P2P 0.000s / 0 hop | orchestration 4.163s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Here's an iterative implementation of the Fibonacci function:
+
+```python
+def fib(n):
+    if n < 0:
+        raise ValueError("n must be a non-negative integer")
+    if n == 0:
+        return 0
+    if n == 1:
+        return 1
+    
+    prev, curr = 0, 1
+    for _ in range(2, n + 1):
+        prev, curr = curr, prev + curr
+    
+    return curr
+```
+
+**How it works:**
+
+1. **Base cases:** `fib(0)` returns 0 and `fib(1)` returns
+---
+prefill 36 tokens in 74.08s | decode 128 tokens in 326.53s (0.39 tok/s) | expert hit rate 1.5% (pin 0.0% + lru 1.5%) | RSS 13.29 GB
+experts loaded/token: 617.3 (per-layer 8.23 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 43444 miss slots; top layers: L67:635 L58:633 L59:627)
+speculation: 1.97 tokens/forward (65 forwards per 128 tokens) | MTP acceptance 95% (62/65)
+PROFILE: expert-disk 272.536s service / 55.011s wait | expert-matmul 73.134s | attention 158.002s (including kvb 0.000s) | lm_head 0.000s | other 40.381s
+ATTENTION: projection/RoPE 24.519s | score-softmax-value 58.216s | output projection 75.256s
+P0-EXEC: routed CPU 72.899s / 4.39 GB/s (32996 row) | routed GPU critical 0.000s | router 2.736s | residual P2P 0.000s / 0 hop | orchestration 37.645s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 65 | latency p50 4875.2 ms | p90 5076.8 ms | p99 5279.3 ms | max 5324.5 ms | 1.97 tok/forward
+[PROF] expert I/O: 315.367 GB fetched (2463.8 MB/token, 0.97 GB/s over the run) | hit 1.5% (0 pin + 425 lru / 27474 load) | 617.3 loads/token | 272.5s read service / 55.0s felt wait
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (0.9 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 17% | expert-matmul 22% | attention 48% | lm_head 0% | other 12%
+[PROF] P0 execution: routed CPU 72.899s / 4.39 GB/s (32996 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 2.736s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 37.645s
+[PROF] verdict: attention-bound (48%) — context length is the cost (DSA on). A lower CTX helps if the workload allows.
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      Glm-5.3 · 256x22B MoE
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+[gguf] ~/colibri-models/gguf/glm-5.3-iq2m/UD-IQ2_M/GLM-5.3-UD-IQ2_M-00001-of-00006.gguf: glm-dsa, 6 part(s), 59949 tensors under the checkpoint's names (1581 renamed, 228 fused expert tensors split per expert, 0 kept as named), read in place
+[METAL] kv_b_proj is fmt=102 on 78/78 layers: the fused Metal attention path serves kv_b only as int4, per-row (fmt=2) or grouped (fmt=4; grouped is served only while COLI_METAL_MOE_EXACT is off), so those layers run decode attention on the CPU absorb path instead. Requantize kv_b to int4 (--kvb-bits 4) to re-enable the fused path.
+[METAL] q_a_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] q_b_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] kv_a_proj_with_mqa is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] o_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.gate_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.up_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.down_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[DSA] indexer active: top-2048 sparse attention beyond 2048 context tokens
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 20.9 GB is 2.9 GB OVER the budget (resident 15.2 GB + reserve 4.9 GB, expert 11.5 MB avg/row).
+[RAM_GB=18.0] resident 15.2 GB + reserve 4.9 GB (ws 0.9, KV 1x1024 0.2, kvb 0.1), experts 11.5 MB avg x 76 layers -> cap lowered 8->1 (projected peak 20.9 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 11.1 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 0.9 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=on PILOT=0 CACHE_ROUTE=0
+[stop] 25 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 154838 154839 154840 154852 154853 154854 154855 (22 from the tokenizer's special set)
+[prefill] layer 1/78 · 36 token · +0.00s
+[CUDA] no reusable LRU expert slot (in flight or cap reached); skipping cache promotion
+[prefill] layer 5/78 · 36 token · +2.56s
+[prefill] layer 9/78 · 36 token · +6.82s
+[prefill] layer 13/78 · 36 token · +10.84s
+[prefill] layer 17/78 · 36 token · +14.70s
+[prefill] layer 21/78 · 36 token · +18.18s
+[prefill] layer 25/78 · 36 token · +21.83s
+[prefill] layer 29/78 · 36 token · +25.74s
+[prefill] layer 33/78 · 36 token · +29.43s
+[prefill] layer 37/78 · 36 token · +33.01s
+[prefill] layer 41/78 · 36 token · +36.56s
+[prefill] layer 45/78 · 36 token · +40.15s
+[prefill] layer 49/78 · 36 token · +43.89s
+[prefill] layer 53/78 · 36 token · +47.57s
+[prefill] layer 57/78 · 36 token · +51.27s
+[prefill] layer 61/78 · 36 token · +54.98s
+[prefill] layer 65/78 · 36 token · +58.67s
+[prefill] layer 69/78 · 36 token · +62.40s
+[prefill] layer 73/78 · 36 token · +66.24s
+[prefill] layer 77/78 · 36 token · +70.21s
+[prefill] layer 78/78 · 36 token · +71.15s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 12.58 GB  hit 2%  0.40 tok/s  1.88 tok/fw]
+
+[t=32  RSS 12.58 GB  hit 1%  0.40 tok/s  1.94 tok/fw]
+
+[t=48  RSS 12.58 GB  hit 2%  0.40 tok/s  1.96 tok/fw]
+
+[t=64  RSS 12.58 GB  hit 2%  0.39 tok/s  1.97 tok/fw]
+
+[t=80  RSS 12.83 GB  hit 2%  0.39 tok/s  1.98 tok/fw]
+
+[t=96  RSS 13.14 GB  hit 2%  0.40 tok/s  1.98 tok/fw]
+
+[t=112  RSS 13.29 GB  hit 2%  0.39 tok/s  1.95 tok/fw]
+
+[t=128  RSS 13.29 GB  hit 2%  0.39 tok/s  1.95 tok/fw]

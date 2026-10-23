@@ -1,0 +1,18 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 392.42,
+ "prompt_tokens": 19,
+ "prefill_s": 58.82,
+ "output_tokens": 128,
+ "decode_s": 329.51,
+ "decode_tok_s": 0.39,
+ "zeroed_slots": 64847,
+ "hit_pct": 3.6,
+ "text": "# Boiling Point of Water at Sea Level\n\nAt sea level (standard atmospheric pressure of 101.325 kPa), water boils at **100°C** (which equals 212°F or 373.15 K on the Kelvin scale).\n\n## Quick Facts\n- **1 atm = 101.325 kPa** — the standard pressure at sea level\n- The Celsius scale was originally defined by setting **0°C = freezing point of water** and **100°C = boiling point of water** (at 1 atm)\n- Kelvin: **0 K = absolute zero** (no heat energy at all), and",
+ "answer_s": 388.33,
+ "correct": true
+}

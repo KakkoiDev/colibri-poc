@@ -1,0 +1,16 @@
+{
+ "text": "```python\ndef create_hash_table():\n    return {}\n\nprint(create_hash_table())\n```\n\nThis code creates an empty dictionary, which serves as a simple hash table in Python.",
+ "usage": {
+  "prompt_tokens": 34,
+  "completion_tokens": 46,
+  "total_tokens": 80,
+  "prompt_tokens_details": {
+   "cached_tokens": 7
+  }
+ },
+ "chunks": 45,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.058,
+ "total_s": 0.305
+}

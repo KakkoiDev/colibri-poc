@@ -1,0 +1,87 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.32s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 27 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Sally has 3 brothers. Each brother has 2 sisters. How many sisters does Sally have?<|assistant|><think></think>PROFILO PREFILL (31.25s):
+PROFILE: expert-disk 159.693s service / 18.556s wait | expert-matmul 6.167s | attention 4.311s (including kvb 0.587s) | lm_head 0.009s | other 2.208s
+ATTENTION: projection/RoPE 1.293s | score-softmax-value 0.130s | output projection 2.300s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.115s | residual P2P 0.000s / 0 hop | orchestration 2.093s
+METAL: blocchi GPU 223 | fallback CPU 0 | expert su GPU 6381 | setup 0.04s gpu-wall 5.54s (kernel 6.19s) scatter 0.01s
+METAL-RESSET: flush 0.56s (residency-set commit in moe_submit, outside setup/gpu-wall)
+**1**
+
+Let me carefully analyze this question with the reasoning it deserves, being very careful and thorough, since it's deceptively tricky (as many such questions are) and a common riddle-type or puzzle-type question whose actual answer may differ from the answer many people might naively jump to (a knee-jerk response of "1" or "3" might be tempting here, for reasons I'll explain, and I'll also explain why the answer of "1" is likely correct but requires careful analysis, and why the answer of "3" or "5" or "7" or "4" or "2
+---
+prefill 27 tokens in 31.25s | decode 128 tokens in 86.07s (1.49 tok/s) | expert hit rate 31.8% (pin 0.0% + lru 31.8%) | RSS 8.75 GB
+experts loaded/token: 604.7 (per-layer 8.06 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 63479 miss slots; top layers: L3:894 L6:892 L5:889)
+speculation: 1.02 tokens/forward (125 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 44.701s service / 34.285s wait | expert-matmul 5.153s | attention 25.526s (including kvb 0.000s) | lm_head 0.000s | other 21.102s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.010s | residual P2P 0.000s / 0 hop | orchestration 21.091s
+METAL-ATTN: layer GPU 9750 | gpu-wall 25.16s (kernel 24.15s | cpu-sched 0.07s gpu-sched 0.44s)
+METAL: blocchi GPU 12076 | fallback CPU 0 | expert su GPU 19846 | setup 0.39s gpu-wall 10.15s (kernel 10.65s) scatter 0.04s
+METAL-RESSET: flush 0.56s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 125 | latency p50 671.3 ms | p90 726.9 ms | p99 1177.6 ms | max 1244.7 ms | 1.02 tok/forward
+[PROF] expert I/O: 194.883 GB fetched (1522.5 MB/token, 2.26 GB/s over the run) | hit 31.8% (0 pin + 4287 lru / 9178 load) | 604.7 loads/token | 44.7s read service / 34.3s felt wait
+[PROF] DISK-CLASS (recency split): cold 3640 x 77.29 GB @ 4.25 GB/s-thread, wall 16.1s @ 4.81 GB/s-wall, avg-conc 1.1 (direct 3624/3640) | warm 5538 x 117.59 GB @ 4.44 GB/s-thread, wall 21.9s @ 5.36 GB/s-wall, avg-conc 1.2 (direct 5524/5538) | disk-busy 34.1s (40% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 40% | expert-matmul 6% | attention 30% | lm_head 0% | other 25%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.010s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 21.091s
+[PROF] verdict: I/O-bound — 40% of the time waits on expert reads (hit 32%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 12.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 27 token · +0.00s
+[prefill] layer 5/78 · 27 token · +1.46s
+[prefill] layer 9/78 · 27 token · +3.58s
+[prefill] layer 13/78 · 27 token · +5.43s
+[prefill] layer 17/78 · 27 token · +7.15s
+[prefill] layer 21/78 · 27 token · +8.62s
+[prefill] layer 25/78 · 27 token · +10.13s
+[prefill] layer 29/78 · 27 token · +11.78s
+[prefill] layer 33/78 · 27 token · +13.24s
+[prefill] layer 37/78 · 27 token · +14.77s
+[prefill] layer 41/78 · 27 token · +16.19s
+[prefill] layer 45/78 · 27 token · +17.65s
+[prefill] layer 49/78 · 27 token · +19.20s
+[prefill] layer 53/78 · 27 token · +20.70s
+[prefill] layer 57/78 · 27 token · +22.12s
+[prefill] layer 61/78 · 27 token · +23.70s
+[prefill] layer 65/78 · 27 token · +25.25s
+[prefill] layer 69/78 · 27 token · +26.86s
+[prefill] layer 73/78 · 27 token · +28.58s
+[prefill] layer 77/78 · 27 token · +30.34s
+[prefill] layer 78/78 · 27 token · +30.75s
+
+[t=16  RSS 8.75 GB  hit 35%  1.55 tok/s  1.00 tok/fw]
+
+[t=32  RSS 8.75 GB  hit 33%  1.46 tok/s  1.00 tok/fw]
+
+[t=48  RSS 8.75 GB  hit 34%  1.47 tok/s  1.00 tok/fw]
+
+[t=64  RSS 8.75 GB  hit 36%  1.48 tok/s  1.00 tok/fw]
+
+[t=80  RSS 8.75 GB  hit 35%  1.49 tok/s  1.00 tok/fw]
+
+[t=96  RSS 8.75 GB  hit 34%  1.50 tok/s  1.00 tok/fw]
+
+[t=112  RSS 8.75 GB  hit 33%  1.51 tok/s  1.02 tok/fw]
+
+[t=128  RSS 8.75 GB  hit 32%  1.49 tok/s  1.02 tok/fw]

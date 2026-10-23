@@ -1,0 +1,19 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 8.11,
+ "prompt_tokens": 40,
+ "prefill_s": 0.331,
+ "output_tokens": 201,
+ "decode_s": 7.768,
+ "load_s": 0.003,
+ "text": "To find the distance traveled, you multiply the speed by the time:\n\n**Distance = Speed × Time**\n\nDistance = 60 km/h × 2.5 hours\nDistance = **150 kilometres**",
+ "thinking_chars": 319,
+ "truncated": false,
+ "decode_tok_s": 25.88,
+ "answer_s": 8.1,
+ "correct": true
+}

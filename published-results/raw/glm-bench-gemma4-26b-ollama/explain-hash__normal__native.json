@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 30.08,
+ "prompt_tokens": 22,
+ "prefill_s": 0.068,
+ "output_tokens": 1600,
+ "decode_s": 30.005,
+ "load_s": 0.004,
+ "text": "At its simplest, a **hash table** (also known as a hash map) is a data structure that stores information in **key-value pairs**. \n\nIt is designed to be incredibly fast. While searching through a list might require looking at every single item, a hash table allows you to jump almost directly to the exact location of the data you are looking for.\n\n---\n\n### 1. How It Works: The Analogy\nImagine you are in a massive library. \n\n*   **Without a Hash Table:** You walk through every aisle, looking at every book cover until you find \"The Great Gatsby.\" This is slow.\n*   **With a Hash Table:** You walk up to a computer and type in the title. The computer instantly gives you a coordinate: **\"Aisle 5, Shelf 3, Book 12.\"** You go directly there.\n\n### 2. The Core Components\nTo achieve this speed, a hash table relies on three main things:\n\n#### A. The Key and the Value\n*   **Key:** The unique identifier (e.g., a person's name or a student ID).\n*   **Value:** The data associated with that key (e.g., their phone number or grade).\n\n#### B. The Hash Function (The \"Magic\" Step)\nThis is a mathematical formula that takes your **Key** and turns it into a specific number (an index). \n*   Example: If the key is `\"Apple\"`, the hash function might do some math and return the number `4`. \n*   This number tells the computer: *\"Put the data for 'Apple' in slot #4 of the array.\"*\n\n#### C. The Array (The \"Buckets\")\nThe computer sets aside a block of memory (an array) consisting of many slots, often called \"buckets.\" When you want to store something, the hash function tells you exactly which bucket to use.\n\n---\n\n### 3. The Problem: Collisions\nSince a hash function turns an infinite number of possible keys into a finite number of slots, eventually two different keys will point to the same slot. This is called a **collision**.\n\n*Example: The hash function might decide that both `\"Apple\"` and `\"Banana\"` belong in Slot #4.*\n\nThere are two main ways to handle this:\n1.  **Chaining (Separate Chaining):** Each slot in the array doesn't hold just one value; instead, it holds a small \"linked list.\" If a collision occurs, you just add the new item to the list at that slot.\n2.  **Open Addressing:** If Slot #4 is full, the computer looks for the next available empty slot (e.g., Slot #5) and puts the data there.\n\n---\n\n### 4. Performance (Complexity)\nThe reason programmers love hash tables is their efficiency.\n\n| Operation | Average Case | Worst Case (Collision Hell) |\n| :--- | :--- | :--- |\n| **Search** | $O(1)$ (Constant time) | $O(n)$ (Linear time) |\n| **Insertion** | $O(1)$ | $O(n)$ |\n| **Deletion** | $O(1)$ | $O(n)$ |\n\n*   **Average Case ($O(1)$):** No matter how many millions of items you have, finding an item takes the same amount of time because the hash function tells you exactly where to look.\n*   **Worst Case ($O(n)$):** If your hash function is terrible and puts every single item into the *same* slot, you end up with one long list, and you have to search through it one by one.\n\n---\n\n### 5. Real-World Summary\nYou use hash tables every single day without knowing it:\n*   **Dictionaries in Python:** `my_dict = {\"name\": \"Alice\"}`\n*   **Objects in JavaScript:** `const user = {id: 101}`\n*   **Database Indexing:** To find your user profile instantly among billions of rows.\n*   **Caching:** Storing web page data so it loads faster next time.\n\n**In short: A hash table uses math (a hash function) to turn a name into a location, allowing for near-instant data retrieval.**",
+ "thinking_chars": 2671,
+ "truncated": false,
+ "decode_tok_s": 53.32,
+ "answer_s": 30.07,
+ "correct": true
+}

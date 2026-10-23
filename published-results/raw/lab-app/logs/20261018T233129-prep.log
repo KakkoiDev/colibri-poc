@@ -1,0 +1,59 @@
+# Download and prepare Qwen3.6-35B-A3B (MoE, ~3B active)
+# make glm-prep-qwen36
+df -h ~ | tail -1
+/dev/disk3s5   1.8Ti   948Gi   866Gi    53%    2.0M  9.1G    0%   /System/Volumes/Data
+hf download Kreuzzelg/qwen36-35b-a3b-colibri-i4-gs64 --local-dir ~/colibri-models/qwen36-35b-a3b
+[90mHint: A new version of huggingface_hub (2.2.0) is available! You are using version 1.30.0.[0m
+[90mHint: The `hf-cli` skill is not installed. Run `hf skills add -g --claude` to teach your AI agents how to use the `hf` CLI.[0m
+
+Fetching 47 files:   0%|          | 0/47 [00:00<?, ?it/s]Still waiting to acquire lock on ~/colibri-models/qwen36-35b-a3b/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on ~/colibri-models/qwen36-35b-a3b/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+Fetching 47 files:   2%|▏         | 1/47 [00:00<00:19,  2.32it/s]
+Fetching 47 files:   6%|▋         | 3/47 [00:00<00:07,  5.82it/s]
+Fetching 47 files:  11%|█         | 5/47 [00:14<02:30,  3.58s/it]
+Fetching 47 files:  13%|█▎        | 6/47 [00:32<05:13,  7.64s/it]
+Fetching 47 files:  15%|█▍        | 7/47 [01:35<15:20, 23.01s/it]
+Fetching 47 files:  17%|█▋        | 8/47 [01:46<12:38, 19.46s/it]
+Fetching 47 files:  19%|█▉        | 9/47 [02:08<12:43, 20.10s/it]
+Fetching 47 files:  21%|██▏       | 10/47 [02:22<11:26, 18.57s/it]
+Fetching 47 files:  23%|██▎       | 11/47 [02:24<08:05, 13.48s/it]
+Fetching 47 files:  26%|██▌       | 12/47 [02:26<05:55, 10.16s/it]
+Fetching 47 files:  30%|██▉       | 14/47 [02:41<04:53,  8.91s/it]
+Fetching 47 files:  32%|███▏      | 15/47 [03:10<07:26, 13.97s/it]
+Fetching 47 files:  34%|███▍      | 16/47 [03:33<08:20, 16.14s/it]
+Fetching 47 files:  36%|███▌      | 17/47 [04:13<11:18, 22.63s/it]
+Fetching 47 files:  38%|███▊      | 18/47 [04:14<07:59, 16.54s/it]
+Fetching 47 files:  40%|████      | 19/47 [04:19<06:11, 13.27s/it]
+Fetching 47 files:  43%|████▎     | 20/47 [04:25<05:01, 11.15s/it]
+Fetching 47 files:  45%|████▍     | 21/47 [04:29<03:56,  9.11s/it]
+Fetching 47 files:  47%|████▋     | 22/47 [05:17<08:34, 20.57s/it]
+Fetching 47 files:  49%|████▉     | 23/47 [05:40<08:34, 21.44s/it]
+Fetching 47 files:  51%|█████     | 24/47 [05:43<06:08, 16.04s/it]
+Fetching 47 files:  53%|█████▎    | 25/47 [05:48<04:35, 12.54s/it]
+Fetching 47 files:  55%|█████▌    | 26/47 [06:01<04:27, 12.76s/it]
+Fetching 47 files:  57%|█████▋    | 27/47 [06:25<05:19, 15.97s/it]
+Fetching 47 files:  60%|█████▉    | 28/47 [06:39<04:54, 15.48s/it]
+Fetching 47 files:  62%|██████▏   | 29/47 [06:57<04:55, 16.41s/it]
+Fetching 47 files:  64%|██████▍   | 30/47 [06:59<03:24, 12.04s/it]
+Fetching 47 files:  66%|██████▌   | 31/47 [07:21<04:01, 15.08s/it]
+Fetching 47 files:  68%|██████▊   | 32/47 [07:25<02:53, 11.56s/it]
+Fetching 47 files:  70%|███████   | 33/47 [07:34<02:33, 10.97s/it]
+Fetching 47 files:  72%|███████▏  | 34/47 [07:56<03:04, 14.22s/it]
+Fetching 47 files:  74%|███████▍  | 35/47 [07:58<02:05, 10.44s/it]
+Fetching 47 files:  77%|███████▋  | 36/47 [08:19<02:31, 13.80s/it]
+Fetching 47 files:  79%|███████▊  | 37/47 [08:44<02:49, 16.97s/it]
+Fetching 47 files:  81%|████████  | 38/47 [08:51<02:06, 14.01s/it]
+Fetching 47 files:  83%|████████▎ | 39/47 [08:55<01:29, 11.16s/it]
+Fetching 47 files:  85%|████████▌ | 40/47 [09:08<01:20, 11.53s/it]
+Fetching 47 files:  87%|████████▋ | 41/47 [10:01<02:23, 23.98s/it]
+Fetching 47 files:  89%|████████▉ | 42/47 [10:04<01:29, 17.81s/it]
+Fetching 47 files:  91%|█████████▏| 43/47 [10:07<00:53, 13.35s/it]
+Fetching 47 files:  94%|█████████▎| 44/47 [10:08<00:28,  9.53s/it]
+Fetching 47 files:  96%|█████████▌| 45/47 [10:18<00:19,  9.79s/it]
+Fetching 47 files:  98%|█████████▊| 46/47 [10:27<00:09,  9.54s/it]
+Fetching 47 files: 100%|██████████| 47/47 [10:39<00:00, 10.17s/it]
+Fetching 47 files: 100%|██████████| 47/47 [10:39<00:00, 13.60s/it]
+[32m✓ Downloaded[0m
+  path: ~/colibri-models/qwen36-35b-a3b

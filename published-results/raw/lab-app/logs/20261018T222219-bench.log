@@ -1,0 +1,12 @@
+# Quality bench v1: d040t12 · normal
+# ~/Code/colibri-poc/.venv/bin/python glm_bench.py run --name v1 --configs d040t12 --styles normal
+[8/24] fact-ocean__normal__d040t12: exit=1 answer=Nones tokens=None correct=False
+[9/24] math-mul__normal__d040t12: exit=1 answer=Nones tokens=None correct=False
+[10/24] math-pct__normal__d040t12: exit=1 answer=Nones tokens=None correct=False
+[11/24] math-pow__normal__d040t12: exit=1 answer=Nones tokens=None correct=False
+[12/24] math-train__normal__d040t12: exit=1 answer=Nones tokens=None correct=False
+[13/24] math-apples__normal__d040t12: exit=1 answer=Nones tokens=None correct=False
+[14/24] logic-sisters__normal__d040t12: exit=1 answer=Nones tokens=None correct=False
+[15/24] logic-feathers__normal__d040t12: exit=1 answer=Nones tokens=None correct=False
+[16/24] logic-days__normal__d040t12: exit=1 answer=Nones tokens=None correct=False
+[17/24] logic-syllogism__normal__d040t12: exit=1 answer=Nones tokens=None correct=False

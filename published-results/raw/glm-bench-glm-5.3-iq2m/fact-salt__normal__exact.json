@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 584.9,
+ "prompt_tokens": 15,
+ "prefill_s": 35.31,
+ "output_tokens": 128,
+ "decode_s": 545.77,
+ "decode_tok_s": 0.23,
+ "zeroed_slots": 0,
+ "hit_pct": 0.5,
+ "text": "The chemical formula of table salt is **NaCl**.\n\nIt consists of:\n- **Na** — sodium (a metal)\n- **Cl** — chlorine (a nonmetal)\n\nThese two elements bond together **ionically**: sodium loses one electron to become a positively charged ion (Na⁺), and chlorine gains that electron to become a negatively charged ion (Cl⁻). The opposite charges attract, forming a crystal lattice structure rather than discrete molecules.\n\nThis is why table salt is more precisely called **sodium chloride**, and in its solid form it exists as a repeating three-dimensional grid of alternating Na⁺ and Cl⁻",
+ "answer_s": 581.08,
+ "correct": true
+}

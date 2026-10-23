@@ -1,0 +1,18 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 375.4,
+ "prompt_tokens": 16,
+ "prefill_s": 40.46,
+ "output_tokens": 128,
+ "decode_s": 330.18,
+ "decode_tok_s": 0.39,
+ "zeroed_slots": 66773,
+ "hit_pct": 2.0,
+ "text": "Pride and Prejudice was written by **Jane Austen** (1775–1817), an English novelist whose works are among the most beloved and widely read books in English literature. Published in 1813, it tells the story of Elizabeth Bennet (one of five daughters in the Bennet family, whose estate is entailed to a male heir, cousin Mr. Bennet's cousin, Mr. William Collins) and Mr. Fitzwilliam Darcy, a wealthy gentleman from Derbyshire. The novel follows their contentious courtship as both characters display the faults of pride and prejudice, gradually overcoming these flaws through a series",
+ "answer_s": 370.64,
+ "correct": true
+}

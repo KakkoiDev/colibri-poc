@@ -1,0 +1,19 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 4.13,
+ "prompt_tokens": 19,
+ "prefill_s": 0.114,
+ "output_tokens": 93,
+ "decode_s": 3.975,
+ "load_s": 0.0,
+ "text": "The chemical formula of table salt is **NaCl**, which stands for **sodium chloride**. It is composed of one sodium (Na) ion bonded to one chloride (Cl) ion in a 1:1 ratio, held together by an ionic bond.",
+ "thinking_chars": 197,
+ "truncated": false,
+ "decode_tok_s": 23.4,
+ "answer_s": 4.09,
+ "correct": true
+}

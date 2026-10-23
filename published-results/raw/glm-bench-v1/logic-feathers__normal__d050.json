@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 112.45,
+ "prompt_tokens": 22,
+ "prefill_s": 26.87,
+ "output_tokens": 128,
+ "decode_s": 82.91,
+ "decode_tok_s": 1.54,
+ "zeroed_slots": 63676,
+ "hit_pct": 34.8,
+ "text": "They weigh exactly the same — a kilogram is a kilogram, regardless of the material. A kilogram of steel and a kilogram of feathers both have a mass of 1 kilogram, so on a scale (in a vacuum, or on Earth, or wherever there's gravity acting on them equally), they would register as exactly the same weight.\n\nThe classic trick version of this question is \"Which is heavier: a *pound* of feathers or a *pound* of gold/steel/lead/rocks/whatever?\" — the answer being \"neither, they weigh the same, a pound is a pound",
+ "answer_s": 109.78,
+ "correct": true
+}

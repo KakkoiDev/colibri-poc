@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 110.7,
+ "prompt_tokens": 17,
+ "prefill_s": 22.74,
+ "output_tokens": 128,
+ "decode_s": 85.27,
+ "decode_tok_s": 1.5,
+ "zeroed_slots": 62975,
+ "hit_pct": 35.0,
+ "text": "# Answer to Your Question\n\n## Reasoning\nThe question is straightforward: it asks what day comes **two days after** Friday in a typical (conforming) calendar/graph structure (e.g., ISO 8601 or a standard Monday-Sunday week). The phrase \"two days after Friday\" is key here.\n\nThe phrase \"two days after Friday\" is key here. I need to work through what \"two days after\" means mathematically and in common usage, and then apply the ISO 8601 or standard conventions (Monday-Sunday numbering, or Sunday-Monday, or Monday-Sunday conventions) to",
+ "answer_s": 108.01,
+ "correct": true
+}

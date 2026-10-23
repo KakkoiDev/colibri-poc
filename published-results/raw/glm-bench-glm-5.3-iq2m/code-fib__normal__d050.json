@@ -1,0 +1,18 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 357.9,
+ "prompt_tokens": 36,
+ "prefill_s": 74.01,
+ "output_tokens": 128,
+ "decode_s": 280.12,
+ "decode_tok_s": 0.46,
+ "zeroed_slots": 67397,
+ "hit_pct": 3.8,
+ "text": "Here's a Python function that computes the n-th Fibonacci number iteratively (that is, using a loop or dynamic programming method rather than recursion), as requested:\n\n**Note: Start an Output (`**output**init**  with a fixed output format**`** and a fixed output content that**`** (for example, by using (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0 (M0",
+ "answer_s": 354.13,
+ "correct": false
+}

@@ -1,0 +1,19 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 5.0,
+ "prompt_tokens": 81,
+ "prefill_s": 0.181,
+ "output_tokens": 189,
+ "decode_s": 4.811,
+ "load_s": 0.001,
+ "text": "They weigh the same.\n\nA kilogram is a kilogram—regardless of what’s being weighed, the mass is the same, so under the same gravity both the feathers and the steel exert the same weight. (The only difference is the volume: the feathers will take up a lot more space, but their mass—and therefore their weight—is exactly equal to the steel.)",
+ "thinking_chars": 531,
+ "truncated": false,
+ "decode_tok_s": 39.28,
+ "answer_s": 4.99,
+ "correct": true
+}

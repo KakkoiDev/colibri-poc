@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 408.21,
+ "prompt_tokens": 15,
+ "prefill_s": 38.99,
+ "output_tokens": 128,
+ "decode_s": 364.97,
+ "decode_tok_s": 0.35,
+ "zeroed_slots": 65073,
+ "hit_pct": 4.0,
+ "text": "# Calculating 15% of 240\n\n**15%** = 15/100 = 0.15 (as a decimal fraction)\n\n**Method 1: Direct multiplication**\n\nTo find 15% of 240, multiply 240 by 0.15:\n\n$$240 \\times 0.15 = 36$$\n\n**Verification:**\n\n- 240 × 0.15\n- = 240 × 15/100\n- = (240 × 15)/100\n- = 3600/100\n- = **36**\n\n**Method 2: Mental calculation (shortcut)**\n\nA useful",
+ "answer_s": 403.96,
+ "correct": false
+}

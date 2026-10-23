@@ -1,0 +1,26 @@
+[
+  {
+    "variant": "baseline",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 196.3765711974418,
+    "min_decode_tps": 141.00243366895515,
+    "max_decode_tps": 198.61420044982276,
+    "paired_median_speedup": 1.0,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04915491599996358
+  },
+  {
+    "variant": "fused-gate-up",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 197.88178861650206,
+    "min_decode_tps": 142.16969841697525,
+    "max_decode_tps": 200.10840497634828,
+    "paired_median_speedup": 1.0085040892066888,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04703124999997499
+  }
+]

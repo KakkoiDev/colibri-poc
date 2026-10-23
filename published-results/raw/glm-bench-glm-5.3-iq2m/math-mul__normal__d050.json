@@ -1,0 +1,18 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 336.23,
+ "prompt_tokens": 15,
+ "prefill_s": 35.59,
+ "output_tokens": 128,
+ "decode_s": 296.83,
+ "decode_tok_s": 0.43,
+ "zeroed_slots": 68567,
+ "hit_pct": 4.6,
+ "text": "17 multiplied by 23 equals **391**  (initial answer, not requiring further context/reasoning tools needed) - straightforward calculation, confirmed as correct, no response transformation needed, no reasoning required, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation beyond concise numeric answer, no explanation",
+ "answer_s": 332.42,
+ "correct": true
+}

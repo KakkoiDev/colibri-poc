@@ -1,0 +1,18 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 121.53,
+ "prompt_tokens": 36,
+ "prefill_s": 40.6,
+ "output_tokens": 98,
+ "decode_s": 77.5,
+ "decode_tok_s": 1.26,
+ "zeroed_slots": 46177,
+ "hit_pct": 21.8,
+ "text": "Yes.\n\nIf all bloops are razzies (all bloops → razzies), and all razzies are lazzies (all razzies → lazzies), then all bloops must be lazzies. This follows from the transitive property: if A → B and B → C, then A → C.\n\n**Note:** This assumes the categories are non-empty and the \"all\" statements are genuine universal claims, as is standard in classical logic.",
+ "answer_s": 118.1,
+ "correct": true
+}

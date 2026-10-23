@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 302.93,
+ "prompt_tokens": 22,
+ "prefill_s": 27.85,
+ "output_tokens": 128,
+ "decode_s": 270.7,
+ "decode_tok_s": 0.47,
+ "zeroed_slots": 45711,
+ "hit_pct": 1.7,
+ "text": "Neither — they weigh exactly the same. A kilogram is a unit of mass, so a kilogram of feathers and a kilogram of steel both have the same mass, regardless of the material.\n\nThis is a classic riddle designed to trick people into saying \"steel\" because it sounds denser or more \"solid\" than feathers. But the trick is that the question specifies the *mass* of each, not the volume or density. Since both are one kilogram, they're equally heavy.\n\nIf you're curious about the interesting physics behind it: while they have the same mass, they differ in volume and density. Feathers",
+ "answer_s": 298.55,
+ "correct": true
+}

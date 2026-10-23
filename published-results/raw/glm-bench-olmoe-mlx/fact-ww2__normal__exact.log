@@ -1,0 +1,16 @@
+{
+ "text": "World War II officially ended in 1945 with the formal surrender of Japan on September 2 and the formal surrender of Germany on May 8. However, conflicts and smaller scale hostilities continued in various regions until later in the year or even into 1946, depending on the specific area in question. The most significant and widely recognized end to World War II was on September 2, 1945, with the formal surrender of Japan, which marked the conclusion of the Pacific War and the end of the war in Asia.",
+ "usage": {
+  "prompt_tokens": 22,
+  "completion_tokens": 99,
+  "total_tokens": 121,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 98,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.045,
+ "total_s": 0.587
+}

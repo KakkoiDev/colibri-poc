@@ -1,0 +1,19 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 19.94,
+ "prompt_tokens": 23,
+ "prefill_s": 0.081,
+ "output_tokens": 1052,
+ "decode_s": 19.84,
+ "load_s": 0.011,
+ "text": "The short answer is a phenomenon called **Rayleigh scattering**. \n\nTo understand it, you have to look at three things: the nature of sunlight, the composition of our atmosphere, and how light behaves when it hits obstacles.\n\n### 1. Sunlight is a Rainbow\nEven though sunlight looks white, it is actually made up of all the colors of the rainbow (red, orange, yellow, green, blue, indigo, and violet). Light travels as **waves**, and each color has a different wavelength:\n*   **Red light** has long, lazy wavelengths.\n*   **Blue and violet light** have much shorter, choppier wavelengths.\n\n### 2. The Atmosphere is an Obstacle Course\nEarth’s atmosphere is filled with gases (mostly nitrogen and oxygen). These gas molecules are much smaller than the wavelength of visible light. \n\nWhen sunlight enters the atmosphere, the long wavelengths (like red and yellow) pass through the gas molecules relatively undisturbed. They move in a mostly straight line from the sun to your eyes.\n\n### 3. Rayleigh Scattering\nBecause blue light travels in shorter, smaller waves, it strikes the gas molecules and gets \"scattered\" in every direction. \n\nImagine throwing a handful of large basketballs (red light) through a forest of thin poles; the balls would mostly fly straight through. Now imagine throwing a handful of tiny marbles (blue light); they would hit the poles and bounce around everywhere.\n\nBecause the blue light is being bounced around in every direction by the molecules in the air, when you look up anywhere in the sky, your eyes are catching that \"scattered\" blue light coming from every part of the atmosphere.\n\n---\n\n### Two Common Follow-up Questions\n\n#### \"If violet light is even shorter than blue, why isn't the sky violet?\"\nYou are technically correct! Violet light scatters even more than blue light. However, the sky doesn't look violet for two reasons:\n1.  **The Sun's Output:** The Sun emits much more blue light than violet light.\n2.  **Human Biology:** Human eyes are much more sensitive to blue than to violet. Our eyes interpret the scattered mix of colors as pale blue.\n\n#### \"Why is the sunset red?\"\nWhen the sun is setting, the light has to travel through much more of the Earth's atmosphere to reach your eyes because it is hitting the horizon at a shallow angle. \n\nBy the time the light reaches you, the blue light has been scattered away completely. The only colors left that are strong enough to make it through that thick layer of atmosphere without being scattered away are the long wavelengths: **red, orange, and pink.**",
+ "thinking_chars": 2017,
+ "truncated": false,
+ "decode_tok_s": 53.02,
+ "answer_s": 19.92,
+ "correct": true
+}

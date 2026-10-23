@@ -1,0 +1,16 @@
+{
+ "text": "The sky appears blue to us on Earth due to a combination of atmospheric conditions and the way light interacts with Earth's atmosphere. Here's a breakdown of the reasons behind the blue color of the sky:\n\n1. **Rayleigh Scattering**: When sunlight reaches Earth's atmosphere, it interacts with molecules of nitrogen and oxygen as well as with tiny particles. This process, known as Rayleigh scattering, causes the sunlight to be dispersed in all directions. Blue light, with its shorter wavelength, is scattered more than other colors because it travels as shorter, smaller waves. This scattering causes the blue hue we observe in the sky during the day",
+ "usage": {
+  "prompt_tokens": 21,
+  "completion_tokens": 128,
+  "total_tokens": 149,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.046,
+ "total_s": 0.75
+}

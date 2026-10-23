@@ -1,0 +1,22 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 9.03s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] clamped to 5.8 GB: that is the MemAvailable this run can actually use (#653 snapshot; COLI_RAM_OVERCOMMIT=1 keeps the literal budget)
+[RAM_GB=5.8] WARNING: cap=1 is the floor, projected peak 18.1 GB is 12.3 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM] refusing to start: that peak also exceeds the 5.8 GB actually available on this machine, so the kernel would OOM-kill this run mid-generation.
+[RAM] lower PIN_GB, lower the context, or raise the RAM budget if the box really has it (COLI_RAM_OVERCOMMIT=1 overrides this check).

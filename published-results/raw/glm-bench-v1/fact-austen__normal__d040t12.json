@@ -1,0 +1,18 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 131.94,
+ "prompt_tokens": 16,
+ "prefill_s": 22.8,
+ "output_tokens": 128,
+ "decode_s": 106.26,
+ "decode_tok_s": 1.2,
+ "zeroed_slots": 59243,
+ "hit_pct": 23.2,
+ "text": "Pride and Prejudice was written by Jane Austen, an English novelist known for her six major novels that critique and comment upon the British landed gentry at the end of the 18th century. The novel was first published in 1813 and follows the main character, Elizabeth Bennet, as she deals with issues of manners, upbringing, morality, education, and marriage in the society of the landed gentry of the Regency era (the period of time in British history between 1811 and 1820, when King George III was deemed unfit to rule and his son, the Prince of Wales, ruled as the",
+ "answer_s": 129.06,
+ "correct": true
+}

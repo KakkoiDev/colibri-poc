@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 152.93,
+ "prompt_tokens": 15,
+ "prefill_s": 65.79,
+ "output_tokens": 128,
+ "decode_s": 84.22,
+ "decode_tok_s": 1.52,
+ "zeroed_slots": 61740,
+ "hit_pct": 22.1,
+ "text": "**15% of 240 = 36**\n\n**Method 1: Using the decimal form**\n\n15% = 0.15 (15 ÷ 100 = 0.15, the \"%\" means \"per hundred\" or \"÷ 100\")\n\nSo: 15% of 240\n= 0.15 × 240\n= **36**\n\n**Method 2: Using the fraction form**\n\n15% = 15/100 = 3/20 (15 ÷ 5 = 3, 100 ÷ 5 = 20, simplified)\n\nSo: 15% of 240",
+ "answer_s": 150.01,
+ "correct": false
+}

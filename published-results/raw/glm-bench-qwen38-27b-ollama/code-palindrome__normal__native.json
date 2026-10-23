@@ -1,0 +1,19 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 149.26,
+ "prompt_tokens": 36,
+ "prefill_s": 0.121,
+ "output_tokens": 739,
+ "decode_s": 39.821,
+ "load_s": 0.052,
+ "text": "```python\ndef is_palindrome(s):\n    \"\"\"Return True if s reads the same forwards and backwards, ignoring case.\"\"\"\n    s = s.lower()\n    return s == s[::-1]\n```\n\n## How it works\n\n| Step | What happens | Example (`\"RaceCar\"`) |\n|---|---|---|\n| `s.lower()` | Normalise to lowercase | `\"racecar\"` |\n| `s[::-1]` | Reverse the string | `\"racecar\"` |\n| `==` | Compare the two | `True` |\n\n## Quick tests\n\n```python\nprint(is_palindrome(\"RaceCar\"))       # True\nprint(is_palindrome(\"hello\"))         # False\nprint(is_palindrome(\"A man a plan a canal Panama\"))  # False (spaces break it)\nprint(is_palindrome(\"\"))             # True  (empty string is vacuously a palindrome)\n```\n\n## Variant: also ignore spaces & punctuation\n\nIf you want `\"A man, a plan, a canal: Panama\"` to count as a palindrome, filter out non-alphanumeric characters before comparing:\n\n```python\nimport re\n\ndef is_palindrome(s):\n    \"\"\"Return True if s is a palindrome, ignoring case, spaces, and punctuation.\"\"\"\n    cleaned = re.sub(r'[^a-z0-9]', '', s.lower())\n    return cleaned == cleaned[::-1]\n\nprint(is_palindrome(\"A man, a plan, a canal: Panama\"))  # True\n```\n\n### Key points\n\n- **`s.lower()`** – makes the comparison case-insensitive.\n- **`s[::-1]`** – Python's slice shorthand for \"reverse the entire string\"; equivalent to `reversed(s)` but returns a new string you can compare directly.\n- **`re.sub(r'[^a-z0-9]', '', ...)`** – strips everything that isn't a letter or digit (only needed in the variant, since we've already lowercased).\n\nThe simple version runs in **O(n)** time and **O(n)** space (for the lowercase copy and the reversed copy), which is optimal since you must read every character at least once.",
+ "thinking_chars": 1284,
+ "truncated": false,
+ "decode_tok_s": 18.56,
+ "answer_s": 39.94,
+ "correct": true
+}

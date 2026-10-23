@@ -1,0 +1,16 @@
+{
+ "text": "```python\ndef count_vowels(s):\n    vowels = 'aeiou'\n    return sum(1 for char in s if char in vowels)\n```",
+ "usage": {
+  "prompt_tokens": 68,
+  "completion_tokens": 42,
+  "total_tokens": 110,
+  "prompt_tokens_details": {
+   "cached_tokens": 10
+  }
+ },
+ "chunks": 41,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.056,
+ "total_s": 0.282
+}

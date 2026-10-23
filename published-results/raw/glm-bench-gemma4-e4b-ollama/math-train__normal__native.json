@@ -1,0 +1,19 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 1.47,
+ "prompt_tokens": 40,
+ "prefill_s": 0.032,
+ "output_tokens": 220,
+ "decode_s": 1.433,
+ "load_s": 0.007,
+ "text": "The train travels **150 kilometres**.\n\nHere is the calculation:\n\nDistance = Speed $\\times$ Time\nDistance = $60 \\text{ km/h} \\times 2.5 \\text{ hours}$\nDistance = $150 \\text{ km}$",
+ "thinking_chars": 351,
+ "truncated": false,
+ "decode_tok_s": 153.52,
+ "answer_s": 1.47,
+ "correct": true
+}

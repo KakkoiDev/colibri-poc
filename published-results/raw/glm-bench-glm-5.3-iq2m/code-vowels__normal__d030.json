@@ -1,0 +1,18 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 427.3,
+ "prompt_tokens": 42,
+ "prefill_s": 83.33,
+ "output_tokens": 128,
+ "decode_s": 340.04,
+ "decode_tok_s": 0.38,
+ "zeroed_slots": 45078,
+ "hit_pct": 1.5,
+ "text": "I'll write a Python function that counts vowels in a string, handling both uppercase and lowercase vowels.\n\n```python\ndef count_vowels(s):\n    \"\"\"\n    Count the number of vowels (a, e, i, o, u) in the given string,\n    case-insensitively.\n    \n    Args:\n        s (str): The input string to search for vowels.\n    \n    Returns:\n        int: The total count of vowels in the string.\n    \"\"\"\n    # Define the set of vowels (both lowercase and uppercase handled via lower())\n    vowels = set('aeiou')\n    \n    # Initialize a counter for vowels",
+ "answer_s": 423.37,
+ "correct": false
+}

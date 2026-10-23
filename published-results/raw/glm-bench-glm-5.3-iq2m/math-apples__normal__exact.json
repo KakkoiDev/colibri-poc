@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 370.22,
+ "prompt_tokens": 30,
+ "prefill_s": 62.21,
+ "output_tokens": 67,
+ "decode_s": 303.83,
+ "decode_tok_s": 0.22,
+ "zeroed_slots": 0,
+ "hit_pct": 0.6,
+ "text": "# Apple Math Problem\n\nStarting with 12 apples:\n\n1. **Start:** 12 apples\n2. **Give away 5:** 12 − 5 = 7 apples\n3. **Buy 8 more:** 7 + 8 = 15 apples\n\n**You have 15 apples.** 🍎",
+ "answer_s": 366.04,
+ "correct": true
+}

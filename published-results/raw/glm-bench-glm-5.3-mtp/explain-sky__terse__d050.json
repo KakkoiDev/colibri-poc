@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 130.02,
+ "prompt_tokens": 29,
+ "prefill_s": 41.7,
+ "output_tokens": 128,
+ "decode_s": 85.4,
+ "decode_tok_s": 1.5,
+ "zeroed_slots": 64355,
+ "hit_pct": 30.7,
+ "text": "The sky is blue because air molecules scatter blue light more than other colors (from the sun or elsewhere). The sky is blue because air molecules scatter blue light more than other colors (from the sun or elsewhere). Blue light's shorter wavelength (smaller than longer waves (red (orange (yellow (green including green that's also (yellowish (longer wavelength))))) more likely to scatter (scattered) (scattered) (scattered) (scattered) (scattered) (scattered) (scattered) (scattered) (scattered) (scattered) (scattered) (scattered) (",
+ "answer_s": 127.1,
+ "correct": true
+}

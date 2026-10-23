@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 142.03,
+ "prompt_tokens": 15,
+ "prefill_s": 19.51,
+ "output_tokens": 69,
+ "decode_s": 118.63,
+ "decode_tok_s": 0.58,
+ "zeroed_slots": 24865,
+ "hit_pct": 1.6,
+ "text": "15% of 240 is **36**.\n\nTo calculate: 15% = 0.15, then 0.15 × 240 = 36.\n\nOr mentally: 10% of 240 is 24, and half of that (5%) is 12. So 24 + 12 = **36**.",
+ "answer_s": 138.14,
+ "correct": true
+}

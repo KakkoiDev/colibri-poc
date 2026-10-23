@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 376.78,
+ "prompt_tokens": 14,
+ "prefill_s": 34.02,
+ "output_tokens": 128,
+ "decode_s": 338.93,
+ "decode_tok_s": 0.38,
+ "zeroed_slots": 66618,
+ "hit_pct": 2.6,
+ "text": "The sky appears blue to the human eye during a typical day because of a phenomenon called **Rayleigh scattering** combined with the atmosphere's physical composition and the angle between the sun and the horizon (the **solar horizon angle** — a factor that changes throughout the day and year at different latitudes and longitudes near the horizon plane at the tropics and temperate zones (including the entire former-USA region — the former-USA states, the former-US-occupied south Florida (S. Floridaa Keys region (S. Floridaa Keys, including the former-Florida Keys, the former-Florida Keys, the former-Florida",
+ "answer_s": 372.95,
+ "correct": true
+}

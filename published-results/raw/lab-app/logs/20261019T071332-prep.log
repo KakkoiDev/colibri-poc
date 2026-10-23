@@ -1,0 +1,25 @@
+# Download and prepare GLM-5.3 UD-IQ2_M (2-bit GGUF)
+# make glm-prep-iq2m
+sh scripts/prep_gguf.sh unsloth/GLM-5.3-GGUF UD-IQ2_M glm-5.3-iq2m
+/dev/disk3s5   1.8Ti   1.1Ti   655Gi    65%    1.3M  6.9G    0%   /System/Volumes/Data
+
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]
+Fetching 6 files:  33%|███▎      | 2/6 [45:38<1:31:16, 1369.03s/it]
+Fetching 6 files:  50%|█████     | 3/6 [53:02<49:11, 983.78s/it]   
+Fetching 6 files:  67%|██████▋   | 4/6 [54:21<21:32, 646.36s/it]
+Fetching 6 files:  83%|████████▎ | 5/6 [54:53<07:12, 432.50s/it]
+Fetching 6 files: 100%|██████████| 6/6 [54:58<00:00, 290.79s/it]
+Fetching 6 files: 100%|██████████| 6/6 [54:58<00:00, 549.80s/it]
+[32m✓ Downloaded[0m
+  path: ~/colibri-models/gguf/glm-5.3-iq2m
+colibri model directory ready: ~/colibri-models/glm-5.3-iq2m  (glm-dsa, 78 layers, mode link)
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      13 model families · MoE experts streamed from disk · CPU
+             import
+             
+  ──────────────────────────────────────────────────────────
+
+  ready: coli chat --model ~/colibri-models/glm-5.3-iq2m   (or coli serve / coli web)
+Ready: ~/colibri-models/glm-5.3-iq2m

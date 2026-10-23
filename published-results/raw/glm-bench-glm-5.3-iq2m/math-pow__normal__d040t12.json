@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 166.34,
+ "prompt_tokens": 17,
+ "prefill_s": 20.39,
+ "output_tokens": 128,
+ "decode_s": 142.05,
+ "decode_tok_s": 0.9,
+ "zeroed_slots": 61943,
+ "hit_pct": 2.5,
+ "text": "2 to the power of 10 is **1024**.\n\nThat's because 2^10 means multiplying 2 by itself 10 times: 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = 1024.\n\nA useful way to remember this is that 2^10 = 2^5 × 2^5 = 32 × 32. And since 32^2 = 1024, doubling 2^5 (squaring 32) also squares the power of 2's base, so 2",
+ "answer_s": 162.44,
+ "correct": false
+}

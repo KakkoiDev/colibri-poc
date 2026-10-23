@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 91.04,
+ "prompt_tokens": 27,
+ "prefill_s": 38.36,
+ "output_tokens": 68,
+ "decode_s": 49.79,
+ "decode_tok_s": 1.37,
+ "zeroed_slots": 35396,
+ "hit_pct": 27.6,
+ "text": "A data structure that stores key-value pairs, using a hash function to compute an index into an array of buckets, enabling fast lookup, insertion, and deletion. Average O(1), worst O(n) (with a good hash function and assuming no pathological collisions). Space: O(n). Common in databases, caches, and hash maps.",
+ "answer_s": 88.15,
+ "correct": true
+}

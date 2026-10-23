@@ -1,0 +1,10 @@
+{
+  "name": "group-0",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T171031.211076Z/r3-group-0.plugin.py",
+  "env": {
+    "COLIBRI_SORT_THRESHOLD": "0"
+  },
+  "description": "Resident execution experiment; weights and routing unchanged"
+}

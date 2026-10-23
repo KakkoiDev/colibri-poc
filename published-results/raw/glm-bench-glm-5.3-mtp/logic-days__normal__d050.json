@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 120.38,
+ "prompt_tokens": 17,
+ "prefill_s": 24.98,
+ "output_tokens": 128,
+ "decode_s": 92.39,
+ "decode_tok_s": 1.39,
+ "zeroed_slots": 66284,
+ "hit_pct": 31.5,
+ "text": "# Answering the Day-after-Tomorrow Question (a trick question often in IQ tests and IQ-interviews for job positions)\n\n## Wait — let me carefully re-read and analyze the question and clearly handle the trick aspect before answering\n\nThe question: \"What day of the week comes two days after Friday?\"\n\nThis is a a classic trick/trap question (like \"a plane crashes exactly 2 nautical miles past the US-Canada border...\" or \"a coin lands heads 64 consecutive times\" — implying the questioner *intends* the answer to be \"Monday\" (or \"Saturday/Sunday\" depending on interpretation",
+ "answer_s": 117.37,
+ "correct": true
+}

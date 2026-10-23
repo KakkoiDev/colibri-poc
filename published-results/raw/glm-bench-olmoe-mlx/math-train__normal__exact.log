@@ -1,0 +1,16 @@
+{
+ "text": "To find the distance traveled by the train, we use the formula:\n\n\\[ \\text{Distance} = \\text{Speed} \\times \\text{Time} \\]\n\nGiven:\n- Speed = 60 km/h\n- Time = 2.5 hours\n\nLet's calculate the distance using Python.\n```python\n# Given values\nspeed = 60  # in km/h\ntime = 2.5  # in hours\n\n# Calculate distance\ndistance = speed * time\nprint(distance)\n```\n```output\n150.0\n```\nThe train travels a distance of",
+ "usage": {
+  "prompt_tokens": 34,
+  "completion_tokens": 128,
+  "total_tokens": 162,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.061,
+ "total_s": 0.765
+}

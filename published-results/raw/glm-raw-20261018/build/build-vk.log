@@ -1,0 +1,2 @@
+clang -O3 -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -Wall -Wextra -Wno-unused-parameter -Wno-misleading-indentation -Wno-unused-function  -MMD -MP -DCOLI_VULKAN -c backend_vulkan.c -o backend_vulkan.o
+clang -O3 -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -Wall -Wextra -Wno-unused-parameter -Wno-misleading-indentation -Wno-unused-function  -MMD -MP -DCOLI_VULKAN colibri.c   backend_vulkan.o vk_tier.o vk_chain.o  -o colibri -lm -L/opt/homebrew/opt/libomp/lib -lomp  -ldl

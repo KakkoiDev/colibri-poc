@@ -1,0 +1,91 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.68s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 17 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>What day of the week comes two days after Friday?<|assistant|><think></think>PROFILO PREFILL (24.98s):
+PROFILE: expert-disk 140.892s service / 17.589s wait | expert-matmul 4.052s | attention 2.664s (including kvb 0.355s) | lm_head 0.007s | other 0.670s
+ATTENTION: projection/RoPE 0.816s | score-softmax-value 0.040s | output projection 1.454s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.056s | residual P2P 0.000s / 0 hop | orchestration 0.614s
+METAL: blocchi GPU 184 | fallback CPU 0 | expert su GPU 5056 | setup 0.03s gpu-wall 3.50s (kernel 3.91s) scatter 0.01s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+# Answering the Day-after-Tomorrow Question (a trick question often in IQ tests and IQ-interviews for job positions)
+
+## Wait — let me carefully re-read and analyze the question and clearly handle the trick aspect before answering
+
+The question: "What day of the week comes two days after Friday?"
+
+This is a a classic trick/trap question (like "a plane crashes exactly 2 nautical miles past the US-Canada border..." or "a coin lands heads 64 consecutive times" — implying the questioner *intends* the answer to be "Monday" (or "Saturday/Sunday" depending on interpretation
+---
+prefill 17 tokens in 24.98s | decode 128 tokens in 92.39s (1.39 tok/s) | expert hit rate 31.5% (pin 0.0% + lru 31.5%) | RSS 10.49 GB
+experts loaded/token: 663.1 (per-layer 8.84 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 66284 miss slots; top layers: L5:971 L6:960 L3:957)
+speculation: 1.09 tokens/forward (117 forwards per 128 tokens) | MTP acceptance 42% (10/24)
+PROFILE: expert-disk 54.277s service / 36.884s wait | expert-matmul 5.083s | attention 26.852s (including kvb 0.000s) | lm_head 0.000s | other 23.570s
+ATTENTION: projection/RoPE 0.087s | score-softmax-value 0.064s | output projection 0.029s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.007s | residual P2P 0.000s / 0 hop | orchestration 23.563s
+METAL-ATTN: layer GPU 9126 | gpu-wall 26.47s (kernel 25.60s | cpu-sched 0.03s gpu-sched 0.44s)
+METAL: blocchi GPU 11718 | fallback CPU 0 | expert su GPU 18881 | setup 0.23s gpu-wall 8.28s (kernel 8.92s) scatter 0.02s
+METAL-RESSET: flush 0.52s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 117 | latency p50 681.7 ms | p90 1227.0 ms | p99 1303.5 ms | max 1309.9 ms | 1.09 tok/forward
+[PROF] expert I/O: 201.264 GB fetched (1572.4 MB/token, 2.18 GB/s over the run) | hit 31.5% (0 pin + 4346 lru / 9445 load) | 663.1 loads/token | 54.3s read service / 36.9s felt wait
+[PROF] DISK-CLASS (recency split): cold 3733 x 79.83 GB @ 3.61 GB/s-thread, wall 18.5s @ 4.32 GB/s-wall, avg-conc 1.2 (direct 3719/3733) | warm 5712 x 121.44 GB @ 3.78 GB/s-thread, wall 24.5s @ 4.96 GB/s-wall, avg-conc 1.3 (direct 5684/5712) | disk-busy 36.7s (40% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 40% | expert-matmul 6% | attention 29% | lm_head 0% | other 26%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.007s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 23.563s
+[PROF] verdict: I/O-bound — 40% of the time waits on expert reads (hit 32%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 17 token · +0.00s
+[prefill] layer 5/78 · 17 token · +1.13s
+[prefill] layer 9/78 · 17 token · +2.78s
+[prefill] layer 13/78 · 17 token · +4.23s
+[prefill] layer 17/78 · 17 token · +5.50s
+[prefill] layer 21/78 · 17 token · +6.71s
+[prefill] layer 25/78 · 17 token · +7.91s
+[prefill] layer 29/78 · 17 token · +9.21s
+[prefill] layer 33/78 · 17 token · +10.33s
+[prefill] layer 37/78 · 17 token · +11.48s
+[prefill] layer 41/78 · 17 token · +12.60s
+[prefill] layer 45/78 · 17 token · +13.77s
+[prefill] layer 49/78 · 17 token · +15.02s
+[prefill] layer 53/78 · 17 token · +16.24s
+[prefill] layer 57/78 · 17 token · +17.41s
+[prefill] layer 61/78 · 17 token · +18.63s
+[prefill] layer 65/78 · 17 token · +19.88s
+[prefill] layer 69/78 · 17 token · +21.12s
+[prefill] layer 73/78 · 17 token · +22.38s
+[prefill] layer 77/78 · 17 token · +23.67s
+[prefill] layer 78/78 · 17 token · +23.97s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.49 GB  hit 27%  1.16 tok/s  1.36 tok/fw]
+
+[t=32  RSS 10.49 GB  hit 26%  1.11 tok/s  1.35 tok/fw]
+[MTP] 42% acceptance over the last 24 proposals: drafts paused for 256 tokens
+
+[t=48  RSS 10.49 GB  hit 27%  1.22 tok/s  1.27 tok/fw]
+
+[t=64  RSS 10.49 GB  hit 29%  1.29 tok/s  1.19 tok/fw]
+
+[t=80  RSS 10.49 GB  hit 30%  1.32 tok/s  1.14 tok/fw]
+
+[t=96  RSS 10.49 GB  hit 31%  1.35 tok/s  1.12 tok/fw]
+
+[t=112  RSS 10.49 GB  hit 31%  1.37 tok/s  1.10 tok/fw]
+
+[t=128  RSS 10.49 GB  hit 32%  1.39 tok/s  1.09 tok/fw]

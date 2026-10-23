@@ -1,0 +1,16 @@
+{
+ "text": "```python\n# The weight of a kilogram of feathers and steel is the same since they both weigh 1000 grams.\nweight_feathers = 1000  # in grams\nweight_steel = 1000      # in grams\n\n# Since they have the same weight, the difference in their weights is 0 grams.\ndifference = weight_feathers - weight_steel\nprint(difference)\n```",
+ "usage": {
+  "prompt_tokens": 44,
+  "completion_tokens": 87,
+  "total_tokens": 131,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 86,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.054,
+ "total_s": 0.539
+}

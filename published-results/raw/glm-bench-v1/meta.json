@@ -1,0 +1,33 @@
+{
+ "started": "2026-10-18T04:01:33Z",
+ "base_env": {
+  "COLI_METAL": "1",
+  "PIPE": "1",
+  "DIRECT": "1",
+  "COLI_METAL_RESSET": "1",
+  "COLI_METAL_SPIN": "1",
+  "USAGE_SAVE": "0",
+  "KVSAVE": "0",
+  "COLI_TEMP": "0",
+  "PROF": "1"
+ },
+ "configs": {
+  "exact": {},
+  "d030": {
+   "DEGRADE_ZERO": "1",
+   "DEGRADE_TAU": "0.30"
+  },
+  "d050": {
+   "DEGRADE_ZERO": "1",
+   "DEGRADE_TAU": "0.50"
+  }
+ },
+ "styles": {
+  "normal": "",
+  "terse": " Answer as briefly as possible. For code, reply with only the code."
+ },
+ "ram": "18",
+ "ctx": "1024",
+ "ngen": 128,
+ "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850"
+}

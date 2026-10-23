@@ -1,0 +1,18 @@
+{
+ "id": "fact-capital",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 357.12,
+ "prompt_tokens": 13,
+ "prefill_s": 33.88,
+ "output_tokens": 128,
+ "decode_s": 319.11,
+ "decode_tok_s": 0.4,
+ "zeroed_slots": 66296,
+ "hit_pct": 2.1,
+ "text": "The capital of Australia is **Canberra**.\n\nThere's an interesting nuance here worth mentioning briefly: many people might think the capital of Australia (and this is a common misconception, especially among those not particularly interested/knowledgeable about political geography, capital cities, or that matter, in general) is Sydney or Melbourne, but the capital is actually **Canberra** (which can be called a purpose-built, planned capital city, akin to, in some respects, some other purpose-built/planned capitals, like Brasília, Brasília (the capital of Brazil, being a prime example of a purpose-built, planned capital city, which",
+ "answer_s": 352.99,
+ "correct": true
+}

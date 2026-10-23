@@ -1,0 +1,19 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.98,
+ "prompt_tokens": 33,
+ "prefill_s": 0.032,
+ "output_tokens": 128,
+ "decode_s": 0.949,
+ "load_s": 0.001,
+ "text": "Here is the solution:\n\n**1. Identify the given information:**\n* Speed ($S$) = 60 km/h\n* Time ($T$) = 2.5 hours\n\n**2. State the formula:**\nThe relationship between distance, speed, and time is:\n$$\\text{Distance} (D) = \\text{Speed} (S) \\times \\text{Time} (T)$$\n\n**3. Substitute the values and calculate:**\n$$D = 60 \\text{ km/h} \\times 2.5 \\text{ hours}$$\n$$D = 1",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 134.88,
+ "answer_s": 0.98,
+ "correct": false
+}

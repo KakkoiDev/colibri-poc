@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 231.66,
+ "prompt_tokens": 17,
+ "prefill_s": 25.96,
+ "output_tokens": 128,
+ "decode_s": 201.52,
+ "decode_tok_s": 0.64,
+ "zeroed_slots": 57944,
+ "hit_pct": 1.9,
+ "text": "# 2 to the power of 10\n\n**2¹⁰** = 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = **1024**\n\nThis is a famous and useful value in computer science and mathematics:\n- **1 KB** (kilobyte) in binary = 2¹⁰ bytes = 1024 bytes\n- It's the base of many powers of 2 calculations (2¹⁰, 2²⁰, 2³⁰, etc.)\n- It's often approximated as",
+ "answer_s": 227.48,
+ "correct": false
+}

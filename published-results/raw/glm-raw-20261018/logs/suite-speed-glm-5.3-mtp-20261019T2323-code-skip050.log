@@ -1,0 +1,76 @@
+# suite-speed-glm-5.3-mtp-20261019T2323-code-skip050 env: DEGRADE_ZERO=1 DEGRADE_TAU=0.50
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.93s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 26 tokens | generating up to 48 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Write a Python function that returns the n-th Fibonacci number iteratively, then state its time complexity.<|assistant|><think></think>PROFILO PREFILL (35.99s):
+PROFILE: expert-disk 200.594s service / 22.613s wait | expert-matmul 6.055s | attention 4.068s (including kvb 0.555s) | lm_head 0.006s | other 3.252s
+ATTENTION: projection/RoPE 1.246s | score-softmax-value 0.040s | output projection 2.226s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.042s | residual P2P 0.000s / 0 hop | orchestration 3.210s
+METAL: blocchi GPU 231 | fallback CPU 0 | expert su GPU 7056 | setup 0.04s gpu-wall 5.36s (kernel 5.99s) scatter 0.01s
+METAL-RESSET: flush 0.64s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Here's a Python function that computes the n-th Fibonacci number iteratively (that is, without recursion, using a loop and just two variables to keep track of the two most-recent Fibonacci numbers so far — actually, since the two most
+---
+prefill 26 tokens in 35.99s | decode 48 tokens in 29.24s (1.64 tok/s) | expert hit rate 22.7% (pin 0.0% + lru 22.7%) | RSS 10.12 GB
+experts loaded/token: 706.5 (per-layer 9.42 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 24496 miss slots; top layers: L3:377 L5:374 L8:374)
+speculation: 1.50 tokens/forward (32 forwards per 48 tokens) | MTP acceptance 62% (15/24)
+PROFILE: expert-disk 26.894s service / 14.256s wait | expert-matmul 2.048s | attention 10.526s (including kvb 0.000s) | lm_head 0.000s | other 2.415s
+ATTENTION: projection/RoPE 0.027s | score-softmax-value 0.022s | output projection 0.027s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.005s | residual P2P 0.000s / 0 hop | orchestration 2.410s
+METAL-ATTN: layer GPU 2496 | gpu-wall 10.39s (kernel 10.15s | cpu-sched 0.01s gpu-sched 0.12s)
+METAL: blocchi GPU 3622 | fallback CPU 0 | expert su GPU 11990 | setup 0.11s gpu-wall 7.31s (kernel 8.15s) scatter 0.02s
+METAL-RESSET: flush 0.64s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 32 | latency p50 963.5 ms | p90 1065.1 ms | p99 1088.4 ms | max 1112.9 ms | 1.50 tok/forward
+[PROF] expert I/O: 81.131 GB fetched (1690.2 MB/token, 2.77 GB/s over the run) | hit 22.7% (0 pin + 1110 lru / 3785 load) | 706.5 loads/token | 26.9s read service / 14.3s felt wait
+[PROF] DISK-CLASS (recency split): cold 1734 x 37.38 GB @ 2.93 GB/s-thread, wall 9.2s @ 4.07 GB/s-wall, avg-conc 1.4 (direct 1729/1734) | warm 2051 x 43.75 GB @ 3.11 GB/s-thread, wall 9.6s @ 4.55 GB/s-wall, avg-conc 1.5 (direct 2045/2051) | disk-busy 14.2s (48% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 49% | expert-matmul 7% | attention 36% | lm_head 0% | other 8%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.005s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 2.410s
+[PROF] verdict: I/O-bound — 49% of the time waits on expert reads (hit 23%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 12.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 26 token · +0.00s
+[prefill] layer 5/78 · 26 token · +1.51s
+[prefill] layer 9/78 · 26 token · +3.87s
+[prefill] layer 13/78 · 26 token · +5.98s
+[prefill] layer 17/78 · 26 token · +7.91s
+[prefill] layer 21/78 · 26 token · +9.47s
+[prefill] layer 25/78 · 26 token · +11.17s
+[prefill] layer 29/78 · 26 token · +13.12s
+[prefill] layer 33/78 · 26 token · +14.85s
+[prefill] layer 37/78 · 26 token · +16.52s
+[prefill] layer 41/78 · 26 token · +18.14s
+[prefill] layer 45/78 · 26 token · +19.84s
+[prefill] layer 49/78 · 26 token · +21.59s
+[prefill] layer 53/78 · 26 token · +23.30s
+[prefill] layer 57/78 · 26 token · +25.03s
+[prefill] layer 61/78 · 26 token · +26.75s
+[prefill] layer 65/78 · 26 token · +28.43s
+[prefill] layer 69/78 · 26 token · +30.13s
+[prefill] layer 73/78 · 26 token · +32.00s
+[prefill] layer 77/78 · 26 token · +33.94s
+[prefill] layer 78/78 · 26 token · +34.40s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.12 GB  hit 22%  1.96 tok/s  1.88 tok/fw]
+
+[t=32  RSS 10.12 GB  hit 20%  1.79 tok/s  1.82 tok/fw]
+[MTP] 62% acceptance over the last 24 proposals: drafts paused for 256 tokens
+
+[t=48  RSS 10.12 GB  hit 23%  1.64 tok/s  1.47 tok/fw]

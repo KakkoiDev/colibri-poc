@@ -1,0 +1,65 @@
+# Quiet run (skip-original)
+# ~/Code/colibri-poc/.venv/bin/python glm_quiet.py run --skip-original
+Free RAM: 27.8 GB (busy runs had 10-17.5; quiet target >= 20.0)
+Swap used: 529.62 MB | processes: 447 | load: 1.5, 1.4, 2.1
+Largest apps still open:
+    0.24 GB  Claude Helper (Renderer)
+    0.16 GB  claude
+    0.15 GB  Claude
+    0.08 GB  Claude Helper (Renderer)
+    0.08 GB  com.apple.WebKit.WebContent
+    0.05 GB  Claude Helper
+    0.05 GB  Claude Helper (Renderer)
+    0.04 GB  Claude Helper
+
+Planned lab experiments (run after the comparison set):
+
+Ready.
+
+Writing to ~/Code/colibri-poc/results/glm-quiet-20261021T172055Z
+Repeat 1/2
+  exact-sky-24__r1: 0.42 tok/s
+  skip030-sky-48__r1: 0.88 tok/s
+  skip050-sky-48__r1: 1.57 tok/s
+  exact-code-48__r1: 0.4 tok/s
+  skip050-code-48__r1: 1.47 tok/s
+  exact-sky-24-t12__r1: 0.41 tok/s
+  skip050-sky-48-t12__r1: 1.91 tok/s
+Repeat 2/2
+  exact-sky-24__r2: 0.42 tok/s
+  skip030-sky-48__r2: 0.88 tok/s
+  skip050-sky-48__r2: 1.57 tok/s
+  exact-code-48__r2: 0.4 tok/s
+  skip050-code-48__r2: 1.47 tok/s
+  exact-sky-24-t12__r2: 0.41 tok/s
+  skip050-sky-48-t12__r2: 1.91 tok/s
+Planned lab experiments
+Skipping ssd-mirror: no runnable plan (needs a decision or hardware)
+Skipping rans: no runnable plan (needs a decision or hardware)
+Skipping reap: no runnable plan (needs a decision or hardware)
+Skipping int3-experts: no runnable plan (needs a decision or hardware)
+Skipping glm53-flash: no runnable plan (needs a decision or hardware)
+Skipping sm-qwen38-27b-ollama: no runnable plan (needs a decision or hardware)
+Skipping sm-qwen36-a3b-resident: no runnable plan (needs a decision or hardware)
+Skipping sm-qwen36-a3b-ram-sweep: no runnable plan (needs a decision or hardware)
+Skipping sm-qwen36-a3b-vulkan: no runnable plan (needs a decision or hardware)
+Skipping sm-qwen38-27b-lowram: no runnable plan (needs a decision or hardware)
+Skipping sm-intelligence-per-minute: no runnable plan (needs a decision or hardware)
+68 experiments -> docs/12-experiment-log.md, site/data/experiments.json
+
+# Quiet-machine GLM rerun 20261021T172055Z
+
+Free RAM before/after: 27.8 / 27.3 GB (busy runs: 10-17.5 GB). Swap used before: 529.62 MB. Processes: 447. Repeats: 2.
+
+| Case | Busy tok/s | Quiet tok/s (each repeat) | Quiet mean | Change | Same text as busy |
+|---|---:|---|---:|---:|---|
+| exact-sky-24 | 0.43 | 0.42, 0.42 | 0.42 | -2% | 2/2 |
+| skip030-sky-48 | 0.91 | 0.88, 0.88 | 0.88 | -3% | 2/2 |
+| skip050-sky-48 | 1.57 | 1.57, 1.57 | 1.57 | +0% | 2/2 |
+| exact-code-48 | 0.42 | 0.40, 0.40 | 0.40 | -5% | 2/2 |
+| skip050-code-48 | 1.46 | 1.47, 1.47 | 1.47 | +1% | 2/2 |
+| exact-sky-24-t12 | 0.44 | 0.41, 0.41 | 0.41 | -7% | 2/2 |
+| skip050-sky-48-t12 | 1.91 | 1.91, 1.91 | 1.91 | +0% | 2/2 |
+
+
+Done. Tell Claude: "quiet run finished: results/glm-quiet-20261021T172055Z"

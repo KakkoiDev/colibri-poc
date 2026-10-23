@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 139.11,
+ "prompt_tokens": 29,
+ "prefill_s": 61.97,
+ "output_tokens": 31,
+ "decode_s": 72.97,
+ "decode_tok_s": 0.42,
+ "zeroed_slots": 16262,
+ "hit_pct": 2.2,
+ "text": "The sky is blue because air molecules scatter blue light more than other colors (Rayleigh scattering), and scattered blue light comes from all directions of the sky.",
+ "answer_s": 134.94,
+ "correct": true
+}

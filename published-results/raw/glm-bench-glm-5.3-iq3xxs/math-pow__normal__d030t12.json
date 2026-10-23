@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 249.76,
+ "prompt_tokens": 17,
+ "prefill_s": 23.07,
+ "output_tokens": 124,
+ "decode_s": 222.61,
+ "decode_tok_s": 0.56,
+ "zeroed_slots": 40464,
+ "hit_pct": 1.2,
+ "text": "# 2 to the power of 10\n\n2¹⁰ = **1024**\n\nThis can be calculated by multiplying 2 by itself 10 times:\n\n2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = 1024\n\n**Fun fact:** This is why 1024 is often used in computing (e.g., 1 kilobyte = 1024 bytes in binary systems), and it's the source of the term \"kilo\" being approximated as 2¹⁰ in computer science.",
+ "answer_s": 245.68,
+ "correct": false
+}

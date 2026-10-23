@@ -1,0 +1,89 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 1.33s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 17 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>What is 2 to the power of 10?<|assistant|><think></think>PROFILO PREFILL (22.96s):
+PROFILE: expert-disk 126.410s service / 15.803s wait | expert-matmul 3.877s | attention 2.681s (including kvb 0.356s) | lm_head 0.008s | other 0.596s
+ATTENTION: projection/RoPE 0.822s | score-softmax-value 0.053s | output projection 1.450s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.074s | residual P2P 0.000s / 0 hop | orchestration 0.522s
+METAL: blocchi GPU 185 | fallback CPU 0 | expert su GPU 4918 | setup 0.03s gpu-wall 3.48s (kernel 3.89s) scatter 0.01s
+METAL-RESSET: flush 0.35s (residency-set commit in moe_submit, outside setup/gpu-wall)
+2 to the power of 10 (2¹⁰) equals **1024**.
+
+This is a well-known value in computing, since computers use binary (base-2) arithmetic. That's why 1024 bytes is called a **kilobyte** (rather than 1000), and powers of 2 like this show up throughout computer science — for example, 2¹⁰ = 1024, 2²⁰ = 1,048,576, and so on.
+
+You can verify it by repeated doubling: 2 → 4 → 8 → 16 → 32
+---
+prefill 17 tokens in 22.96s | decode 128 tokens in 150.53s (0.85 tok/s) | expert hit rate 9.9% (pin 0.0% + lru 9.9%) | RSS 10.98 GB
+experts loaded/token: 609.4 (per-layer 8.12 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 45602 miss slots; top layers: L63:692 L52:680 L4:665)
+speculation: 1.02 tokens/forward (126 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 302.394s service / 92.519s wait | expert-matmul 11.059s | attention 25.673s (including kvb 0.000s) | lm_head 0.000s | other 21.275s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.012s | residual P2P 0.000s / 0 hop | orchestration 21.263s
+METAL-ATTN: layer GPU 9828 | gpu-wall 25.30s (kernel 24.29s | cpu-sched 0.06s gpu-sched 0.46s)
+METAL: blocchi GPU 12767 | fallback CPU 0 | expert su GPU 36758 | setup 0.50s gpu-wall 13.88s (kernel 14.37s) scatter 0.05s
+METAL-RESSET: flush 0.35s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 126 | latency p50 1158.9 ms | p90 1248.2 ms | p99 2078.6 ms | max 2145.8 ms | 1.02 tok/forward
+[PROF] expert I/O: 608.833 GB fetched (4756.5 MB/token, 4.04 GB/s over the run) | hit 9.9% (0 pin + 3167 lru / 28673 load) | 609.4 loads/token | 302.4s read service / 92.5s felt wait
+[PROF] DISK-CLASS (recency split): cold 10529 x 223.57 GB @ 1.85 GB/s-thread, wall 65.1s @ 3.43 GB/s-wall, avg-conc 1.9 (direct 10489/10529) | warm 18144 x 385.26 GB @ 2.12 GB/s-thread, wall 80.8s @ 4.77 GB/s-wall, avg-conc 2.2 (direct 18045/18144) | disk-busy 92.3s (61% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 61% | expert-matmul 7% | attention 17% | lm_head 0% | other 14%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.012s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 21.263s
+[PROF] verdict: I/O-bound — 61% of the time waits on expert reads (hit 10%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.5 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 17 token · +0.00s
+[prefill] layer 5/78 · 17 token · +0.92s
+[prefill] layer 9/78 · 17 token · +2.42s
+[prefill] layer 13/78 · 17 token · +3.78s
+[prefill] layer 17/78 · 17 token · +4.98s
+[prefill] layer 21/78 · 17 token · +6.08s
+[prefill] layer 25/78 · 17 token · +7.22s
+[prefill] layer 29/78 · 17 token · +8.47s
+[prefill] layer 33/78 · 17 token · +9.59s
+[prefill] layer 37/78 · 17 token · +10.69s
+[prefill] layer 41/78 · 17 token · +11.75s
+[prefill] layer 45/78 · 17 token · +12.84s
+[prefill] layer 49/78 · 17 token · +14.06s
+[prefill] layer 53/78 · 17 token · +15.16s
+[prefill] layer 57/78 · 17 token · +16.34s
+[prefill] layer 61/78 · 17 token · +17.48s
+[prefill] layer 65/78 · 17 token · +18.70s
+[prefill] layer 69/78 · 17 token · +19.90s
+[prefill] layer 73/78 · 17 token · +21.10s
+[prefill] layer 77/78 · 17 token · +22.35s
+[prefill] layer 78/78 · 17 token · +22.64s
+
+[t=16  RSS 10.98 GB  hit 8%  0.94 tok/s  1.07 tok/fw]
+
+[t=32  RSS 10.98 GB  hit 10%  0.90 tok/s  1.03 tok/fw]
+
+[t=48  RSS 10.98 GB  hit 11%  0.90 tok/s  1.02 tok/fw]
+
+[t=64  RSS 10.98 GB  hit 11%  0.89 tok/s  1.02 tok/fw]
+
+[t=80  RSS 10.98 GB  hit 11%  0.88 tok/s  1.01 tok/fw]
+
+[t=96  RSS 10.98 GB  hit 10%  0.86 tok/s  1.01 tok/fw]
+
+[t=112  RSS 10.98 GB  hit 10%  0.85 tok/s  1.01 tok/fw]
+
+[t=128  RSS 10.98 GB  hit 10%  0.85 tok/s  1.01 tok/fw]

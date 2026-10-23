@@ -1,0 +1,19 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 3.76,
+ "prompt_tokens": 95,
+ "prefill_s": 0.191,
+ "output_tokens": 141,
+ "decode_s": 3.567,
+ "load_s": 0.001,
+ "text": "100°C",
+ "thinking_chars": 526,
+ "truncated": false,
+ "decode_tok_s": 39.53,
+ "answer_s": 3.76,
+ "correct": true
+}

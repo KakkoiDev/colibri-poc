@@ -1,0 +1,89 @@
+# c2-metal-r18-c1k 2026-10-17T19:37:18Z dir=<tmp>/claude-501/-Users-kakkoidev-Code-pi-local-harness/95e98610-3ae1-4256-8832-7c25ada2f2cd/scratchpad/colibri args=--ram 18 --ctx 1024 env: RAM_GB=18 COLI_METAL=1 PIPE= DIRECT= MTP= CACHE_ROUTE= PILOT=
+Pageouts:                                       1672.
+Swapouts:                                        680.
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 10.3 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=0 DIRECT=0 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.47s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 17 tokens | generating up to 24 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Explain in two sentences why the sky is blue.<|assistant|><think></think>[prefill] layer 1/78 · 17 token · +0.00s
+[prefill] layer 5/78 · 17 token · +0.81s
+[prefill] layer 9/78 · 17 token · +2.61s
+[prefill] layer 13/78 · 17 token · +4.20s
+[prefill] layer 17/78 · 17 token · +5.52s
+[prefill] layer 21/78 · 17 token · +6.75s
+[prefill] layer 25/78 · 17 token · +7.99s
+[prefill] layer 29/78 · 17 token · +9.46s
+[prefill] layer 33/78 · 17 token · +10.61s
+[prefill] layer 37/78 · 17 token · +11.79s
+[prefill] layer 41/78 · 17 token · +12.94s
+[prefill] layer 45/78 · 17 token · +14.13s
+[prefill] layer 49/78 · 17 token · +15.43s
+[prefill] layer 53/78 · 17 token · +16.68s
+[prefill] layer 57/78 · 17 token · +17.95s
+[prefill] layer 61/78 · 17 token · +19.31s
+[prefill] layer 65/78 · 17 token · +20.73s
+[prefill] layer 69/78 · 17 token · +22.06s
+[prefill] layer 73/78 · 17 token · +23.50s
+[prefill] layer 77/78 · 17 token · +25.03s
+[prefill] layer 78/78 · 17 token · +25.45s
+PROFILO PREFILL (25.92s):
+PROFILE: expert-disk 33.001s service / 16.584s wait | expert-matmul 4.002s | attention 3.529s (including kvb 0.438s) | lm_head 0.091s | other 1.714s
+ATTENTION: projection/RoPE 1.094s | score-softmax-value 0.055s | output projection 1.941s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.107s | residual P2P 0.000s / 0 hop | orchestration 1.607s
+METAL: blocchi GPU 193 | fallback CPU 0 | expert su GPU 5173 | setup 0.04s gpu-wall 3.95s (kernel 4.21s) scatter 0.01s
+The sky appears blue because molecules in Earth's atmosphere scatter shorter wavelengths of sunlight (
+[t=16  RSS 7.44 GB  hit 2%  0.23 tok/s  1.00 tok/fw]
+blue and violet) more strongly than longer
+---
+prefill 17 tokens in 25.92s | decode 24 tokens in 104.30s (0.23 tok/s) | expert hit rate 2.1% (pin 0.0% + lru 2.1%) | RSS 7.44 GB
+experts loaded/token: 575.0 (per-layer 7.67 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.04 tokens/forward (23 forwards per 24 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 98.862s service / 51.046s wait | expert-matmul 12.811s | attention 34.600s (including kvb 0.000s) | lm_head 0.000s | other 5.842s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.003s | residual P2P 0.000s / 0 hop | orchestration 5.839s
+METAL-ATTN: layer GPU 1794 | gpu-wall 34.48s (kernel 9.67s | cpu-sched 0.04s gpu-sched 24.59s)
+METAL: blocchi GPU 2205 | fallback CPU 0 | expert su GPU 18973 | setup 0.22s gpu-wall 16.51s (kernel 15.86s) scatter 0.02s
+[PROF] decode forwards: 23 | latency p50 4546.1 ms | p90 4696.7 ms | p99 4859.1 ms | max 4949.9 ms | 1.04 tok/forward
+[PROF] expert I/O: 286.931 GB fetched (11955.4 MB/token, 2.75 GB/s over the run) | hit 2.1% (0 pin + 287 lru / 13513 load) | 575.0 loads/token | 98.9s read service / 51.0s felt wait
+[PROF] DISK-CLASS (recency split): cold 5599 x 118.89 GB @ 2.88 GB/s-thread, wall 31.5s @ 3.78 GB/s-wall, avg-conc 1.3 (direct 0/5599) | warm 7914 x 168.04 GB @ 2.92 GB/s-thread, wall 39.5s @ 4.26 GB/s-wall, avg-conc 1.5 (direct 0/7914) | disk-busy 51.0s (49% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 49% | expert-matmul 12% | attention 33% | lm_head 0% | other 6%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.003s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 5.839s
+[PROF] verdict: I/O-bound — 49% of the time waits on expert reads (hit 2%). More cache is the lever: raise RAM_GB (or add RAM). Try PIPE=1 (overlap reads with matmul). On NVMe try DIRECT=1.
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+      134.23 real         8.13 user        78.66 sys
+          7985790976  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+             4705743  page reclaims
+                  80  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+               73391  voluntary context switches
+              731179  involuntary context switches
+          1361436235  instructions retired
+           437730715  cycles elapsed
+            43352592  peak memory footprint
+exit 0
+Pageouts:                                       2924.
+Swapouts:                                        680.

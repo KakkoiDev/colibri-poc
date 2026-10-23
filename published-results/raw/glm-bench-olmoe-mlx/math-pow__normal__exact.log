@@ -1,0 +1,16 @@
+{
+ "text": "2 to the power of 10 is 1024. \n\nHere's how you calculate it:\n\n2^10 = 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 = 1024\n\nThis calculation is straightforward using basic multiplication.",
+ "usage": {
+  "prompt_tokens": 22,
+  "completion_tokens": 54,
+  "total_tokens": 76,
+  "prompt_tokens_details": {
+   "cached_tokens": 8
+  }
+ },
+ "chunks": 53,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.041,
+ "total_s": 0.334
+}

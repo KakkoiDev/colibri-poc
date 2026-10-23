@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 578.13,
+ "prompt_tokens": 12,
+ "prefill_s": 30.01,
+ "output_tokens": 128,
+ "decode_s": 544.21,
+ "decode_tok_s": 0.24,
+ "zeroed_slots": 0,
+ "hit_pct": 0.4,
+ "text": "# Hash Table\n\nA **hash table** (also called a hash map) is a data structure that stores key-value pairs and provides fast lookup, insertion, and deletion operations.\n\n## How It Works\n\nA hash table uses a **hash function** to convert a key into an index in an array (called a \"bucket\"). This allows you to jump directly to where data is stored, rather than searching through it sequentially.\n\n```\nKey: \"apple\" → Hash Function → Index 3 → Value: 0.75\n```\n\n## Basic Operations\n\n| Operation | Average Time | Worst Case |\n|-----------|-------------|------------",
+ "answer_s": 574.22,
+ "correct": true
+}

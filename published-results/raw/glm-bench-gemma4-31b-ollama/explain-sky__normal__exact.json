@@ -1,0 +1,19 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 7.71,
+ "prompt_tokens": 20,
+ "prefill_s": 0.401,
+ "output_tokens": 128,
+ "decode_s": 7.148,
+ "load_s": 0.057,
+ "text": "The short answer is a phenomenon called **Rayleigh scattering**.\n\nHere is the step-by-step explanation of how it works:\n\n### 1. Sunlight is a spectrum\nAlthough sunlight looks white to us, it is actually made up of all the colors of the rainbow (red, orange, yellow, green, blue, indigo, and violet). Each of these colors travels as a wave of energy, but they have different **wavelengths**:\n*   **Red light** has long, lazy wavelengths.\n*   **Blue and violet light** have short, choppy wavelengths.\n\n### 2. The Atmosphere is an",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 17.91,
+ "answer_s": 7.55,
+ "correct": true
+}

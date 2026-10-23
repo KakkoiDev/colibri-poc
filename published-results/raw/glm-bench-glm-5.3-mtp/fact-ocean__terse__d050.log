@@ -1,0 +1,68 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.64s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 29 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>What is the largest ocean on Earth? Answer as briefly as possible. For code, reply with only the code.<|assistant|><think></think>PROFILO PREFILL (41.55s):
+PROFILE: expert-disk 235.831s service / 26.852s wait | expert-matmul 6.547s | attention 4.605s (including kvb 0.632s) | lm_head 0.007s | other 3.540s
+ATTENTION: projection/RoPE 1.383s | score-softmax-value 0.107s | output projection 2.483s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.091s | residual P2P 0.000s / 0 hop | orchestration 3.450s
+METAL: blocchi GPU 231 | fallback CPU 0 | expert su GPU 7030 | setup 0.04s gpu-wall 5.99s (kernel 6.70s) scatter 0.01s
+METAL-RESSET: flush 0.50s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Pacific Ocean.
+---
+prefill 29 tokens in 41.55s | decode 3 tokens in 2.52s (1.19 tok/s) | expert hit rate 16.7% (pin 0.0% + lru 16.7%) | RSS 10.42 GB
+experts loaded/token: 808.0 (per-layer 10.77 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 1612 miss slots; top layers: L3:28 L8:26 L73:26)
+speculation: 1.50 tokens/forward (2 forwards per 3 tokens) | MTP acceptance 50% (1/2)
+PROFILE: expert-disk 1.806s service / 0.968s wait | expert-matmul 0.144s | attention 0.744s (including kvb 0.000s) | lm_head 0.000s | other 0.665s
+ATTENTION: projection/RoPE 0.008s | score-softmax-value 0.006s | output projection 0.005s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.000s | residual P2P 0.000s / 0 hop | orchestration 0.665s
+METAL-ATTN: layer GPU 156 | gpu-wall 0.72s (kernel 0.71s | cpu-sched 0.00s gpu-sched 0.01s)
+METAL: blocchi GPU 427 | fallback CPU 0 | expert su GPU 7332 | setup 0.05s gpu-wall 6.13s (kernel 6.84s) scatter 0.01s
+METAL-RESSET: flush 0.50s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 2 | latency p50 1186.0 ms | p90 1186.0 ms | p99 1186.0 ms | max 1274.0 ms | 1.50 tok/forward
+[PROF] expert I/O: 5.337 GB fetched (1779.0 MB/token, 2.12 GB/s over the run) | hit 16.7% (0 pin + 50 lru / 249 load) | 808.0 loads/token | 1.8s read service / 1.0s felt wait
+[PROF] DISK-CLASS (recency split): cold 186 x 3.95 GB @ 2.81 GB/s-thread, wall 0.8s @ 4.82 GB/s-wall, avg-conc 1.7 (direct 186/186) | warm 63 x 1.39 GB @ 3.49 GB/s-thread, wall 0.3s @ 4.44 GB/s-wall, avg-conc 1.3 (direct 61/63) | disk-busy 1.0s (38% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 38% | expert-matmul 6% | attention 30% | lm_head 0% | other 26%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.000s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 0.665s
+[PROF] verdict: I/O-bound — 38% of the time waits on expert reads (hit 17%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 12.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 29 token · +0.00s
+[prefill] layer 5/78 · 29 token · +1.66s
+[prefill] layer 9/78 · 29 token · +4.07s
+[prefill] layer 13/78 · 29 token · +6.60s
+[prefill] layer 17/78 · 29 token · +8.51s
+[prefill] layer 21/78 · 29 token · +10.49s
+[prefill] layer 25/78 · 29 token · +12.31s
+[prefill] layer 29/78 · 29 token · +14.51s
+[prefill] layer 33/78 · 29 token · +16.51s
+[prefill] layer 37/78 · 29 token · +18.55s
+[prefill] layer 41/78 · 29 token · +20.53s
+[prefill] layer 45/78 · 29 token · +22.59s
+[prefill] layer 49/78 · 29 token · +25.02s
+[prefill] layer 53/78 · 29 token · +27.16s
+[prefill] layer 57/78 · 29 token · +28.92s
+[prefill] layer 61/78 · 29 token · +30.95s
+[prefill] layer 65/78 · 29 token · +32.85s
+[prefill] layer 69/78 · 29 token · +35.00s
+[prefill] layer 73/78 · 29 token · +37.21s
+[prefill] layer 77/78 · 29 token · +39.55s
+[prefill] layer 78/78 · 29 token · +40.07s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)

@@ -1,0 +1,19 @@
+{
+ "id": "fact-capital",
+ "kind": "fact",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 4.49,
+ "prompt_tokens": 84,
+ "prefill_s": 0.19,
+ "output_tokens": 128,
+ "decode_s": 3.242,
+ "load_s": 1.045,
+ "text": "",
+ "thinking_chars": 555,
+ "truncated": true,
+ "decode_tok_s": 39.48,
+ "answer_s": 3.43,
+ "correct": false
+}

@@ -1,0 +1,16 @@
+{
+ "text": "```python\napples = 12\napples -= 5\napples += 8\nprint(apples)\n```\n\nThe final answer is 13.",
+ "usage": {
+  "prompt_tokens": 49,
+  "completion_tokens": 34,
+  "total_tokens": 83,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 33,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.054,
+ "total_s": 0.234
+}

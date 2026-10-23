@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 249.12,
+ "prompt_tokens": 17,
+ "prefill_s": 24.15,
+ "output_tokens": 91,
+ "decode_s": 222.34,
+ "decode_tok_s": 0.41,
+ "zeroed_slots": 0,
+ "hit_pct": 1.7,
+ "text": "2 to the power of 10 is **1024**.\n\nThis is calculated as: 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = 1024\n\nThis number is significant in computing — it's why memory sizes are often measured in units like kilobytes (1024 bytes) and why binary systems work so neatly with powers of 2.",
+ "answer_s": 246.49,
+ "correct": false
+}

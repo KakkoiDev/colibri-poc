@@ -1,0 +1,18 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 421.84,
+ "prompt_tokens": 29,
+ "prefill_s": 61.88,
+ "output_tokens": 128,
+ "decode_s": 356.06,
+ "decode_tok_s": 0.36,
+ "zeroed_slots": 45766,
+ "hit_pct": 1.7,
+ "text": "Here's a Python function that reverses the words of a string:\n\n```python\ndef reverse_words(s):\n    return ' '.join(s.split()[::-1])\n```\n\n**How it works:**\n\n1. `s.split()` — splits the string on any whitespace (spaces, tabs, newlines) and automatically discards empty strings from the result, so consecutive whitespace and leading/trailing whitespace are handled cleanly. For example, `\"  hello   world  \".split()` gives `['hello', 'world']`.\n\n2. `[::-1]` — reverses the list of words using slicing, which is a common and efficient",
+ "answer_s": 417.94,
+ "correct": true
+}

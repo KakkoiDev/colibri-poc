@@ -1,0 +1,18 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 391.37,
+ "prompt_tokens": 19,
+ "prefill_s": 45.71,
+ "output_tokens": 128,
+ "decode_s": 341.41,
+ "decode_tok_s": 0.37,
+ "zeroed_slots": 42723,
+ "hit_pct": 1.2,
+ "text": "# Boiling Point of Water at Sea Level\n\nAt sea level (standard atmospheric pressure of 101.325 kPa or 1 atm), water boils at **100°C**.\n\nThis is equivalent to:\n- **212°F** (Fahrenheit)\n- **373.15 K** (Kelvin)\n- **373.15 °Ré** (Réaumur, approximately)\n\n## Important Notes\n\n- **Altitude matters**: The boiling point decreases as altitude increases. For example, in Denver (~1,600 m above sea level), water boils at approximately 95°C, and at the top of Mount Everest",
+ "answer_s": 387.12,
+ "correct": true
+}

@@ -1,0 +1,3 @@
+# Speed bench on GLM-5.3 UD-IQ2_M (2-bit GGUF)
+# ~/Code/colibri-poc/.venv/bin/python glm_suite.py run speed --model glm-5.3-iq2m --run-id c9c4d035d06e47ae827aa3782941dcfc
+Running suite-speed-glm-5.3-iq2m-c9c4d035d06e47ae827aa3782941dcfc-sky-exact ...

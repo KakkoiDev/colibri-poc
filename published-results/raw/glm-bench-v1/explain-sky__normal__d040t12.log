@@ -1,0 +1,93 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.74s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 14 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Explain why the sky is blue.<|assistant|><think></think>PROFILO PREFILL (32.62s):
+PROFILE: expert-disk 114.151s service / 14.363s wait | expert-matmul 4.804s | attention 12.511s (including kvb 1.219s) | lm_head 0.016s | other 0.931s
+ATTENTION: projection/RoPE 3.713s | score-softmax-value 0.033s | output projection 7.546s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.046s | residual P2P 0.000s / 0 hop | orchestration 0.884s
+METAL: blocchi GPU 170 | fallback CPU 0 | expert su GPU 4483 | setup 0.04s gpu-wall 3.40s (kernel 3.75s) scatter 0.01s
+METAL-RESSET: flush 1.34s (residency-set commit in moe_submit, outside setup/gpu-wall)
+# Why the Sky Is Blue
+
+The sky appears blue due to a phenomenon called **Rayleigh scattering**, named after the British physicist Lord Rayleigh (John William Strutt), who first explained it scientifically in the 1870s.
+
+## The Basic Explanation
+
+Sunlight is made up of all the colors of the rainbow — red, orange, yellow, green, blue, indigo, and violet (often remembered as **ROYGBIV**). When sunlight passes through Earth's atmosphere, it collides with gas molecules (mainly nitrogen and oxygen) and tiny particles like dust and water droplets.
+
+The key insight is that **sc
+---
+prefill 14 tokens in 32.62s | decode 128 tokens in 106.84s (1.20 tok/s) | expert hit rate 25.1% (pin 0.0% + lru 25.1%) | RSS 12.13 GB
+experts loaded/token: 595.3 (per-layer 7.94 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 57611 miss slots; top layers: L5:848 L9:839 L12:838)
+speculation: 1.01 tokens/forward (127 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 89.704s service / 52.023s wait | expert-matmul 9.590s | attention 37.863s (including kvb 0.000s) | lm_head 0.000s | other 7.367s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.019s | residual P2P 0.000s / 0 hop | orchestration 7.348s
+METAL-ATTN: layer GPU 9906 | gpu-wall 37.31s (kernel 35.93s | cpu-sched 0.14s gpu-sched 0.52s)
+METAL: blocchi GPU 13638 | fallback CPU 0 | expert su GPU 23072 | setup 0.68s gpu-wall 11.98s (kernel 12.92s) scatter 0.05s
+METAL-RESSET: flush 1.35s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 127 | latency p50 824.5 ms | p90 1002.6 ms | p99 1094.4 ms | max 1127.3 ms | 1.01 tok/forward
+[PROF] expert I/O: 295.827 GB fetched (2311.2 MB/token, 2.77 GB/s over the run) | hit 25.1% (0 pin + 4657 lru / 13932 load) | 595.3 loads/token | 89.7s read service / 52.0s felt wait
+[PROF] DISK-CLASS (recency split): cold 4165 x 88.44 GB @ 3.10 GB/s-thread, wall 23.3s @ 3.79 GB/s-wall, avg-conc 1.2 (direct 4148/4165) | warm 9767 x 207.39 GB @ 3.40 GB/s-thread, wall 40.5s @ 5.12 GB/s-wall, avg-conc 1.5 (direct 9751/9767) | disk-busy 51.7s (48% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 49% | expert-matmul 9% | attention 35% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.019s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 7.348s
+[PROF] verdict: I/O-bound — 49% of the time waits on expert reads (hit 25%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 8.2 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 14 token · +0.00s
+[prefill] layer 5/78 · 14 token · +3.03s
+[prefill] layer 9/78 · 14 token · +5.00s
+[prefill] layer 13/78 · 14 token · +6.75s
+[prefill] layer 17/78 · 14 token · +8.38s
+[prefill] layer 21/78 · 14 token · +9.83s
+[prefill] layer 25/78 · 14 token · +11.40s
+[prefill] layer 29/78 · 14 token · +13.02s
+[prefill] layer 33/78 · 14 token · +14.48s
+[prefill] layer 37/78 · 14 token · +16.05s
+[prefill] layer 41/78 · 14 token · +17.52s
+[prefill] layer 45/78 · 14 token · +19.13s
+[prefill] layer 49/78 · 14 token · +20.72s
+[prefill] layer 53/78 · 14 token · +22.25s
+[prefill] layer 57/78 · 14 token · +23.66s
+[prefill] layer 61/78 · 14 token · +25.26s
+[prefill] layer 65/78 · 14 token · +26.83s
+[prefill] layer 69/78 · 14 token · +28.42s
+[prefill] layer 73/78 · 14 token · +30.06s
+[prefill] layer 77/78 · 14 token · +31.71s
+[prefill] layer 78/78 · 14 token · +32.14s
+
+[t=16  RSS 12.13 GB  hit 22%  1.27 tok/s  1.00 tok/fw]
+
+[t=32  RSS 12.13 GB  hit 24%  1.23 tok/s  1.00 tok/fw]
+
+[t=48  RSS 12.13 GB  hit 26%  1.20 tok/s  1.00 tok/fw]
+
+[t=64  RSS 12.13 GB  hit 26%  1.19 tok/s  1.00 tok/fw]
+
+[t=80  RSS 12.13 GB  hit 24%  1.19 tok/s  1.00 tok/fw]
+
+[t=96  RSS 12.13 GB  hit 24%  1.20 tok/s  1.00 tok/fw]
+
+[t=112  RSS 12.13 GB  hit 25%  1.20 tok/s  1.00 tok/fw]
+
+[t=128  RSS 12.13 GB  hit 25%  1.20 tok/s  1.00 tok/fw]

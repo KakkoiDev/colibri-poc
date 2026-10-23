@@ -1,0 +1,96 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.67s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 29 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Write a Python function reverse_words(s) that returns the words of s in reverse order, separated by single spaces.<|assistant|><think></think>PROFILO PREFILL (38.73s):
+PROFILE: expert-disk 214.457s service / 23.734s wait | expert-matmul 6.563s | attention 4.544s (including kvb 0.628s) | lm_head 0.006s | other 3.880s
+ATTENTION: projection/RoPE 1.386s | score-softmax-value 0.046s | output projection 2.484s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.045s | residual P2P 0.000s / 0 hop | orchestration 3.835s
+METAL: blocchi GPU 232 | fallback CPU 0 | expert su GPU 7565 | setup 0.04s gpu-wall 5.98s (kernel 6.69s) scatter 0.01s
+METAL-RESSET: flush 0.52s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Here's a clean implementation that relies on Python's built-in capabilities to split, reverse, and join, which is both efficient and readable:
+
+```python
+def reverse_words(s):
+    return ' '.join(reversed(s.split()))
+```
+
+**How it works:**
+
+1. `s.split()` — splits the string `s` on any whitespace (spaces, tabs, newlines), automatically collapsing multiple consecutive separators into a single delimiter. This handles edge cases like leading/trailing spaces and multiple spaces between words gracefully. For example, `"  hello   world  ".split()` produces `['hello', 'world']`.
+
+2. `
+---
+prefill 29 tokens in 38.73s | decode 128 tokens in 90.13s (1.42 tok/s) | expert hit rate 21.0% (pin 0.0% + lru 21.0%) | RSS 10.33 GB
+experts loaded/token: 635.3 (per-layer 8.47 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 59160 miss slots; top layers: L3:883 L11:883 L7:877)
+speculation: 1.15 tokens/forward (111 forwards per 128 tokens) | MTP acceptance 67% (16/24)
+PROFILE: expert-disk 109.135s service / 51.705s wait | expert-matmul 6.434s | attention 26.406s (including kvb 0.000s) | lm_head 0.000s | other 5.584s
+ATTENTION: projection/RoPE 0.029s | score-softmax-value 0.024s | output projection 0.028s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.008s | residual P2P 0.000s / 0 hop | orchestration 5.576s
+METAL-ATTN: layer GPU 8658 | gpu-wall 26.13s (kernel 25.31s | cpu-sched 0.03s gpu-sched 0.42s)
+METAL: blocchi GPU 11862 | fallback CPU 0 | expert su GPU 25513 | setup 0.27s gpu-wall 12.09s (kernel 13.25s) scatter 0.03s
+METAL-RESSET: flush 0.52s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 111 | latency p50 695.3 ms | p90 1273.2 ms | p99 1348.8 ms | max 1406.0 ms | 1.15 tok/forward
+[PROF] expert I/O: 302.050 GB fetched (2359.8 MB/token, 3.35 GB/s over the run) | hit 21.0% (0 pin + 3757 lru / 14151 load) | 635.3 loads/token | 109.1s read service / 51.7s felt wait
+[PROF] DISK-CLASS (recency split): cold 5393 x 115.61 GB @ 2.60 GB/s-thread, wall 30.3s @ 3.81 GB/s-wall, avg-conc 1.5 (direct 5381/5393) | warm 8758 x 186.44 GB @ 2.89 GB/s-thread, wall 39.4s @ 4.74 GB/s-wall, avg-conc 1.6 (direct 8751/8758) | disk-busy 51.5s (57% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 57% | expert-matmul 7% | attention 29% | lm_head 0% | other 6%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.008s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 5.576s
+[PROF] verdict: I/O-bound — 57% of the time waits on expert reads (hit 21%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 12.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 29 token · +0.00s
+[prefill] layer 5/78 · 29 token · +1.50s
+[prefill] layer 9/78 · 29 token · +3.97s
+[prefill] layer 13/78 · 29 token · +6.20s
+[prefill] layer 17/78 · 29 token · +8.28s
+[prefill] layer 21/78 · 29 token · +10.01s
+[prefill] layer 25/78 · 29 token · +11.82s
+[prefill] layer 29/78 · 29 token · +13.93s
+[prefill] layer 33/78 · 29 token · +15.74s
+[prefill] layer 37/78 · 29 token · +17.56s
+[prefill] layer 41/78 · 29 token · +19.25s
+[prefill] layer 45/78 · 29 token · +21.17s
+[prefill] layer 49/78 · 29 token · +23.07s
+[prefill] layer 53/78 · 29 token · +24.96s
+[prefill] layer 57/78 · 29 token · +26.88s
+[prefill] layer 61/78 · 29 token · +28.69s
+[prefill] layer 65/78 · 29 token · +30.55s
+[prefill] layer 69/78 · 29 token · +32.46s
+[prefill] layer 73/78 · 29 token · +34.49s
+[prefill] layer 77/78 · 29 token · +36.55s
+[prefill] layer 78/78 · 29 token · +37.09s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.33 GB  hit 14%  1.10 tok/s  1.36 tok/fw]
+
+[t=32  RSS 10.33 GB  hit 15%  1.23 tok/s  1.55 tok/fw]
+[MTP] 67% acceptance over the last 24 proposals: drafts paused for 256 tokens
+
+[t=48  RSS 10.33 GB  hit 17%  1.34 tok/s  1.52 tok/fw]
+
+[t=64  RSS 10.33 GB  hit 19%  1.38 tok/s  1.34 tok/fw]
+
+[t=80  RSS 10.33 GB  hit 19%  1.39 tok/s  1.25 tok/fw]
+
+[t=96  RSS 10.33 GB  hit 20%  1.40 tok/s  1.20 tok/fw]
+
+[t=112  RSS 10.33 GB  hit 21%  1.41 tok/s  1.17 tok/fw]
+
+[t=128  RSS 10.33 GB  hit 21%  1.42 tok/s  1.14 tok/fw]

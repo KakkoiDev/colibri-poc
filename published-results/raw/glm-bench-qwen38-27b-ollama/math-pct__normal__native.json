@@ -1,0 +1,19 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 6.58,
+ "prompt_tokens": 22,
+ "prefill_s": 0.122,
+ "output_tokens": 163,
+ "decode_s": 6.451,
+ "load_s": 0.0,
+ "text": "15% of 240 is **36**.\n\n**Quick way to solve:**\n- 10% of 240 = 24\n- 5% of 240 = 12\n- 15% = 24 + 12 = **36**",
+ "thinking_chars": 142,
+ "truncated": false,
+ "decode_tok_s": 25.27,
+ "answer_s": 6.57,
+ "correct": true
+}

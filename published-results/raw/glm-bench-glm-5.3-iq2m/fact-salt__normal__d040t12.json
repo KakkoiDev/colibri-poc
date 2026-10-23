@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 122.19,
+ "prompt_tokens": 15,
+ "prefill_s": 18.87,
+ "output_tokens": 128,
+ "decode_s": 99.52,
+ "decode_tok_s": 1.29,
+ "zeroed_slots": 62184,
+ "hit_pct": 2.9,
+ "text": "The chemical formula of table salt is NaCl. It's the chemical formula for **sodium chloride** (NaCl), which is a salt chemical formula for sodium chloride (salt chemical formulae that is, salt chemical formula for table salt, salt, table salt, sodium chloride, table salt, and its formulae, salt, NaCl, salt, and its formula, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, NaCl, Na",
+ "answer_s": 118.39,
+ "correct": true
+}

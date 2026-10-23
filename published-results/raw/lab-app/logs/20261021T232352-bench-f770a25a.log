@@ -1,0 +1,2 @@
+# Quality bench gemma4-26b-ollama on Ollama gemma4:26b-mlx: exact, native · terse
+# ~/Code/colibri-poc/.venv/bin/python glm_bench.py run --name gemma4-26b-ollama --configs exact,native --styles terse --backend ollama --ollama-model gemma4:26b-mlx

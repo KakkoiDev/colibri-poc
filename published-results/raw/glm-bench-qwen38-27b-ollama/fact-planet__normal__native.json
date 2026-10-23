@@ -1,0 +1,19 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 4.58,
+ "prompt_tokens": 20,
+ "prefill_s": 0.11,
+ "output_tokens": 101,
+ "decode_s": 4.462,
+ "load_s": 0.003,
+ "text": "The largest planet in our solar system is **Jupiter**. It is a gas giant with a mass more than twice that of all the other planets combined. Jupiter's diameter is about 86,881 miles (139,820 km), making it roughly 11 times wider than Earth.",
+ "thinking_chars": 162,
+ "truncated": false,
+ "decode_tok_s": 22.64,
+ "answer_s": 4.57,
+ "correct": true
+}

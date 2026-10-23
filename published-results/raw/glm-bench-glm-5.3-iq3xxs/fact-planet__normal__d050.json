@@ -1,0 +1,18 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 391.36,
+ "prompt_tokens": 16,
+ "prefill_s": 39.11,
+ "output_tokens": 128,
+ "decode_s": 347.92,
+ "decode_tok_s": 0.37,
+ "zeroed_slots": 66201,
+ "hit_pct": 2.6,
+ "text": "The largest planet in our solar system is **Jupiter**, which is a gas giant made primarily of hydrogen and helium (with a small rocky core deep inside, if any at all). Its immense size, powerful storm systems (including the famous **Great Red Spot**), and rapid rotation (about 9 hours 55 minutes, making it the fastest-spinning planet in the solar system) all contribute to its status as the largest and most dynamic planet in the solar neighborhood.\n\n- **Diameter:** ~ 139,820 km (about 88,000 miles) — roughly 11 Earth diameters, or about 0.",
+ "answer_s": 387.03,
+ "correct": true
+}

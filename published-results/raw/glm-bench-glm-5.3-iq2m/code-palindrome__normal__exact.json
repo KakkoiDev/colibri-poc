@@ -1,0 +1,18 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 630.43,
+ "prompt_tokens": 32,
+ "prefill_s": 68.12,
+ "output_tokens": 128,
+ "decode_s": 558.42,
+ "decode_tok_s": 0.23,
+ "zeroed_slots": 0,
+ "hit_pct": 0.7,
+ "text": "Here's a Python function to check if a string is a palindrome:\n\n```python\ndef is_palindrome(s):\n    s = s.lower()\n    return s == s[::-1]\n```\n\n**How it works:**\n1. `s.lower()` converts the string to lowercase so the comparison is case-insensitive (e.g., \"Racecar\" becomes \"racecar\")\n2. `s[::-1]` uses Python's slice notation to reverse the string\n3. The function returns `True` if the original (lowercased) string equals its reversed version\n\n**Example usage:**\n\n```python\nprint(is_palindrome(\"",
+ "answer_s": 626.54,
+ "correct": true
+}

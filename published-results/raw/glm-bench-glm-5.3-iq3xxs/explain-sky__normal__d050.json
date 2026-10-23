@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 396.57,
+ "prompt_tokens": 14,
+ "prefill_s": 37.95,
+ "output_tokens": 128,
+ "decode_s": 354.2,
+ "decode_tok_s": 0.36,
+ "zeroed_slots": 64583,
+ "hit_pct": 2.6,
+ "text": "# Why the Sky is Blue\n\n## The Short Answer\n\nThe sky appears blue during the day because **air molecules scatter short wavelengths (blue/violet) more strongly than longer ones**, and sunlight reaching the atmosphere contains all visible colors but the blue component dominates the scattered light that reaches your eyes from all directions across the sky.\n\nAt sunset and sunrise, the sky often turns red or orange because **blue light is scattered away from the direct path of sunlight**, leaving longer wavelengths (red/orange) to dominate the light that reaches your eyes directly from the sun's position near the horizon. The atmosphere also has a **path length effect** that",
+ "answer_s": 392.15,
+ "correct": true
+}

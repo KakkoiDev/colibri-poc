@@ -1,0 +1,19 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 1.43,
+ "prompt_tokens": 76,
+ "prefill_s": 0.176,
+ "output_tokens": 50,
+ "decode_s": 1.254,
+ "load_s": 0.001,
+ "text": "Table salt (sodium chloride) has the chemical formula **NaCl**.",
+ "thinking_chars": 105,
+ "truncated": false,
+ "decode_tok_s": 39.87,
+ "answer_s": 1.43,
+ "correct": true
+}

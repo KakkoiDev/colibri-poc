@@ -1,0 +1,16 @@
+{
+ "text": "Here is a Python function that calculates the n-th Fibonacci number iteratively:\n\n```python\ndef fib(n):\n    if n <= 0:\n        return \"Invalid input. The value must be positive.\"\n    elif n == 1:\n        return 0\n    elif n == 2:\n        return 1\n    else:\n        a, b = 0, 1\n        for _ in range(n - 2):\n            a, b = b, a + b\n        return b\n\n# Example usage:\nprint(fib(10))  # Output: 55\n",
+ "usage": {
+  "prompt_tokens": 47,
+  "completion_tokens": 128,
+  "total_tokens": 175,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.053,
+ "total_s": 0.788
+}

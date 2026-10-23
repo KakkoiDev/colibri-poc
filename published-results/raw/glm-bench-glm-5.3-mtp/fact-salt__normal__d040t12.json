@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 125.14,
+ "prompt_tokens": 15,
+ "prefill_s": 30.72,
+ "output_tokens": 128,
+ "decode_s": 91.35,
+ "decode_tok_s": 1.4,
+ "zeroed_slots": 59357,
+ "hit_pct": 15.5,
+ "text": "The chemical formula of table salt is **NaCl** (sodium chloride).\n\nTable salt is an ionic compound composed of sodium cations (Na⁺) and chloride anions (Cl⁻) in a 1:1 ratio. The sodium atoms each lose one electron, acquiring a positive charge, while the chlorine atoms each gain one electron, acquiring a negative charge. The oppositely charged ions then attract each other strongly, forming a crystal lattice structure.\n\nSome key points about NaCl:\n\n- **Ionic bonding**: The bond between Na⁺ and Cl⁻ is ionic (electrostatic attraction), not co",
+ "answer_s": 122.07,
+ "correct": true
+}

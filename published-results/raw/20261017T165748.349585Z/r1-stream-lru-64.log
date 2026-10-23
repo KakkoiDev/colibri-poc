@@ -1,0 +1,6 @@
+stream-lru-64 warmup explain: 67.04 tok/s
+stream-lru-64 measured explain: 71.73 tok/s
+stream-lru-64 measured code: 71.29 tok/s
+stream-lru-64 measured reason: 71.57 tok/s
+stream-lru-64 measured story: 71.20 tok/s
+stream-lru-64 measured long-context: 63.13 tok/s

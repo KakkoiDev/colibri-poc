@@ -1,0 +1,18 @@
+{
+ "id": "fact-ocean",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 150.71,
+ "prompt_tokens": 14,
+ "prefill_s": 61.84,
+ "output_tokens": 128,
+ "decode_s": 85.64,
+ "decode_tok_s": 1.49,
+ "zeroed_slots": 65313,
+ "hit_pct": 34.4,
+ "text": "The largest ocean on Earth is the **Pacific Ocean**, which is bounded by the continents of Asia and Australia (including the Indian Ocean boundary to its west and the Pacific Ocean boundary to its east), and by the Americas to the east, and by the Southern Ocean to the south (if that is geographically considered a continent-adjacent oceanic sub-basin as a hydro-sphere of the oceanic Pacific Ocean, which is a sub-oceanic basin of the oceanic Pacific Ocean, which is a sub-oceanic basin of the oceanic Pacific Ocean, which is a sub-oceanic basin of the oceanic Pacific Ocean",
+ "answer_s": 147.48,
+ "correct": true
+}

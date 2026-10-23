@@ -1,0 +1,18 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 94.72,
+ "prompt_tokens": 36,
+ "prefill_s": 40.89,
+ "output_tokens": 71,
+ "decode_s": 50.81,
+ "decode_tok_s": 1.4,
+ "zeroed_slots": 34010,
+ "hit_pct": 16.3,
+ "text": "Yes.\n\nIf all bloops are razzies, and all razzies are lazzies, then all bloops must be lazzies. This follows from the transitive property of the \"all...are...\" relationship: if A is a member of B, and B is a member of C, then A is a member of C.",
+ "answer_s": 91.7,
+ "correct": true
+}

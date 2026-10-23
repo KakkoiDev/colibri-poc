@@ -1,0 +1,78 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.68s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 15 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>In which year did World War II end?<|assistant|><think></think>PROFILO PREFILL (65.33s):
+PROFILE: expert-disk 133.232s service / 16.690s wait | expert-matmul 3.503s | attention 42.442s (including kvb 3.298s) | lm_head 0.007s | other 2.689s
+ATTENTION: projection/RoPE 12.649s | score-softmax-value 0.033s | output projection 26.462s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.052s | residual P2P 0.000s / 0 hop | orchestration 2.636s
+METAL: blocchi GPU 174 | fallback CPU 0 | expert su GPU 4703 | setup 0.03s gpu-wall 3.08s (kernel 3.45s) scatter 0.01s
+METAL-RESSET: flush 0.38s (residency-set commit in moe_submit, outside setup/gpu-wall)
+World War II ended in 1945. The war in Europe concluded with Germany's surrender on May 8, 1945 (known as V-E Day, or Victory in Europe Day), while the war in the Pacific ended with Japan's surrender on August 15, 1945 (announced), with the formal surrender ceremony taking place on September 2, 1945 (V-J Day, or Victory over Japan Day).
+---
+prefill 15 tokens in 65.33s | decode 92 tokens in 109.00s (0.84 tok/s) | expert hit rate 6.5% (pin 0.0% + lru 6.5%) | RSS 14.43 GB
+experts loaded/token: 647.1 (per-layer 8.63 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 29718 miss slots; top layers: L4:511 L5:482 L65:482)
+speculation: 1.88 tokens/forward (49 forwards per 92 tokens) | MTP acceptance 88% (43/49)
+PROFILE: expert-disk 346.142s service / 65.954s wait | expert-matmul 8.654s | attention 18.296s (including kvb 0.000s) | lm_head 0.000s | other 16.094s
+ATTENTION: projection/RoPE 0.229s | score-softmax-value 0.178s | output projection 0.070s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.009s | residual P2P 0.000s / 0 hop | orchestration 16.086s
+METAL-ATTN: layer GPU 3822 | gpu-wall 17.72s (kernel 17.36s | cpu-sched 0.01s gpu-sched 0.16s)
+METAL: blocchi GPU 5373 | fallback CPU 0 | expert su GPU 25543 | setup 0.20s gpu-wall 11.50s (kernel 12.16s) scatter 0.02s
+METAL-RESSET: flush 0.39s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 49 | latency p50 2139.5 ms | p90 2308.9 ms | p99 2383.6 ms | max 2506.7 ms | 1.88 tok/forward
+[PROF] expert I/O: 417.950 GB fetched (4542.9 MB/token, 3.83 GB/s over the run) | hit 6.5% (0 pin + 1350 lru / 19398 load) | 647.1 loads/token | 346.1s read service / 66.0s felt wait
+[PROF] DISK-CLASS (recency split): cold 7765 x 168.75 GB @ 1.11 GB/s-thread, wall 56.4s @ 2.99 GB/s-wall, avg-conc 2.7 (direct 7738/7765) | warm 11633 x 249.20 GB @ 1.28 GB/s-thread, wall 60.0s @ 4.15 GB/s-wall, avg-conc 3.2 (direct 11503/11633) | disk-busy 65.8s (60% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 61% | expert-matmul 8% | attention 17% | lm_head 0% | other 15%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.009s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 16.086s
+[PROF] verdict: I/O-bound — 61% of the time waits on expert reads (hit 7%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 15 token · +0.00s
+[prefill] layer 5/78 · 15 token · +5.16s
+[prefill] layer 9/78 · 15 token · +8.75s
+[prefill] layer 13/78 · 15 token · +12.13s
+[prefill] layer 17/78 · 15 token · +15.35s
+[prefill] layer 21/78 · 15 token · +18.49s
+[prefill] layer 25/78 · 15 token · +21.62s
+[prefill] layer 29/78 · 15 token · +24.92s
+[prefill] layer 33/78 · 15 token · +28.03s
+[prefill] layer 37/78 · 15 token · +31.10s
+[prefill] layer 41/78 · 15 token · +34.18s
+[prefill] layer 45/78 · 15 token · +37.28s
+[prefill] layer 49/78 · 15 token · +40.46s
+[prefill] layer 53/78 · 15 token · +43.60s
+[prefill] layer 57/78 · 15 token · +46.75s
+[prefill] layer 61/78 · 15 token · +49.96s
+[prefill] layer 65/78 · 15 token · +53.15s
+[prefill] layer 69/78 · 15 token · +56.41s
+[prefill] layer 73/78 · 15 token · +59.63s
+[prefill] layer 77/78 · 15 token · +62.93s
+[prefill] layer 78/78 · 15 token · +63.74s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 14.43 GB  hit 7%  0.91 tok/s  1.88 tok/fw]
+
+[t=32  RSS 14.43 GB  hit 6%  0.85 tok/s  1.82 tok/fw]
+
+[t=48  RSS 14.43 GB  hit 6%  0.87 tok/s  1.88 tok/fw]
+
+[t=64  RSS 14.43 GB  hit 6%  0.87 tok/s  1.91 tok/fw]
+
+[t=80  RSS 14.43 GB  hit 7%  0.86 tok/s  1.88 tok/fw]

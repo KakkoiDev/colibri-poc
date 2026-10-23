@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 360.09,
+ "prompt_tokens": 17,
+ "prefill_s": 42.05,
+ "output_tokens": 128,
+ "decode_s": 313.85,
+ "decode_tok_s": 0.41,
+ "zeroed_slots": 66836,
+ "hit_pct": 2.8,
+ "text": "# 2 to the power of 10\n\n2 to the power of 10 (also written as 2^10 or 2¹⁰) means multiplying 2 by itself 10 times:\n\n**2¹⁰ = 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = 1024**\n\nThis is a famous number in computing and mathematics, often called a \"**kilo**\" of binary (2^10 = 1024 bytes, a \"kibibyte\" KiB in some contexts, though \"k",
+ "answer_s": 355.9,
+ "correct": true
+}

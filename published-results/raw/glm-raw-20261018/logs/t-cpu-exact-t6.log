@@ -1,0 +1,59 @@
+[OMP] hot-thread tuning skipped on macOS (#707): spin-wait knobs measured slower on Apple Silicon (COLI_NO_OMP_TUNE=1 to skip)
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] resident 11.1 GB + reserve 5.4 GB (ws 1.4, KV 1x1024 0.2, kvb 0.1), experts 21.2 MB avg x 75 layers -> cap lowered 8->1 (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (6 omp threads) | RAM 34.4 GB total, 11.8 GB available | backend CPU
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.27s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 17 tokens | generating up to 12 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Explain in two sentences why the sky is blue.<|assistant|><think></think>[prefill] layer 1/78 · 17 token · +0.00s
+[prefill] layer 5/78 · 17 token · +1.98s
+[prefill] layer 9/78 · 17 token · +4.63s
+[prefill] layer 13/78 · 17 token · +7.30s
+[prefill] layer 17/78 · 17 token · +9.92s
+[prefill] layer 21/78 · 17 token · +12.51s
+[prefill] layer 25/78 · 17 token · +15.14s
+[prefill] layer 29/78 · 17 token · +17.81s
+[prefill] layer 33/78 · 17 token · +20.40s
+[prefill] layer 37/78 · 17 token · +22.99s
+[prefill] layer 41/78 · 17 token · +25.57s
+[prefill] layer 45/78 · 17 token · +28.17s
+[prefill] layer 49/78 · 17 token · +30.78s
+[prefill] layer 53/78 · 17 token · +33.35s
+[prefill] layer 57/78 · 17 token · +35.98s
+[prefill] layer 61/78 · 17 token · +38.57s
+[prefill] layer 65/78 · 17 token · +41.22s
+[prefill] layer 69/78 · 17 token · +43.80s
+[prefill] layer 73/78 · 17 token · +46.46s
+[prefill] layer 77/78 · 17 token · +49.22s
+[prefill] layer 78/78 · 17 token · +49.87s
+PROFILO PREFILL (50.56s):
+PROFILE: expert-disk 130.561s service / 2.631s wait | expert-matmul 27.893s | attention 15.051s (including kvb 1.254s) | lm_head 0.039s | other 4.950s
+ATTENTION: projection/RoPE 4.599s | score-softmax-value 0.021s | output projection 9.176s
+P0-EXEC: routed CPU 27.893s / 3.88 GB/s (10200 row) | routed GPU critical 0.000s | router 0.051s | residual P2P 0.000s / 0 hop | orchestration 4.899s
+The sky appears blue because molecules in Earth's atmosphere scatter shorter
+---
+prefill 17 tokens in 50.56s | decode 12 tokens in 49.59s (0.24 tok/s) | expert hit rate 2.0% (pin 0.0% + lru 2.0%) | RSS 12.32 GB
+experts loaded/token: 550.0 (per-layer 7.33 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.09 tokens/forward (11 forwards per 12 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 151.782s service / 19.068s wait | expert-matmul 14.692s | attention 12.146s (including kvb 0.000s) | lm_head 0.000s | other 3.684s
+ATTENTION: projection/RoPE 3.559s | score-softmax-value 1.124s | output projection 7.462s
+P0-EXEC: routed CPU 14.692s / 9.54 GB/s (6600 row) | routed GPU critical 0.000s | router 0.221s | residual P2P 0.000s / 0 hop | orchestration 3.464s
+[PROF] decode forwards: 11 | latency p50 4502.9 ms | p90 4604.5 ms | p99 4604.5 ms | max 4726.2 ms | 1.09 tok/forward
+[PROF] expert I/O: 137.382 GB fetched (11448.5 MB/token, 2.77 GB/s over the run) | hit 2.0% (0 pin + 130 lru / 6470 load) | 550.0 loads/token | 151.8s read service / 19.1s felt wait
+[PROF] DISK-CLASS (recency split): cold 2967 x 63.00 GB @ 0.85 GB/s-thread, wall 19.7s @ 3.20 GB/s-wall, avg-conc 3.8 (direct 2949/2967) | warm 3503 x 74.38 GB @ 0.96 GB/s-thread, wall 17.2s @ 4.33 GB/s-wall, avg-conc 4.5 (direct 3488/3503) | disk-busy 20.5s (41% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 38% | expert-matmul 30% | attention 24% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 14.692s / 9.54 GB/s (6600 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.221s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 3.464s
+[PROF] verdict: I/O-bound — 38% of the time waits on expert reads (hit 2%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────

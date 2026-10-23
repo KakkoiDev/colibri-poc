@@ -1,0 +1,11 @@
+{
+  "name": "slots-packed-grouped",
+  "backend": "mlx",
+  "description": "Bounded complete-expert GPU slots; original weights and routing; explicit staging and I/O policy",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T171558.896165Z/r2-slots-packed-grouped.plugin.py",
+  "env": {
+    "SLOTS_LAYOUT": "packed",
+    "SLOTS_GROUP_READS": "1"
+  }
+}

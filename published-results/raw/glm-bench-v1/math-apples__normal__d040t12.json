@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 93.42,
+ "prompt_tokens": 30,
+ "prefill_s": 37.93,
+ "output_tokens": 71,
+ "decode_s": 52.1,
+ "decode_tok_s": 1.36,
+ "zeroed_slots": 34313,
+ "hit_pct": 18.8,
+ "text": "**12 - 5 + 8 = 15 apples**\n\nLet me break it down:\n1. Start with 12 apples\n2. Give away 5: 12 - 5 = 7 apples remaining\n3. Buy 8 more: 7 + 8 = 15 apples\n\nYou end up with **15 apples**.",
+ "answer_s": 90.03,
+ "correct": true
+}

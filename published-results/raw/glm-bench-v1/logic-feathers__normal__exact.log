@@ -1,0 +1,88 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.48s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 22 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Which is heavier: a kilogram of feathers or a kilogram of steel?<|assistant|><think></think>PROFILO PREFILL (27.32s):
+PROFILE: expert-disk 140.795s service / 16.858s wait | expert-matmul 5.477s | attention 3.526s (including kvb 0.482s) | lm_head 0.009s | other 1.454s
+ATTENTION: projection/RoPE 1.070s | score-softmax-value 0.092s | output projection 1.883s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.112s | residual P2P 0.000s / 0 hop | orchestration 1.342s
+METAL: blocchi GPU 211 | fallback CPU 0 | expert su GPU 5642 | setup 0.04s gpu-wall 4.53s (kernel 5.05s) scatter 0.01s
+METAL-RESSET: flush 0.89s (residency-set commit in moe_submit, outside setup/gpu-wall)
+They weigh exactly the same — one kilogram is one kilogram, regardless of the material.
+
+This is a classic trick question! The intuitive (but wrong) answer is "steel," because steel is much *denser* than feathers. Density is mass per unit volume, so a kilogram of steel would be a small, compact block, while a kilogram of feathers would be a huge, fluffy pile. But on a scale, both would read exactly 1 kg.
+
+**Fun bonus fact:** If you want to get extremely technical, there's a subtle physics argument that the feathers might actually register *very slightly* heavier on a
+---
+prefill 22 tokens in 27.32s | decode 128 tokens in 303.01s (0.42 tok/s) | expert hit rate 2.0% (pin 0.0% + lru 2.0%) | RSS 7.12 GB
+experts loaded/token: 600.0 (per-layer 8.00 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.03 tokens/forward (124 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 1699.011s service / 229.296s wait | expert-matmul 26.552s | attention 25.400s (including kvb 0.000s) | lm_head 0.000s | other 21.757s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.011s | residual P2P 0.000s / 0 hop | orchestration 21.745s
+METAL-ATTN: layer GPU 9672 | gpu-wall 25.03s (kernel 24.13s | cpu-sched 0.06s gpu-sched 0.42s)
+METAL: blocchi GPU 11064 | fallback CPU 0 | expert su GPU 81582 | setup 0.69s gpu-wall 30.28s (kernel 30.44s) scatter 0.06s
+METAL-RESSET: flush 0.89s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 124 | latency p50 2377.8 ms | p90 2436.1 ms | p99 4014.0 ms | max 4527.5 ms | 1.03 tok/forward
+[PROF] expert I/O: 1579.509 GB fetched (12339.9 MB/token, 5.21 GB/s over the run) | hit 2.0% (0 pin + 1553 lru / 74387 load) | 600.0 loads/token | 1699.0s read service / 229.3s felt wait
+[PROF] DISK-CLASS (recency split): cold 33278 x 706.61 GB @ 0.88 GB/s-thread, wall 222.9s @ 3.17 GB/s-wall, avg-conc 3.6 (direct 33143/33278) | warm 41109 x 872.89 GB @ 0.98 GB/s-thread, wall 211.4s @ 4.13 GB/s-wall, avg-conc 4.2 (direct 40906/41109) | disk-busy 229.1s (76% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 76% | expert-matmul 9% | attention 8% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.011s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 21.745s
+[PROF] verdict: I/O-bound — 76% of the time waits on expert reads (hit 2%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 10.7 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 22 token · +0.00s
+[prefill] layer 5/78 · 22 token · +1.59s
+[prefill] layer 9/78 · 22 token · +3.37s
+[prefill] layer 13/78 · 22 token · +5.00s
+[prefill] layer 17/78 · 22 token · +6.45s
+[prefill] layer 21/78 · 22 token · +7.71s
+[prefill] layer 25/78 · 22 token · +8.98s
+[prefill] layer 29/78 · 22 token · +10.43s
+[prefill] layer 33/78 · 22 token · +11.74s
+[prefill] layer 37/78 · 22 token · +12.96s
+[prefill] layer 41/78 · 22 token · +14.19s
+[prefill] layer 45/78 · 22 token · +15.51s
+[prefill] layer 49/78 · 22 token · +16.84s
+[prefill] layer 53/78 · 22 token · +18.19s
+[prefill] layer 57/78 · 22 token · +19.50s
+[prefill] layer 61/78 · 22 token · +20.86s
+[prefill] layer 65/78 · 22 token · +22.30s
+[prefill] layer 69/78 · 22 token · +23.68s
+[prefill] layer 73/78 · 22 token · +25.14s
+[prefill] layer 77/78 · 22 token · +26.62s
+[prefill] layer 78/78 · 22 token · +26.95s
+
+[t=16  RSS 7.12 GB  hit 2%  0.44 tok/s  1.00 tok/fw]
+
+[t=32  RSS 7.12 GB  hit 2%  0.43 tok/s  1.00 tok/fw]
+
+[t=48  RSS 7.12 GB  hit 2%  0.43 tok/s  1.00 tok/fw]
+
+[t=64  RSS 7.12 GB  hit 2%  0.43 tok/s  1.03 tok/fw]
+
+[t=80  RSS 7.12 GB  hit 2%  0.42 tok/s  1.04 tok/fw]
+
+[t=96  RSS 7.12 GB  hit 2%  0.42 tok/s  1.03 tok/fw]
+
+[t=112  RSS 7.12 GB  hit 2%  0.42 tok/s  1.03 tok/fw]
+
+[t=128  RSS 7.12 GB  hit 2%  0.42 tok/s  1.02 tok/fw]

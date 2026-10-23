@@ -1,0 +1,7 @@
+
+Traceback (most recent call last):
+  File "~/Code/colibri/c/coli", line 77, in <module>
+    from family_registry import (FamilyConfigError, UnknownFamilyError, all_families,
+  File "~/Code/colibri/c/family_registry.py", line 28, in <module>
+    @dataclass(frozen=True, slots=True)
+TypeError: dataclass() got an unexpected keyword argument 'slots'

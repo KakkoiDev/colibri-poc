@@ -1,0 +1,19 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 3.68,
+ "prompt_tokens": 30,
+ "prefill_s": 0.132,
+ "output_tokens": 228,
+ "decode_s": 3.544,
+ "load_s": 0.002,
+ "text": "They weigh the **same**. \n\nBoth are exactly one kilogram.",
+ "thinking_chars": 818,
+ "truncated": false,
+ "decode_tok_s": 64.33,
+ "answer_s": 3.68,
+ "correct": true
+}

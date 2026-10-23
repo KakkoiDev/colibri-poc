@@ -1,0 +1,18 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 135.77,
+ "prompt_tokens": 28,
+ "prefill_s": 36.77,
+ "output_tokens": 128,
+ "decode_s": 94.88,
+ "decode_tok_s": 1.35,
+ "zeroed_slots": 60181,
+ "hit_pct": 22.6,
+ "text": "# Solving the Problem\n\n**Given information:**\n- Speed of the train = 60 km/h (kilometres per hour)\n- Time travelled = 2.5 hours (2 hours and 30 minutes)\n\n**What we need to find:**\nThe distance travelled in kilometres (km)\n\n## Step 1: Identify the formula\n\nThe relationship between speed, time, and distance is:\n\n$$\\text{Distance} = \\text{Speed} \\times \\text{Time}$$\n\n## Step 2: Substitute the values\n\n$$\\text{Distance} = 60 \\text{ km/h} \\times",
+ "answer_s": 131.65,
+ "correct": false
+}

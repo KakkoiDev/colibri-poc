@@ -1,0 +1,119 @@
+# Quiet run
+# ~/Code/colibri-poc/.venv/bin/python glm_quiet.py run
+Free RAM: 28.3 GB (busy runs had 10-17.5; quiet target >= 20.0)
+Swap used: 1169.44 MB | processes: 568 | load: 1.5, 1.5, 1.9
+Largest apps still open:
+    0.60 GB  Claude Helper (Renderer)
+    0.41 GB  claude
+    0.23 GB  Claude
+    0.17 GB  mediaanalysisd
+    0.14 GB  loginwindow
+    0.09 GB  Claude Helper
+    0.08 GB  corespotlightd
+    0.07 GB  com.apple.WebKit.WebContent
+
+Planned lab experiments (run after the comparison set):
+  ready    lookup-off
+  ready    lookup-off-code
+  ready    stack-skip050-lookup-off
+  ready    baseline-16239caa
+  ready    stack-skip050-16239caa
+  ready    mtp-int8
+  ready    mtp-int8-skip050
+  ready    gguf-iq2m
+  ready    gguf-iq2m-skip050
+  ready    gguf-iq3xxs
+  ready    gguf-iq3xxs-skip050
+
+Ready.
+
+Writing to ~/Code/colibri-poc/results/glm-quiet-20261021T162228Z
+Repeat 1/2
+  exact-sky-24__r1: 0.41 tok/s
+  skip030-sky-48__r1: 0.86 tok/s
+  skip050-sky-48__r1: 1.55 tok/s
+  exact-code-48__r1: 0.4 tok/s
+  skip050-code-48__r1: 1.46 tok/s
+  exact-sky-24-t12__r1: 0.41 tok/s
+  skip050-sky-48-t12__r1: 1.9 tok/s
+Repeat 2/2
+  exact-sky-24__r2: 0.42 tok/s
+  skip030-sky-48__r2: 0.88 tok/s
+  skip050-sky-48__r2: 1.56 tok/s
+  exact-code-48__r2: 0.4 tok/s
+  skip050-code-48__r2: 1.46 tok/s
+  exact-sky-24-t12__r2: 0.4 tok/s
+  skip050-sky-48-t12__r2: 1.9 tok/s
+Planned lab experiments
+Skipping ssd-mirror: no runnable plan (needs a decision or hardware)
+Skipping rans: no runnable plan (needs a decision or hardware)
+Skipping reap: no runnable plan (needs a decision or hardware)
+Skipping int3-experts: no runnable plan (needs a decision or hardware)
+Running x-lookup-off ...
+97 runs, 93 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  lookup-off: 0.4 tok/s vs 0.44 (-9.1%), output identical
+Running x-lookup-off-code ...
+98 runs, 94 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  lookup-off-code: 0.4 tok/s vs 0.42 (-4.8%), output identical
+Running x-stack-skip050-lookup-off ...
+99 runs, 95 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  stack-skip050-lookup-off: 1.89 tok/s vs 1.87 (1.1%), output identical
+Running x-baseline-16239caa ...
+100 runs, 96 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  baseline-16239caa: 0.4 tok/s vs 0.44 (-9.1%), output identical
+Running x-stack-skip050-16239caa ...
+101 runs, 97 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  stack-skip050-16239caa: 1.89 tok/s vs 1.87 (1.1%), output identical
+Running x-mtp-int8 ...
+102 runs, 98 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  mtp-int8: 0.42 tok/s vs 0.44 (-4.5%), output identical
+Running x-mtp-int8-skip050 ...
+103 runs, 99 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  mtp-int8-skip050: 1.69 tok/s vs 1.87 (-9.6%), output changed
+Running x-gguf-iq2m ...
+104 runs, 100 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  gguf-iq2m: 0.35 tok/s vs 0.44 (-20.5%), output changed
+Running x-gguf-iq2m-skip050 ...
+105 runs, 101 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  gguf-iq2m-skip050: 0.73 tok/s vs 1.87 (-61.0%), output changed
+Running x-gguf-iq3xxs ...
+106 runs, 102 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  gguf-iq3xxs: 0.33 tok/s vs 0.44 (-25.0%), output identical
+Running x-gguf-iq3xxs-skip050 ...
+107 runs, 103 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  gguf-iq3xxs-skip050: 0.64 tok/s vs 1.87 (-65.8%), output changed
+Skipping glm53-flash: no runnable plan (needs a decision or hardware)
+Skipping sm-qwen38-27b-ollama: no runnable plan (needs a decision or hardware)
+Skipping sm-qwen36-a3b-resident: no runnable plan (needs a decision or hardware)
+Skipping sm-qwen36-a3b-ram-sweep: no runnable plan (needs a decision or hardware)
+Skipping sm-qwen36-a3b-vulkan: no runnable plan (needs a decision or hardware)
+Skipping sm-qwen38-27b-lowram: no runnable plan (needs a decision or hardware)
+Skipping sm-intelligence-per-minute: no runnable plan (needs a decision or hardware)
+68 experiments -> docs/12-experiment-log.md, site/data/experiments.json
+Original engine (CPU-only, single-threaded): the user-reported starting point. Each run can take 10-20 minutes.
+  original-defaults__r1: 0.06 tok/s
+  original-r18-c1k__r1: 0.07 tok/s
+
+# Quiet-machine GLM rerun 20261021T162228Z
+
+Free RAM before/after: 28.3 / 28.0 GB (busy runs: 10-17.5 GB). Swap used before: 1169.44 MB. Processes: 568. Repeats: 2.
+
+| Case | Busy tok/s | Quiet tok/s (each repeat) | Quiet mean | Change | Same text as busy |
+|---|---:|---|---:|---:|---|
+| exact-sky-24 | 0.43 | 0.41, 0.42 | 0.41 | -3% | 2/2 |
+| skip030-sky-48 | 0.91 | 0.86, 0.88 | 0.87 | -4% | 2/2 |
+| skip050-sky-48 | 1.57 | 1.55, 1.56 | 1.56 | -1% | 2/2 |
+| exact-code-48 | 0.42 | 0.40, 0.40 | 0.40 | -5% | 2/2 |
+| skip050-code-48 | 1.46 | 1.46, 1.46 | 1.46 | +0% | 2/2 |
+| exact-sky-24-t12 | 0.44 | 0.41, 0.40 | 0.41 | -8% | 2/2 |
+| skip050-sky-48-t12 | 1.91 | 1.90, 1.90 | 1.90 | -1% | 2/2 |
+
+## Original engine (the user-reported 0.10 tok/s start)
+
+| Run | RAM / context | tok/s | Prompt reading s | Result |
+|---|---|---:|---:|---|
+| original-defaults | automatic (24.3 GB) / default | 0.06 | 273.08 | ok |
+| original-r18-c1k | 18 GB / 1024 | 0.07 | 267.92 | ok |
+
+
+Done. Tell Claude: "quiet run finished: results/glm-quiet-20261021T162228Z"

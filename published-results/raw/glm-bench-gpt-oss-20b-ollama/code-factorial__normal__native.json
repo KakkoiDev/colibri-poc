@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 11.88,
+ "prompt_tokens": 85,
+ "prefill_s": 0.184,
+ "output_tokens": 454,
+ "decode_s": 11.686,
+ "load_s": 0.001,
+ "text": "Here’s a compact, type‑hinted, and fully documented implementation that works for any non‑negative integer `n`:\n\n```python\ndef factorial(n: int) -> int:\n    \"\"\"\n    Return the factorial of a non‑negative integer `n`.\n\n    Parameters\n    ----------\n    n : int\n        The number to compute the factorial of. Must be ≥ 0.\n\n    Returns\n    -------\n    int\n        n! (1 * 2 * … * n). By definition, 0! = 1.\n\n    Raises\n    ------\n    ValueError\n        If `n` is negative or not an integer.\n\n    Examples\n    --------\n    >>> factorial(0)\n    1\n    >>> factorial(5)\n    120\n    \"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"factorial() only accepts integers\")\n    if n < 0:\n        raise ValueError(\"factorial() only accepts non‑negative integers\")\n\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n```\n\n**Why this version?**\n\n- **Input validation**: It refuses negative values and non‑integers, giving clear error messages.\n- **Iterative loop**: This avoids the risk of hitting Python’s recursion depth limit for large `n`.\n- **Python’s arbitrary‑precision integers**: Even for very large `n` (within memory limits), the function will compute the exact value.\n\nFeel free to drop this into any script or module and use it as needed!",
+ "thinking_chars": 594,
+ "truncated": false,
+ "decode_tok_s": 38.85,
+ "answer_s": 11.87,
+ "correct": true
+}

@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 143.92,
+ "prompt_tokens": 14,
+ "prefill_s": 59.85,
+ "output_tokens": 128,
+ "decode_s": 81.4,
+ "decode_tok_s": 1.57,
+ "zeroed_slots": 63714,
+ "hit_pct": 32.7,
+ "text": "# Why Is the Sky Blue?\n\nAn everyday phenomenon with a surprisingly elegant explanation, the blue sky has fascinated scientists and all kinds of inquisitive minds for centuries. (Rayleigh, Lord Rayleigh, 1918, \"On the light of the sky and the sky colour, due to diffuse reflection at the high altitudes of the air, the light of the day, the sky, and the sky colour, due to diffuse reflection at the high altitudes of the air, the light of the day, the sky, and the sky colour, due to diffuse reflection at the high altitudes of the air, the light of",
+ "answer_s": 141.25,
+ "correct": false
+}

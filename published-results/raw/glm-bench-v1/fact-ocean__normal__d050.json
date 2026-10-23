@@ -1,0 +1,18 @@
+{
+ "id": "fact-ocean",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 145.89,
+ "prompt_tokens": 14,
+ "prefill_s": 60.22,
+ "output_tokens": 128,
+ "decode_s": 82.99,
+ "decode_tok_s": 1.54,
+ "zeroed_slots": 64140,
+ "hit_pct": 34.4,
+ "text": "The largest ocean on Earth is the **Pacific Ocean**, which is bounded by the continents of Asia and Australia on the west, and the Americas on the east. It stretches from the Arctic Ocean in the north (the Bering Sea is a part of it near Alaska and Russia) to the Southern Ocean in the south (the Southern Ocean is a distinct body of water that surrounds Antarctica and extends to the 60 degrees south latitude line, and the Drake Passage and Scotia Sea are parts of it near South America, and the Tasman Sea and Coral Sea are parts of it near Australia and New Zealand, and the Pacific Ocean extends to the Tas",
+ "answer_s": 143.21,
+ "correct": true
+}

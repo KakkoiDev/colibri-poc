@@ -1,0 +1,6 @@
+# Experiment: Engine policy "balanced"
+# ~/Code/colibri-poc/.venv/bin/python glm_lab.py run-planned policy-balanced
+Running x-policy-balanced ...
+115 runs, 111 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  policy-balanced: 0.39 tok/s vs 0.44 (-11.4%), output n/a
+83 experiments -> docs/12-experiment-log.md, site/data/experiments.json

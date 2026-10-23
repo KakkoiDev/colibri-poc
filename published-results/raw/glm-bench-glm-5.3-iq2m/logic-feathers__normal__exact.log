@@ -1,0 +1,96 @@
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 3.29s | resident dense: 14457.58 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 22 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Which is heavier: a kilogram of feathers or a kilogram of steel?<|assistant|><think></think>PROFILO PREFILL (48.31s):
+PROFILE: expert-disk 88.374s service / 11.395s wait | expert-matmul 21.159s | attention 12.890s (including kvb 3.071s) | lm_head 0.087s | other 2.782s
+ATTENTION: projection/RoPE 2.031s | score-softmax-value 0.065s | output projection 7.723s
+P0-EXEC: routed CPU 21.155s / 3.11 GB/s (13368 row) | routed GPU critical 0.000s | router 0.099s | residual P2P 0.000s / 0 hop | orchestration 2.683s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+A kilogram of feathers and a kilogram of steel weigh exactly the same — they're both one kilogram. This is a classic trick question that plays on our intuition that steel is "heavier" than feathers.
+
+The confusion comes from mixing up two different concepts:
+
+- **Weight/mass**: Both are 1 kg, so they're equal.
+- **Density**: Steel is much denser than feathers. A kilogram of steel would be a small, compact block, while a kilogram of feathers would fill a large bag. But density affects how much *space* something takes up, not how much it *weighs*
+---
+prefill 22 tokens in 48.31s | decode 128 tokens in 559.96s (0.23 tok/s) | expert hit rate 0.6% (pin 0.0% + lru 0.6%) | RSS 10.31 GB
+experts loaded/token: 645.4 (per-layer 8.61 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.88 tokens/forward (68 forwards per 128 tokens) | MTP acceptance 87% (59/68)
+PROFILE: expert-disk 1054.791s service / 147.499s wait | expert-matmul 184.894s | attention 178.395s (including kvb 0.000s) | lm_head 0.000s | other 49.168s
+ATTENTION: projection/RoPE 33.702s | score-softmax-value 62.734s | output projection 81.946s
+P0-EXEC: routed CPU 184.623s / 4.36 GB/s (82616 row) | routed GPU critical 0.000s | router 3.767s | residual P2P 0.000s / 0 hop | orchestration 45.401s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 68 | latency p50 7979.0 ms | p90 8334.1 ms | p99 8596.9 ms | max 8600.0 ms | 1.88 tok/forward
+[PROF] expert I/O: 800.144 GB fetched (6251.1 MB/token, 1.43 GB/s over the run) | hit 0.6% (0 pin + 429 lru / 69807 load) | 645.4 loads/token | 1054.8s read service / 147.5s felt wait
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (0.9 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 26% | expert-matmul 33% | attention 32% | lm_head 0% | other 8%
+[PROF] P0 execution: routed CPU 184.623s / 4.36 GB/s (82616 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 3.767s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 45.401s
+[PROF] verdict: balanced — no phase dominates (I/O 26%, matmul 33%, attention 32%); this config is a reasonable fit for this machine.
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      Glm-5.3 · 256x22B MoE
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+[gguf] ~/colibri-models/gguf/glm-5.3-iq2m/UD-IQ2_M/GLM-5.3-UD-IQ2_M-00001-of-00006.gguf: glm-dsa, 6 part(s), 59949 tensors under the checkpoint's names (1581 renamed, 228 fused expert tensors split per expert, 0 kept as named), read in place
+[METAL] kv_b_proj is fmt=102 on 78/78 layers: the fused Metal attention path serves kv_b only as int4, per-row (fmt=2) or grouped (fmt=4; grouped is served only while COLI_METAL_MOE_EXACT is off), so those layers run decode attention on the CPU absorb path instead. Requantize kv_b to int4 (--kvb-bits 4) to re-enable the fused path.
+[METAL] q_a_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] q_b_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] kv_a_proj_with_mqa is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] o_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.gate_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.up_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.down_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[DSA] indexer active: top-2048 sparse attention beyond 2048 context tokens
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 20.9 GB is 2.9 GB OVER the budget (resident 15.2 GB + reserve 4.9 GB, expert 11.5 MB avg/row).
+[RAM_GB=18.0] resident 15.2 GB + reserve 4.9 GB (ws 0.9, KV 1x1024 0.2, kvb 0.1), experts 11.5 MB avg x 76 layers -> cap lowered 8->1 (projected peak 20.9 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 10.4 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 0.9 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=on PILOT=0 CACHE_ROUTE=0
+[stop] 25 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 154838 154839 154840 154852 154853 154854 154855 (22 from the tokenizer's special set)
+[prefill] layer 1/78 · 22 token · +0.00s
+[CUDA] no reusable LRU expert slot (in flight or cap reached); skipping cache promotion
+[prefill] layer 5/78 · 22 token · +1.74s
+[prefill] layer 9/78 · 22 token · +4.66s
+[prefill] layer 13/78 · 22 token · +7.44s
+[prefill] layer 17/78 · 22 token · +9.96s
+[prefill] layer 21/78 · 22 token · +12.27s
+[prefill] layer 25/78 · 22 token · +14.58s
+[prefill] layer 29/78 · 22 token · +17.10s
+[prefill] layer 33/78 · 22 token · +19.45s
+[prefill] layer 37/78 · 22 token · +21.71s
+[prefill] layer 41/78 · 22 token · +24.02s
+[prefill] layer 45/78 · 22 token · +26.42s
+[prefill] layer 49/78 · 22 token · +28.80s
+[prefill] layer 53/78 · 22 token · +31.22s
+[prefill] layer 57/78 · 22 token · +33.63s
+[prefill] layer 61/78 · 22 token · +35.99s
+[prefill] layer 65/78 · 22 token · +38.38s
+[prefill] layer 69/78 · 22 token · +40.84s
+[prefill] layer 73/78 · 22 token · +43.27s
+[prefill] layer 77/78 · 22 token · +45.85s
+[prefill] layer 78/78 · 22 token · +46.45s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.31 GB  hit 1%  0.24 tok/s  1.88 tok/fw]
+
+[t=32  RSS 10.31 GB  hit 1%  0.24 tok/s  1.94 tok/fw]
+
+[t=48  RSS 10.31 GB  hit 1%  0.22 tok/s  1.81 tok/fw]
+
+[t=64  RSS 10.31 GB  hit 1%  0.22 tok/s  1.80 tok/fw]
+
+[t=80  RSS 10.31 GB  hit 1%  0.22 tok/s  1.80 tok/fw]
+
+[t=96  RSS 10.31 GB  hit 1%  0.22 tok/s  1.83 tok/fw]
+
+[t=112  RSS 10.31 GB  hit 1%  0.23 tok/s  1.85 tok/fw]
+
+[t=128  RSS 10.31 GB  hit 1%  0.23 tok/s  1.87 tok/fw]

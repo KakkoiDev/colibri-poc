@@ -1,0 +1,19 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.24,
+ "prompt_tokens": 18,
+ "prefill_s": 0.02,
+ "output_tokens": 18,
+ "decode_s": 0.214,
+ "load_s": 0.0,
+ "text": "The chemical formula of table salt is **NaCl**.\n\nThis stands for **sodium chloride**.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 84.11,
+ "answer_s": 0.23,
+ "correct": true
+}

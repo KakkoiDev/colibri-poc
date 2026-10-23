@@ -1,0 +1,18 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 254.38,
+ "prompt_tokens": 16,
+ "prefill_s": 36.98,
+ "output_tokens": 128,
+ "decode_s": 213.69,
+ "decode_tok_s": 0.6,
+ "zeroed_slots": 67978,
+ "hit_pct": 4.1,
+ "text": "The largest planet in our solar system is **Jupiter**.\n\nJupiter is the largest planet in our solar system in terms of mass, volume, and physical size (which are all actually in a common characteristic of such an overall common overall common being the general general common overall common being the so-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-",
+ "answer_s": 250.67,
+ "correct": true
+}

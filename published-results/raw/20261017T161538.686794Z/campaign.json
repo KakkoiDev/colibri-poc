@@ -1,0 +1,275 @@
+{
+  "schema": 1,
+  "tokens": 16,
+  "rounds": 1,
+  "baseline": "baseline",
+  "model": {
+    "repo": "mlx-community/OLMoE-1B-7B-0125-Instruct-4bit",
+    "revision": "e23844197887b031e7ddddbb0b8959c5a6853a7b"
+  },
+  "prompts_sha256": "d4a5f923d7ab1f6edb61d44cde267843ad9cc56ee39ad992eeeee431d8f1ceaf",
+  "runner_sha256": "6bedd6945723bb74ea065b9a921601430d1d981f268f9867690e67586ae113f8",
+  "python": "3.12.15 (main, Oct  1 2026, 20:49:34) [Clang 22.1.3 ]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "host": "arm64",
+  "packages": "annotated-doc==0.0.5\nanyio==4.15.1\nclick==8.5.0\nfilelock==4.2.0\nfsspec==2026.9.0\nh11==0.16.0\nhf-xet==1.7.0\nhttpcore2==2.13.1\nhttpx2==2.13.1\nhuggingface-hub==2.2.0\nidna==3.20\njinja2==3.1.6\nmarkdown-it-py==4.2.0\nmarkupsafe==3.0.4\nmdurl==0.1.2\nmlx==0.32.4\nmlx-lm==0.32.2\nmlx-metal==0.32.4\nnumpy==2.5.4\npackaging==26.3\nprotobuf==7.36.2\npygments==2.21.0\npyyaml==6.0.3\nregex==2026.9.29\nrich==15.0.0\nsafetensors==0.8.0\nsentencepiece==0.2.2\nshellingham==1.5.4\ntokenizers==0.23.3\ntqdm==4.70.1\ntransformers==5.20.1\ntruststore==0.10.5\ntyper==0.27.3\ntyping-extensions==4.16.0\n",
+  "records": [
+    {
+      "round": 1,
+      "variant": "baseline",
+      "status": "ok",
+      "output": "r1-baseline.json",
+      "data": {
+        "variant": {
+          "name": "baseline",
+          "backend": "mlx",
+          "prefill_step_size": 512,
+          "description": "MLX Metal, greedy, fresh KV per request, no prefix reuse"
+        },
+        "plugin_sha256": null,
+        "load_s": 2.0689113749999706,
+        "metal_available": true,
+        "cache_state": "OS page cache uncontrolled; fresh KV per request; weights resident",
+        "metal_device": {
+          "device_name": "Apple M6",
+          "max_recommended_working_set_size": 26800603136,
+          "memory_size": 34359738368,
+          "architecture": "applegpu_g18g",
+          "max_buffer_length": 20100448256,
+          "resource_limit": 499000
+        },
+        "requests": [
+          {
+            "phase": "warmup",
+            "prompt_id": "explain",
+            "prompt_tokens": 31,
+            "tokens": 16,
+            "prompt_tps": 26.264932760189723,
+            "decode_tps": 115.839095875814,
+            "request_s": 1.4965066660001867,
+            "ttft_s": 1.3560069580003073,
+            "first_text_s": 1.3560069580003073,
+            "peak_gpu_gb": 3.965306556,
+            "finish_reason": "length",
+            "token_ids": [
+              1992,
+              2096,
+              849,
+              247,
+              12874,
+              11556,
+              2987,
+              13,
+              1339,
+              434,
+              897,
+              247,
+              11859,
+              1650,
+              7668,
+              247
+            ],
+            "text": "To understand how a CPU cache works, let's use a concrete example involving a"
+          },
+          {
+            "phase": "measured",
+            "prompt_id": "explain",
+            "prompt_tokens": 31,
+            "tokens": 16,
+            "prompt_tps": 538.3482662461705,
+            "decode_tps": 198.60911553784277,
+            "request_s": 0.14112787500016566,
+            "ttft_s": 0.05795962499996676,
+            "first_text_s": 0.05795962499996676,
+            "peak_gpu_gb": 3.965425148,
+            "finish_reason": "length",
+            "token_ids": [
+              1992,
+              2096,
+              849,
+              247,
+              12874,
+              11556,
+              2987,
+              13,
+              1339,
+              434,
+              897,
+              247,
+              11859,
+              1650,
+              7668,
+              247
+            ],
+            "text": "To understand how a CPU cache works, let's use a concrete example involving a"
+          },
+          {
+            "phase": "measured",
+            "prompt_id": "code",
+            "prompt_tokens": 33,
+            "tokens": 16,
+            "prompt_tps": 54.9723878276908,
+            "decode_tps": 50.9920137742257,
+            "request_s": 0.9168045000001257,
+            "ttft_s": 0.6007213329999104,
+            "first_text_s": 0.6007213329999104,
+            "peak_gpu_gb": 3.967421056,
+            "finish_reason": "length",
+            "token_ids": [
+              4943,
+              310,
+              247,
+              13814,
+              1159,
+              326,
+              14041,
+              265,
+              21481,
+              11508,
+              15,
+              380,
+              1159,
+              4648,
+              247,
+              2969
+            ],
+            "text": "Here is a Python function that merges overlapping intervals. The function uses a simple"
+          },
+          {
+            "phase": "measured",
+            "prompt_id": "reason",
+            "prompt_tokens": 43,
+            "tokens": 16,
+            "prompt_tps": 475.5251938010401,
+            "decode_tps": 188.46126360687649,
+            "request_s": 0.17838037500041537,
+            "ttft_s": 0.09092208400033996,
+            "first_text_s": 0.09092208400033996,
+            "peak_gpu_gb": 4.003202256,
+            "finish_reason": "length",
+            "token_ids": [
+              1992,
+              8415,
+              436,
+              1895,
+              13,
+              359,
+              878,
+              281,
+              10173,
+              253,
+              3388,
+              3885,
+              273,
+              253,
+              6194,
+              689
+            ],
+            "text": "To solve this problem, we need to calculate the average speed of the train over"
+          },
+          {
+            "phase": "measured",
+            "prompt_id": "story",
+            "prompt_tokens": 35,
+            "tokens": 16,
+            "prompt_tps": 690.0149183193431,
+            "decode_tps": 204.1370699281773,
+            "request_s": 0.13188149999996313,
+            "ttft_s": 0.05110187500031316,
+            "first_text_s": 0.05110187500031316,
+            "peak_gpu_gb": 3.988200784,
+            "finish_reason": "length",
+            "token_ids": [
+              1909,
+              344,
+              9407,
+              1834,
+              13,
+              253,
+              5026,
+              23010,
+              4455,
+              281,
+              6906,
+              5777,
+              13,
+              6941,
+              779,
+              247
+            ],
+            "text": "As he ascended, the thick fog seemed to thin slightly, allowing him a"
+          },
+          {
+            "phase": "measured",
+            "prompt_id": "long-context",
+            "prompt_tokens": 2329,
+            "tokens": 16,
+            "prompt_tps": 1606.8851128890274,
+            "decode_tps": 143.2206291416226,
+            "request_s": 1.5671281670001918,
+            "ttft_s": 1.4518505830001232,
+            "first_text_s": 1.4518505830001232,
+            "peak_gpu_gb": 4.644076276,
+            "finish_reason": "length",
+            "token_ids": [
+              510,
+              21429,
+              12028,
+              3389,
+              247,
+              36108,
+              10014,
+              273,
+              12082,
+              9363,
+              285,
+              10097,
+              273,
+              8468,
+              20131,
+              285
+            ],
+            "text": "The archive entries document a recurring theme of systematic maintenance and documentation of sensor logs and"
+          }
+        ]
+      }
+    }
+  ],
+  "model_files": [
+    {
+      "name": "README.md",
+      "bytes": 968,
+      "sha256": "94820b1251f3eabcaa9d174011d937e53fb1a76e38edd4afb393b2b754e2cb40"
+    },
+    {
+      "name": "config.json",
+      "bytes": 994,
+      "sha256": "83468e17ab8e7ce8255b52fef0e9cc8c82a4a9f8094de45877e6d67810c0e3d7"
+    },
+    {
+      "name": "model.safetensors",
+      "bytes": 3893373229,
+      "sha256": "472151b0e490c93f409caec4ba36524048183118403192a261d2df5645a21bf9"
+    },
+    {
+      "name": "model.safetensors.index.json",
+      "bytes": 745813,
+      "sha256": "de5659205913425c3616cf63876f7deb8d9cb082e0d0ed54083457b71d715437"
+    },
+    {
+      "name": "special_tokens_map.json",
+      "bytes": 437,
+      "sha256": "43ffdefa4e501eebdaaba8f34999ac1b5507dc836fab4a1d1529466de35101e0"
+    },
+    {
+      "name": "tokenizer.json",
+      "bytes": 3565064,
+      "sha256": "d1e645ebd850d79567e531a3c103ac575d8e9cf45fa941420afc584b293438ea"
+    },
+    {
+      "name": "tokenizer_config.json",
+      "bytes": 6123,
+      "sha256": "67ac3cdae4e25e84d5d0f4faadb961dd36341cf04e02c7be90a8fd8e697617eb"
+    }
+  ]
+}

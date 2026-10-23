@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 6.52,
+ "prompt_tokens": 18,
+ "prefill_s": 0.378,
+ "output_tokens": 128,
+ "decode_s": 6.128,
+ "load_s": 0.009,
+ "text": "A **hash table** (also known as a **hash map** or **associative array**) is a data structure that implements an abstract **associative array** (dictionary) data type. It is a collection of key-value pairs where each key is unique.\n\n### Core Concept\nThe primary goal of a hash table is to provide **fast lookup, insertion, and deletion** of elements. It achieves this by using a **hash function** to compute an index into an array of buckets or slots, from which the desired value can be found.\n\n---\n\n### How It Works\n\n1.  **Hash Function**:",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 20.89,
+ "answer_s": 6.51,
+ "correct": true
+}

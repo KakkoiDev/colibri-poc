@@ -1,0 +1,16 @@
+{
+ "text": "```python\ndef fib(n):\n    if n == 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        a, b = 0, 1\n        for _ in range(n - 1):\n            a, b = b, a + b\n        return b\n```",
+ "usage": {
+  "prompt_tokens": 62,
+  "completion_tokens": 72,
+  "total_tokens": 134,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 71,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.055,
+ "total_s": 0.5
+}

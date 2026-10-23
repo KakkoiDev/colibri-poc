@@ -1,0 +1,18 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 92.73,
+ "prompt_tokens": 36,
+ "prefill_s": 41.11,
+ "output_tokens": 37,
+ "decode_s": 48.4,
+ "decode_tok_s": 0.76,
+ "zeroed_slots": 13166,
+ "hit_pct": 7.4,
+ "text": "Yes.\n\nIf all bloops are razzies, and all razzies are lazzies, then by transitivity, every bloop must also be a lazzie.",
+ "answer_s": 89.51,
+ "correct": true
+}

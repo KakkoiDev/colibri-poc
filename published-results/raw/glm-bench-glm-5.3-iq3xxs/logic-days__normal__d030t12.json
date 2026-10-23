@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 107.28,
+ "prompt_tokens": 17,
+ "prefill_s": 23.27,
+ "output_tokens": 37,
+ "decode_s": 79.71,
+ "decode_tok_s": 0.46,
+ "zeroed_slots": 12749,
+ "hit_pct": 2.1,
+ "text": "# Day Calculation\n\nTwo days after Friday:\n\n- **1 day after Friday** = Saturday\n- **2 days after Friday** = **Sunday**\n\nThe answer is **Sunday**.",
+ "answer_s": 102.98,
+ "correct": true
+}

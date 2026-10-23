@@ -1,0 +1,18 @@
+{
+ "id": "fact-ww2",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 127.98,
+ "prompt_tokens": 15,
+ "prefill_s": 18.85,
+ "output_tokens": 128,
+ "decode_s": 105.36,
+ "decode_tok_s": 1.21,
+ "zeroed_slots": 58794,
+ "hit_pct": 2.9,
+ "text": "World War II ended in 1945. The war in Europe ended in May 1945 (Germany's surrender on May 7/8, 1945), while the war in the Pacific ended in August/September 1945 (Japan's surrender on August 15, 1945, with the formal signing on September 2, 1945 aboard the USS Missouri in Tokyo Bay).\n\nSome key dates related to the end of WWII:\n\n- **May 7, 1945**: Germany signs unconditional surrender at Reims, France (effective May 8)\n- **May 8",
+ "answer_s": 124.21,
+ "correct": true
+}

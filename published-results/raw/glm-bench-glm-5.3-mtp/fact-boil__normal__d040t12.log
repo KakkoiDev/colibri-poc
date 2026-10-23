@@ -1,0 +1,89 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.63s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 19 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>At sea level, at what temperature in Celsius does water boil?<|assistant|><think></think>PROFILO PREFILL (27.33s):
+PROFILE: expert-disk 154.029s service / 18.762s wait | expert-matmul 4.467s | attention 2.965s (including kvb 0.399s) | lm_head 0.006s | other 1.129s
+ATTENTION: projection/RoPE 0.913s | score-softmax-value 0.026s | output projection 1.626s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.033s | residual P2P 0.000s / 0 hop | orchestration 1.096s
+METAL: blocchi GPU 204 | fallback CPU 0 | expert su GPU 5486 | setup 0.03s gpu-wall 3.91s (kernel 4.37s) scatter 0.01s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Water boils at 100°C (212°F) at sea level, which is the standard atmospheric pressure of 1 atmosphere (101.325 kPa or 14.7 psi). This is the boiling point where water transitions from liquid to gas throughout the liquid (not just at the surface, which happens at lower temperatures as altitude increases).
+
+A few notes to keep in mind about this:
+
+1. **Boiling point vs. evaporation temperature**: The boiling point is defined as the temperature at which the vapor pressure of the liquid equals the surrounding atmospheric pressure. Evaporation, in contrast, can occur at any temperature below the boiling point
+---
+prefill 19 tokens in 27.33s | decode 128 tokens in 91.05s (1.41 tok/s) | expert hit rate 20.4% (pin 0.0% + lru 20.4%) | RSS 10.65 GB
+experts loaded/token: 645.4 (per-layer 8.61 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 59007 miss slots; top layers: L8:901 L9:896 L5:891)
+speculation: 1.21 tokens/forward (106 forwards per 128 tokens) | MTP acceptance 68% (21/31)
+PROFILE: expert-disk 114.254s service / 52.084s wait | expert-matmul 6.614s | attention 26.647s (including kvb 0.000s) | lm_head 0.000s | other 5.708s
+ATTENTION: projection/RoPE 0.039s | score-softmax-value 0.031s | output projection 0.037s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.009s | residual P2P 0.000s / 0 hop | orchestration 5.699s
+METAL-ATTN: layer GPU 8268 | gpu-wall 26.35s (kernel 25.57s | cpu-sched 0.03s gpu-sched 0.39s)
+METAL: blocchi GPU 11441 | fallback CPU 0 | expert su GPU 23479 | setup 0.26s gpu-wall 10.20s (kernel 11.18s) scatter 0.03s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 106 | latency p50 709.0 ms | p90 1253.2 ms | p99 1356.8 ms | max 1437.6 ms | 1.21 tok/forward
+[PROF] expert I/O: 304.950 GB fetched (2382.4 MB/token, 3.35 GB/s over the run) | hit 20.4% (0 pin + 3662 lru / 14279 load) | 645.4 loads/token | 114.3s read service / 52.1s felt wait
+[PROF] DISK-CLASS (recency split): cold 5067 x 108.82 GB @ 2.52 GB/s-thread, wall 29.2s @ 3.72 GB/s-wall, avg-conc 1.5 (direct 5048/5067) | warm 9212 x 196.13 GB @ 2.77 GB/s-thread, wall 41.0s @ 4.78 GB/s-wall, avg-conc 1.7 (direct 9180/9212) | disk-busy 51.9s (57% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 57% | expert-matmul 7% | attention 29% | lm_head 0% | other 6%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.009s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 5.699s
+[PROF] verdict: I/O-bound — 57% of the time waits on expert reads (hit 20%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 13.1 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 19 token · +0.00s
+[prefill] layer 5/78 · 19 token · +1.17s
+[prefill] layer 9/78 · 19 token · +2.95s
+[prefill] layer 13/78 · 19 token · +4.50s
+[prefill] layer 17/78 · 19 token · +5.89s
+[prefill] layer 21/78 · 19 token · +7.14s
+[prefill] layer 25/78 · 19 token · +8.35s
+[prefill] layer 29/78 · 19 token · +9.82s
+[prefill] layer 33/78 · 19 token · +11.07s
+[prefill] layer 37/78 · 19 token · +12.33s
+[prefill] layer 41/78 · 19 token · +13.56s
+[prefill] layer 45/78 · 19 token · +14.87s
+[prefill] layer 49/78 · 19 token · +16.25s
+[prefill] layer 53/78 · 19 token · +17.57s
+[prefill] layer 57/78 · 19 token · +18.88s
+[prefill] layer 61/78 · 19 token · +20.15s
+[prefill] layer 65/78 · 19 token · +21.56s
+[prefill] layer 69/78 · 19 token · +22.93s
+[prefill] layer 73/78 · 19 token · +24.36s
+[prefill] layer 77/78 · 19 token · +25.81s
+[prefill] layer 78/78 · 19 token · +26.17s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.65 GB  hit 14%  1.54 tok/s  1.88 tok/fw]
+
+[t=32  RSS 10.65 GB  hit 17%  1.48 tok/s  1.82 tok/fw]
+
+[t=48  RSS 10.65 GB  hit 16%  1.39 tok/s  1.74 tok/fw]
+[MTP] 68% acceptance over the last 31 proposals: drafts paused for 256 tokens
+
+[t=64  RSS 10.65 GB  hit 17%  1.35 tok/s  1.50 tok/fw]
+
+[t=80  RSS 10.65 GB  hit 19%  1.37 tok/s  1.36 tok/fw]
+
+[t=96  RSS 10.65 GB  hit 20%  1.38 tok/s  1.28 tok/fw]
+
+[t=112  RSS 10.65 GB  hit 20%  1.40 tok/s  1.23 tok/fw]
+
+[t=128  RSS 10.65 GB  hit 20%  1.41 tok/s  1.20 tok/fw]

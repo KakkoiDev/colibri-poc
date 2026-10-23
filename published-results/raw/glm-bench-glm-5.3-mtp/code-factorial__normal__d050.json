@@ -1,0 +1,18 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 130.14,
+ "prompt_tokens": 24,
+ "prefill_s": 33.97,
+ "output_tokens": 128,
+ "decode_s": 93.14,
+ "decode_tok_s": 1.37,
+ "zeroed_slots": 64134,
+ "hit_pct": 22.6,
+ "text": "Here's a simple Python function `factorial(n)` that computes n! (n factorial) for a non-negative integer n, with basic input validation and a recursive implementation:\n\n```python\ndef factorial(n):\n    \"\"\"\n    Compute n! (n factorial) for a non-negative integer n.\n\n    Args:\n        n (int): A non-negative integer whose factorial is to be computed.\n\n        Must be an integer: a string, float, or other non-int type raises\n        a TypeError, as does an int with a fractional part (e.g., 5.0).\n\n    Returns:\n        int: The factorial of n (",
+ "answer_s": 127.11,
+ "correct": false
+}

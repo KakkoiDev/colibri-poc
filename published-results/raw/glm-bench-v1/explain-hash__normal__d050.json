@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 136.56,
+ "prompt_tokens": 12,
+ "prefill_s": 52.28,
+ "output_tokens": 128,
+ "decode_s": 81.64,
+ "decode_tok_s": 1.57,
+ "zeroed_slots": 62518,
+ "hit_pct": 35.1,
+ "text": "# Hash Tables: Demystifying the Fastest Data Structure in Computer Science\n\n## The Short Answer\nA **hash table** is a data structure that stores key-value pairs, using a mathematical function (a **hash function**) to compute an index (or \"hash\") into an array of buckets or slots, from which the desired value can be found quickly. This allows for near-constant average time complexity — O(1) — for lookup, insertion, and deletion operations, making it one of the most efficient and widely used data structures in computing.\n\n## Key Characteristics\n\n1. **Average O(1) time complexity** for",
+ "answer_s": 133.92,
+ "correct": true
+}

@@ -1,0 +1,16 @@
+{
+ "text": "Here is a Python function that calculates the factorial of a non-negative integer `n`:\n\n```python\ndef factorial(n):\n    if n == 0:\n        return 1\n    else:\n        result = 1\n        for i in range(1, n+1):\n            result *= i\n        return result\n```\n\nThis function works by initializing `result` to 1 and then multiplying it by each integer from 1 to `n` (inclusive) during the loop. The final product is the factorial of `n`.\n\nHere's how you can use this",
+ "usage": {
+  "prompt_tokens": 35,
+  "completion_tokens": 128,
+  "total_tokens": 163,
+  "prompt_tokens_details": {
+   "cached_tokens": 10
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.056,
+ "total_s": 0.761
+}

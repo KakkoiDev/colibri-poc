@@ -1,0 +1,24 @@
+# Download and prepare GLM-5.3-Flash UD-IQ3_XXS
+# make glm-prep-flash
+sh scripts/prep_gguf.sh unsloth/GLM-5.3-Flash-GGUF UD-IQ3_XXS glm-5.3-flash-iq3xxs
+/dev/disk3s5   1.8Ti   949Gi   865Gi    53%    2.0M  9.1G    0%   /System/Volumes/Data
+
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]
+Fetching 4 files:  25%|██▌       | 1/4 [00:23<01:11, 23.78s/it]
+Fetching 4 files:  50%|█████     | 2/4 [21:56<25:40, 770.48s/it]
+Fetching 4 files:  75%|███████▌  | 3/4 [33:53<12:25, 745.84s/it]
+Fetching 4 files: 100%|██████████| 4/4 [34:00<00:00, 454.08s/it]
+Fetching 4 files: 100%|██████████| 4/4 [34:00<00:00, 510.07s/it]
+[32m✓ Downloaded[0m
+  path: ~/colibri-models/gguf/glm-5.3-flash-iq3xxs
+colibri model directory ready: ~/colibri-models/glm-5.3-flash-iq3xxs  (glm5-next, 45 layers, mode link)
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      13 model families · MoE experts streamed from disk · CPU
+             import
+             
+  ──────────────────────────────────────────────────────────
+
+  ready: coli chat --model ~/colibri-models/glm-5.3-flash-iq3xxs   (or coli serve / coli web)
+Ready: ~/colibri-models/glm-5.3-flash-iq3xxs

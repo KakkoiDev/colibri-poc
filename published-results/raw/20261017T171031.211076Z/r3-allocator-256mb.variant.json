@@ -1,0 +1,10 @@
+{
+  "name": "allocator-256mb",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T171031.211076Z/r3-allocator-256mb.plugin.py",
+  "env": {
+    "POC_ALLOCATOR_MB": "256"
+  },
+  "description": "Resident execution experiment; weights and routing unchanged"
+}

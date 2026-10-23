@@ -1,0 +1,22 @@
+{
+ "started": "2026-10-22T03:25:31Z",
+ "backend": "openai",
+ "openai_model": "olmoe-1b-7b-4bit",
+ "openai_request_model": "default_model",
+ "openai_url": "http://127.0.0.1:8771",
+ "openai_options": {
+  "temperature": 0,
+  "max_tokens": 128,
+  "stream": true
+ },
+ "timing_note": "prefill_s = time to first streamed token (includes request overhead); decode_s = the rest",
+ "base_env": {},
+ "configs": {},
+ "styles": {
+  "normal": "",
+  "terse": " Answer as briefly as possible. For code, reply with only the code."
+ },
+ "ram": "18",
+ "ctx": "1024",
+ "ngen": 128
+}

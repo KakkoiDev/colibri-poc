@@ -1,0 +1,18 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 121.34,
+ "prompt_tokens": 19,
+ "prefill_s": 27.33,
+ "output_tokens": 128,
+ "decode_s": 91.05,
+ "decode_tok_s": 1.41,
+ "zeroed_slots": 59007,
+ "hit_pct": 20.4,
+ "text": "Water boils at 100°C (212°F) at sea level, which is the standard atmospheric pressure of 1 atmosphere (101.325 kPa or 14.7 psi). This is the boiling point where water transitions from liquid to gas throughout the liquid (not just at the surface, which happens at lower temperatures as altitude increases).\n\nA few notes to keep in mind about this:\n\n1. **Boiling point vs. evaporation temperature**: The boiling point is defined as the temperature at which the vapor pressure of the liquid equals the surrounding atmospheric pressure. Evaporation, in contrast, can occur at any temperature below the boiling point",
+ "answer_s": 118.38,
+ "correct": true
+}

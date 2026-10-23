@@ -1,0 +1,19 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 1.46,
+ "prompt_tokens": 24,
+ "prefill_s": 0.124,
+ "output_tokens": 93,
+ "decode_s": 1.328,
+ "load_s": 0.002,
+ "text": "17 multiplied by 23 is **391**.\n\nHere is a quick way to calculate it mentally:\nSince both numbers are equidistant from 20, you can use the \"difference of squares\" formula:\n$(20 - 3) \\times (20 + 3)$\n$= 20^2 - 3^2$\n$= 400 - 9$\n$= 391$",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 70.03,
+ "answer_s": 1.45,
+ "correct": true
+}

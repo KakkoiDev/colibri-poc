@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 149.14,
+ "prompt_tokens": 15,
+ "prefill_s": 63.59,
+ "output_tokens": 128,
+ "decode_s": 82.76,
+ "decode_tok_s": 1.55,
+ "zeroed_slots": 64085,
+ "hit_pct": 33.1,
+ "text": "**15% of 240 = 36**\n\n**Method 1: Using the standard percentage formula:**\n\n15% means 15 per 100, or 0.15 as a decimal.\n\n15% of 240 = 0.15 × 240 = **36**\n\n**Method 2: Splitting into convenient parts (mental math):**\n\n15% = 10% + 5% (a half of 10%)\n\n- 10% of 240 = 24 (move the decimal one place left: 240 → 24)\n- 5% of 240 = 12 (half of 24",
+ "answer_s": 146.35,
+ "correct": false
+}

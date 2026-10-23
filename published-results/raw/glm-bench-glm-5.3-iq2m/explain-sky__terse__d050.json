@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 419.76,
+ "prompt_tokens": 29,
+ "prefill_s": 62.68,
+ "output_tokens": 128,
+ "decode_s": 353.15,
+ "decode_tok_s": 0.36,
+ "zeroed_slots": 64971,
+ "hit_pct": 2.2,
+ "text": "The sky is blue because molecules in the atmosphere preferentially scatter shorter (blue) wavelengths of light compared to visible (red) light, and the scattered blue light reaches our eyes from all directions. The sky appears blue at noon, but at sunrise and sunset, when the path of light through the atmosphere is longer, the scattered blue light is \"exhausted\" and the light reaching our eyes, directly from the sun, or reflected from the horizon and clouds, appears increasingly red, even though the at sunrise and sunset, some light still reaches our eyes from in front of, and at noon, some light still reaches our eyes from behind",
+ "answer_s": 415.83,
+ "correct": true
+}

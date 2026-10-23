@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 227.87,
+ "prompt_tokens": 15,
+ "prefill_s": 65.41,
+ "output_tokens": 128,
+ "decode_s": 159.48,
+ "decode_tok_s": 0.8,
+ "zeroed_slots": 45375,
+ "hit_pct": 7.5,
+ "text": "The chemical formula of table salt is **NaCl**, which stands for sodium chloride.\n\nHere's a quick breakdown:\n- **Na** = sodium (from the Latin *natrium*)\n- **Cl** = chlorine\n\nIn its solid form, table salt is made up of a crystal lattice structure where sodium ions (Na⁺) and chloride ions (Cl⁻) alternate in a repeating pattern, held together by ionic bonds. This is why table salt is often called an \"ionic compound.\"\n\nInterestingly, while sodium is a highly reactive metal and chlorine is a toxic gas, when they combine, they form a compound that's",
+ "answer_s": 224.89,
+ "correct": true
+}

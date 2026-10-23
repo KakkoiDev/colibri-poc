@@ -1,0 +1,43 @@
+{
+ "started": "2026-10-21T00:03:43Z",
+ "backend": "colibri",
+ "colibri_commit": "16239caafd71588fe6efb12d287f29094060c1b8",
+ "base_env": {
+  "COLI_METAL": "1",
+  "PIPE": "1",
+  "DIRECT": "1",
+  "COLI_METAL_RESSET": "1",
+  "COLI_METAL_SPIN": "1",
+  "USAGE_SAVE": "0",
+  "KVSAVE": "0",
+  "COLI_TEMP": "0",
+  "PROF": "1"
+ },
+ "configs": {
+  "exact": {},
+  "d030": {
+   "DEGRADE_ZERO": "1",
+   "DEGRADE_TAU": "0.30"
+  },
+  "d050": {
+   "DEGRADE_ZERO": "1",
+   "DEGRADE_TAU": "0.50"
+  },
+  "d030t12": {
+   "DEGRADE_ZERO": "1",
+   "DEGRADE_TAU": "0.30",
+   "OMP_NUM_THREADS": "12"
+  },
+  "d040t12": {
+   "DEGRADE_ZERO": "1",
+   "DEGRADE_TAU": "0.40",
+   "OMP_NUM_THREADS": "12"
+  }
+ },
+ "styles": {
+  "normal": ""
+ },
+ "ram": "18",
+ "ctx": "1024",
+ "ngen": 128
+}

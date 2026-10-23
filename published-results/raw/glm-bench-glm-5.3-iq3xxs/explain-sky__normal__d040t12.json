@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 336.56,
+ "prompt_tokens": 14,
+ "prefill_s": 23.38,
+ "output_tokens": 128,
+ "decode_s": 308.79,
+ "decode_tok_s": 0.41,
+ "zeroed_slots": 59644,
+ "hit_pct": 2.5,
+ "text": "# Why the Sky is Blue\n\nThe sky appears blue due to a phenomenon called **Rayleigh scattering** (sometimes called the *Tyndall effect* when referring to scattering by particles in a colloid or suspension, though the effect is named after Lord Rayleigh's mathematical description of the scattering of light by small particles).\n\n## The Physics Behind It\n\n**Sunlight is composed of all colors** of the visible spectrum, which together appear white to our eyes. When sunlight enters Earth's atmosphere, it collides with gas molecules—mainly nitrogen (N₂) and oxygen (O₂), which are much smaller than the wavelength of",
+ "answer_s": 332.17,
+ "correct": true
+}

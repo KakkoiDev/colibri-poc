@@ -1,0 +1,6 @@
+compact-packed-grouped warmup explain: 41.01 tok/s
+compact-packed-grouped measured explain: 40.96 tok/s
+compact-packed-grouped measured code: 42.59 tok/s
+compact-packed-grouped measured reason: 42.54 tok/s
+compact-packed-grouped measured story: 41.86 tok/s
+compact-packed-grouped measured long-context: 37.01 tok/s

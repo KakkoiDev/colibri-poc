@@ -1,0 +1,16 @@
+{
+ "text": "The largest ocean on Earth is the Pacific Ocean. Covering approximately 165,250,000 square kilometers (approximately one-third of the Earth's surface), the Pacific Ocean is vast, containing more than 50,000 islands, including the Hawaiian Islands, and stretching from the Arctic in the north to the Southern Ocean in the south. It is divided into the North Pacific, Central Pacific, South Pacific, and the Western Pacific by various geographical features. The Pacific Ocean is deep, with an average depth of about 14,000 feet (4,270 meters), and it contains more than 50,000 different species of plants and animals. It plays",
+ "usage": {
+  "prompt_tokens": 21,
+  "completion_tokens": 128,
+  "total_tokens": 149,
+  "prompt_tokens_details": {
+   "cached_tokens": 10
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.037,
+ "total_s": 0.747
+}

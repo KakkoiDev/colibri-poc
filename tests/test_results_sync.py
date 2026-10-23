@@ -61,3 +61,19 @@ class PublisherTests(unittest.TestCase):
                 publish.side_effect = None
                 sync.check_completions()
                 self.assertEqual(publish.call_count, 2)
+    def test_archive_preserves_failed_runs_and_excludes_app_state(self):
+        import json
+        with tempfile.TemporaryDirectory() as temp:
+            source, target = Path(temp)/'source', Path(temp)/'target'
+            (source/'results/parallel-bench-test').mkdir(parents=True)
+            (source/'results/parallel-bench-test/failure.json').write_text('{"error":"/Users/alice/model"}')
+            (source/'results/lab-app').mkdir()
+            (source/'results/lab-app/queue.json').write_text('{"private":"state"}')
+            (target/'site/data').mkdir(parents=True)
+            sync.archive_results(source,target)
+            manifest=json.loads((target/'site/data/bench-archive.json').read_text())
+            self.assertEqual(len(manifest['files']),1)
+            file=target/'published-results/raw/parallel-bench-test/failure.json'
+            self.assertNotIn('/Users/alice',file.read_text())
+            import hashlib
+            self.assertEqual(manifest['files'][0]['sha256'],hashlib.sha256(file.read_bytes()).hexdigest())

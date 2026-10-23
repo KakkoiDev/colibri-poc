@@ -1,0 +1,18 @@
+{
+ "id": "fact-ww2",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 402.55,
+ "prompt_tokens": 15,
+ "prefill_s": 37.13,
+ "output_tokens": 128,
+ "decode_s": 361.31,
+ "decode_tok_s": 0.35,
+ "zeroed_slots": 66591,
+ "hit_pct": 3.5,
+ "text": "World War II ended in 1945. The war, which began on 1 September 1939 with the German invasion of Poland (though some historians argue the true start was the earlier Japanese invasion of Manchuria on 18 September 1931, or even the Mukden/Marco Polo Bridge Incident on 7 July 1937 in China, or the Marco Polo Bridge Incident (7 July 1937), the Marco Polo Bridge Incident (7 July 1937, the Marco Polo Bridge Incident (7 July 1937, the Marco Polo Bridge Incident (7 July 193",
+ "answer_s": 398.44,
+ "correct": true
+}

@@ -1,0 +1,10 @@
+# Quality bench qwen38-27b-ollama on Ollama qwen3.8:27b-mlx: exact, native · normal
+# ~/Code/colibri-poc/.venv/bin/python glm_bench.py run --name qwen38-27b-ollama --configs exact,native --styles normal --backend ollama --ollama-model qwen3.8:27b-mlx
+[41/48] code-reverse-words__normal__exact: exit=0 answer=5.92s tokens=122 correct=True
+[42/48] code-reverse-words__normal__native: exit=0 answer=30.27s tokens=767 correct=True
+[43/48] code-factorial__normal__exact: exit=0 answer=4.34s tokens=128 correct=False
+[44/48] code-factorial__normal__native: exit=0 answer=26.62s tokens=731 correct=True
+[45/48] explain-sky__normal__exact: exit=0 answer=5.21s tokens=128 correct=True
+[46/48] explain-sky__normal__native: exit=0 answer=22.21s tokens=466 correct=True
+[47/48] explain-hash__normal__exact: exit=0 answer=6.51s tokens=128 correct=True
+[48/48] explain-hash__normal__native: exit=0 answer=28.74s tokens=633 correct=True

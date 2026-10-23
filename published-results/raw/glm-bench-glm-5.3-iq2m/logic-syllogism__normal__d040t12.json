@@ -1,0 +1,18 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 162.02,
+ "prompt_tokens": 36,
+ "prefill_s": 34.8,
+ "output_tokens": 80,
+ "decode_s": 123.34,
+ "decode_tok_s": 0.65,
+ "zeroed_slots": 36911,
+ "hit_pct": 3.3,
+ "text": "Yes. If all bloops are razzies, and all razzies are lazzies, then by transitivity, all bloops must be lazzies. This is a classic syllogism (Barbara AAA-3) in Aristotelian logic: All B are R, All R are L, therefore All B are L. The conclusion follows logically from the premises.",
+ "answer_s": 158.14,
+ "correct": true
+}

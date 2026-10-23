@@ -1,0 +1,19 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 15.99,
+ "prompt_tokens": 90,
+ "prefill_s": 0.185,
+ "output_tokens": 613,
+ "decode_s": 15.803,
+ "load_s": 0.001,
+ "text": "Here is a compact, easy‑to‑read implementation that meets the requirements:\n\n```python\ndef reverse_words(s: str) -> str:\n    \"\"\"\n    Return a string consisting of the words of *s* in reverse order,\n    separated by single spaces.\n\n    Words are defined by any whitespace sequence (spaces, tabs,\n    newlines, etc.). Leading/trailing/multiple intermediate spaces\n    are ignored – the result always contains single spaces between\n    words.\n\n    Parameters\n    ----------\n    s : str\n        The input string.\n\n    Returns\n    -------\n    str\n        The words of *s* in reverse order, joined by a single space.\n\n    Examples\n    --------\n    >>> reverse_words(\"Hello world\")\n    'world Hello'\n    >>> reverse_words(\"  The quick   brown fox  \")\n    'fox brown quick The'\n    >>> reverse_words(\"\")\n    ''\n    >>> reverse_words(\"   \")\n    ''\n    \"\"\"\n    # Split on any whitespace, discard empty tokens\n    words = s.split()\n    # Reverse the list of words\n    words.reverse()\n    # Join with a single space\n    return ' '.join(words)\n```\n\n### Quick test\n\n```python\nif __name__ == \"__main__\":\n    tests = [\n        (\"Hello world\", \"world Hello\"),\n        (\"  The quick   brown fox  \", \"fox brown quick The\"),\n        (\"\", \"\"),\n        (\"   \", \"\"),\n        (\"Python\", \"Python\"),\n    ]\n\n    for inp, expected in tests:\n        out = reverse_words(inp)\n        assert out == expected, f\"Input: {inp!r}\\nExpected: {expected!r}\\nGot: {out!r}\"\n    print(\"All tests passed.\")\n```\n\nThis function handles arbitrary whitespace, returns an empty string for inputs that contain no words, and always separates the reversed words with a single space as requested.",
+ "thinking_chars": 1080,
+ "truncated": false,
+ "decode_tok_s": 38.79,
+ "answer_s": 15.99,
+ "correct": true
+}

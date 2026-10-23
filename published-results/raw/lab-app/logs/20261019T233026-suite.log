@@ -1,0 +1,11 @@
+# Ram bench on GLM-5.3 int4 + int8 MTP head
+# ~/Code/colibri-poc/.venv/bin/python glm_suite.py run ram --model glm-5.3-mtp
+Running suite-ram-glm-5.3-mtp-20261019T2330-sky-exact-ram18 ...
+84 runs, 80 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-ram-glm-5.3-mtp-20261019T2330-sky-exact-ram18 done
+Running suite-ram-glm-5.3-mtp-20261019T2330-sky-exact-ram22 ...
+85 runs, 81 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-ram-glm-5.3-mtp-20261019T2330-sky-exact-ram22 done
+Running suite-ram-glm-5.3-mtp-20261019T2330-sky-exact-ram26 ...
+86 runs, 82 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-ram-glm-5.3-mtp-20261019T2330-sky-exact-ram26 done

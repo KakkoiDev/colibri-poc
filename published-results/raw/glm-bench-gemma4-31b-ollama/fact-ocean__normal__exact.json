@@ -1,0 +1,19 @@
+{
+ "id": "fact-ocean",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.73,
+ "prompt_tokens": 21,
+ "prefill_s": 0.318,
+ "output_tokens": 11,
+ "decode_s": 0.402,
+ "load_s": 0.008,
+ "text": "The largest ocean on Earth is the **Pacific Ocean**.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 27.36,
+ "answer_s": 0.72,
+ "correct": true
+}

@@ -1,0 +1,6 @@
+# Experiment: Re-pin hot experts every 64 tokens (skip < 0.5)
+# ~/Code/colibri-poc/.venv/bin/python glm_lab.py run-planned repin-skip050
+Running x-repin-skip050 ...
+114 runs, 110 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  repin-skip050: 1.77 tok/s vs 1.7 (4.1%), output n/a
+83 experiments -> docs/12-experiment-log.md, site/data/experiments.json

@@ -1,0 +1,16 @@
+{
+ "text": "```python\nnum = 240\npercentage = 15\nresult = num * (percentage / 100)\nprint(result)\n```",
+ "usage": {
+  "prompt_tokens": 35,
+  "completion_tokens": 30,
+  "total_tokens": 65,
+  "prompt_tokens_details": {
+   "cached_tokens": 8
+  }
+ },
+ "chunks": 29,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.058,
+ "total_s": 0.216
+}

@@ -1,0 +1,19 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 9.82,
+ "prompt_tokens": 28,
+ "prefill_s": 0.085,
+ "output_tokens": 664,
+ "decode_s": 9.734,
+ "load_s": 0.003,
+ "text": "15% of 240 is **36**.\n\nHere are two easy ways to calculate it:\n\n**Method 1: The 10% Rule (Mental Math)**\n1. Find **10%** of 240 (just move the decimal one place to the left): **24**\n2. Find **5%** of 240 (which is half of 10%): **12**\n3. Add them together: **24 + 12 = 36**\n\n**Method 2: Multiplication**\n1. Convert 15% to a decimal: **0.15**\n2. Multiply: **240 × 0.15 = 36**",
+ "thinking_chars": 1194,
+ "truncated": false,
+ "decode_tok_s": 68.21,
+ "answer_s": 9.82,
+ "correct": true
+}

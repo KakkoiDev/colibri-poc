@@ -1,0 +1,3 @@
+85232f432fe4997cc995decebedfcd06e417d6203f098d29d77ef18992fb6fec  ~/colibri-models/glm-5.3/.coli_analysis.json
+1b7466ca858cf5758990e575b852d32f7e04b154d7c7348f670820755773488f  ~/colibri-models/glm-5.3/.coli_kv
+d489bd3b020267a3c302203aa5f2e96dc5c9a1cca8788045d9de6f94f5ddf035  ~/colibri-models/glm-5.3/.coli_usage

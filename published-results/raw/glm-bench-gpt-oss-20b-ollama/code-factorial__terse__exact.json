@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.46,
+ "prompt_tokens": 95,
+ "prefill_s": 0.194,
+ "output_tokens": 128,
+ "decode_s": 3.258,
+ "load_s": 0.001,
+ "text": "",
+ "thinking_chars": 548,
+ "truncated": true,
+ "decode_tok_s": 39.29,
+ "answer_s": 3.45,
+ "correct": false
+}

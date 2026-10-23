@@ -1,0 +1,21 @@
+{
+ "case": "skip050-sky-48__r1",
+ "exit": 0,
+ "wall_s": 57.93,
+ "ram": 18,
+ "ctx": 1024,
+ "ngen": 48,
+ "env": {
+  "DEGRADE_ZERO": "1",
+  "DEGRADE_TAU": "0.50"
+ },
+ "refused": false,
+ "prompt_tokens": 17,
+ "prefill_s": 24.62,
+ "output_tokens": 48,
+ "decode_s": 30.59,
+ "decode_tok_s": 1.57,
+ "zeroed_slots": 23163,
+ "hit_pct": 35.8,
+ "text": "The sky appears blue because molecules in the atmosphere (mostly nitrogen and oxygen, plus some water vapor and noble gases) scatter short-wavelength blue light more strongly than longer-wavelength red and orange light from the sun. This scattered blue light is"
+}

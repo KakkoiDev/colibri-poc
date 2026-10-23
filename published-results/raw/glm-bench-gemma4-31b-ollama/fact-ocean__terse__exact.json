@@ -1,0 +1,19 @@
+{
+ "id": "fact-ocean",
+ "kind": "fact",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.64,
+ "prompt_tokens": 36,
+ "prefill_s": 0.329,
+ "output_tokens": 2,
+ "decode_s": 0.21,
+ "load_s": 0.054,
+ "text": "Pacific Ocean",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 9.52,
+ "answer_s": 0.54,
+ "correct": true
+}

@@ -1,0 +1,18 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 437.59,
+ "prompt_tokens": 24,
+ "prefill_s": 61.68,
+ "output_tokens": 128,
+ "decode_s": 371.71,
+ "decode_tok_s": 0.34,
+ "zeroed_slots": 65548,
+ "hit_pct": 4.3,
+ "text": "Write a Python function factorial(n) that returns n factorial for a non-negative integer n, i.e., n! = n(n-1)! for n >= 1, and n! = 1 for n = 0 (0! = 1 by convention/mathematics). The function should return the result as an integer and should not use Python's built-in math.factorial function or similar functions that trivially compute factorial via recursion (e.g., a function that calls itself *must not* be used). The function should be iterative (non-recursive) and should use a simple loop (e.g., a for loop or",
+ "answer_s": 433.39,
+ "correct": false
+}

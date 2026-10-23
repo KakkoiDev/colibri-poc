@@ -1,0 +1,16 @@
+{
+ "text": "ELDREDGE, JANE",
+ "usage": {
+  "prompt_tokens": 38,
+  "completion_tokens": 8,
+  "total_tokens": 46,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 7,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.065,
+ "total_s": 0.103
+}

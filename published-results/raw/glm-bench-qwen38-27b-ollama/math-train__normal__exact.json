@@ -1,0 +1,19 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 5.29,
+ "prompt_tokens": 35,
+ "prefill_s": 0.338,
+ "output_tokens": 128,
+ "decode_s": 4.947,
+ "load_s": 0.0,
+ "text": "To calculate the distance traveled by the train, we can use the fundamental formula relating distance, speed, and time:\n\n$$ \\text{Distance} = \\text{Speed} \\times \\text{Time} $$\n\n**Step 1: Identify the given values**\n*   Speed ($v$) = $60 \\text{ km/h}$\n*   Time ($t$) = $2.5 \\text{ hours}$\n\n**Step 2: Perform the calculation**\nSubstitute the values into the formula:\n\n$$ \\text{Distance} = 60 \\text{ km/h} \\",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 25.87,
+ "answer_s": 5.29,
+ "correct": false
+}

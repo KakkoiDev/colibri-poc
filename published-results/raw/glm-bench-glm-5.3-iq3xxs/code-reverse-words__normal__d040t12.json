@@ -1,0 +1,18 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 263.91,
+ "prompt_tokens": 29,
+ "prefill_s": 37.2,
+ "output_tokens": 128,
+ "decode_s": 222.47,
+ "decode_tok_s": 0.58,
+ "zeroed_slots": 57696,
+ "hit_pct": 2.8,
+ "text": "Here's a clean Python function for that:\n\n```python\ndef reverse_words(s):\n    # Split the string on whitespace, filtering out empty strings\n    words = s.split()\n    # Reverse the list of words and join with single spaces\n    return ' '.join(reversed(words))\n```\n\n**How it works:**\n\n1. `s.split()` — Python's `split()` without arguments splits on *any whitespace* (spaces, tabs, newlines) and automatically collapses multiple consecutive separators into single delimiters, discarding leading/trailing whitespace. This means you never end up with empty strings in the resulting list.\n\n2.",
+ "answer_s": 259.67,
+ "correct": true
+}

@@ -1,0 +1,72 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.28s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 27 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>What is a hash table? Answer as briefly as possible. For code, reply with only the code.<|assistant|><think></think>PROFILO PREFILL (32.63s):
+PROFILE: expert-disk 171.574s service / 19.447s wait | expert-matmul 6.163s | attention 4.254s (including kvb 0.584s) | lm_head 0.008s | other 2.755s
+ATTENTION: projection/RoPE 1.280s | score-softmax-value 0.094s | output projection 2.295s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.086s | residual P2P 0.000s / 0 hop | orchestration 2.669s
+METAL: blocchi GPU 226 | fallback CPU 0 | expert su GPU 6772 | setup 0.04s gpu-wall 5.52s (kernel 6.17s) scatter 0.01s
+METAL-RESSET: flush 0.58s (residency-set commit in moe_submit, outside setup/gpu-wall)
+A data structure that maps keys to values using a hash function to compute an index into an array of buckets, enabling average O(1) lookup, insertion, and deletion.
+---
+prefill 27 tokens in 32.63s | decode 35 tokens in 83.44s (0.42 tok/s) | expert hit rate 1.8% (pin 0.0% + lru 1.8%) | RSS 7.95 GB
+experts loaded/token: 600.0 (per-layer 8.00 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.00 tokens/forward (35 forwards per 35 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 472.610s service / 63.577s wait | expert-matmul 7.017s | attention 6.720s (including kvb 0.000s) | lm_head 0.000s | other 6.126s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.002s | residual P2P 0.000s / 0 hop | orchestration 6.124s
+METAL-ATTN: layer GPU 2730 | gpu-wall 6.64s (kernel 6.41s | cpu-sched 0.01s gpu-sched 0.11s)
+METAL: blocchi GPU 3222 | fallback CPU 0 | expert su GPU 27772 | setup 0.17s gpu-wall 12.37s (kernel 12.94s) scatter 0.02s
+METAL-RESSET: flush 0.58s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 35 | latency p50 2377.0 ms | p90 2412.2 ms | p99 2446.3 ms | max 2473.6 ms | 1.00 tok/forward
+[PROF] expert I/O: 438.029 GB fetched (12515.1 MB/token, 5.25 GB/s over the run) | hit 1.8% (0 pin + 371 lru / 20629 load) | 600.0 loads/token | 472.6s read service / 63.6s felt wait
+[PROF] DISK-CLASS (recency split): cold 9188 x 195.09 GB @ 0.88 GB/s-thread, wall 61.9s @ 3.15 GB/s-wall, avg-conc 3.6 (direct 9146/9188) | warm 11441 x 242.93 GB @ 0.97 GB/s-thread, wall 58.3s @ 4.17 GB/s-wall, avg-conc 4.3 (direct 11389/11441) | disk-busy 63.5s (76% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 76% | expert-matmul 8% | attention 8% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.002s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 6.124s
+[PROF] verdict: I/O-bound — 76% of the time waits on expert reads (hit 2%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 11.4 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 27 token · +0.00s
+[prefill] layer 5/78 · 27 token · +1.46s
+[prefill] layer 9/78 · 27 token · +3.60s
+[prefill] layer 13/78 · 27 token · +5.58s
+[prefill] layer 17/78 · 27 token · +7.32s
+[prefill] layer 21/78 · 27 token · +8.83s
+[prefill] layer 25/78 · 27 token · +10.42s
+[prefill] layer 29/78 · 27 token · +12.16s
+[prefill] layer 33/78 · 27 token · +13.66s
+[prefill] layer 37/78 · 27 token · +15.17s
+[prefill] layer 41/78 · 27 token · +16.75s
+[prefill] layer 45/78 · 27 token · +18.28s
+[prefill] layer 49/78 · 27 token · +19.91s
+[prefill] layer 53/78 · 27 token · +21.56s
+[prefill] layer 57/78 · 27 token · +23.16s
+[prefill] layer 61/78 · 27 token · +24.85s
+[prefill] layer 65/78 · 27 token · +26.54s
+[prefill] layer 69/78 · 27 token · +28.21s
+[prefill] layer 73/78 · 27 token · +29.90s
+[prefill] layer 77/78 · 27 token · +31.73s
+[prefill] layer 78/78 · 27 token · +32.17s
+
+[t=16  RSS 7.95 GB  hit 2%  0.45 tok/s  1.00 tok/fw]
+
+[t=32  RSS 7.95 GB  hit 2%  0.43 tok/s  1.00 tok/fw]

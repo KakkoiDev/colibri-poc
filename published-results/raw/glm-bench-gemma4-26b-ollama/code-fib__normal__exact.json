@@ -1,0 +1,19 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 2.0,
+ "prompt_tokens": 44,
+ "prefill_s": 0.262,
+ "output_tokens": 128,
+ "decode_s": 1.725,
+ "load_s": 0.012,
+ "text": "Here is the iterative implementation of the Fibonacci function in Python.\n\n```python\ndef fib(n):\n    \"\"\"\n    Returns the n-th Fibonacci number using an iterative approach.\n    Complexity: Time O(n), Space O(1)\n    \"\"\"\n    # Handle negative input\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer.\")\n    \n    # Base cases\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n    \n    # Initialize the first two numbers in the",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 74.2,
+ "answer_s": 1.99,
+ "correct": false
+}

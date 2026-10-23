@@ -1,0 +1,76 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.36s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 16 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Who wrote the novel Pride and Prejudice?<|assistant|><think></think>PROFILO PREFILL (22.13s):
+PROFILE: expert-disk 120.598s service / 15.063s wait | expert-matmul 3.971s | attention 2.527s (including kvb 0.335s) | lm_head 0.009s | other 0.561s
+ATTENTION: projection/RoPE 0.777s | score-softmax-value 0.040s | output projection 1.375s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.060s | residual P2P 0.000s / 0 hop | orchestration 0.501s
+METAL: blocchi GPU 182 | fallback CPU 0 | expert su GPU 4831 | setup 0.03s gpu-wall 3.30s (kernel 3.69s) scatter 0.01s
+METAL-RESSET: flush 0.63s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Pride and Prejudice was written by **Jane Austen**. It was first published in 1813 and is one of her most famous works, telling the story of Elizabeth Bennet and Mr. Darcy. The novel explores themes of love, class, marriage, and social expectations in early 19th-century England.
+---
+prefill 16 tokens in 22.13s | decode 67 tokens in 159.77s (0.42 tok/s) | expert hit rate 2.2% (pin 0.0% + lru 2.2%) | RSS 7.78 GB
+experts loaded/token: 600.0 (per-layer 8.00 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.00 tokens/forward (67 forwards per 67 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 895.017s service / 121.427s wait | expert-matmul 13.833s | attention 13.201s (including kvb 0.000s) | lm_head 0.000s | other 11.305s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.006s | residual P2P 0.000s / 0 hop | orchestration 11.299s
+METAL-ATTN: layer GPU 5226 | gpu-wall 13.00s (kernel 12.49s | cpu-sched 0.03s gpu-sched 0.24s)
+METAL: blocchi GPU 6073 | fallback CPU 0 | expert su GPU 45031 | setup 0.39s gpu-wall 16.69s (kernel 16.86s) scatter 0.03s
+METAL-RESSET: flush 0.63s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 67 | latency p50 2377.5 ms | p90 2438.6 ms | p99 2469.3 ms | max 2629.8 ms | 1.00 tok/forward
+[PROF] expert I/O: 835.205 GB fetched (12465.7 MB/token, 5.23 GB/s over the run) | hit 2.2% (0 pin + 866 lru / 39334 load) | 600.0 loads/token | 895.0s read service / 121.4s felt wait
+[PROF] DISK-CLASS (recency split): cold 16198 x 343.94 GB @ 0.87 GB/s-thread, wall 116.3s @ 2.96 GB/s-wall, avg-conc 3.4 (direct 16140/16198) | warm 23136 x 491.26 GB @ 0.98 GB/s-thread, wall 111.6s @ 4.40 GB/s-wall, avg-conc 4.5 (direct 23012/23136) | disk-busy 121.3s (76% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 76% | expert-matmul 9% | attention 8% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.006s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 11.299s
+[PROF] verdict: I/O-bound — 76% of the time waits on expert reads (hit 2%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 15.2 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 16 token · +0.00s
+[prefill] layer 5/78 · 16 token · +1.20s
+[prefill] layer 9/78 · 16 token · +2.66s
+[prefill] layer 13/78 · 16 token · +3.97s
+[prefill] layer 17/78 · 16 token · +5.14s
+[prefill] layer 21/78 · 16 token · +6.18s
+[prefill] layer 25/78 · 16 token · +7.23s
+[prefill] layer 29/78 · 16 token · +8.40s
+[prefill] layer 33/78 · 16 token · +9.42s
+[prefill] layer 37/78 · 16 token · +10.43s
+[prefill] layer 41/78 · 16 token · +11.45s
+[prefill] layer 45/78 · 16 token · +12.50s
+[prefill] layer 49/78 · 16 token · +13.63s
+[prefill] layer 53/78 · 16 token · +14.73s
+[prefill] layer 57/78 · 16 token · +15.81s
+[prefill] layer 61/78 · 16 token · +16.94s
+[prefill] layer 65/78 · 16 token · +18.05s
+[prefill] layer 69/78 · 16 token · +19.13s
+[prefill] layer 73/78 · 16 token · +20.29s
+[prefill] layer 77/78 · 16 token · +21.49s
+[prefill] layer 78/78 · 16 token · +21.80s
+
+[t=16  RSS 7.78 GB  hit 2%  0.44 tok/s  1.00 tok/fw]
+
+[t=32  RSS 7.78 GB  hit 2%  0.43 tok/s  1.00 tok/fw]
+
+[t=48  RSS 7.78 GB  hit 2%  0.43 tok/s  1.00 tok/fw]
+
+[t=64  RSS 7.78 GB  hit 2%  0.43 tok/s  1.00 tok/fw]

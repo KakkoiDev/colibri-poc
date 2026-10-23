@@ -1,0 +1,19 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 2.51,
+ "prompt_tokens": 38,
+ "prefill_s": 0.03,
+ "output_tokens": 237,
+ "decode_s": 2.482,
+ "load_s": 0.0,
+ "text": "Atmospheric gas molecules preferentially scatter shorter blue wavelengths of sunlight (Rayleigh scattering).",
+ "thinking_chars": 998,
+ "truncated": false,
+ "decode_tok_s": 95.49,
+ "answer_s": 2.51,
+ "correct": true
+}

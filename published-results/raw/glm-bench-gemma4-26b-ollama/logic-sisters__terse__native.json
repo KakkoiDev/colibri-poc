@@ -1,0 +1,19 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 4.84,
+ "prompt_tokens": 51,
+ "prefill_s": 0.262,
+ "output_tokens": 297,
+ "decode_s": 4.569,
+ "load_s": 0.002,
+ "text": "1",
+ "thinking_chars": 848,
+ "truncated": false,
+ "decode_tok_s": 65.0,
+ "answer_s": 4.83,
+ "correct": true
+}

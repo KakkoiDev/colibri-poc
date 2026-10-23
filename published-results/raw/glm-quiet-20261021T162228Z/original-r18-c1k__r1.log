@@ -1,0 +1,62 @@
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon-i8mm ==
+loaded in 2.42s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 17 tokens | generating up to 24 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Explain in two sentences why the sky is blue.<|assistant|><think></think>PROFILO PREFILL (267.92s):
+PROFILE: expert-disk 23.524s service / 23.525s wait | expert-matmul 134.466s | attention 84.887s (including kvb 6.536s) | lm_head 0.012s | other 25.025s
+ATTENTION: projection/RoPE 25.469s | score-softmax-value 0.068s | output projection 52.813s
+P0-EXEC: routed CPU 134.466s / 0.81 GB/s (10200 row) | routed GPU critical 0.000s | router 0.108s | residual P2P 0.000s / 0 hop | orchestration 24.917s
+The sky appears blue because molecules in Earth's atmosphere scatter shorter wavelengths of sunlight (blue and violet) more strongly than longer
+---
+prefill 17 tokens in 267.92s | decode 24 tokens in 347.74s (0.07 tok/s) | expert hit rate 2.1% (pin 0.0% + lru 2.1%) | RSS 12.49 GB
+experts loaded/token: 575.0 (per-layer 7.67 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.04 tokens/forward (23 forwards per 24 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 56.822s service / 56.822s wait | expert-matmul 133.446s | attention 122.622s (including kvb 0.000s) | lm_head 0.000s | other 34.853s
+ATTENTION: projection/RoPE 37.068s | score-softmax-value 9.485s | output projection 76.067s
+P0-EXEC: routed CPU 133.446s / 2.20 GB/s (13800 row) | routed GPU critical 0.000s | router 0.556s | residual P2P 0.000s / 0 hop | orchestration 34.297s
+[PROF] decode forwards: 23 | latency p50 15068.3 ms | p90 15359.8 ms | p99 15515.6 ms | max 15688.7 ms | 1.04 tok/forward
+[PROF] expert I/O: 286.931 GB fetched (11955.4 MB/token, 0.83 GB/s over the run) | hit 2.1% (0 pin + 287 lru / 13513 load) | 575.0 loads/token | 56.8s read service / 56.8s felt wait
+[PROF] DISK-CLASS (recency split): cold 5599 x 118.89 GB @ 3.97 GB/s-thread, wall 29.9s @ 3.97 GB/s-wall, avg-conc 1.0 (direct 0/5599) | warm 7914 x 168.04 GB @ 6.26 GB/s-thread, wall 26.8s @ 6.26 GB/s-wall, avg-conc 1.0 (direct 0/7914) | disk-busy 56.8s (16% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 16% | expert-matmul 38% | attention 35% | lm_head 0% | other 10%
+[PROF] P0 execution: routed CPU 133.446s / 2.20 GB/s (13800 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.556s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 34.297s
+[PROF] verdict: attention-bound (35%) — context length is the cost (DSA not available for this model). A lower CTX helps if the workload allows.
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[OMP] hot-thread tuning skipped on macOS (#707): spin-wait knobs measured slower on Apple Silicon (COLI_NO_OMP_TUNE=1 to skip)
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] resident 11.1 GB + reserve 5.4 GB (ws 1.4, KV 1x1024 0.2, kvb 0.1), experts 21.2 MB avg x 75 layers -> cap lowered 8->1 (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (1 omp threads) | RAM 34.4 GB total, 16.7 GB available | backend CPU
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=0 DIRECT=0 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 17 token · +0.00s
+[prefill] layer 5/78 · 17 token · +11.27s
+[prefill] layer 9/78 · 17 token · +25.15s
+[prefill] layer 13/78 · 17 token · +39.17s
+[prefill] layer 17/78 · 17 token · +53.10s
+[prefill] layer 21/78 · 17 token · +67.00s
+[prefill] layer 25/78 · 17 token · +80.78s
+[prefill] layer 29/78 · 17 token · +94.65s
+[prefill] layer 33/78 · 17 token · +108.52s
+[prefill] layer 37/78 · 17 token · +122.35s
+[prefill] layer 41/78 · 17 token · +136.23s
+[prefill] layer 45/78 · 17 token · +150.09s
+[prefill] layer 49/78 · 17 token · +163.93s
+[prefill] layer 53/78 · 17 token · +177.77s
+[prefill] layer 57/78 · 17 token · +191.69s
+[prefill] layer 61/78 · 17 token · +205.56s
+[prefill] layer 65/78 · 17 token · +219.42s
+[prefill] layer 69/78 · 17 token · +233.26s
+[prefill] layer 73/78 · 17 token · +247.11s
+[prefill] layer 77/78 · 17 token · +260.99s
+[prefill] layer 78/78 · 17 token · +264.44s
+
+[t=16  RSS 12.49 GB  hit 2%  0.07 tok/s  1.00 tok/fw]

@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 280.58,
+ "prompt_tokens": 27,
+ "prefill_s": 59.94,
+ "output_tokens": 49,
+ "decode_s": 216.66,
+ "decode_tok_s": 0.23,
+ "zeroed_slots": 0,
+ "hit_pct": 0.5,
+ "text": "```python\n# A hash table maps keys to values using a hash function\n# to compute an index into an array of buckets.\n\ntable = {}\ntable[\"key\"] = \"value\"\nprint(table[\"key\"])  # \"value\"\n```",
+ "answer_s": 276.6,
+ "correct": true
+}

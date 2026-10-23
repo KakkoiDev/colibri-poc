@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 115.24,
+ "prompt_tokens": 17,
+ "prefill_s": 22.79,
+ "output_tokens": 38,
+ "decode_s": 89.82,
+ "decode_tok_s": 0.42,
+ "zeroed_slots": 0,
+ "hit_pct": 2.2,
+ "text": "# Answer: Sunday\n\nHere's the reasoning:\n\n1. Start with **Friday**\n2. One day after Friday is **Saturday**\n3. Two days after Friday is **Sunday** ✓",
+ "answer_s": 112.61,
+ "correct": true
+}

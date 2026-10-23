@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.53,
+ "prompt_tokens": 48,
+ "prefill_s": 0.261,
+ "output_tokens": 22,
+ "decode_s": 0.267,
+ "load_s": 0.003,
+ "text": "```python\nimport math\n\ndef factorial(n):\n    return math.factorial(n)\n```",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 82.4,
+ "answer_s": 0.53,
+ "correct": true
+}

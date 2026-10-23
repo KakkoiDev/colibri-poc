@@ -1,0 +1,13 @@
+# Threads bench on GLM-5.3 UD-IQ3_XXS (3-bit GGUF)
+# ~/Code/colibri-poc/.venv/bin/python glm_suite.py run threads --model glm-5.3-iq3xxs
+Traceback (most recent call last):
+  File "~/Code/colibri-poc/glm_suite.py", line 68, in <module>
+    main()
+  File "~/Code/colibri-poc/glm_suite.py", line 64, in main
+    run(a.bench, a.model)
+  File "~/Code/colibri-poc/glm_suite.py", line 52, in run
+    glm_lab.execute(name, prompt, ngen, env, coli_dir=m['coli_dir'], model=str(mdir), ram=ram)
+  File "~/Code/colibri-poc/glm_lab.py", line 213, in execute
+    env = dict(os.environ, **({} if no_base else BEST), **extra)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: dict() got multiple values for keyword argument 'OMP_NUM_THREADS'

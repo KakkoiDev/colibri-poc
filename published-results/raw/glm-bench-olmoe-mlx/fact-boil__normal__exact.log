@@ -1,0 +1,16 @@
+{
+ "text": "Water boils at 100 degrees Celsius (212 degrees Fahrenheit) at sea level, regardless of the atmospheric pressure, due to the standard atmospheric pressure of 101,325 pascals (101.325 kilopascals). This standard pressure is used as the reference point for defining the boiling point of water on the International System of Units (SI).\n\nThe boiling point of water can vary slightly with changes in atmospheric pressure. For example, at higher altitudes, where the atmospheric pressure is lower, water boils at a lower temperature. Conversely, at lower altitudes, where the atmospheric pressure is higher, water bo",
+ "usage": {
+  "prompt_tokens": 28,
+  "completion_tokens": 128,
+  "total_tokens": 156,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.053,
+ "total_s": 0.769
+}

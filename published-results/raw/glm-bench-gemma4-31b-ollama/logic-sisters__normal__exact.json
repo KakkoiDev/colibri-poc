@@ -1,0 +1,19 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 4.19,
+ "prompt_tokens": 33,
+ "prefill_s": 0.324,
+ "output_tokens": 75,
+ "decode_s": 3.81,
+ "load_s": 0.049,
+ "text": "Sally has **1** sister.\n\nHere is the breakdown:\n1. Sally is a girl.\n2. She has 3 brothers.\n3. Each of those brothers has the same sisters. Since they have 2 sisters in total, and one of them is Sally, there must be one other girl.\n4. Therefore, Sally has one sister.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 19.69,
+ "answer_s": 4.13,
+ "correct": false
+}

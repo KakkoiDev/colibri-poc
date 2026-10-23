@@ -1,0 +1,19 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.48,
+ "prompt_tokens": 103,
+ "prefill_s": 0.198,
+ "output_tokens": 128,
+ "decode_s": 3.277,
+ "load_s": 0.001,
+ "text": "",
+ "thinking_chars": 541,
+ "truncated": true,
+ "decode_tok_s": 39.06,
+ "answer_s": 3.48,
+ "correct": false
+}

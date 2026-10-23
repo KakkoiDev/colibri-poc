@@ -1,0 +1,94 @@
+# f5-d070 2026-10-17T21:10:41Z dir=<tmp>/claude-501/-Users-kakkoidev-Code-pi-local-harness/95e98610-3ae1-4256-8832-7c25ada2f2cd/scratchpad/colibri args=--ram 18 --ctx 1024 env: RAM_GB=18 COLI_METAL=1 PIPE=1 DIRECT=1 MTP= CACHE_ROUTE= PILOT=
+Pageouts:                                      23096.
+Swapouts:                                    1971412.
+[DEGRADE] zero-fill ON, tau=0.700 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.4 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.26s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 22 tokens | generating up to 16 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Translate 'thank you very much' into Japanese. Answer with the Japanese only.<|assistant|><think></think>[prefill] layer 1/78 · 22 token · +0.00s
+[prefill] layer 5/78 · 22 token · +1.12s
+[prefill] layer 9/78 · 22 token · +2.98s
+[prefill] layer 13/78 · 22 token · +4.61s
+[prefill] layer 17/78 · 22 token · +6.03s
+[prefill] layer 21/78 · 22 token · +7.24s
+[prefill] layer 25/78 · 22 token · +8.46s
+[prefill] layer 29/78 · 22 token · +9.89s
+[prefill] layer 33/78 · 22 token · +11.20s
+[prefill] layer 37/78 · 22 token · +12.47s
+[prefill] layer 41/78 · 22 token · +13.77s
+[prefill] layer 45/78 · 22 token · +15.09s
+[prefill] layer 49/78 · 22 token · +16.41s
+[prefill] layer 53/78 · 22 token · +17.76s
+[prefill] layer 57/78 · 22 token · +19.03s
+[prefill] layer 61/78 · 22 token · +20.35s
+[prefill] layer 65/78 · 22 token · +21.73s
+[prefill] layer 69/78 · 22 token · +23.10s
+[prefill] layer 73/78 · 22 token · +24.48s
+[prefill] layer 77/78 · 22 token · +25.96s
+[prefill] layer 78/78 · 22 token · +26.34s
+PROFILO PREFILL (26.71s):
+PROFILE: expert-disk 140.557s service / 16.957s wait | expert-matmul 4.967s | attention 3.473s (including kvb 0.472s) | lm_head 0.008s | other 1.307s
+ATTENTION: projection/RoPE 1.053s | score-softmax-value 0.071s | output projection 1.877s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.077s | residual P2P 0.000s / 0 hop | orchestration 1.229s
+METAL: blocchi GPU 209 | fallback CPU 0 | expert su GPU 5620 | setup 0.03s gpu-wall 4.52s (kernel 5.05s) scatter 0.01s
+METAL-RESSET: flush 0.39s (residency-set commit in moe_submit, outside setup/gpu-wall)
+ありがとうございました。 (Thank you very much [Japanese phrase, ありがとうございました,
+[t=16  RSS 10.17 GB  hit 58%  1.98 tok/s  1.00 tok/fw]
+
+---
+prefill 22 tokens in 26.71s | decode 16 tokens in 8.08s (1.98 tok/s) | expert hit rate 58.2% (pin 0.0% + lru 58.2%) | RSS 10.17 GB
+experts loaded/token: 562.5 (per-layer 7.50 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.700 (zeroed 7769 miss slots; top layers: L3:105 L4:105 L5:105)
+speculation: 1.07 tokens/forward (15 forwards per 16 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 2.028s service / 1.993s wait | expert-matmul 0.539s | attention 3.095s (including kvb 0.000s) | lm_head 0.000s | other 2.451s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.001s | residual P2P 0.000s / 0 hop | orchestration 2.450s
+METAL-ATTN: layer GPU 1170 | gpu-wall 3.06s (kernel 2.96s | cpu-sched 0.01s gpu-sched 0.05s)
+METAL: blocchi GPU 1432 | fallback CPU 0 | expert su GPU 6851 | setup 0.06s gpu-wall 5.02s (kernel 5.49s) scatter 0.01s
+METAL-RESSET: flush 0.39s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 15 | latency p50 520.3 ms | p90 612.9 ms | p99 646.9 ms | max 669.6 ms | 1.07 tok/forward
+[PROF] expert I/O: 10.935 GB fetched (683.5 MB/token, 1.35 GB/s over the run) | hit 58.2% (0 pin + 716 lru / 515 load) | 562.5 loads/token | 2.0s read service / 2.0s felt wait
+[PROF] DISK-CLASS (recency split): cold 201 x 4.27 GB @ 5.15 GB/s-thread, wall 0.8s @ 5.15 GB/s-wall, avg-conc 1.0 (direct 199/201) | warm 314 x 6.67 GB @ 5.56 GB/s-thread, wall 1.2s @ 5.72 GB/s-wall, avg-conc 1.0 (direct 311/314) | disk-busy 2.0s (25% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 25% | expert-matmul 7% | attention 38% | lm_head 0% | other 30%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.001s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 2.450s
+[PROF] verdict: attention-bound (38%) — context length is the cost (DSA not available for this model). A lower CTX helps if the workload allows.
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+       37.40 real        14.72 user        15.63 sys
+         10921345024  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              958132  page reclaims
+                  27  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+              128733  voluntary context switches
+             2625226  involuntary context switches
+          1350463792  instructions retired
+           392144410  cycles elapsed
+            42615312  peak memory footprint
+exit 0
+Pageouts:                                      23118.
+Swapouts:                                    1971412.

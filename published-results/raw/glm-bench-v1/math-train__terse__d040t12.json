@@ -1,0 +1,18 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "terse",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 57.1,
+ "prompt_tokens": 43,
+ "prefill_s": 47.2,
+ "output_tokens": 9,
+ "decode_s": 6.85,
+ "decode_tok_s": 1.31,
+ "zeroed_slots": 4249,
+ "hit_pct": 17.7,
+ "text": "60 * 2.5 = 150",
+ "answer_s": 54.05,
+ "correct": true
+}

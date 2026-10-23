@@ -1,0 +1,93 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.64s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 14 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Explain why the sky is blue.<|assistant|><think></think>PROFILO PREFILL (29.18s):
+PROFILE: expert-disk 127.551s service / 16.117s wait | expert-matmul 3.754s | attention 8.522s (including kvb 0.740s) | lm_head 0.006s | other 0.779s
+ATTENTION: projection/RoPE 2.548s | score-softmax-value 0.014s | output projection 5.220s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.028s | residual P2P 0.000s / 0 hop | orchestration 0.751s
+METAL: blocchi GPU 173 | fallback CPU 0 | expert su GPU 4568 | setup 0.03s gpu-wall 3.22s (kernel 3.56s) scatter 0.01s
+METAL-RESSET: flush 0.50s (residency-set commit in moe_submit, outside setup/gpu-wall)
+# Why the Sky Is Blue
+
+The sky appears blue because of a phenomenon called **Rayleigh scattering** — sunlight scattering off molecules in Earth's atmosphere. Here's how it works:
+
+## The Physics Behind It
+
+**1. Sunlight contains all colors.** Although sunlight looks white, it's actually made of all the colors of the rainbow (red, orange, yellow, green, blue, violet), each with a different wavelength. Red light has the longest wavelength (~700 nm), while blue and violet have shorter wavelengths (~450 and 400 nm).
+
+**2. Scattering depends on wavelength.** When light passes through the atmosphere
+---
+prefill 14 tokens in 29.18s | decode 128 tokens in 90.38s (1.42 tok/s) | expert hit rate 21.3% (pin 0.0% + lru 21.3%) | RSS 14.41 GB
+experts loaded/token: 635.6 (per-layer 8.47 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 58451 miss slots; top layers: L6:880 L5:878 L3:876)
+speculation: 1.17 tokens/forward (109 forwards per 128 tokens) | MTP acceptance 69% (18/26)
+PROFILE: expert-disk 113.667s service / 51.925s wait | expert-matmul 6.567s | attention 26.326s (including kvb 0.000s) | lm_head 0.000s | other 5.564s
+ATTENTION: projection/RoPE 0.032s | score-softmax-value 0.026s | output projection 0.030s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.008s | residual P2P 0.000s / 0 hop | orchestration 5.556s
+METAL-ATTN: layer GPU 8502 | gpu-wall 26.05s (kernel 25.23s | cpu-sched 0.03s gpu-sched 0.41s)
+METAL: blocchi GPU 11857 | fallback CPU 0 | expert su GPU 23000 | setup 0.26s gpu-wall 9.45s (kernel 10.32s) scatter 0.02s
+METAL-RESSET: flush 0.50s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 109 | latency p50 688.8 ms | p90 1285.4 ms | p99 1351.4 ms | max 1364.1 ms | 1.17 tok/forward
+[PROF] expert I/O: 309.067 GB fetched (2414.6 MB/token, 3.42 GB/s over the run) | hit 21.3% (0 pin + 3912 lru / 14476 load) | 635.6 loads/token | 113.7s read service / 51.9s felt wait
+[PROF] DISK-CLASS (recency split): cold 4440 x 95.37 GB @ 2.59 GB/s-thread, wall 26.1s @ 3.66 GB/s-wall, avg-conc 1.4 (direct 4421/4440) | warm 10036 x 213.70 GB @ 2.79 GB/s-thread, wall 42.4s @ 5.04 GB/s-wall, avg-conc 1.8 (direct 10016/10036) | disk-busy 51.7s (57% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 57% | expert-matmul 7% | attention 29% | lm_head 0% | other 6%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.008s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 5.556s
+[PROF] verdict: I/O-bound — 57% of the time waits on expert reads (hit 21%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 13.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 14 token · +0.00s
+[prefill] layer 5/78 · 14 token · +1.71s
+[prefill] layer 9/78 · 14 token · +3.52s
+[prefill] layer 13/78 · 14 token · +5.14s
+[prefill] layer 17/78 · 14 token · +6.62s
+[prefill] layer 21/78 · 14 token · +7.96s
+[prefill] layer 25/78 · 14 token · +9.34s
+[prefill] layer 29/78 · 14 token · +10.89s
+[prefill] layer 33/78 · 14 token · +12.19s
+[prefill] layer 37/78 · 14 token · +13.50s
+[prefill] layer 41/78 · 14 token · +14.79s
+[prefill] layer 45/78 · 14 token · +16.13s
+[prefill] layer 49/78 · 14 token · +17.57s
+[prefill] layer 53/78 · 14 token · +18.96s
+[prefill] layer 57/78 · 14 token · +20.33s
+[prefill] layer 61/78 · 14 token · +21.74s
+[prefill] layer 65/78 · 14 token · +23.20s
+[prefill] layer 69/78 · 14 token · +24.66s
+[prefill] layer 73/78 · 14 token · +26.13s
+[prefill] layer 77/78 · 14 token · +27.71s
+[prefill] layer 78/78 · 14 token · +28.12s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 14.41 GB  hit 16%  1.38 tok/s  1.67 tok/fw]
+
+[t=32  RSS 14.41 GB  hit 15%  1.35 tok/s  1.72 tok/fw]
+[MTP] 69% acceptance over the last 26 proposals: drafts paused for 256 tokens
+
+[t=48  RSS 14.41 GB  hit 15%  1.33 tok/s  1.62 tok/fw]
+
+[t=64  RSS 14.41 GB  hit 19%  1.37 tok/s  1.40 tok/fw]
+
+[t=80  RSS 14.41 GB  hit 19%  1.39 tok/s  1.30 tok/fw]
+
+[t=96  RSS 14.41 GB  hit 20%  1.40 tok/s  1.23 tok/fw]
+
+[t=112  RSS 14.41 GB  hit 20%  1.40 tok/s  1.19 tok/fw]
+
+[t=128  RSS 14.41 GB  hit 21%  1.42 tok/s  1.17 tok/fw]

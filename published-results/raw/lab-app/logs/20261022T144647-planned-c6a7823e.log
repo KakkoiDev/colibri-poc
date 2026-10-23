@@ -1,0 +1,6 @@
+# Experiment: Expert cache: 2 slots per layer (exact)
+# ~/Code/colibri-poc/.venv/bin/python glm_lab.py run-planned cache-cap2-exact
+Running x-cache-cap2-exact ...
+108 runs, 104 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  cache-cap2-exact: 0.39 tok/s vs 0.44 (-11.4%), output n/a
+83 experiments -> docs/12-experiment-log.md, site/data/experiments.json

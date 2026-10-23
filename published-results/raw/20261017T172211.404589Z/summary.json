@@ -1,0 +1,86 @@
+[
+  {
+    "variant": "baseline",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 204.316831556691,
+    "min_decode_tps": 149.7532289079851,
+    "max_decode_tps": 206.4728716161555,
+    "paired_median_speedup": 1.0,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.047371166000175435
+  },
+  {
+    "variant": "stream-lru-32",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 47.84455302330067,
+    "min_decode_tps": 43.758728994680304,
+    "max_decode_tps": 49.615146626098095,
+    "paired_median_speedup": 0.23748657471907017,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.3627113749998898
+  },
+  {
+    "variant": "slots-deferred-packed",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 54.96504715969133,
+    "min_decode_tps": 47.6877495573406,
+    "max_decode_tps": 63.009692416757545,
+    "paired_median_speedup": 0.2778947637844398,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.39744991700035825
+  },
+  {
+    "variant": "compact-deferred-packed",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 47.63540456785429,
+    "min_decode_tps": 42.7424490287929,
+    "max_decode_tps": 52.31223478022171,
+    "paired_median_speedup": 0.23868933699405548,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.3671425000002273
+  },
+  {
+    "variant": "slots-unequal-packed",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 46.581901376948906,
+    "min_decode_tps": 39.06965186385396,
+    "max_decode_tps": 51.27923330742266,
+    "paired_median_speedup": 0.23503057975195182,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.41540237499975774
+  },
+  {
+    "variant": "compact-deferred-unequal-packed",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 47.13817857340091,
+    "min_decode_tps": 42.28696730747135,
+    "max_decode_tps": 52.2964152645797,
+    "paired_median_speedup": 0.2440112744972449,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.37888075000000754
+  },
+  {
+    "variant": "slots-deferred-lfu-4",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 66.4830188231828,
+    "min_decode_tps": 52.68679679014617,
+    "max_decode_tps": 74.22112037365898,
+    "paired_median_speedup": 0.3518241120698588,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.36066483300010077
+  }
+]

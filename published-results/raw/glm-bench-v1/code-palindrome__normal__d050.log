@@ -1,0 +1,106 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.31s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 32 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Write a Python function is_palindrome(s) that returns True if the string s reads the same forwards and backwards, ignoring case.<|assistant|><think></think>PROFILO PREFILL (39.05s):
+PROFILE: expert-disk 207.334s service / 22.771s wait | expert-matmul 7.194s | attention 5.108s (including kvb 0.700s) | lm_head 0.009s | other 3.970s
+ATTENTION: projection/RoPE 1.521s | score-softmax-value 0.159s | output projection 2.727s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.125s | residual P2P 0.000s / 0 hop | orchestration 3.845s
+METAL: blocchi GPU 231 | fallback CPU 0 | expert su GPU 8090 | setup 0.05s gpu-wall 6.56s (kernel 7.33s) scatter 0.02s
+METAL-RESSET: flush 0.56s (residency-set commit in moe_submit, outside setup/gpu-wall)
+```python
+def is_palindrome(s):
+    """
+    Return True if the string s reads the same forwards and backwards,
+    ignoring case (uppercase/lowercase differences).
+
+    Examples:
+        >>> is_palindrome("racecar")
+        True
+        >>> is_palindrome("RaceCar")
+        True
+        >>> is_palindrome("hello")
+        False
+        >>> is_palindrome("")
+        True
+        >>> is_palindrome("a")
+        True
+        >>> is_palindrome("ab")
+        False
+    """
+    # Normalize the string to lowercase so that case is ignored.
+    # A palindrome reads the same both ways
+---
+prefill 32 tokens in 39.05s | decode 128 tokens in 83.55s (1.53 tok/s) | expert hit rate 29.2% (pin 0.0% + lru 29.2%) | RSS 8.67 GB
+experts loaded/token: 604.7 (per-layer 8.06 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 63911 miss slots; top layers: L5:893 L8:893 L6:890)
+speculation: 1.06 tokens/forward (121 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 42.356s service / 32.558s wait | expert-matmul 4.750s | attention 24.977s (including kvb 0.000s) | lm_head 0.000s | other 21.270s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.009s | residual P2P 0.000s / 0 hop | orchestration 21.260s
+METAL-ATTN: layer GPU 9438 | gpu-wall 24.67s (kernel 23.80s | cpu-sched 0.05s gpu-sched 0.40s)
+METAL: blocchi GPU 11253 | fallback CPU 0 | expert su GPU 20546 | setup 0.32s gpu-wall 10.90s (kernel 11.50s) scatter 0.04s
+METAL-RESSET: flush 0.56s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 121 | latency p50 662.1 ms | p90 723.2 ms | p99 1234.1 ms | max 1771.5 ms | 1.06 tok/forward
+[PROF] expert I/O: 187.281 GB fetched (1463.1 MB/token, 2.24 GB/s over the run) | hit 29.2% (0 pin + 3636 lru / 8820 load) | 604.7 loads/token | 42.4s read service / 32.6s felt wait
+[PROF] DISK-CLASS (recency split): cold 3841 x 81.56 GB @ 4.27 GB/s-thread, wall 16.7s @ 4.89 GB/s-wall, avg-conc 1.1 (direct 3826/3841) | warm 4979 x 105.72 GB @ 4.55 GB/s-thread, wall 19.6s @ 5.38 GB/s-wall, avg-conc 1.2 (direct 4962/4979) | disk-busy 32.4s (39% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 39% | expert-matmul 6% | attention 30% | lm_head 0% | other 25%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.009s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 21.260s
+[PROF] verdict: I/O-bound — 39% of the time waits on expert reads (hit 29%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 11.8 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 32 token · +0.00s
+[prefill] layer 5/78 · 32 token · +1.56s
+[prefill] layer 9/78 · 32 token · +4.06s
+[prefill] layer 13/78 · 32 token · +6.34s
+[prefill] layer 17/78 · 32 token · +8.45s
+[prefill] layer 21/78 · 32 token · +10.21s
+[prefill] layer 25/78 · 32 token · +12.07s
+[prefill] layer 29/78 · 32 token · +14.26s
+[prefill] layer 33/78 · 32 token · +16.15s
+[prefill] layer 37/78 · 32 token · +17.99s
+[prefill] layer 41/78 · 32 token · +19.82s
+[prefill] layer 45/78 · 32 token · +21.80s
+[prefill] layer 49/78 · 32 token · +23.78s
+[prefill] layer 53/78 · 32 token · +25.70s
+[prefill] layer 57/78 · 32 token · +27.67s
+[prefill] layer 61/78 · 32 token · +29.63s
+[prefill] layer 65/78 · 32 token · +31.66s
+[prefill] layer 69/78 · 32 token · +33.73s
+[prefill] layer 73/78 · 32 token · +35.80s
+[prefill] layer 77/78 · 32 token · +37.91s
+[prefill] layer 78/78 · 32 token · +38.45s
+
+[t=16  RSS 8.67 GB  hit 28%  1.50 tok/s  1.00 tok/fw]
+
+[t=32  RSS 8.67 GB  hit 28%  1.52 tok/s  1.07 tok/fw]
+
+[t=48  RSS 8.67 GB  hit 32%  1.54 tok/s  1.04 tok/fw]
+
+[t=64  RSS 8.67 GB  hit 31%  1.55 tok/s  1.05 tok/fw]
+
+[t=80  RSS 8.67 GB  hit 30%  1.55 tok/s  1.05 tok/fw]
+
+[t=96  RSS 8.67 GB  hit 29%  1.55 tok/s  1.04 tok/fw]
+
+[t=112  RSS 8.67 GB  hit 29%  1.55 tok/s  1.05 tok/fw]
+
+[t=128  RSS 8.67 GB  hit 29%  1.53 tok/s  1.05 tok/fw]

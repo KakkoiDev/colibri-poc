@@ -3,6 +3,7 @@ import argparse
 import csv
 import fcntl
 import io
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -30,6 +31,42 @@ def saved_json(path):
         return json.loads(clean(path.read_text()))
     except (OSError, ValueError):
         return None  # An answer may still be being written.
+
+
+def archive_results(source, target):
+    """Archive benchmark evidence, including failed/partial runs; exclude app state and downloads."""
+    entries = []
+    extensions = {'.json', '.jsonl', '.csv', '.md', '.txt', '.log', '.out', '.py', '.sh'}
+    for path in sorted((source / 'results').rglob('*')):
+        rel = path.relative_to(source / 'results')
+        if path.is_symlink() or not path.is_file() or path.suffix not in extensions:
+            continue
+        if rel.parts[0] == 'prep' or (rel.parts[0] == 'lab-app' and (len(rel.parts) < 3 or rel.parts[1] != 'logs')):
+            continue
+        text = clean(path.read_text())
+        # A malformed JSON may be an interrupted write. Preserve it as raw evidence,
+        # without treating it as a complete result in the comparison tables.
+        dest = target / 'published-results/raw' / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(text)
+        blob = dest.read_bytes()
+        entries.append(dict(path=rel.as_posix(), bytes=len(blob), sha256=hashlib.sha256(blob).hexdigest()))
+    # Merge older archived evidence that is no longer present locally.
+    present = {e['path'] for e in entries}
+    for path in sorted((target / 'published-results/raw').rglob('*')):
+        if path.is_file():
+            rel = path.relative_to(target / 'published-results/raw').as_posix()
+            if rel not in present:
+                blob = path.read_bytes()
+                entries.append(dict(path=rel, bytes=len(blob), sha256=hashlib.sha256(blob).hexdigest()))
+    manifest = dict(files=sorted(entries, key=lambda e: e['path']), note='Sanitized benchmark evidence, including partial and failed runs. A file in this archive does not imply successful completion. Application state and download caches excluded.')
+    (target / 'site/data/bench-archive.json').write_text(json.dumps(manifest, indent=1)+'\n')
+    parallel = []
+    for folder in sorted((source / 'results').glob('parallel-bench-*')):
+        summary = saved_json(folder / 'summary.json')
+        if summary:
+            parallel.append(dict(name=folder.name, **summary))
+    (target / 'site/data/parallel-capability.json').write_text(json.dumps(parallel, indent=1)+'\n')
 
 
 def snapshot(source, target):
@@ -89,6 +126,7 @@ def snapshot(source, target):
         concurrency.append(dict(name=folder.name, **summary))
     if concurrency:
         (target / 'site/data/concurrency.json').write_text(json.dumps(concurrency, indent=1) + '\n')
+    archive_results(source, target)
     run([sys.executable, 'glm_lab.py', 'log'], target)
     # Failed rows have undefined means; browsers require strict JSON nulls.
     for path in (target / 'site/data').glob('*.json'):
@@ -129,7 +167,9 @@ def sync():
 
 def completed_jobs():
     jobs = saved_json(ROOT / 'results/lab-app/jobs.json') or {'jobs': []}
-    return {str(job['id']) for job in jobs['jobs']
+    finished = {'parallel:' + p.parent.name for p in (ROOT / 'results').glob('parallel-bench-*/summary.json')
+                if (saved_json(p) or {}).get('phase') in {'finished', 'failed'}}
+    return finished | {str(job['id']) for job in jobs['jobs']
             if job.get('kind') in {'bench', 'suite', 'planned', 'quiet', 'concurrency'}
             and job.get('status') in {'done', 'failed', 'finished'}}
 

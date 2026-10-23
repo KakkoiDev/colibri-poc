@@ -1,0 +1,16 @@
+{
+ "text": "The capital of Australia is Canberra. It was chosen as the capital in 1908 as a compromise between rival cities Melbourne and Sydney, and it was designed by American architect Walter Burley Griffin. Canberra is known for its unique layout, with its central business district, called the \"Green Belt,\" surrounded by residential and public areas. It's also famous for its many national monuments, museums, and cultural institutions, making it a significant political and cultural hub in Australia.",
+ "usage": {
+  "prompt_tokens": 20,
+  "completion_tokens": 96,
+  "total_tokens": 116,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "chunks": 95,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.074,
+ "total_s": 0.595
+}

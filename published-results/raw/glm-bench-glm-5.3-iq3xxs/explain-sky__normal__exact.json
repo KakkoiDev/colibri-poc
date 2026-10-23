@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 651.73,
+ "prompt_tokens": 14,
+ "prefill_s": 38.21,
+ "output_tokens": 128,
+ "decode_s": 609.24,
+ "decode_tok_s": 0.21,
+ "zeroed_slots": 0,
+ "hit_pct": 0.5,
+ "text": "# Why the Sky Is Blue\n\nThe sky appears blue because of a phenomenon called **Rayleigh scattering**.\n\n## The Basic Explanation\n\nSunlight looks white, but it actually contains all the colors of the rainbow. As sunlight travels through Earth's atmosphere, it collides with tiny gas molecules (mostly nitrogen and oxygen). These molecules scatter the light in different directions.\n\n## Why Blue Specifically?\n\nThe key is that **shorter wavelengths scatter more** than longer wavelengths. Blue light has a shorter wavelength than red light, so it gets scattered about **10 times more strongly** than red light.\n\nWhen you look at the sky, you're seeing",
+ "answer_s": 647.45,
+ "correct": true
+}

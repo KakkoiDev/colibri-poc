@@ -1,0 +1,18 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 221.62,
+ "prompt_tokens": 36,
+ "prefill_s": 38.31,
+ "output_tokens": 128,
+ "decode_s": 179.42,
+ "decode_tok_s": 0.71,
+ "zeroed_slots": 56774,
+ "hit_pct": 3.4,
+ "text": "Here's a Python function that computes the n-th Fibonacci number iteratively:\n\n```python\ndef fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```\n\n**Explanation:**\n- `a` and `b` are two consecutive Fibonacci numbers, initialized to `fib(0) = 0` and `fib(1) = 1`.\n- Each loop iteration shifts the pair forward: `a` becomes the old `b` (the next Fibonacci number), and `b` becomes the new sum",
+ "answer_s": 217.73,
+ "correct": true
+}

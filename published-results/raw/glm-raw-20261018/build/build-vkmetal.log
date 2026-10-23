@@ -1,0 +1,49 @@
+clang++ -x objective-c++ -std=gnu++17 -fobjc-arc -O3 -c backend_metal.mm -o backend_metal.o
+clang -O3 -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -Wall -Wextra -Wno-unused-parameter -Wno-misleading-indentation -Wno-unused-function  -MMD -MP -DCOLI_METAL -DCOLI_VULKAN -c backend_vulkan.c -o backend_vulkan.o
+clang -O3 -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -Wall -Wextra -Wno-unused-parameter -Wno-misleading-indentation -Wno-unused-function  -MMD -MP -DCOLI_METAL -DCOLI_VULKAN -c vk_tier.c -o vk_tier.o
+clang -O3 -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -Wall -Wextra -Wno-unused-parameter -Wno-misleading-indentation -Wno-unused-function  -MMD -MP -DCOLI_METAL -DCOLI_VULKAN -c vk_chain.c -o vk_chain.o
+backend_metal.mm:941:44: warning: 'isLowPower' is deprecated: first deprecated in macOS 27.0 - Not applicable on Apple Silicon [-Wdeprecated-declarations]
+  941 |       for (id<MTLDevice> d in all) if (![d isLowPower]) { g_dev = d; break; }
+      |                                            ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Metal.framework/Headers/MTLDevice.h:493:46: note: property 'lowPower' is declared deprecated here
+  493 | @property (readonly, getter=isLowPower) BOOL lowPower API_DEPRECATED("Not applicable on Apple Silicon", macos(10.11, 27.0), macCatalyst(13.0, 27.0)) API_UNAVAILABLE(ios);
+      |                                              ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Metal.framework/Headers/MTLDevice.h:493:46: note: 'isLowPower' has been explicitly marked deprecated here
+backend_metal.mm:1947:58: warning: 'MTLResourceStorageModeManaged' is deprecated: first deprecated in macOS 27.0 - Managed storage has no effect on Apple Silicon, use Shared storage instead [-Wdeprecated-declarations]
+ 1947 |   id<MTLBuffer> b = [dev newBufferWithLength:len options:MTLResourceStorageModeManaged];
+      |                                                          ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Metal.framework/Headers/MTLResource.h:177:5: note: 'MTLResourceStorageModeManaged' has been explicitly marked deprecated here
+  177 |     MTLResourceStorageModeManaged API_DEPRECATED("Managed storage has no effect on Apple Silicon, use Shared storage instead", macos(10.11, 27.0), macCatalyst(13.0, 27.0)) API_UNAVAILABLE(ios) = MTLStorageModeManaged << MTLResourceStorageModeShift,
+      |     ^
+backend_metal.mm:1950:6: warning: 'didModifyRange:' is deprecated: first deprecated in macOS 27.0 - Managed storage has no effect on Apple Silicon, use Shared storage instead [-Wdeprecated-declarations]
+ 1950 |   [b didModifyRange:NSMakeRange(0, (NSUInteger)len)];
+      |      ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Metal.framework/Headers/MTLBuffer.h:60:1: note: 'didModifyRange:' has been explicitly marked deprecated here
+   60 | - (void)didModifyRange:(NSRange)range API_DEPRECATED("Managed storage has no effect on Apple Silicon, use Shared storage instead", macos(10.11, 27.0), macCatalyst(13.0, 27.0)) API_UNAVAILABLE(ios);
+      | ^
+backend_metal.mm:1968:67: warning: 'synchronizeResource:' is deprecated: first deprecated in macOS 27.0 - Managed storage has no effect on Apple Silicon, use Shared storage instead [-Wdeprecated-declarations]
+ 1968 |     { id<MTLBlitCommandEncoder> bl = [cb blitCommandEncoder]; [bl synchronizeResource:xb]; [bl endEncoding]; }
+      |                                                                   ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Metal.framework/Headers/MTLBlitCommandEncoder.h:50:1: note: 'synchronizeResource:' has been explicitly marked deprecated here
+   50 | - (void)synchronizeResource:(id<MTLResource>)resource API_DEPRECATED("Managed storage has no effect on Apple Silicon, use Shared storage instead", macos(10.11, 27.0), macCatalyst(13.0, 27.0)) API_UNAVAILABLE(ios);
+      | ^
+backend_metal.mm:1988:67: warning: 'synchronizeResource:' is deprecated: first deprecated in macOS 27.0 - Managed storage has no effect on Apple Silicon, use Shared storage instead [-Wdeprecated-declarations]
+ 1988 |     { id<MTLBlitCommandEncoder> bl = [cb blitCommandEncoder]; [bl synchronizeResource:yb]; [bl endEncoding]; }
+      |                                                                   ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Metal.framework/Headers/MTLBlitCommandEncoder.h:50:1: note: 'synchronizeResource:' has been explicitly marked deprecated here
+   50 | - (void)synchronizeResource:(id<MTLResource>)resource API_DEPRECATED("Managed storage has no effect on Apple Silicon, use Shared storage instead", macos(10.11, 27.0), macCatalyst(13.0, 27.0)) API_UNAVAILABLE(ios);
+      | ^
+backend_metal.mm:2008:67: warning: 'synchronizeResource:' is deprecated: first deprecated in macOS 27.0 - Managed storage has no effect on Apple Silicon, use Shared storage instead [-Wdeprecated-declarations]
+ 2008 |     { id<MTLBlitCommandEncoder> bl = [cb blitCommandEncoder]; [bl synchronizeResource:gb]; [bl endEncoding]; }
+      |                                                                   ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Metal.framework/Headers/MTLBlitCommandEncoder.h:50:1: note: 'synchronizeResource:' has been explicitly marked deprecated here
+   50 | - (void)synchronizeResource:(id<MTLResource>)resource API_DEPRECATED("Managed storage has no effect on Apple Silicon, use Shared storage instead", macos(10.11, 27.0), macCatalyst(13.0, 27.0)) API_UNAVAILABLE(ios);
+      | ^
+backend_metal.mm:2029:67: warning: 'synchronizeResource:' is deprecated: first deprecated in macOS 27.0 - Managed storage has no effect on Apple Silicon, use Shared storage instead [-Wdeprecated-declarations]
+ 2029 |     { id<MTLBlitCommandEncoder> bl = [cb blitCommandEncoder]; [bl synchronizeResource:gb]; [bl endEncoding]; }
+      |                                                                   ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Metal.framework/Headers/MTLBlitCommandEncoder.h:50:1: note: 'synchronizeResource:' has been explicitly marked deprecated here
+   50 | - (void)synchronizeResource:(id<MTLResource>)resource API_DEPRECATED("Managed storage has no effect on Apple Silicon, use Shared storage instead", macos(10.11, 27.0), macCatalyst(13.0, 27.0)) API_UNAVAILABLE(ios);
+      | ^
+7 warnings generated.
+clang -O3 -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -Wall -Wextra -Wno-unused-parameter -Wno-misleading-indentation -Wno-unused-function  -MMD -MP -DCOLI_METAL -DCOLI_VULKAN colibri.c  backend_metal.o backend_vulkan.o vk_tier.o vk_chain.o  -o colibri -lm -L/opt/homebrew/opt/libomp/lib -lomp  -framework Metal -framework Foundation -lc++ -ldl

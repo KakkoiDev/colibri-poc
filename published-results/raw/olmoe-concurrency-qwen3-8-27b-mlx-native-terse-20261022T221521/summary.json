@@ -1,0 +1,123 @@
+{
+ "started": "2026-10-22T13:15:49Z",
+ "url": "http://127.0.0.1:11434",
+ "model": "qwen3.8:27b-mlx",
+ "style": "terse",
+ "ngen": 4096,
+ "prompts": 1,
+ "repeats": 1,
+ "levels": [
+  1,
+  4
+ ],
+ "runs": [
+  {
+   "requests": 1,
+   "tokens": 58,
+   "wall_s": 2.789,
+   "retries": 0,
+   "total_tok_s": 20.8,
+   "per_request_tok_s": 20.81,
+   "p50_latency_s": 2.788,
+   "p95_latency_s": 2.788,
+   "p50_ttft_s": 0.204,
+   "same_as_single": "1/1",
+   "level": 1,
+   "repeat": 1,
+   "peak_rss_gb": 19.03,
+   "correct": "1/1"
+  },
+  {
+   "requests": 4,
+   "tokens": 232,
+   "wall_s": 10.793,
+   "retries": 0,
+   "total_tok_s": 21.49,
+   "per_request_tok_s": 11.34,
+   "p50_latency_s": 5.36,
+   "p95_latency_s": 10.791,
+   "p50_ttft_s": 2.852,
+   "same_as_single": "4/4",
+   "level": 4,
+   "repeat": 1,
+   "peak_rss_gb": 19.03,
+   "correct": "4/4"
+  }
+ ],
+ "by_level": [
+  {
+   "level": 1,
+   "total_tok_s": 20.8,
+   "per_request_tok_s": 20.81,
+   "p50_latency_s": 2.788,
+   "p95_latency_s": 2.788,
+   "peak_rss_gb": 19.03,
+   "retries": 0,
+   "same_as_single": [
+    "1/1"
+   ],
+   "correct": [
+    "1/1"
+   ],
+   "truncated": 0,
+   "correct_count": 1,
+   "graded_count": 1,
+   "mean_decode_tok_s": 20.820892087476658,
+   "overlapping_generation_observed": false
+  },
+  {
+   "level": 4,
+   "total_tok_s": 21.49,
+   "per_request_tok_s": 11.34,
+   "p50_latency_s": 5.36,
+   "p95_latency_s": 10.791,
+   "peak_rss_gb": 19.03,
+   "retries": 0,
+   "same_as_single": [
+    "4/4"
+   ],
+   "correct": [
+    "4/4"
+   ],
+   "truncated": 0,
+   "correct_count": 4,
+   "graded_count": 4,
+   "mean_decode_tok_s": 21.5868874353967,
+   "overlapping_generation_observed": false
+  }
+ ],
+ "note": "Median over repeats. total_tok_s = generated tokens of all requests / wall time of the level. Each client sends every prompt once, in a rotated order; one warm-up request discarded. Connections reset before a request started (server backlog of 5) are retried and counted; latency is the successful attempt.",
+ "campaign_metadata": {
+  "model": {
+   "name": "qwen3.8:27b-mlx",
+   "model": "qwen3.8:27b-mlx",
+   "modified_at": "2026-10-13T23:48:14.180808025+09:00",
+   "size": 18174721847,
+   "digest": "5642e97495e1a088883805981563dcdc4a040c2f53388b7a41d1f24d3622cf7e",
+   "details": {
+    "parent_model": "",
+    "format": "safetensors",
+    "family": "",
+    "families": null,
+    "parameter_size": "",
+    "quantization_level": "nvfp4",
+    "runner": "mlx"
+   },
+   "capabilities": [
+    "completion",
+    "vision",
+    "tools",
+    "thinking"
+   ]
+  },
+  "profile": "native",
+  "style": "terse",
+  "levels": "1,4",
+  "repeats": 1,
+  "server_pid": 912,
+  "temperature": 0,
+  "num_ctx": 4096,
+  "num_predict": 4096,
+  "note": "Existing Ollama settings; no parallelism reconfiguration. One model at a time. Native keeps model default thinking with temperature zero. Footprint sums daemon and descendants; shared pages may be counted more than once. Requests in flight are not proof of GPU batching."
+ }
+}

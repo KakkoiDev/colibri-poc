@@ -1,0 +1,12 @@
+{
+  "name": "compact-packed-grouped",
+  "backend": "mlx",
+  "description": "Compact active batches instead of indexed fixed-bank updates; same retained expert capacity and grouped packed reads",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T171558.896165Z/r1-compact-packed-grouped.plugin.py",
+  "env": {
+    "SLOTS_LAYOUT": "packed",
+    "SLOTS_GROUP_READS": "1",
+    "SLOTS_COMPACT": "1"
+  }
+}

@@ -1,0 +1,18 @@
+{
+ "id": "fact-ocean",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 313.26,
+ "prompt_tokens": 14,
+ "prefill_s": 34.15,
+ "output_tokens": 128,
+ "decode_s": 275.24,
+ "decode_tok_s": 0.47,
+ "zeroed_slots": 66554,
+ "hit_pct": 2.0,
+ "text": "The largest ocean on Earth is the **Pacific Ocean**, which spans an area of approximately **165.25 million square kilometers** (about 64 million square miles) or roughly **46%** of the world's ocean area and **40%** of the global water surface. It is also the largest single feature on the planet Earth as a global entity, associated with approximately **32%** of the world's total land area ( including the terrestrial ecosystem, which is a significant proportion of the world's total landmass, and the world's terrestrial ecosystem, which is a significant proportion of the world's total landmass, which is a",
+ "answer_s": 309.39,
+ "correct": true
+}

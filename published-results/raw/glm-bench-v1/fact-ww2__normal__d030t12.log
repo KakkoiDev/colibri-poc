@@ -1,0 +1,81 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.59s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 15 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>In which year did World War II end?<|assistant|><think></think>PROFILO PREFILL (29.70s):
+PROFILE: expert-disk 127.549s service / 16.002s wait | expert-matmul 3.907s | attention 8.955s (including kvb 0.775s) | lm_head 0.006s | other 0.832s
+ATTENTION: projection/RoPE 2.674s | score-softmax-value 0.015s | output projection 5.491s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.029s | residual P2P 0.000s / 0 hop | orchestration 0.804s
+METAL: blocchi GPU 171 | fallback CPU 0 | expert su GPU 4615 | setup 0.03s gpu-wall 3.40s (kernel 3.77s) scatter 0.01s
+METAL-RESSET: flush 0.47s (residency-set commit in moe_submit, outside setup/gpu-wall)
+World War II ended in 1945. The war in Europe concluded with Germany's surrender on May 8, 1945 (known as V-E Day, or Victory in Europe Day). The war in the Pacific ended with Japan's surrender on August 15, 1945 (announced), with the formal surrender ceremony taking place aboard the USS Missouri on September 2, 1945 (known as V-J Day, or Victory over Japan Day).
+---
+prefill 15 tokens in 29.70s | decode 97 tokens in 104.51s (0.93 tok/s) | expert hit rate 9.8% (pin 0.0% + lru 9.8%) | RSS 12.71 GB
+experts loaded/token: 606.2 (per-layer 8.08 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 34146 miss slots; top layers: L65:542 L61:536 L20:534)
+speculation: 1.03 tokens/forward (94 forwards per 97 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 238.471s service / 72.321s wait | expert-matmul 8.414s | attention 19.955s (including kvb 0.000s) | lm_head 0.000s | other 3.822s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.004s | residual P2P 0.000s / 0 hop | orchestration 3.818s
+METAL-ATTN: layer GPU 7332 | gpu-wall 19.80s (kernel 19.14s | cpu-sched 0.03s gpu-sched 0.32s)
+METAL: blocchi GPU 9529 | fallback CPU 0 | expert su GPU 28506 | setup 0.25s gpu-wall 11.52s (kernel 12.07s) scatter 0.02s
+METAL-RESSET: flush 0.47s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 94 | latency p50 1067.1 ms | p90 1205.1 ms | p99 1918.1 ms | max 1936.9 ms | 1.03 tok/forward
+[PROF] expert I/O: 457.564 GB fetched (4717.2 MB/token, 4.38 GB/s over the run) | hit 9.8% (0 pin + 2342 lru / 21549 load) | 606.2 loads/token | 238.5s read service / 72.3s felt wait
+[PROF] DISK-CLASS (recency split): cold 7645 x 162.33 GB @ 1.76 GB/s-thread, wall 49.8s @ 3.26 GB/s-wall, avg-conc 1.9 (direct 7616/7645) | warm 13904 x 295.23 GB @ 2.02 GB/s-thread, wall 63.1s @ 4.68 GB/s-wall, avg-conc 2.3 (direct 13750/13904) | disk-busy 72.2s (69% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 69% | expert-matmul 8% | attention 19% | lm_head 0% | other 4%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.004s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 3.818s
+[PROF] verdict: I/O-bound — 69% of the time waits on expert reads (hit 10%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.9 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 13.3 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 15 token · +0.00s
+[prefill] layer 5/78 · 15 token · +1.74s
+[prefill] layer 9/78 · 15 token · +3.68s
+[prefill] layer 13/78 · 15 token · +5.40s
+[prefill] layer 17/78 · 15 token · +6.93s
+[prefill] layer 21/78 · 15 token · +8.37s
+[prefill] layer 25/78 · 15 token · +9.80s
+[prefill] layer 29/78 · 15 token · +11.38s
+[prefill] layer 33/78 · 15 token · +12.79s
+[prefill] layer 37/78 · 15 token · +14.13s
+[prefill] layer 41/78 · 15 token · +15.51s
+[prefill] layer 45/78 · 15 token · +16.89s
+[prefill] layer 49/78 · 15 token · +18.37s
+[prefill] layer 53/78 · 15 token · +19.80s
+[prefill] layer 57/78 · 15 token · +21.24s
+[prefill] layer 61/78 · 15 token · +22.72s
+[prefill] layer 65/78 · 15 token · +24.19s
+[prefill] layer 69/78 · 15 token · +25.76s
+[prefill] layer 73/78 · 15 token · +27.29s
+[prefill] layer 77/78 · 15 token · +28.90s
+[prefill] layer 78/78 · 15 token · +29.29s
+
+[t=16  RSS 12.70 GB  hit 12%  1.01 tok/s  1.00 tok/fw]
+
+[t=32  RSS 12.71 GB  hit 11%  0.95 tok/s  1.00 tok/fw]
+
+[t=48  RSS 12.71 GB  hit 11%  0.95 tok/s  1.00 tok/fw]
+
+[t=64  RSS 12.71 GB  hit 10%  0.94 tok/s  1.03 tok/fw]
+
+[t=80  RSS 12.71 GB  hit 10%  0.95 tok/s  1.03 tok/fw]
+
+[t=96  RSS 12.71 GB  hit 10%  0.94 tok/s  1.03 tok/fw]

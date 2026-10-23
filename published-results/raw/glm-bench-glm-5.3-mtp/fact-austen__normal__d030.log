@@ -1,0 +1,86 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.69s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 16 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Who wrote the novel Pride and Prejudice?<|assistant|><think></think>PROFILO PREFILL (24.18s):
+PROFILE: expert-disk 137.132s service / 17.216s wait | expert-matmul 3.830s | attention 2.547s (including kvb 0.333s) | lm_head 0.007s | other 0.583s
+ATTENTION: projection/RoPE 0.808s | score-softmax-value 0.036s | output projection 1.370s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.053s | residual P2P 0.000s / 0 hop | orchestration 0.530s
+METAL: blocchi GPU 185 | fallback CPU 0 | expert su GPU 4921 | setup 0.03s gpu-wall 3.29s (kernel 3.68s) scatter 0.01s
+METAL-RESSET: flush 0.50s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Pride and Prejudice was written by Jane Austen, the English novelist known for her sharp social commentary and keen observations of the British landed gentry at the end of the 18th century. Published in 1813, the novel is widely considered her masterpiece and one of the most beloved works in English literature.
+
+The story follows Elizabeth Bennet, the second of five daughters in a family of modest means, as she navigates issues of class, reputation, and—most importantly—her complicated relationship with the proud and wealthy Mr. Darcy. The novel's enduring popularity stems from its witty dialogue, memorable characters, and its
+---
+prefill 16 tokens in 24.18s | decode 128 tokens in 154.74s (0.83 tok/s) | expert hit rate 7.9% (pin 0.0% + lru 7.9%) | RSS 10.46 GB
+experts loaded/token: 673.6 (per-layer 8.98 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 42704 miss slots; top layers: L4:735 L6:651 L3:635)
+speculation: 1.80 tokens/forward (71 forwards per 128 tokens) | MTP acceptance 80% (57/71)
+PROFILE: expert-disk 467.321s service / 92.212s wait | expert-matmul 12.390s | attention 26.562s (including kvb 0.000s) | lm_head 0.000s | other 23.570s
+ATTENTION: projection/RoPE 0.320s | score-softmax-value 0.256s | output projection 0.098s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.012s | residual P2P 0.000s / 0 hop | orchestration 23.558s
+METAL-ATTN: layer GPU 5538 | gpu-wall 25.75s (kernel 25.23s | cpu-sched 0.02s gpu-sched 0.24s)
+METAL: blocchi GPU 8059 | fallback CPU 0 | expert su GPU 34214 | setup 0.28s gpu-wall 15.34s (kernel 16.32s) scatter 0.03s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 71 | latency p50 2098.4 ms | p90 2259.6 ms | p99 2417.1 ms | max 2440.4 ms | 1.80 tok/forward
+[PROF] expert I/O: 578.940 GB fetched (4523.0 MB/token, 3.74 GB/s over the run) | hit 7.9% (0 pin + 2299 lru / 26866 load) | 673.6 loads/token | 467.3s read service / 92.2s felt wait
+[PROF] DISK-CLASS (recency split): cold 10404 x 226.84 GB @ 1.13 GB/s-thread, wall 77.2s @ 2.94 GB/s-wall, avg-conc 2.6 (direct 10368/10404) | warm 16462 x 352.10 GB @ 1.32 GB/s-thread, wall 84.0s @ 4.19 GB/s-wall, avg-conc 3.2 (direct 16404/16462) | disk-busy 92.0s (59% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 60% | expert-matmul 8% | attention 17% | lm_head 0% | other 15%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.012s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 23.558s
+[PROF] verdict: I/O-bound — 60% of the time waits on expert reads (hit 8%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 16 token · +0.00s
+[prefill] layer 5/78 · 16 token · +1.10s
+[prefill] layer 9/78 · 16 token · +2.68s
+[prefill] layer 13/78 · 16 token · +4.05s
+[prefill] layer 17/78 · 16 token · +5.30s
+[prefill] layer 21/78 · 16 token · +6.40s
+[prefill] layer 25/78 · 16 token · +7.52s
+[prefill] layer 29/78 · 16 token · +8.78s
+[prefill] layer 33/78 · 16 token · +9.86s
+[prefill] layer 37/78 · 16 token · +10.94s
+[prefill] layer 41/78 · 16 token · +12.03s
+[prefill] layer 45/78 · 16 token · +13.15s
+[prefill] layer 49/78 · 16 token · +14.37s
+[prefill] layer 53/78 · 16 token · +15.55s
+[prefill] layer 57/78 · 16 token · +16.71s
+[prefill] layer 61/78 · 16 token · +17.91s
+[prefill] layer 65/78 · 16 token · +19.09s
+[prefill] layer 69/78 · 16 token · +20.27s
+[prefill] layer 73/78 · 16 token · +21.52s
+[prefill] layer 77/78 · 16 token · +22.80s
+[prefill] layer 78/78 · 16 token · +23.12s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.46 GB  hit 5%  0.88 tok/s  1.88 tok/fw]
+
+[t=32  RSS 10.46 GB  hit 7%  0.86 tok/s  1.82 tok/fw]
+
+[t=48  RSS 10.46 GB  hit 7%  0.86 tok/s  1.88 tok/fw]
+
+[t=64  RSS 10.46 GB  hit 7%  0.88 tok/s  1.91 tok/fw]
+
+[t=80  RSS 10.46 GB  hit 8%  0.87 tok/s  1.88 tok/fw]
+
+[t=96  RSS 10.46 GB  hit 8%  0.86 tok/s  1.86 tok/fw]
+
+[t=112  RSS 10.46 GB  hit 8%  0.85 tok/s  1.85 tok/fw]
+
+[t=128  RSS 10.46 GB  hit 8%  0.83 tok/s  1.79 tok/fw]

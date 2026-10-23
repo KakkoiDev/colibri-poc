@@ -1,0 +1,18 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 99.74,
+ "prompt_tokens": 14,
+ "prefill_s": 60.21,
+ "output_tokens": 32,
+ "decode_s": 36.86,
+ "decode_tok_s": 0.87,
+ "zeroed_slots": 11383,
+ "hit_pct": 10.6,
+ "text": "The chemical symbol for gold is **Au**, which comes from the Latin word *aurum*, meaning \"shining dawn\" or \"glow of sunrise.\"",
+ "answer_s": 97.07,
+ "correct": true
+}

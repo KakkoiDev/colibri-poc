@@ -1,0 +1,11 @@
+# Ram bench on GLM-5.3 int4 g64
+# ~/Code/colibri-poc/.venv/bin/python glm_suite.py run ram --model glm-5.3-int4
+Running suite-ram-glm-5.3-int4-20261019T2217-sky-exact-ram18 ...
+77 runs, 73 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-ram-glm-5.3-int4-20261019T2217-sky-exact-ram18 done
+Running suite-ram-glm-5.3-int4-20261019T2217-sky-exact-ram22 ...
+78 runs, 74 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-ram-glm-5.3-int4-20261019T2217-sky-exact-ram22 done
+Running suite-ram-glm-5.3-int4-20261019T2217-sky-exact-ram26 ...
+79 runs, 75 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-ram-glm-5.3-int4-20261019T2217-sky-exact-ram26 done

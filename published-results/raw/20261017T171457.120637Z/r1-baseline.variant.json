@@ -1,0 +1,6 @@
+{
+  "name": "baseline",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "description": "MLX Metal, greedy, fresh KV per request, no prefix reuse"
+}

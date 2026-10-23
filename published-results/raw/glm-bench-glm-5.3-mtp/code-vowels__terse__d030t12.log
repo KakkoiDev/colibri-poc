@@ -1,0 +1,73 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.86s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 57 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Write a Python function count_vowels(s) that returns how many vowels (a, e, i, o, u, case-insensitive) are in the string s. Answer as briefly as possible. For code, reply with only the code.<|assistant|><think></think>PROFILO PREFILL (73.41s):
+PROFILE: expert-disk 403.907s service / 42.134s wait | expert-matmul 12.453s | attention 9.037s (including kvb 1.273s) | lm_head 0.006s | other 9.777s
+ATTENTION: projection/RoPE 2.723s | score-softmax-value 0.148s | output projection 4.893s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.077s | residual P2P 0.000s / 0 hop | orchestration 9.699s
+METAL: blocchi GPU 276 | fallback CPU 0 | expert su GPU 10650 | setup 0.07s gpu-wall 11.85s (kernel 13.27s) scatter 0.03s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+```python
+def count_vowels(s):
+    return sum(1 for c in s.lower() if c in "aeiou")
+```
+---
+prefill 57 tokens in 73.41s | decode 29 tokens in 29.63s (0.98 tok/s) | expert hit rate 6.6% (pin 0.0% + lru 6.6%) | RSS 10.38 GB
+experts loaded/token: 628.7 (per-layer 8.38 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 9905 miss slots; top layers: L59:162 L5:154 L61:151)
+speculation: 1.93 tokens/forward (15 forwards per 29 tokens) | MTP acceptance 93% (14/15)
+PROFILE: expert-disk 103.061s service / 19.942s wait | expert-matmul 2.536s | attention 5.848s (including kvb 0.000s) | lm_head 0.000s | other 1.308s
+ATTENTION: projection/RoPE 0.022s | score-softmax-value 0.018s | output projection 0.020s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.003s | residual P2P 0.000s / 0 hop | orchestration 1.305s
+METAL-ATTN: layer GPU 1170 | gpu-wall 5.76s (kernel 5.65s | cpu-sched 0.00s gpu-sched 0.05s)
+METAL: blocchi GPU 1863 | fallback CPU 0 | expert su GPU 16839 | setup 0.12s gpu-wall 14.31s (kernel 15.81s) scatter 0.03s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 15 | latency p50 1890.1 ms | p90 2056.1 ms | p99 2056.2 ms | max 2127.0 ms | 1.93 tok/forward
+[PROF] expert I/O: 123.839 GB fetched (4270.3 MB/token, 4.18 GB/s over the run) | hit 6.6% (0 pin + 405 lru / 5755 load) | 628.7 loads/token | 103.1s read service / 19.9s felt wait
+[PROF] DISK-CLASS (recency split): cold 2862 x 61.73 GB @ 1.12 GB/s-thread, wall 17.9s @ 3.46 GB/s-wall, avg-conc 3.1 (direct 2854/2862) | warm 2893 x 62.11 GB @ 1.30 GB/s-thread, wall 17.0s @ 3.65 GB/s-wall, avg-conc 2.8 (direct 2889/2893) | disk-busy 19.9s (67% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 67% | expert-matmul 9% | attention 20% | lm_head 0% | other 4%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.003s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 1.305s
+[PROF] verdict: I/O-bound — 67% of the time waits on expert reads (hit 7%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 12.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 57 token · +0.00s
+[prefill] layer 5/78 · 57 token · +2.49s
+[prefill] layer 9/78 · 57 token · +6.62s
+[prefill] layer 13/78 · 57 token · +10.86s
+[prefill] layer 17/78 · 57 token · +14.37s
+[prefill] layer 21/78 · 57 token · +17.58s
+[prefill] layer 25/78 · 57 token · +21.39s
+[prefill] layer 29/78 · 57 token · +25.81s
+[prefill] layer 33/78 · 57 token · +29.06s
+[prefill] layer 37/78 · 57 token · +32.31s
+[prefill] layer 41/78 · 57 token · +35.78s
+[prefill] layer 45/78 · 57 token · +39.67s
+[prefill] layer 49/78 · 57 token · +43.23s
+[prefill] layer 53/78 · 57 token · +46.48s
+[prefill] layer 57/78 · 57 token · +49.95s
+[prefill] layer 61/78 · 57 token · +53.56s
+[prefill] layer 65/78 · 57 token · +56.94s
+[prefill] layer 69/78 · 57 token · +60.38s
+[prefill] layer 73/78 · 57 token · +64.74s
+[prefill] layer 77/78 · 57 token · +69.28s
+[prefill] layer 78/78 · 57 token · +70.35s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.38 GB  hit 6%  1.02 tok/s  1.88 tok/fw]

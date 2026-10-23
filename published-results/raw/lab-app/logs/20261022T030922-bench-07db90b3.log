@@ -1,0 +1,33 @@
+# Quality bench glm-5.3-iq3xxs on GLM-5.3 UD-IQ3_XXS (3-bit GGUF): exact, d030, d050, d030t12, d040t12 · terse
+# ~/Code/colibri-poc/.venv/bin/python glm_bench.py run --name glm-5.3-iq3xxs --configs exact,d030,d050,d030t12,d040t12 --styles terse --model ~/colibri-models/glm-5.3-iq3xxs --coli-dir engines/colibri-16239caa
+[90/120] code-fib__terse__d040t12: exit=0 answer=109.67s tokens=41 correct=True
+[91/120] code-palindrome__terse__exact: exit=0 answer=188.93s tokens=22 correct=True
+[92/120] code-palindrome__terse__d030: exit=0 answer=146.76s tokens=22 correct=True
+[93/120] code-palindrome__terse__d050: exit=0 answer=137.45s tokens=22 correct=True
+[94/120] code-palindrome__terse__d030t12: exit=0 answer=80.47s tokens=22 correct=True
+[95/120] code-palindrome__terse__d040t12: exit=0 answer=75.35s tokens=22 correct=True
+[96/120] code-vowels__terse__exact: exit=0 answer=231.68s tokens=27 correct=True
+[97/120] code-vowels__terse__d030: exit=0 answer=177.4s tokens=26 correct=True
+[98/120] code-vowels__terse__d050: exit=0 answer=168.38s tokens=29 correct=True
+[99/120] code-vowels__terse__d030t12: exit=0 answer=95.59s tokens=26 correct=True
+[100/120] code-vowels__terse__d040t12: exit=0 answer=91.58s tokens=28 correct=True
+[101/120] code-reverse-words__terse__exact: exit=0 answer=184.26s tokens=20 correct=True
+[102/120] code-reverse-words__terse__d030: exit=0 answer=140.83s tokens=20 correct=True
+[103/120] code-reverse-words__terse__d050: exit=0 answer=128.28s tokens=20 correct=True
+[104/120] code-reverse-words__terse__d030t12: exit=0 answer=80.58s tokens=20 correct=True
+[105/120] code-reverse-words__terse__d040t12: exit=0 answer=72.55s tokens=20 correct=True
+[106/120] code-factorial__terse__exact: exit=0 answer=214.73s tokens=30 correct=True
+[107/120] code-factorial__terse__d030: exit=0 answer=144.69s tokens=26 correct=True
+[108/120] code-factorial__terse__d050: exit=0 answer=135.18s tokens=26 correct=True
+[109/120] code-factorial__terse__d030t12: exit=0 answer=87.15s tokens=26 correct=True
+[110/120] code-factorial__terse__d040t12: exit=0 answer=79.98s tokens=26 correct=True
+[111/120] explain-sky__terse__exact: exit=0 answer=202.8s tokens=30 correct=True
+[112/120] explain-sky__terse__d030: exit=0 answer=143.02s tokens=30 correct=True
+[113/120] explain-sky__terse__d050: exit=0 answer=134.94s tokens=31 correct=True
+[114/120] explain-sky__terse__d030t12: exit=0 answer=84.92s tokens=30 correct=True
+[115/120] explain-sky__terse__d040t12: exit=0 answer=117.23s tokens=51 correct=True
+[116/120] explain-hash__terse__exact: exit=0 answer=260.41s tokens=43 correct=True
+[117/120] explain-hash__terse__d030: exit=0 answer=161.61s tokens=39 correct=True
+[118/120] explain-hash__terse__d050: exit=0 answer=388.82s tokens=128 correct=True
+[119/120] explain-hash__terse__d030t12: exit=0 answer=99.69s tokens=39 correct=True
+[120/120] explain-hash__terse__d040t12: exit=0 answer=109.61s tokens=50 correct=True

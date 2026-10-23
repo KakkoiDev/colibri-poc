@@ -1,0 +1,6 @@
+slots-workers-2 warmup explain: 46.17 tok/s
+slots-workers-2 measured explain: 45.55 tok/s
+slots-workers-2 measured code: 51.64 tok/s
+slots-workers-2 measured reason: 48.50 tok/s
+slots-workers-2 measured story: 47.91 tok/s
+slots-workers-2 measured long-context: 40.36 tok/s

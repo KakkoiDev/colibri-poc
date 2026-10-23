@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 175.15,
+ "prompt_tokens": 17,
+ "prefill_s": 22.96,
+ "output_tokens": 128,
+ "decode_s": 150.53,
+ "decode_tok_s": 0.85,
+ "zeroed_slots": 45602,
+ "hit_pct": 9.9,
+ "text": "2 to the power of 10 (2¹⁰) equals **1024**.\n\nThis is a well-known value in computing, since computers use binary (base-2) arithmetic. That's why 1024 bytes is called a **kilobyte** (rather than 1000), and powers of 2 like this show up throughout computer science — for example, 2¹⁰ = 1024, 2²⁰ = 1,048,576, and so on.\n\nYou can verify it by repeated doubling: 2 → 4 → 8 → 16 → 32",
+ "answer_s": 173.49,
+ "correct": false
+}

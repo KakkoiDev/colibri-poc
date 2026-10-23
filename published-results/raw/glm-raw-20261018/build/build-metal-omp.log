@@ -1,0 +1,2 @@
+clang -O3 -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -Wall -Wextra -Wno-unused-parameter -Wno-misleading-indentation -Wno-unused-function  -MMD -MP -DCOLI_METAL colibri.c  backend_metal.o   -o colibri -lm -L/opt/homebrew/opt/libomp/lib -lomp  -framework Metal -framework Foundation -lc++
+make: `iobench' is up to date.

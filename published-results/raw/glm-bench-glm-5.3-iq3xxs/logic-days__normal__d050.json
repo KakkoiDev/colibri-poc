@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 394.15,
+ "prompt_tokens": 17,
+ "prefill_s": 44.66,
+ "output_tokens": 128,
+ "decode_s": 345.39,
+ "decode_tok_s": 0.37,
+ "zeroed_slots": 66375,
+ "hit_pct": 3.2,
+ "text": "# Answer\n\n**The day of the week that comes two days after Friday is: Sunday (Sunday being two days after the \"given\" Friday and the day that comes two days after a given day within an Ignorant-Distinct or an Ignorant-Derivative-Permutation-Mechanism-Operation-System-Component-Operation-Function-Assurance-Consistent-Permutation-Mechanism-Permutation-Permutation-Every-Order-Permutation-Every-Order-Permutation-Every-Order-Permutation-Every-Order-Permutation-Every-Order-Permutation-Every-Order",
+ "answer_s": 390.05,
+ "correct": true
+}

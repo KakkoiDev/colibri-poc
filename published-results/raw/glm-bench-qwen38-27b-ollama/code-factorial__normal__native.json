@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 26.63,
+ "prompt_tokens": 28,
+ "prefill_s": 0.112,
+ "output_tokens": 731,
+ "decode_s": 26.511,
+ "load_s": 0.0,
+ "text": "```python\ndef factorial(n):\n    \"\"\"Return n! (n factorial) for a non-negative integer n.\n\n    factorial(0) = 1\n    factorial(1) = 1\n    factorial(n) = n * (n-1) * ... * 1\n\n    Raises:\n        TypeError:  if n is not an integer.\n        ValueError: if n is negative.\n    \"\"\"\n    if not isinstance(n, int):\n        raise TypeError(f\"n must be an integer, got {type(n).__name__}\")\n    if n < 0:\n        raise ValueError(f\"n must be non-negative, got {n}\")\n\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n```\n\n### How it works\n\n| Step | Detail |\n|------|--------|\n| **Input validation** | Rejects non-integer types and negative values up front. |\n| **Base case** | For `n = 0` or `n = 1`, the `range(2, n+1)` loop body never executes, so `result` stays `1`. |\n| **Loop** | Multiplies `result` by every integer from 2 up to `n`. |\n| **Return** | The accumulated product is `n!`. |\n\n### Quick examples\n\n```python\nprint(factorial(0))   # 1\nprint(factorial(1))   # 1\nprint(factorial(5))   # 120\nprint(factorial(10))  # 3628800\n```\n\n### Recursive alternative\n\nIf you prefer a more \"mathematical\" style, here's the equivalent recursive version:\n\n```python\ndef factorial_recursive(n):\n    if not isinstance(n, int):\n        raise TypeError(f\"n must be an integer, got {type(n).__name__}\")\n    if n < 0:\n        raise ValueError(f\"n must be non-negative, got {n}\")\n    if n <= 1:\n        return 1\n    return n * factorial_recursive(n - 1)\n```\n\n> **Note:** The iterative version is generally preferred in production code because it uses O(1) stack space, whereas the recursive version will hit Python's default recursion limit (~1000) for `n > 1000`. For very large factorials in a real project, consider `math.factorial(n)` from the standard library, which is implemented in C and highly optimized.",
+ "thinking_chars": 746,
+ "truncated": false,
+ "decode_tok_s": 27.57,
+ "answer_s": 26.62,
+ "correct": true
+}

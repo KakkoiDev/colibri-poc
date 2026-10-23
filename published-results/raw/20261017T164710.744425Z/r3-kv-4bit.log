@@ -1,0 +1,6 @@
+kv-4bit warmup explain: 192.09 tok/s
+kv-4bit measured explain: 195.83 tok/s
+kv-4bit measured code: 196.09 tok/s
+kv-4bit measured reason: 195.49 tok/s
+kv-4bit measured story: 195.73 tok/s
+kv-4bit measured long-context: 172.79 tok/s

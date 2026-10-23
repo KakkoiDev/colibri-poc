@@ -19,3 +19,7 @@ Supported means repeated interleaved streamed output, not merely overlapping net
 Stress uses 128-token outputs and distinct reference-text prompts. Actual prompt tokens are saved; 8K is a context limit, not a claim that every prompt fills 8K. Model allocation is reported by Ollama and is not measured physical peak RAM. The ramp stops after a level if swap grows by more than128 MiB, or fewer streams interleave than requested. This bounded smoke does not establish maximum safe capacity or prolonged workload stability.
 
 Results are in Results → Parallel requests. Old queued concurrency jobs automatically use the gated runner when started. The queue remains paused until explicitly resumed.
+
+## Backups and public data
+
+All saved benchmark evidence is archived under `published-results/raw/`, including failed, interrupted and smoke runs. The searchable public index is `site/archive.html`; `site/data/bench-archive.json` inventories each file with byte size and SHA-256. Pages deployment copies the published archive under `/archive/`. App queue/state and download preparation caches stay local. Publication runs after benchmark completion, not on a periodic commit schedule.

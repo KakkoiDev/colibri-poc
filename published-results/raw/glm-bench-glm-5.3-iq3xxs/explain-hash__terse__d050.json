@@ -1,0 +1,18 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 392.81,
+ "prompt_tokens": 27,
+ "prefill_s": 58.95,
+ "output_tokens": 128,
+ "decode_s": 329.87,
+ "decode_tok_s": 0.39,
+ "zeroed_slots": 66958,
+ "hit_pct": 2.6,
+ "text": "A data structure that maps keys to values by computing a hash on the key of any given content, and using that hash to decide where to place the key's value in an underlying array. A hash table typically has these components:\n\n**Key**<br>\nThis key is understood as, for example, a string like \"hello\", or \"IP address like \"127.0.0.1\", or any other content or object, such as a string, or a tuple, or a number, or a pointer, or a complex object, or a reference to an object, or a file number, or a pointer to an object",
+ "answer_s": 388.82,
+ "correct": true
+}

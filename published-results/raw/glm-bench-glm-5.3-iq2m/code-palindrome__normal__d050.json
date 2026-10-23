@@ -1,0 +1,18 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 364.56,
+ "prompt_tokens": 32,
+ "prefill_s": 67.84,
+ "output_tokens": 128,
+ "decode_s": 292.74,
+ "decode_tok_s": 0.44,
+ "zeroed_slots": 64043,
+ "hit_pct": 4.2,
+ "text": "Here's a Python function that checks if a string is a palindrome (reads the same forwards and backwards), ignoring case:\n\n```python\ndef is_palindrome(s):\n    \"\"\"\n    Check if a string is a palindrome, ignoring case.\n    \n    A palindrome is a string that reads the same forwards and backwards\n    when character case (uppercase/lowercase) is ignored.\n    \n    Args:\n        s (str): The input string to check.\n    \n    Returns:\n        bool: True if the string is a palindrome, False otherwise.\n    \n    Examples:\n        >>> is_palindrome(\"racecar\")  # doctest: +SKIP",
+ "answer_s": 360.58,
+ "correct": false
+}

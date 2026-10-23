@@ -1,0 +1,18 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "terse",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 65.88,
+ "prompt_tokens": 51,
+ "prefill_s": 61.63,
+ "output_tokens": 1,
+ "decode_s": 1.26,
+ "decode_tok_s": 0.79,
+ "zeroed_slots": 805,
+ "hit_pct": 4.7,
+ "text": "Yes",
+ "answer_s": 62.89,
+ "correct": true
+}

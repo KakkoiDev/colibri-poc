@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 146.76,
+ "prompt_tokens": 15,
+ "prefill_s": 34.8,
+ "output_tokens": 128,
+ "decode_s": 108.81,
+ "decode_tok_s": 1.18,
+ "zeroed_slots": 58857,
+ "hit_pct": 24.4,
+ "text": "The chemical formula of table salt is **NaCl** (sodium chloride).\n\nHere's a breakdown of what that means:\n\n- **Na** = Sodium, a highly reactive **alkali metal** (element 11 on the periodic table)\n- **Cl** = Chlorine, a highly reactive **halogen** (element 17 on the periodic table)\n\nWhen these two elements combine, sodium donates its single outer electron to chlorine, forming an **ionic bond**. This creates a crystal lattice structure (a repeating pattern of Na⁺ and Cl⁻ ions) rather than discrete molecules, which is why table salt is technically",
+ "answer_s": 143.61,
+ "correct": true
+}

@@ -1,0 +1,16 @@
+{
+ "text": "```python\ndef count_sisters():\n    num_brothers = 3\n    sisters_per_brother = 2\n    total_sisters = num_brothers * sisters_per_brother\n    return total_sisters\n\nprint(count_sisters())\n```\n\nThe output will be \\(6\\), indicating Sally has 6 sisters.",
+ "usage": {
+  "prompt_tokens": 47,
+  "completion_tokens": 79,
+  "total_tokens": 126,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 78,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.054,
+ "total_s": 0.483
+}

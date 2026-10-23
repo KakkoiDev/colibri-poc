@@ -1,0 +1,82 @@
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 3.29s | resident dense: 14457.58 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 15 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>What is 17 multiplied by 23?<|assistant|><think></think>PROFILO PREFILL (35.91s):
+PROFILE: expert-disk 70.479s service / 9.073s wait | expert-matmul 15.644s | attention 9.108s (including kvb 2.197s) | lm_head 0.088s | other 1.996s
+ATTENTION: projection/RoPE 1.443s | score-softmax-value 0.034s | output projection 5.434s
+P0-EXEC: routed CPU 15.639s / 3.35 GB/s (9112 row) | routed GPU critical 0.000s | router 0.084s | residual P2P 0.000s / 0 hop | orchestration 1.912s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+17 × 23 = 391
+
+To break it down: 17 × 20 = 340, and 17 × 3 = 51. Adding those together: 340 + 51 = 391.
+---
+prefill 15 tokens in 35.91s | decode 47 tokens in 141.03s (0.33 tok/s) | expert hit rate 1.7% (pin 0.0% + lru 1.7%) | RSS 11.89 GB
+experts loaded/token: 671.8 (per-layer 8.96 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 17026 miss slots; top layers: L19:291 L4:266 L17:259)
+speculation: 1.81 tokens/forward (26 forwards per 47 tokens) | MTP acceptance 81% (21/26)
+PROFILE: expert-disk 99.975s service / 20.540s wait | expert-matmul 32.108s | attention 69.998s (including kvb 0.000s) | lm_head 0.000s | other 18.379s
+ATTENTION: projection/RoPE 12.183s | score-softmax-value 24.499s | output projection 33.312s
+P0-EXEC: routed CPU 31.998s / 4.02 GB/s (13469 row) | routed GPU critical 0.000s | router 1.368s | residual P2P 0.000s / 0 hop | orchestration 17.012s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 26 | latency p50 5153.7 ms | p90 5829.4 ms | p99 5857.6 ms | max 5898.4 ms | 1.81 tok/forward
+[PROF] expert I/O: 126.499 GB fetched (2691.5 MB/token, 0.90 GB/s over the run) | hit 1.7% (0 pin + 185 lru / 11025 load) | 671.8 loads/token | 100.0s read service / 20.5s felt wait
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (0.9 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 15% | expert-matmul 23% | attention 50% | lm_head 0% | other 12%
+[PROF] P0 execution: routed CPU 31.998s / 4.02 GB/s (13469 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 1.368s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 17.012s
+[PROF] verdict: attention-bound (50%) — context length is the cost (DSA on). A lower CTX helps if the workload allows.
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      Glm-5.3 · 256x22B MoE
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+[gguf] ~/colibri-models/gguf/glm-5.3-iq2m/UD-IQ2_M/GLM-5.3-UD-IQ2_M-00001-of-00006.gguf: glm-dsa, 6 part(s), 59949 tensors under the checkpoint's names (1581 renamed, 228 fused expert tensors split per expert, 0 kept as named), read in place
+[METAL] kv_b_proj is fmt=102 on 78/78 layers: the fused Metal attention path serves kv_b only as int4, per-row (fmt=2) or grouped (fmt=4; grouped is served only while COLI_METAL_MOE_EXACT is off), so those layers run decode attention on the CPU absorb path instead. Requantize kv_b to int4 (--kvb-bits 4) to re-enable the fused path.
+[METAL] q_a_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] q_b_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] kv_a_proj_with_mqa is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] o_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.gate_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.up_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.down_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[DSA] indexer active: top-2048 sparse attention beyond 2048 context tokens
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 20.9 GB is 2.9 GB OVER the budget (resident 15.2 GB + reserve 4.9 GB, expert 11.5 MB avg/row).
+[RAM_GB=18.0] resident 15.2 GB + reserve 4.9 GB (ws 0.9, KV 1x1024 0.2, kvb 0.1), experts 11.5 MB avg x 76 layers -> cap lowered 8->1 (projected peak 20.9 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 11.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 0.9 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=on PILOT=0 CACHE_ROUTE=0
+[stop] 25 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 154838 154839 154840 154852 154853 154854 154855 (22 from the tokenizer's special set)
+[prefill] layer 1/78 · 15 token · +0.00s
+[CUDA] no reusable LRU expert slot (in flight or cap reached); skipping cache promotion
+[prefill] layer 5/78 · 15 token · +1.18s
+[prefill] layer 9/78 · 15 token · +3.26s
+[prefill] layer 13/78 · 15 token · +5.27s
+[prefill] layer 17/78 · 15 token · +7.12s
+[prefill] layer 21/78 · 15 token · +8.88s
+[prefill] layer 25/78 · 15 token · +10.66s
+[prefill] layer 29/78 · 15 token · +12.58s
+[prefill] layer 33/78 · 15 token · +14.33s
+[prefill] layer 37/78 · 15 token · +16.00s
+[prefill] layer 41/78 · 15 token · +17.68s
+[prefill] layer 45/78 · 15 token · +19.35s
+[prefill] layer 49/78 · 15 token · +21.16s
+[prefill] layer 53/78 · 15 token · +22.89s
+[prefill] layer 57/78 · 15 token · +24.70s
+[prefill] layer 61/78 · 15 token · +26.50s
+[prefill] layer 65/78 · 15 token · +28.31s
+[prefill] layer 69/78 · 15 token · +30.14s
+[prefill] layer 73/78 · 15 token · +32.14s
+[prefill] layer 77/78 · 15 token · +34.04s
+[prefill] layer 78/78 · 15 token · +34.50s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 11.89 GB  hit 2%  0.34 tok/s  1.67 tok/fw]
+
+[t=32  RSS 11.89 GB  hit 2%  0.33 tok/s  1.72 tok/fw]

@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 210.7,
+ "prompt_tokens": 15,
+ "prefill_s": 23.33,
+ "output_tokens": 128,
+ "decode_s": 183.29,
+ "decode_tok_s": 0.7,
+ "zeroed_slots": 54703,
+ "hit_pct": 2.5,
+ "text": "# Chemical Formula of Table Salt\n\nThe chemical formula for table salt is **NaCl**, which is also known as **sodium chloride**.\n\n## Composition Breakdown\n\nTable salt consists of:\n- **Sodium (Na)** — a positively charged ion (cation)\n- **Chlorine (Cl)** — a negatively charged ion (chloride anion)\n\nThese ions combine in a 1:1 ratio to form a neutral compound, since the +1 charge of sodium balances the -1 charge of chlorine.\n\n## Key Properties\n\n- **Bond type**: Ionic bond (electrostatic attraction between oppositely charged ions)\n-",
+ "answer_s": 206.62,
+ "correct": true
+}

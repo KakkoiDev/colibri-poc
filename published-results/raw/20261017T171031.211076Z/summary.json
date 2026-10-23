@@ -1,0 +1,122 @@
+[
+  {
+    "variant": "baseline",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 197.94770999993935,
+    "min_decode_tps": 138.8660671488008,
+    "max_decode_tps": 200.91021746173857,
+    "paired_median_speedup": 1.0,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.048096333000103186
+  },
+  {
+    "variant": "allocator-256mb",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 197.6176778263249,
+    "min_decode_tps": 137.8960155815569,
+    "max_decode_tps": 200.8249250931788,
+    "paired_median_speedup": 0.993920359186797,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04823112500002935
+  },
+  {
+    "variant": "allocator-off",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 194.7500655786713,
+    "min_decode_tps": 140.38114934112565,
+    "max_decode_tps": 198.65888460008927,
+    "paired_median_speedup": 0.9902000542254463,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04884549999997034
+  },
+  {
+    "variant": "group-0",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 190.9658365430684,
+    "min_decode_tps": 139.16675170788605,
+    "max_decode_tps": 193.5442531125225,
+    "paired_median_speedup": 0.964728698013869,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04809116699993865
+  },
+  {
+    "variant": "group-128",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 198.37537541665918,
+    "min_decode_tps": 138.78898747333656,
+    "max_decode_tps": 200.40512867473313,
+    "paired_median_speedup": 0.9976754838393157,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04816649999997935
+  },
+  {
+    "variant": "group-256",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 197.18804183191884,
+    "min_decode_tps": 140.07392278710557,
+    "max_decode_tps": 201.06700320845044,
+    "paired_median_speedup": 0.9986203883041086,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.047742333000087456
+  },
+  {
+    "variant": "group-32",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 198.48825852864223,
+    "min_decode_tps": 142.93842313237855,
+    "max_decode_tps": 200.4016776074971,
+    "paired_median_speedup": 0.9985697813107554,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04764079099982155
+  },
+  {
+    "variant": "resident-compiled-fused",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 199.65035171511883,
+    "min_decode_tps": 143.84033957844738,
+    "max_decode_tps": 202.57961911591147,
+    "paired_median_speedup": 1.0086014721523173,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04673754200007352
+  },
+  {
+    "variant": "resident-compiled",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 198.14949517774426,
+    "min_decode_tps": 140.75603309362637,
+    "max_decode_tps": 200.87147619150778,
+    "paired_median_speedup": 0.9980614601648696,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.048820166000041354
+  },
+  {
+    "variant": "resident-fused",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 195.55031372074143,
+    "min_decode_tps": 143.9442148693525,
+    "max_decode_tps": 200.47356648979923,
+    "paired_median_speedup": 0.9937807619258893,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04884166700003334
+  }
+]

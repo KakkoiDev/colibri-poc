@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 223.68,
+ "prompt_tokens": 30,
+ "prefill_s": 37.4,
+ "output_tokens": 74,
+ "decode_s": 183.34,
+ "decode_tok_s": 0.4,
+ "zeroed_slots": 0,
+ "hit_pct": 1.3,
+ "text": "**12 apples**\n\nHere's the breakdown:\n- Start: 12 apples\n- Give away 5: 12 − 5 = 7 apples\n- Buy 8 more: 7 + 8 = 15 apples\n\nWait, let me recalculate — that gives **15 apples**, not 12. \n\n**Final answer: 15 apples**",
+ "answer_s": 220.74,
+ "correct": true
+}

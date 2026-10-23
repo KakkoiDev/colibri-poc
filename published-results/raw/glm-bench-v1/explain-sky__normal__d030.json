@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 205.08,
+ "prompt_tokens": 14,
+ "prefill_s": 59.53,
+ "output_tokens": 128,
+ "decode_s": 142.89,
+ "decode_tok_s": 0.9,
+ "zeroed_slots": 45280,
+ "hit_pct": 12.7,
+ "text": "# Why the Sky Is Blue\n\nThe blue sky is caused by **Rayleigh scattering** — the scattering of sunlight off molecules in Earth's atmosphere (mainly nitrogen and oxygen).\n\n## How It Works\n\n**1. Sunlight contains all colors.**\nSunlight appears white but is actually made up of all the colors of the rainbow, each with a different wavelength. Violet and blue have short wavelengths; red and orange have long ones.\n\n**2. Air molecules scatter short wavelengths more.**\nWhen sunlight hits air molecules, the light is scattered in all directions. Rayleigh scattering is much more effective for **shorter wavelengths** — in",
+ "answer_s": 202.42,
+ "correct": true
+}

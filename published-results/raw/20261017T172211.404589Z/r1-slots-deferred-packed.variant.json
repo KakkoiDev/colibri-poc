@@ -1,0 +1,12 @@
+{
+  "name": "slots-deferred-packed",
+  "backend": "mlx",
+  "description": "Defer bank upload and decode compute synchronization until downstream dependency; same bounded prefill partitions",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T172211.404589Z/r1-slots-deferred-packed.plugin.py",
+  "env": {
+    "SLOTS_LAYOUT": "packed",
+    "SLOTS_GROUP_READS": "1",
+    "SLOTS_DEFERRED": "1"
+  }
+}

@@ -1,0 +1,18 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "terse",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 69.46,
+ "prompt_tokens": 43,
+ "prefill_s": 46.92,
+ "output_tokens": 11,
+ "decode_s": 18.88,
+ "decode_tok_s": 0.58,
+ "zeroed_slots": 3936,
+ "hit_pct": 1.9,
+ "text": "60 × 2.5 = **150 km**",
+ "answer_s": 65.8,
+ "correct": true
+}

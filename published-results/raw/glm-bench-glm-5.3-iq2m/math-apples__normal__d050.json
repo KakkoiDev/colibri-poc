@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 373.52,
+ "prompt_tokens": 30,
+ "prefill_s": 61.77,
+ "output_tokens": 128,
+ "decode_s": 307.84,
+ "decode_tok_s": 0.42,
+ "zeroed_slots": 65282,
+ "hit_pct": 3.6,
+ "text": "# Solving the apple problem\n\n## Setup\n- **Initial apples**: 12\n- **Given away**: 5\n- **New purchase**: 8 more apples\n\n## Solution\n- **Step 1**: Start with 12 apples\n- **Step 2**: Give away 5 → 12 - 5 = 7\n- **Step 3**: Buy 8 more → 7 + 8 = 15\n\n## Verification\n- **Check**: 12 - 5 + 8 = 15 ✓\n- **Final answer**: 15 apples\n\n## Summary\nYou started with 12",
+ "answer_s": 369.61,
+ "correct": false
+}

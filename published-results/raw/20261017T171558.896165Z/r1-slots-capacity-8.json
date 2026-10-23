@@ -1,0 +1,1170 @@
+{
+  "variant": {
+    "name": "slots-capacity-8",
+    "backend": "mlx",
+    "description": "Bounded complete-expert GPU slots; original weights and routing; explicit staging and I/O policy",
+    "prefill_step_size": 512,
+    "plugin": "~/Code/colibri-poc/results/20261017T171558.896165Z/r1-slots-capacity-8.plugin.py",
+    "env": {
+      "SLOTS_LAYOUT": "packed",
+      "SLOTS_GROUP_READS": "1",
+      "SLOTS_CAPACITY": "8"
+    }
+  },
+  "plugin_sha256": "47f844baabf874290b374c4804698f98c0c1170296b86e24563e9576fab22ec9",
+  "load_s": 0.11084266699981526,
+  "load_peak_gpu_gb": 0.268374024,
+  "loaded_active_gpu_gb": 0.268374024,
+  "metal_available": true,
+  "cache_state": "OS file cache uncontrolled; lazy startup; fixed retained expert banks; bounded prefill partitions; prefetch scratch separate",
+  "metal_device": {
+    "device_name": "Apple M6",
+    "max_recommended_working_set_size": 26800603136,
+    "memory_size": 34359738368,
+    "architecture": "applegpu_g18g",
+    "max_buffer_length": 20100448256,
+    "resource_limit": 499000
+  },
+  "requests": [
+    {
+      "phase": "warmup",
+      "prompt_id": "explain",
+      "prompt_tokens": 31,
+      "tokens": 32,
+      "prompt_tps": 54.80806712585799,
+      "decode_tps": 23.52323115679643,
+      "request_s": 1.9288414170000578,
+      "ttft_s": 0.5678251249998993,
+      "first_text_s": 0.5678251249998993,
+      "peak_gpu_gb": 0.813700388,
+      "finish_reason": "length",
+      "token_ids": [
+        1992,
+        2096,
+        849,
+        247,
+        12874,
+        11556,
+        2987,
+        13,
+        1339,
+        434,
+        897,
+        247,
+        11859,
+        1650,
+        7668,
+        247,
+        2969,
+        2086,
+        3515,
+        327,
+        247,
+        4382,
+        15,
+        831,
+        1650,
+        588,
+        17093,
+        253,
+        11556,
+        434,
+        2554,
+        275
+      ],
+      "text": "To understand how a CPU cache works, let's use a concrete example involving a simple program running on a computer. This example will illustrate the cache's role in",
+      "plugin_telemetry": {
+        "read_bytes": 12552634368,
+        "read_calls": 2757,
+        "read_seconds": 0.5098671960001866,
+        "hits": 1520,
+        "misses": 3547,
+        "upload_seconds": 0.9385501230021873,
+        "compute_seconds": 0.2489605270006905,
+        "prefetch_useful": 0,
+        "prefetch_submitted": 0,
+        "prefetch_discarded": 0,
+        "bank_updates": 638,
+        "retained_expert_bytes": 452984832,
+        "configuration": {
+          "workers": 1,
+          "group_reads": true,
+          "policy": "lru",
+          "prefetch": false,
+          "layout": "packed",
+          "capacities": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "compact": false,
+          "layout_sha256": "4471ddb16c3c6e622ba7cd13088f57cddd9ac0ffaaaded7e1d4a7afbb3641725"
+        },
+        "layers": [
+          {
+            "layer": 0,
+            "capacity": 8,
+            "hits": 80,
+            "misses": 234
+          },
+          {
+            "layer": 1,
+            "capacity": 8,
+            "hits": 69,
+            "misses": 251
+          },
+          {
+            "layer": 2,
+            "capacity": 8,
+            "hits": 101,
+            "misses": 218
+          },
+          {
+            "layer": 3,
+            "capacity": 8,
+            "hits": 94,
+            "misses": 223
+          },
+          {
+            "layer": 4,
+            "capacity": 8,
+            "hits": 120,
+            "misses": 199
+          },
+          {
+            "layer": 5,
+            "capacity": 8,
+            "hits": 122,
+            "misses": 193
+          },
+          {
+            "layer": 6,
+            "capacity": 8,
+            "hits": 119,
+            "misses": 193
+          },
+          {
+            "layer": 7,
+            "capacity": 8,
+            "hits": 113,
+            "misses": 200
+          },
+          {
+            "layer": 8,
+            "capacity": 8,
+            "hits": 91,
+            "misses": 222
+          },
+          {
+            "layer": 9,
+            "capacity": 8,
+            "hits": 74,
+            "misses": 244
+          },
+          {
+            "layer": 10,
+            "capacity": 8,
+            "hits": 60,
+            "misses": 257
+          },
+          {
+            "layer": 11,
+            "capacity": 8,
+            "hits": 95,
+            "misses": 224
+          },
+          {
+            "layer": 12,
+            "capacity": 8,
+            "hits": 88,
+            "misses": 228
+          },
+          {
+            "layer": 13,
+            "capacity": 8,
+            "hits": 90,
+            "misses": 229
+          },
+          {
+            "layer": 14,
+            "capacity": 8,
+            "hits": 109,
+            "misses": 208
+          },
+          {
+            "layer": 15,
+            "capacity": 8,
+            "hits": 95,
+            "misses": 224
+          }
+        ],
+        "prefetch_record_limit": 0,
+        "counters": "cumulative since worker start, including warmup; read seconds sum across threads"
+      },
+      "process_peak_rss_gb": 0.608550912
+    },
+    {
+      "phase": "measured",
+      "prompt_id": "explain",
+      "prompt_tokens": 31,
+      "tokens": 32,
+      "prompt_tps": 58.40264526301832,
+      "decode_tps": 23.47950702207171,
+      "request_s": 1.894623249999995,
+      "ttft_s": 0.5310459580000497,
+      "first_text_s": 0.5310459580000497,
+      "peak_gpu_gb": 0.813815652,
+      "finish_reason": "length",
+      "token_ids": [
+        1992,
+        2096,
+        849,
+        247,
+        12874,
+        11556,
+        2987,
+        13,
+        1339,
+        434,
+        897,
+        247,
+        11859,
+        1650,
+        7668,
+        247,
+        2969,
+        2086,
+        3515,
+        327,
+        247,
+        4382,
+        15,
+        831,
+        1650,
+        588,
+        17093,
+        253,
+        11556,
+        434,
+        2554,
+        275
+      ],
+      "text": "To understand how a CPU cache works, let's use a concrete example involving a simple program running on a computer. This example will illustrate the cache's role in",
+      "plugin_telemetry": {
+        "read_bytes": 25038028800,
+        "read_calls": 5519,
+        "read_seconds": 1.0185058140025376,
+        "hits": 3059,
+        "misses": 7075,
+        "upload_seconds": 1.8560498199985886,
+        "compute_seconds": 0.4915077500006646,
+        "prefetch_useful": 0,
+        "prefetch_submitted": 0,
+        "prefetch_discarded": 0,
+        "bank_updates": 1276,
+        "retained_expert_bytes": 452984832,
+        "configuration": {
+          "workers": 1,
+          "group_reads": true,
+          "policy": "lru",
+          "prefetch": false,
+          "layout": "packed",
+          "capacities": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "compact": false,
+          "layout_sha256": "4471ddb16c3c6e622ba7cd13088f57cddd9ac0ffaaaded7e1d4a7afbb3641725"
+        },
+        "layers": [
+          {
+            "layer": 0,
+            "capacity": 8,
+            "hits": 162,
+            "misses": 466
+          },
+          {
+            "layer": 1,
+            "capacity": 8,
+            "hits": 138,
+            "misses": 502
+          },
+          {
+            "layer": 2,
+            "capacity": 8,
+            "hits": 204,
+            "misses": 434
+          },
+          {
+            "layer": 3,
+            "capacity": 8,
+            "hits": 189,
+            "misses": 445
+          },
+          {
+            "layer": 4,
+            "capacity": 8,
+            "hits": 241,
+            "misses": 397
+          },
+          {
+            "layer": 5,
+            "capacity": 8,
+            "hits": 245,
+            "misses": 385
+          },
+          {
+            "layer": 6,
+            "capacity": 8,
+            "hits": 240,
+            "misses": 384
+          },
+          {
+            "layer": 7,
+            "capacity": 8,
+            "hits": 226,
+            "misses": 400
+          },
+          {
+            "layer": 8,
+            "capacity": 8,
+            "hits": 184,
+            "misses": 442
+          },
+          {
+            "layer": 9,
+            "capacity": 8,
+            "hits": 148,
+            "misses": 488
+          },
+          {
+            "layer": 10,
+            "capacity": 8,
+            "hits": 121,
+            "misses": 513
+          },
+          {
+            "layer": 11,
+            "capacity": 8,
+            "hits": 191,
+            "misses": 447
+          },
+          {
+            "layer": 12,
+            "capacity": 8,
+            "hits": 177,
+            "misses": 455
+          },
+          {
+            "layer": 13,
+            "capacity": 8,
+            "hits": 182,
+            "misses": 456
+          },
+          {
+            "layer": 14,
+            "capacity": 8,
+            "hits": 221,
+            "misses": 413
+          },
+          {
+            "layer": 15,
+            "capacity": 8,
+            "hits": 190,
+            "misses": 448
+          }
+        ],
+        "prefetch_record_limit": 0,
+        "counters": "cumulative since worker start, including warmup; read seconds sum across threads"
+      },
+      "process_peak_rss_gb": 0.6107136
+    },
+    {
+      "phase": "measured",
+      "prompt_id": "code",
+      "prompt_tokens": 33,
+      "tokens": 32,
+      "prompt_tps": 63.64433748286506,
+      "decode_tps": 26.470478137085543,
+      "request_s": 1.7283782920001158,
+      "ttft_s": 0.5187913750000916,
+      "first_text_s": 0.5187913750000916,
+      "peak_gpu_gb": 0.814029352,
+      "finish_reason": "length",
+      "token_ids": [
+        4943,
+        310,
+        247,
+        13814,
+        1159,
+        326,
+        14041,
+        265,
+        21481,
+        11508,
+        15,
+        380,
+        1159,
+        4648,
+        247,
+        2969,
+        2746,
+        273,
+        23762,
+        253,
+        11508,
+        407,
+        616,
+        1265,
+        2069,
+        285,
+        840,
+        10040,
+        839,
+        949,
+        731,
+        281
+      ],
+      "text": "Here is a Python function that merges overlapping intervals. The function uses a simple approach of sorting the intervals by their start times and then iterating through them to",
+      "plugin_telemetry": {
+        "read_bytes": 36185702400,
+        "read_calls": 7960,
+        "read_seconds": 1.4680979990032483,
+        "hits": 4969,
+        "misses": 10225,
+        "upload_seconds": 2.6693652799988286,
+        "compute_seconds": 0.735757848998901,
+        "prefetch_useful": 0,
+        "prefetch_submitted": 0,
+        "prefetch_discarded": 0,
+        "bank_updates": 1911,
+        "retained_expert_bytes": 452984832,
+        "configuration": {
+          "workers": 1,
+          "group_reads": true,
+          "policy": "lru",
+          "prefetch": false,
+          "layout": "packed",
+          "capacities": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "compact": false,
+          "layout_sha256": "4471ddb16c3c6e622ba7cd13088f57cddd9ac0ffaaaded7e1d4a7afbb3641725"
+        },
+        "layers": [
+          {
+            "layer": 0,
+            "capacity": 8,
+            "hits": 245,
+            "misses": 704
+          },
+          {
+            "layer": 1,
+            "capacity": 8,
+            "hits": 224,
+            "misses": 741
+          },
+          {
+            "layer": 2,
+            "capacity": 8,
+            "hits": 322,
+            "misses": 636
+          },
+          {
+            "layer": 3,
+            "capacity": 8,
+            "hits": 300,
+            "misses": 651
+          },
+          {
+            "layer": 4,
+            "capacity": 8,
+            "hits": 386,
+            "misses": 567
+          },
+          {
+            "layer": 5,
+            "capacity": 8,
+            "hits": 404,
+            "misses": 541
+          },
+          {
+            "layer": 6,
+            "capacity": 8,
+            "hits": 392,
+            "misses": 540
+          },
+          {
+            "layer": 7,
+            "capacity": 8,
+            "hits": 353,
+            "misses": 581
+          },
+          {
+            "layer": 8,
+            "capacity": 8,
+            "hits": 295,
+            "misses": 650
+          },
+          {
+            "layer": 9,
+            "capacity": 8,
+            "hits": 260,
+            "misses": 694
+          },
+          {
+            "layer": 10,
+            "capacity": 8,
+            "hits": 201,
+            "misses": 754
+          },
+          {
+            "layer": 11,
+            "capacity": 8,
+            "hits": 319,
+            "misses": 638
+          },
+          {
+            "layer": 12,
+            "capacity": 8,
+            "hits": 293,
+            "misses": 652
+          },
+          {
+            "layer": 13,
+            "capacity": 8,
+            "hits": 310,
+            "misses": 643
+          },
+          {
+            "layer": 14,
+            "capacity": 8,
+            "hits": 347,
+            "misses": 598
+          },
+          {
+            "layer": 15,
+            "capacity": 8,
+            "hits": 318,
+            "misses": 635
+          }
+        ],
+        "prefetch_record_limit": 0,
+        "counters": "cumulative since worker start, including warmup; read seconds sum across threads"
+      },
+      "process_peak_rss_gb": 0.611958784
+    },
+    {
+      "phase": "measured",
+      "prompt_id": "reason",
+      "prompt_tokens": 43,
+      "tokens": 32,
+      "prompt_tps": 74.68534447782874,
+      "decode_tps": 24.007926366942687,
+      "request_s": 1.9095742080000946,
+      "ttft_s": 0.5760380419999365,
+      "first_text_s": 0.5760380419999365,
+      "peak_gpu_gb": 0.814728872,
+      "finish_reason": "length",
+      "token_ids": [
+        1992,
+        8415,
+        436,
+        1895,
+        13,
+        359,
+        878,
+        281,
+        10173,
+        253,
+        3388,
+        3885,
+        273,
+        253,
+        6194,
+        689,
+        253,
+        2862,
+        3790,
+        7408,
+        15,
+        380,
+        3388,
+        3885,
+        323,
+        247,
+        3790,
+        7408,
+        310,
+        417,
+        3365,
+        253
+      ],
+      "text": "To solve this problem, we need to calculate the average speed of the train over the entire round trip. The average speed for a round trip is not simply the",
+      "plugin_telemetry": {
+        "read_bytes": 48494149632,
+        "read_calls": 10593,
+        "read_seconds": 1.9761363680001978,
+        "hits": 6621,
+        "misses": 13703,
+        "upload_seconds": 3.5755115669974202,
+        "compute_seconds": 0.9972740269954556,
+        "prefetch_useful": 0,
+        "prefetch_submitted": 0,
+        "prefetch_discarded": 0,
+        "bank_updates": 2559,
+        "retained_expert_bytes": 452984832,
+        "configuration": {
+          "workers": 1,
+          "group_reads": true,
+          "policy": "lru",
+          "prefetch": false,
+          "layout": "packed",
+          "capacities": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "compact": false,
+          "layout_sha256": "4471ddb16c3c6e622ba7cd13088f57cddd9ac0ffaaaded7e1d4a7afbb3641725"
+        },
+        "layers": [
+          {
+            "layer": 0,
+            "capacity": 8,
+            "hits": 341,
+            "misses": 932
+          },
+          {
+            "layer": 1,
+            "capacity": 8,
+            "hits": 295,
+            "misses": 993
+          },
+          {
+            "layer": 2,
+            "capacity": 8,
+            "hits": 419,
+            "misses": 863
+          },
+          {
+            "layer": 3,
+            "capacity": 8,
+            "hits": 404,
+            "misses": 863
+          },
+          {
+            "layer": 4,
+            "capacity": 8,
+            "hits": 526,
+            "misses": 747
+          },
+          {
+            "layer": 5,
+            "capacity": 8,
+            "hits": 541,
+            "misses": 725
+          },
+          {
+            "layer": 6,
+            "capacity": 8,
+            "hits": 532,
+            "misses": 713
+          },
+          {
+            "layer": 7,
+            "capacity": 8,
+            "hits": 468,
+            "misses": 783
+          },
+          {
+            "layer": 8,
+            "capacity": 8,
+            "hits": 398,
+            "misses": 867
+          },
+          {
+            "layer": 9,
+            "capacity": 8,
+            "hits": 350,
+            "misses": 927
+          },
+          {
+            "layer": 10,
+            "capacity": 8,
+            "hits": 268,
+            "misses": 1009
+          },
+          {
+            "layer": 11,
+            "capacity": 8,
+            "hits": 414,
+            "misses": 865
+          },
+          {
+            "layer": 12,
+            "capacity": 8,
+            "hits": 394,
+            "misses": 873
+          },
+          {
+            "layer": 13,
+            "capacity": 8,
+            "hits": 413,
+            "misses": 863
+          },
+          {
+            "layer": 14,
+            "capacity": 8,
+            "hits": 437,
+            "misses": 829
+          },
+          {
+            "layer": 15,
+            "capacity": 8,
+            "hits": 421,
+            "misses": 851
+          }
+        ],
+        "prefetch_record_limit": 0,
+        "counters": "cumulative since worker start, including warmup; read seconds sum across threads"
+      },
+      "process_peak_rss_gb": 0.611958784
+    },
+    {
+      "phase": "measured",
+      "prompt_id": "story",
+      "prompt_tokens": 35,
+      "tokens": 32,
+      "prompt_tps": 63.01488403999143,
+      "decode_tps": 23.75292945064468,
+      "request_s": 1.9035859579998942,
+      "ttft_s": 0.555722249999917,
+      "first_text_s": 0.555722249999917,
+      "peak_gpu_gb": 0.81410372,
+      "finish_reason": "length",
+      "token_ids": [
+        1909,
+        344,
+        9407,
+        1834,
+        13,
+        253,
+        5026,
+        23010,
+        4455,
+        281,
+        6906,
+        5777,
+        13,
+        6941,
+        779,
+        247,
+        7520,
+        13,
+        2590,
+        1859,
+        273,
+        253,
+        8704,
+        13016,
+        15,
+        380,
+        1708,
+        5967,
+        13,
+        247,
+        12413,
+        2158
+      ],
+      "text": "As he ascended, the thick fog seemed to thin slightly, allowing him a rare, clear view of the surrounding landscape. The lighthouse, a towering",
+      "plugin_telemetry": {
+        "read_bytes": 60912304128,
+        "read_calls": 13263,
+        "read_seconds": 2.483760110003459,
+        "hits": 8230,
+        "misses": 17212,
+        "upload_seconds": 4.492935687993622,
+        "compute_seconds": 1.246955278997575,
+        "prefetch_useful": 0,
+        "prefetch_submitted": 0,
+        "prefetch_discarded": 0,
+        "bank_updates": 3205,
+        "retained_expert_bytes": 452984832,
+        "configuration": {
+          "workers": 1,
+          "group_reads": true,
+          "policy": "lru",
+          "prefetch": false,
+          "layout": "packed",
+          "capacities": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "compact": false,
+          "layout_sha256": "4471ddb16c3c6e622ba7cd13088f57cddd9ac0ffaaaded7e1d4a7afbb3641725"
+        },
+        "layers": [
+          {
+            "layer": 0,
+            "capacity": 8,
+            "hits": 412,
+            "misses": 1179
+          },
+          {
+            "layer": 1,
+            "capacity": 8,
+            "hits": 380,
+            "misses": 1233
+          },
+          {
+            "layer": 2,
+            "capacity": 8,
+            "hits": 517,
+            "misses": 1088
+          },
+          {
+            "layer": 3,
+            "capacity": 8,
+            "hits": 522,
+            "misses": 1064
+          },
+          {
+            "layer": 4,
+            "capacity": 8,
+            "hits": 633,
+            "misses": 959
+          },
+          {
+            "layer": 5,
+            "capacity": 8,
+            "hits": 664,
+            "misses": 922
+          },
+          {
+            "layer": 6,
+            "capacity": 8,
+            "hits": 669,
+            "misses": 894
+          },
+          {
+            "layer": 7,
+            "capacity": 8,
+            "hits": 594,
+            "misses": 970
+          },
+          {
+            "layer": 8,
+            "capacity": 8,
+            "hits": 496,
+            "misses": 1086
+          },
+          {
+            "layer": 9,
+            "capacity": 8,
+            "hits": 447,
+            "misses": 1151
+          },
+          {
+            "layer": 10,
+            "capacity": 8,
+            "hits": 339,
+            "misses": 1260
+          },
+          {
+            "layer": 11,
+            "capacity": 8,
+            "hits": 509,
+            "misses": 1094
+          },
+          {
+            "layer": 12,
+            "capacity": 8,
+            "hits": 497,
+            "misses": 1090
+          },
+          {
+            "layer": 13,
+            "capacity": 8,
+            "hits": 506,
+            "misses": 1091
+          },
+          {
+            "layer": 14,
+            "capacity": 8,
+            "hits": 520,
+            "misses": 1065
+          },
+          {
+            "layer": 15,
+            "capacity": 8,
+            "hits": 525,
+            "misses": 1066
+          }
+        ],
+        "prefetch_record_limit": 0,
+        "counters": "cumulative since worker start, including warmup; read seconds sum across threads"
+      },
+      "process_peak_rss_gb": 0.611958784
+    },
+    {
+      "phase": "measured",
+      "prompt_id": "long-context",
+      "prompt_tokens": 2329,
+      "tokens": 32,
+      "prompt_tps": 460.6025151586924,
+      "decode_tps": 19.281361565252666,
+      "request_s": 6.718704541999841,
+      "ttft_s": 5.058359791999919,
+      "first_text_s": 5.058359791999919,
+      "peak_gpu_gb": 1.134729,
+      "finish_reason": "length",
+      "token_ids": [
+        510,
+        21429,
+        12028,
+        3389,
+        247,
+        36108,
+        10014,
+        273,
+        12082,
+        285,
+        1313,
+        16512,
+        789,
+        5196,
+        407,
+        247,
+        22754,
+        2285,
+        15,
+        831,
+        789,
+        8687,
+        247,
+        2962,
+        273,
+        4712,
+        11205,
+        387,
+        17749,
+        253,
+        5252,
+        13
+      ],
+      "text": "The archive entries document a recurring theme of systematic and meticulous work conducted by a harbor team. This work involves a series of activities aimed at ensuring the safety,",
+      "plugin_telemetry": {
+        "read_bytes": 87072178176,
+        "read_calls": 17120,
+        "read_seconds": 3.612612465003849,
+        "hits": 9475,
+        "misses": 24604,
+        "upload_seconds": 6.554389482992747,
+        "compute_seconds": 4.157630849997759,
+        "prefetch_useful": 0,
+        "prefetch_submitted": 0,
+        "prefetch_discarded": 0,
+        "bank_updates": 4314,
+        "retained_expert_bytes": 452984832,
+        "configuration": {
+          "workers": 1,
+          "group_reads": true,
+          "policy": "lru",
+          "prefetch": false,
+          "layout": "packed",
+          "capacities": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "compact": false,
+          "layout_sha256": "4471ddb16c3c6e622ba7cd13088f57cddd9ac0ffaaaded7e1d4a7afbb3641725"
+        },
+        "layers": [
+          {
+            "layer": 0,
+            "capacity": 8,
+            "hits": 481,
+            "misses": 1653
+          },
+          {
+            "layer": 1,
+            "capacity": 8,
+            "hits": 444,
+            "misses": 1722
+          },
+          {
+            "layer": 2,
+            "capacity": 8,
+            "hits": 603,
+            "misses": 1545
+          },
+          {
+            "layer": 3,
+            "capacity": 8,
+            "hits": 613,
+            "misses": 1524
+          },
+          {
+            "layer": 4,
+            "capacity": 8,
+            "hits": 740,
+            "misses": 1389
+          },
+          {
+            "layer": 5,
+            "capacity": 8,
+            "hits": 761,
+            "misses": 1343
+          },
+          {
+            "layer": 6,
+            "capacity": 8,
+            "hits": 763,
+            "misses": 1328
+          },
+          {
+            "layer": 7,
+            "capacity": 8,
+            "hits": 689,
+            "misses": 1418
+          },
+          {
+            "layer": 8,
+            "capacity": 8,
+            "hits": 569,
+            "misses": 1528
+          },
+          {
+            "layer": 9,
+            "capacity": 8,
+            "hits": 508,
+            "misses": 1620
+          },
+          {
+            "layer": 10,
+            "capacity": 8,
+            "hits": 384,
+            "misses": 1748
+          },
+          {
+            "layer": 11,
+            "capacity": 8,
+            "hits": 573,
+            "misses": 1571
+          },
+          {
+            "layer": 12,
+            "capacity": 8,
+            "hits": 565,
+            "misses": 1559
+          },
+          {
+            "layer": 13,
+            "capacity": 8,
+            "hits": 580,
+            "misses": 1576
+          },
+          {
+            "layer": 14,
+            "capacity": 8,
+            "hits": 589,
+            "misses": 1545
+          },
+          {
+            "layer": 15,
+            "capacity": 8,
+            "hits": 613,
+            "misses": 1535
+          }
+        ],
+        "prefetch_record_limit": 0,
+        "counters": "cumulative since worker start, including warmup; read seconds sum across threads"
+      },
+      "process_peak_rss_gb": 0.612171776
+    }
+  ]
+}

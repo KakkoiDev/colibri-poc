@@ -1,0 +1,19 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.25,
+ "prompt_tokens": 22,
+ "prefill_s": 0.027,
+ "output_tokens": 28,
+ "decode_s": 0.219,
+ "load_s": 0.0,
+ "text": "At sea level, water boils at **100 degrees Celsius ($\\text{100}^\\circ\\text{C}$)**.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 127.85,
+ "answer_s": 0.25,
+ "correct": true
+}

@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 298.83,
+ "prompt_tokens": 22,
+ "prefill_s": 24.48,
+ "output_tokens": 128,
+ "decode_s": 270.41,
+ "decode_tok_s": 0.47,
+ "zeroed_slots": 60876,
+ "hit_pct": 2.7,
+ "text": "A kilogram of feathers and a kilogram of steel weigh the same — they both have exactly the same mass, so on a scale (under normal gravity) they would register exactly the same weight, 9.81 N each (assuming standard gravity, or roughly 1 kilogram-force each). \n\nAny perceived difference is purely psychological, arising from the habit of associating steel with density and heft, and feathers with lightness and fluffiness — perceptual illusions from volumetric mismatch: kil-sized steel occupies ~1/8 the volume of the1 kg of feathers, so the1 kg of feathers would look far larger/",
+ "answer_s": 294.89,
+ "correct": true
+}

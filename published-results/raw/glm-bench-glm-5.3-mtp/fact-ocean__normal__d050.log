@@ -1,0 +1,85 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.82s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 14 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>What is the largest ocean on Earth?<|assistant|><think></think>PROFILO PREFILL (61.84s):
+PROFILE: expert-disk 129.470s service / 16.374s wait | expert-matmul 3.418s | attention 39.615s (including kvb 3.102s) | lm_head 0.007s | other 2.425s
+ATTENTION: projection/RoPE 11.801s | score-softmax-value 0.030s | output projection 24.683s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.050s | residual P2P 0.000s / 0 hop | orchestration 2.375s
+METAL: blocchi GPU 169 | fallback CPU 0 | expert su GPU 4566 | setup 0.02s gpu-wall 2.88s (kernel 3.22s) scatter 0.01s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+The largest ocean on Earth is the **Pacific Ocean**, which is bounded by the continents of Asia and Australia (including the Indian Ocean boundary to its west and the Pacific Ocean boundary to its east), and by the Americas to the east, and by the Southern Ocean to the south (if that is geographically considered a continent-adjacent oceanic sub-basin as a hydro-sphere of the oceanic Pacific Ocean, which is a sub-oceanic basin of the oceanic Pacific Ocean, which is a sub-oceanic basin of the oceanic Pacific Ocean, which is a sub-oceanic basin of the oceanic Pacific Ocean
+---
+prefill 14 tokens in 61.84s | decode 128 tokens in 85.64s (1.49 tok/s) | expert hit rate 34.4% (pin 0.0% + lru 34.4%) | RSS 14.36 GB
+experts loaded/token: 644.6 (per-layer 8.59 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 65313 miss slots; top layers: L3:943 L5:936 L6:934)
+speculation: 1.13 tokens/forward (113 forwards per 128 tokens) | MTP acceptance 58% (14/24)
+PROFILE: expert-disk 46.504s service / 32.566s wait | expert-matmul 4.771s | attention 26.102s (including kvb 0.000s) | lm_head 0.000s | other 22.199s
+ATTENTION: projection/RoPE 0.095s | score-softmax-value 0.071s | output projection 0.029s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.007s | residual P2P 0.000s / 0 hop | orchestration 22.193s
+METAL-ATTN: layer GPU 8814 | gpu-wall 25.71s (kernel 24.86s | cpu-sched 0.03s gpu-sched 0.43s)
+METAL: blocchi GPU 11196 | fallback CPU 0 | expert su GPU 17446 | setup 0.22s gpu-wall 7.36s (kernel 7.89s) scatter 0.02s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 113 | latency p50 647.8 ms | p90 1177.5 ms | p99 1273.9 ms | max 1329.9 ms | 1.13 tok/forward
+[PROF] expert I/O: 179.707 GB fetched (1404.0 MB/token, 2.10 GB/s over the run) | hit 34.4% (0 pin + 4413 lru / 8429 load) | 644.6 loads/token | 46.5s read service / 32.6s felt wait
+[PROF] DISK-CLASS (recency split): cold 3029 x 64.76 GB @ 3.70 GB/s-thread, wall 14.9s @ 4.35 GB/s-wall, avg-conc 1.2 (direct 3023/3029) | warm 5400 x 114.94 GB @ 3.97 GB/s-thread, wall 22.3s @ 5.14 GB/s-wall, avg-conc 1.3 (direct 5382/5400) | disk-busy 32.4s (38% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 38% | expert-matmul 6% | attention 30% | lm_head 0% | other 26%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.007s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 22.193s
+[PROF] verdict: I/O-bound — 38% of the time waits on expert reads (hit 34%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 12.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 14 token · +0.00s
+[prefill] layer 5/78 · 14 token · +5.05s
+[prefill] layer 9/78 · 14 token · +8.44s
+[prefill] layer 13/78 · 14 token · +11.58s
+[prefill] layer 17/78 · 14 token · +14.64s
+[prefill] layer 21/78 · 14 token · +17.60s
+[prefill] layer 25/78 · 14 token · +20.65s
+[prefill] layer 29/78 · 14 token · +23.73s
+[prefill] layer 33/78 · 14 token · +26.68s
+[prefill] layer 37/78 · 14 token · +29.65s
+[prefill] layer 41/78 · 14 token · +32.57s
+[prefill] layer 45/78 · 14 token · +35.51s
+[prefill] layer 49/78 · 14 token · +38.52s
+[prefill] layer 53/78 · 14 token · +41.52s
+[prefill] layer 57/78 · 14 token · +44.46s
+[prefill] layer 61/78 · 14 token · +47.42s
+[prefill] layer 65/78 · 14 token · +50.41s
+[prefill] layer 69/78 · 14 token · +53.42s
+[prefill] layer 73/78 · 14 token · +56.49s
+[prefill] layer 77/78 · 14 token · +59.61s
+[prefill] layer 78/78 · 14 token · +60.38s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 14.36 GB  hit 23%  1.44 tok/s  1.67 tok/fw]
+
+[t=32  RSS 14.36 GB  hit 26%  1.30 tok/s  1.55 tok/fw]
+[MTP] 58% acceptance over the last 24 proposals: drafts paused for 256 tokens
+
+[t=48  RSS 14.36 GB  hit 27%  1.36 tok/s  1.42 tok/fw]
+
+[t=64  RSS 14.36 GB  hit 30%  1.39 tok/s  1.29 tok/fw]
+
+[t=80  RSS 14.36 GB  hit 32%  1.43 tok/s  1.22 tok/fw]
+
+[t=96  RSS 14.36 GB  hit 33%  1.45 tok/s  1.17 tok/fw]
+
+[t=112  RSS 14.36 GB  hit 34%  1.47 tok/s  1.14 tok/fw]
+
+[t=128  RSS 14.36 GB  hit 34%  1.49 tok/s  1.12 tok/fw]

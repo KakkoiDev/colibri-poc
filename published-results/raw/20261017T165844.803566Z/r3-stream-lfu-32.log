@@ -1,0 +1,6 @@
+stream-lfu-32 warmup explain: 50.21 tok/s
+stream-lfu-32 measured explain: 55.48 tok/s
+stream-lfu-32 measured code: 49.74 tok/s
+stream-lfu-32 measured reason: 47.28 tok/s
+stream-lfu-32 measured story: 41.66 tok/s
+stream-lfu-32 measured long-context: 41.80 tok/s

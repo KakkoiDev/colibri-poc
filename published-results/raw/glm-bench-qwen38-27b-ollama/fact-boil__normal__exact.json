@@ -1,0 +1,19 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 5.78,
+ "prompt_tokens": 25,
+ "prefill_s": 0.247,
+ "output_tokens": 128,
+ "decode_s": 5.482,
+ "load_s": 0.052,
+ "text": "At sea level, water boils at **100 degrees Celsius** ($100^\\circ\\text{C}$).\n\n### Explanation\n*   **Standard Atmospheric Pressure:** This temperature corresponds to a standard atmospheric pressure of 1 atmosphere (atm), which is approximately 101.325 kPa or 14.7 psi.\n*   **Variation with Altitude:** The boiling point of water is dependent on atmospheric pressure. As altitude increases, atmospheric pressure decreases, causing water to boil at a lower temperature. Conversely, in pressurized environments (like a pressure cooker), water boils at",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 23.35,
+ "answer_s": 5.73,
+ "correct": true
+}

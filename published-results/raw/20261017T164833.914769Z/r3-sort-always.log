@@ -1,0 +1,6 @@
+sort-always warmup explain: 191.56 tok/s
+sort-always measured explain: 190.67 tok/s
+sort-always measured code: 187.72 tok/s
+sort-always measured reason: 185.38 tok/s
+sort-always measured story: 189.69 tok/s
+sort-always measured long-context: 138.70 tok/s

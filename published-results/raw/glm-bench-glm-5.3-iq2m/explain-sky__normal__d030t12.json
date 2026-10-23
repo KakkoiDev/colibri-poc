@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 229.4,
+ "prompt_tokens": 14,
+ "prefill_s": 18.09,
+ "output_tokens": 128,
+ "decode_s": 207.6,
+ "decode_tok_s": 0.62,
+ "zeroed_slots": 42741,
+ "hit_pct": 1.1,
+ "text": "The sky appears blue because of a phenomenon called **Rayleigh scattering**. Here's how it works:\n\n## The Physics Behind It\n\n**Sunlight contains all colors.** White light from the sun is actually made up of all the colors of the visible spectrum — red, orange, yellow, green, blue, and violet — similar to how white light separates into colors when passing through a prism.\n\n**Air molecules scatter blue light.** As sunlight passes through Earth's atmosphere, it collides with tiny gas molecules (mostly nitrogen and oxygen). These molecules scatter shorter wavelengths of light (blue and violet) much more strongly than longer wavelengths (",
+ "answer_s": 225.69,
+ "correct": true
+}

@@ -1,0 +1,16 @@
+{
+ "text": "```python\nresult = 17 * 23\nprint(result)\n```",
+ "usage": {
+  "prompt_tokens": 35,
+  "completion_tokens": 16,
+  "total_tokens": 51,
+  "prompt_tokens_details": {
+   "cached_tokens": 8
+  }
+ },
+ "chunks": 15,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.058,
+ "total_s": 0.14
+}

@@ -1,0 +1,93 @@
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 3.31s | resident dense: 14457.58 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 42 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Write a Python function count_vowels(s) that returns how many vowels (a, e, i, o, u, case-insensitive) are in the string s.<|assistant|><think></think>PROFILO PREFILL (83.26s):
+PROFILE: expert-disk 144.375s service / 18.385s wait | expert-matmul 36.481s | attention 23.320s (including kvb 5.610s) | lm_head 0.084s | other 4.986s
+ATTENTION: projection/RoPE 3.453s | score-softmax-value 0.224s | output projection 14.032s
+P0-EXEC: routed CPU 36.476s / 2.93 GB/s (25528 row) | routed GPU critical 0.000s | router 0.156s | residual P2P 0.000s / 0 hop | orchestration 4.830s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+I'll write a `count_vowels` function that counts vowels (a, e, i, o, u) in a given string, case-insensitively (that is, 'A' and 'a' are both counted as vowels, upper or lower doesn't matter — one is enough for the other, same letter, same sound, same meaning, same count, same result, same value, same answer, same outcome, same output, same conclusion, same end, same finish, same same, same same same, same same same same, same same same same same, same same same same same same, same
+---
+prefill 42 tokens in 83.26s | decode 128 tokens in 298.33s (0.43 tok/s) | expert hit rate 2.5% (pin 0.0% + lru 2.5%) | RSS 14.91 GB
+experts loaded/token: 655.6 (per-layer 8.74 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 66160 miss slots; top layers: L6:945 L3:944 L4:935)
+speculation: 1.27 tokens/forward (101 forwards per 128 tokens) | MTP acceptance 68% (26/38)
+PROFILE: expert-disk 32.901s service / 21.647s wait | expert-matmul 30.655s | attention 193.737s (including kvb 0.000s) | lm_head 0.000s | other 52.287s
+ATTENTION: projection/RoPE 35.874s | score-softmax-value 63.101s | output projection 94.748s
+P0-EXEC: routed CPU 30.346s / 4.33 GB/s (13685 row) | routed GPU critical 0.000s | router 4.420s | residual P2P 0.000s / 0 hop | orchestration 47.867s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 101 | latency p50 2676.0 ms | p90 3968.0 ms | p99 4029.5 ms | max 4172.0 ms | 1.27 tok/forward
+[PROF] expert I/O: 128.091 GB fetched (1000.7 MB/token, 0.43 GB/s over the run) | hit 2.5% (0 pin + 293 lru / 11199 load) | 655.6 loads/token | 32.9s read service / 21.6s felt wait
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (0.9 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 7% | expert-matmul 10% | attention 65% | lm_head 0% | other 16%
+[PROF] P0 execution: routed CPU 30.346s / 4.33 GB/s (13685 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 4.420s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 47.867s
+[PROF] verdict: attention-bound (65%) — context length is the cost (DSA on). A lower CTX helps if the workload allows.
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      Glm-5.3 · 256x22B MoE
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+[gguf] ~/colibri-models/gguf/glm-5.3-iq2m/UD-IQ2_M/GLM-5.3-UD-IQ2_M-00001-of-00006.gguf: glm-dsa, 6 part(s), 59949 tensors under the checkpoint's names (1581 renamed, 228 fused expert tensors split per expert, 0 kept as named), read in place
+[METAL] kv_b_proj is fmt=102 on 78/78 layers: the fused Metal attention path serves kv_b only as int4, per-row (fmt=2) or grouped (fmt=4; grouped is served only while COLI_METAL_MOE_EXACT is off), so those layers run decode attention on the CPU absorb path instead. Requantize kv_b to int4 (--kvb-bits 4) to re-enable the fused path.
+[METAL] q_a_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] q_b_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] kv_a_proj_with_mqa is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] o_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.gate_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.up_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.down_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[DSA] indexer active: top-2048 sparse attention beyond 2048 context tokens
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 20.9 GB is 2.9 GB OVER the budget (resident 15.2 GB + reserve 4.9 GB, expert 11.5 MB avg/row).
+[RAM_GB=18.0] resident 15.2 GB + reserve 4.9 GB (ws 0.9, KV 1x1024 0.2, kvb 0.1), experts 11.5 MB avg x 76 layers -> cap lowered 8->1 (projected peak 20.9 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 10.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 0.9 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=on PILOT=0 CACHE_ROUTE=0
+[stop] 25 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 154838 154839 154840 154852 154853 154854 154855 (22 from the tokenizer's special set)
+[prefill] layer 1/78 · 42 token · +0.00s
+[CUDA] no reusable LRU expert slot (in flight or cap reached); skipping cache promotion
+[prefill] layer 5/78 · 42 token · +3.00s
+[prefill] layer 9/78 · 42 token · +7.74s
+[prefill] layer 13/78 · 42 token · +12.26s
+[prefill] layer 17/78 · 42 token · +16.57s
+[prefill] layer 21/78 · 42 token · +20.45s
+[prefill] layer 25/78 · 42 token · +24.46s
+[prefill] layer 29/78 · 42 token · +28.82s
+[prefill] layer 33/78 · 42 token · +32.86s
+[prefill] layer 37/78 · 42 token · +36.91s
+[prefill] layer 41/78 · 42 token · +40.91s
+[prefill] layer 45/78 · 42 token · +45.03s
+[prefill] layer 49/78 · 42 token · +49.19s
+[prefill] layer 53/78 · 42 token · +53.41s
+[prefill] layer 57/78 · 42 token · +57.65s
+[prefill] layer 61/78 · 42 token · +61.82s
+[prefill] layer 65/78 · 42 token · +65.99s
+[prefill] layer 69/78 · 42 token · +70.27s
+[prefill] layer 73/78 · 42 token · +74.56s
+[prefill] layer 77/78 · 42 token · +79.00s
+[prefill] layer 78/78 · 42 token · +80.10s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 12.68 GB  hit 3%  0.44 tok/s  1.67 tok/fw]
+
+[t=32  RSS 12.68 GB  hit 3%  0.47 tok/s  1.82 tok/fw]
+
+[t=48  RSS 12.68 GB  hit 3%  0.46 tok/s  1.81 tok/fw]
+
+[t=64  RSS 12.68 GB  hit 3%  0.43 tok/s  1.70 tok/fw]
+[MTP] 68% acceptance over the last 38 proposals: drafts paused for 256 tokens
+
+[t=80  RSS 13.34 GB  hit 3%  0.41 tok/s  1.49 tok/fw]
+
+[t=96  RSS 14.48 GB  hit 3%  0.41 tok/s  1.38 tok/fw]
+
+[t=112  RSS 14.91 GB  hit 3%  0.41 tok/s  1.31 tok/fw]
+
+[t=128  RSS 14.91 GB  hit 3%  0.43 tok/s  1.26 tok/fw]

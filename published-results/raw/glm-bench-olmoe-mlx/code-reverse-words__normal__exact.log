@@ -1,0 +1,16 @@
+{
+ "text": "Here is a Python function that achieves this:\n\n```python\ndef reverse_words(s):\n    # Split the string into a list of words\n    words = s.split()\n    \n    # Reverse the order of the list\n    reversed_words = words[::-1]\n    \n    # Join the reversed words back into a string separated by single spaces\n    reversed_string = ' '.join(reversed_words)\n    \n    return reversed_string\n```\n\nYou can test this function with the following code:\n\n```python\nprint(reverse_",
+ "usage": {
+  "prompt_tokens": 38,
+  "completion_tokens": 128,
+  "total_tokens": 166,
+  "prompt_tokens_details": {
+   "cached_tokens": 10
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.059,
+ "total_s": 0.768
+}

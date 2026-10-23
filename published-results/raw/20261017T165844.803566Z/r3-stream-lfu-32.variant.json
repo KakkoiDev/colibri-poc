@@ -1,0 +1,11 @@
+{
+  "name": "stream-lfu-32",
+  "backend": "mlx",
+  "description": "Frequency eviction; same original expert tensors and 32-expert retained capacity",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T165844.803566Z/r3-stream-lfu-32.plugin.py",
+  "env": {
+    "COLIBRI_EXPERT_CACHE": "32",
+    "COLIBRI_CACHE_POLICY": "lfu"
+  }
+}

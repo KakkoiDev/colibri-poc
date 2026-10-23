@@ -1,0 +1,6 @@
+fused-gate-up-compact warmup explain: 199.45 tok/s
+fused-gate-up-compact measured explain: 200.14 tok/s
+fused-gate-up-compact measured code: 198.76 tok/s
+fused-gate-up-compact measured reason: 196.50 tok/s
+fused-gate-up-compact measured story: 199.00 tok/s
+fused-gate-up-compact measured long-context: 144.11 tok/s

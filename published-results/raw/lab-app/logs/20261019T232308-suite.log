@@ -1,0 +1,14 @@
+# Speed bench on GLM-5.3 int4 + int8 MTP head
+# ~/Code/colibri-poc/.venv/bin/python glm_suite.py run speed --model glm-5.3-mtp
+Running suite-speed-glm-5.3-mtp-20261019T2323-sky-exact ...
+80 runs, 76 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-speed-glm-5.3-mtp-20261019T2323-sky-exact done
+Running suite-speed-glm-5.3-mtp-20261019T2323-code-exact ...
+81 runs, 77 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-speed-glm-5.3-mtp-20261019T2323-code-exact done
+Running suite-speed-glm-5.3-mtp-20261019T2323-sky-skip050 ...
+82 runs, 78 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-speed-glm-5.3-mtp-20261019T2323-sky-skip050 done
+Running suite-speed-glm-5.3-mtp-20261019T2323-code-skip050 ...
+83 runs, 79 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-speed-glm-5.3-mtp-20261019T2323-code-skip050 done

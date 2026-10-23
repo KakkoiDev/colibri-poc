@@ -1,0 +1,16 @@
+{
+ "text": "```python\ndef explain_sky_color():\n    \"\"\"\n    The sky appears blue because of Rayleigh scattering in the Earth's atmosphere.\n    Sunlight consists of different colors, each with a specific wavelength. When sunlight enters the Earth's atmosphere, shorter wavelengths like blue are scattered in all directions by air molecules, dust, and water vapor. This scattering process is more efficient for blue light than for other colors because blue light has smaller wavelengths. As a result, the sky appears blue from the perspective of an observer on the ground.\n    \"\"\"\n    return \"Rayleigh scattering in the Earth's atmosphere.\"\n\n",
+ "usage": {
+  "prompt_tokens": 36,
+  "completion_tokens": 128,
+  "total_tokens": 164,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.062,
+ "total_s": 0.765
+}

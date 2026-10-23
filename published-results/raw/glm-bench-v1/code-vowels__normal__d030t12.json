@@ -1,0 +1,18 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 191.29,
+ "prompt_tokens": 42,
+ "prefill_s": 48.55,
+ "output_tokens": 128,
+ "decode_s": 139.76,
+ "decode_tok_s": 0.92,
+ "zeroed_slots": 46594,
+ "hit_pct": 9.0,
+ "text": "Here's a simple implementation:\n\n```python\ndef count_vowels(s):\n    vowels = \"aeiouAEIOU\"\n    count = 0\n    for char in s:\n        if char in vowels:\n            count += 1\n    return count\n```\n\n**How it works:**\n1. Define a string containing all vowels (both lowercase and uppercase to handle case-insensitivity)\n2. Initialize a counter to 0\n3. Loop through each character in the input string\n4. If the character is found in the vowels string, increment the counter\n5. Return the final count\n\n**Example usage:",
+ "answer_s": 188.31,
+ "correct": true
+}

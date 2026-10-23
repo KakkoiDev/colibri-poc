@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 323.24,
+ "prompt_tokens": 17,
+ "prefill_s": 38.64,
+ "output_tokens": 128,
+ "decode_s": 280.84,
+ "decode_tok_s": 0.46,
+ "zeroed_slots": 67055,
+ "hit_pct": 4.2,
+ "text": "2 to the power of 10 is **1024**.\n\nTo calculate this, I can use exponentiation: 2¹⁰ = 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 (ten 2s multiplied together). \n\n**Some more context if you're interested (may be relevant to understanding exponentiation, especially for helping with explaining the answer in a more detailed way):**\n\nWhen people say \"2 to the power of 10\" they usually mean the exponent is 10, i.e., the base is 2 (",
+ "answer_s": 319.48,
+ "correct": false
+}

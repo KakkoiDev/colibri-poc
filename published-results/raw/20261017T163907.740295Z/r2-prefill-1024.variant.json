@@ -1,0 +1,6 @@
+{
+  "name": "prefill-1024",
+  "backend": "mlx",
+  "prefill_step_size": 1024,
+  "description": "Larger prefill chunks; same weights and sampling"
+}

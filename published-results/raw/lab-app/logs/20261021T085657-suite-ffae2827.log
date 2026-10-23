@@ -1,0 +1,11 @@
+# Ram bench on GLM-5.3 UD-IQ2_M (2-bit GGUF)
+# ~/Code/colibri-poc/.venv/bin/python glm_suite.py run ram --model glm-5.3-iq2m --run-id d326db75adee448abf26974d66630107
+Running suite-ram-glm-5.3-iq2m-d326db75adee448abf26974d66630107-sky-exact-ram18 ...
+94 runs, 90 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-ram-glm-5.3-iq2m-d326db75adee448abf26974d66630107-sky-exact-ram18 done
+Running suite-ram-glm-5.3-iq2m-d326db75adee448abf26974d66630107-sky-exact-ram22 ...
+95 runs, 91 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-ram-glm-5.3-iq2m-d326db75adee448abf26974d66630107-sky-exact-ram22 done
+Running suite-ram-glm-5.3-iq2m-d326db75adee448abf26974d66630107-sky-exact-ram26 ...
+96 runs, 92 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  suite-ram-glm-5.3-iq2m-d326db75adee448abf26974d66630107-sky-exact-ram26 done

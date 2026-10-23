@@ -1,0 +1,18 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 170.89,
+ "prompt_tokens": 24,
+ "prefill_s": 33.97,
+ "output_tokens": 128,
+ "decode_s": 133.92,
+ "decode_tok_s": 0.96,
+ "zeroed_slots": 43424,
+ "hit_pct": 6.3,
+ "text": "Here's a Python function that computes the factorial of a non-negative integer:\n\n```python\ndef factorial(n):\n    \"\"\"Return n! for a non-negative integer n.\"\"\"\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n```\n\n**How it works:**\n\n- It first validates the input, raising a `ValueError` if `n` is negative or not an integer (note that `isinstance(True, int",
+ "answer_s": 167.89,
+ "correct": true
+}

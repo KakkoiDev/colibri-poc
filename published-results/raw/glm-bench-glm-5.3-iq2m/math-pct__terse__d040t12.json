@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "terse",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 41.0,
+ "prompt_tokens": 30,
+ "prefill_s": 33.6,
+ "output_tokens": 1,
+ "decode_s": 3.37,
+ "decode_tok_s": 0.3,
+ "zeroed_slots": 763,
+ "hit_pct": 2.4,
+ "text": "36",
+ "answer_s": 36.97,
+ "correct": true
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "variant": "baseline",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 190.71889360727607,
+    "min_decode_tps": 136.75553971503973,
+    "max_decode_tps": 199.3176354521596,
+    "paired_median_speedup": 1.0,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04920658399998956
+  },
+  {
+    "variant": "kv-8bit",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 192.71569801988144,
+    "min_decode_tps": 155.52489271592157,
+    "max_decode_tps": 196.59839950563776,
+    "paired_median_speedup": 0.9956777946867055,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.05131270900000118
+  },
+  {
+    "variant": "kv-4bit",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 195.2425021548153,
+    "min_decode_tps": 172.44366018744708,
+    "max_decode_tps": 197.25162712327744,
+    "paired_median_speedup": 1.0256570383813237,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.0492473749999931
+  }
+]

@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "terse",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 50.34,
+ "prompt_tokens": 45,
+ "prefill_s": 46.47,
+ "output_tokens": 1,
+ "decode_s": 1.25,
+ "decode_tok_s": 0.8,
+ "zeroed_slots": 349,
+ "hit_pct": 3.2,
+ "text": "15",
+ "answer_s": 47.72,
+ "correct": true
+}

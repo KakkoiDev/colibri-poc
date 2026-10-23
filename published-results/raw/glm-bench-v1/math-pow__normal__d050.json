@@ -1,0 +1,18 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 108.04,
+ "prompt_tokens": 17,
+ "prefill_s": 22.78,
+ "output_tokens": 128,
+ "decode_s": 82.53,
+ "decode_tok_s": 1.55,
+ "zeroed_slots": 64515,
+ "hit_pct": 31.6,
+ "text": "2 to the power of 10 is **1024**.\n\n- Here's a quick breakdown of the math: 2^10 means 2 multiplied by itself 10 times (2×2×2×2×2×2×2×2×2×2), which equals 1,024.\n- You can also think of it as 2 squared (2^5), cubed (2^5), and so on, up to 2^10, where each multiplication doubles the result: 2, 4, 8, 16, 32, 64, 128,",
+ "answer_s": 105.31,
+ "correct": false
+}

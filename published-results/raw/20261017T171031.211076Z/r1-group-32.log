@@ -1,0 +1,6 @@
+group-32 warmup explain: 200.74 tok/s
+group-32 measured explain: 199.73 tok/s
+group-32 measured code: 198.51 tok/s
+group-32 measured reason: 199.16 tok/s
+group-32 measured story: 196.27 tok/s
+group-32 measured long-context: 142.94 tok/s

@@ -1,0 +1,16 @@
+{
+ "text": "```python\ndef factorial(n):\n    if n == 0:\n        return 1\n    else:\n        return n * factorial(n-1)\n```",
+ "usage": {
+  "prompt_tokens": 50,
+  "completion_tokens": 39,
+  "total_tokens": 89,
+  "prompt_tokens_details": {
+   "cached_tokens": 10
+  }
+ },
+ "chunks": 38,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.053,
+ "total_s": 0.261
+}

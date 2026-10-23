@@ -1,0 +1,220 @@
+{
+ "started": "2026-10-22T03:34:59Z",
+ "url": "http://127.0.0.1:8771",
+ "model": "default_model",
+ "style": "terse",
+ "ngen": 128,
+ "prompts": 24,
+ "repeats": 3,
+ "levels": [
+  1,
+  4,
+  10
+ ],
+ "runs": [
+  {
+   "requests": 24,
+   "tokens": 976,
+   "wall_s": 6.548,
+   "retries": 0,
+   "total_tok_s": 149.05,
+   "per_request_tok_s": 120.9,
+   "p50_latency_s": 0.233,
+   "p95_latency_s": 0.716,
+   "p50_ttft_s": 0.052,
+   "same_as_single": "24/24",
+   "level": 1,
+   "repeat": 1,
+   "peak_rss_gb": 3.95,
+   "correct": "12/24"
+  },
+  {
+   "requests": 96,
+   "tokens": 3936,
+   "wall_s": 19.135,
+   "retries": 0,
+   "total_tok_s": 205.7,
+   "per_request_tok_s": 45.0,
+   "p50_latency_s": 0.621,
+   "p95_latency_s": 1.671,
+   "p50_ttft_s": 0.336,
+   "same_as_single": "89/96",
+   "level": 4,
+   "repeat": 1,
+   "peak_rss_gb": 4.5,
+   "correct": "49/96"
+  },
+  {
+   "requests": 240,
+   "tokens": 9837,
+   "wall_s": 34.69,
+   "retries": 0,
+   "total_tok_s": 283.57,
+   "per_request_tok_s": 23.1,
+   "p50_latency_s": 1.184,
+   "p95_latency_s": 3.702,
+   "p50_ttft_s": 0.37,
+   "same_as_single": "223/240",
+   "level": 10,
+   "repeat": 1,
+   "peak_rss_gb": 5.9,
+   "correct": "122/240"
+  },
+  {
+   "requests": 240,
+   "tokens": 9838,
+   "wall_s": 35.886,
+   "retries": 0,
+   "total_tok_s": 274.14,
+   "per_request_tok_s": 22.23,
+   "p50_latency_s": 1.244,
+   "p95_latency_s": 3.753,
+   "p50_ttft_s": 0.415,
+   "same_as_single": "224/240",
+   "level": 10,
+   "repeat": 2,
+   "peak_rss_gb": 5.59,
+   "correct": "122/240"
+  },
+  {
+   "requests": 96,
+   "tokens": 3939,
+   "wall_s": 19.51,
+   "retries": 0,
+   "total_tok_s": 201.9,
+   "per_request_tok_s": 42.7,
+   "p50_latency_s": 0.683,
+   "p95_latency_s": 1.918,
+   "p50_ttft_s": 0.322,
+   "same_as_single": "90/96",
+   "level": 4,
+   "repeat": 2,
+   "peak_rss_gb": 4.58,
+   "correct": "49/96"
+  },
+  {
+   "requests": 24,
+   "tokens": 976,
+   "wall_s": 6.631,
+   "retries": 0,
+   "total_tok_s": 147.19,
+   "per_request_tok_s": 119.5,
+   "p50_latency_s": 0.237,
+   "p95_latency_s": 0.722,
+   "p50_ttft_s": 0.052,
+   "same_as_single": "24/24",
+   "level": 1,
+   "repeat": 2,
+   "peak_rss_gb": 3.95,
+   "correct": "12/24"
+  },
+  {
+   "requests": 24,
+   "tokens": 976,
+   "wall_s": 6.627,
+   "retries": 0,
+   "total_tok_s": 147.28,
+   "per_request_tok_s": 119.58,
+   "p50_latency_s": 0.236,
+   "p95_latency_s": 0.725,
+   "p50_ttft_s": 0.052,
+   "same_as_single": "24/24",
+   "level": 1,
+   "repeat": 3,
+   "peak_rss_gb": 3.94,
+   "correct": "12/24"
+  },
+  {
+   "requests": 96,
+   "tokens": 3950,
+   "wall_s": 19.308,
+   "retries": 0,
+   "total_tok_s": 204.58,
+   "per_request_tok_s": 44.76,
+   "p50_latency_s": 0.682,
+   "p95_latency_s": 1.858,
+   "p50_ttft_s": 0.349,
+   "same_as_single": "90/96",
+   "level": 4,
+   "repeat": 3,
+   "peak_rss_gb": 4.47,
+   "correct": "48/96"
+  },
+  {
+   "requests": 240,
+   "tokens": 9842,
+   "wall_s": 35.359,
+   "retries": 0,
+   "total_tok_s": 278.34,
+   "per_request_tok_s": 22.4,
+   "p50_latency_s": 1.249,
+   "p95_latency_s": 3.77,
+   "p50_ttft_s": 0.392,
+   "same_as_single": "222/240",
+   "level": 10,
+   "repeat": 3,
+   "peak_rss_gb": 6.09,
+   "correct": "124/240"
+  }
+ ],
+ "by_level": [
+  {
+   "level": 1,
+   "total_tok_s": 147.28,
+   "per_request_tok_s": 119.58,
+   "p50_latency_s": 0.236,
+   "p95_latency_s": 0.722,
+   "peak_rss_gb": 3.95,
+   "retries": 0,
+   "same_as_single": [
+    "24/24",
+    "24/24",
+    "24/24"
+   ],
+   "correct": [
+    "12/24",
+    "12/24",
+    "12/24"
+   ]
+  },
+  {
+   "level": 4,
+   "total_tok_s": 204.58,
+   "per_request_tok_s": 44.76,
+   "p50_latency_s": 0.682,
+   "p95_latency_s": 1.858,
+   "peak_rss_gb": 4.58,
+   "retries": 0,
+   "same_as_single": [
+    "89/96",
+    "90/96",
+    "90/96"
+   ],
+   "correct": [
+    "49/96",
+    "49/96",
+    "48/96"
+   ]
+  },
+  {
+   "level": 10,
+   "total_tok_s": 278.34,
+   "per_request_tok_s": 22.4,
+   "p50_latency_s": 1.244,
+   "p95_latency_s": 3.753,
+   "peak_rss_gb": 6.09,
+   "retries": 0,
+   "same_as_single": [
+    "223/240",
+    "224/240",
+    "222/240"
+   ],
+   "correct": [
+    "122/240",
+    "122/240",
+    "124/240"
+   ]
+  }
+ ],
+ "note": "Median over repeats. total_tok_s = generated tokens of all requests / wall time of the level. Each client sends every prompt once, in a rotated order; one warm-up request discarded. Connections reset before a request started (server backlog of 5) are retried and counted; latency is the successful attempt."
+}

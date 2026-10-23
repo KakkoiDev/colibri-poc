@@ -1,0 +1,18 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 406.46,
+ "prompt_tokens": 32,
+ "prefill_s": 67.86,
+ "output_tokens": 128,
+ "decode_s": 334.84,
+ "decode_tok_s": 0.38,
+ "zeroed_slots": 43787,
+ "hit_pct": 1.6,
+ "text": "Here's a Python function to check if a string is a palindrome, ignoring case:\n\n```python\ndef is_palindrome(s):\n    \"\"\"\n    Check if a string reads the same forwards and backwards, ignoring case.\n    \n    Args:\n        s (str): The string to check.\n    \n    Returns:\n        bool: True if the string is a palindrome (case-insensitive), False otherwise.\n    \"\"\"\n    # Convert to lowercase to ignore case\n    normalized = s.lower()\n    \n    # Compare the string with its reverse\n    # s[::-1] creates a reversed copy of the string using slicing\n    return normalized == normalized[::-",
+ "answer_s": 402.7,
+ "correct": false
+}

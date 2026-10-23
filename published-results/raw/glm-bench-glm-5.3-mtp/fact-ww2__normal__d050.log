@@ -1,0 +1,77 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.63s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 15 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>In which year did World War II end?<|assistant|><think></think>PROFILO PREFILL (65.35s):
+PROFILE: expert-disk 133.312s service / 16.682s wait | expert-matmul 3.593s | attention 42.361s (including kvb 3.301s) | lm_head 0.007s | other 2.711s
+ATTENTION: projection/RoPE 12.639s | score-softmax-value 0.033s | output projection 26.387s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.053s | residual P2P 0.000s / 0 hop | orchestration 2.658s
+METAL: blocchi GPU 174 | fallback CPU 0 | expert su GPU 4703 | setup 0.03s gpu-wall 3.08s (kernel 3.45s) scatter 0.01s
+METAL-RESSET: flush 0.47s (residency-set commit in moe_submit, outside setup/gpu-wall)
+World War II ended in 1945. Specifically, the war in Europe ended on May 8, 1945 (V-E Day), when Germany surrendered to the Allies, while the war in the Pacific theater ended on September 2, 1945 (V-J Day), when Japan surrendered, marking the official end of the entire global conflict.
+---
+prefill 15 tokens in 65.35s | decode 74 tokens in 51.21s (1.45 tok/s) | expert hit rate 29.4% (pin 0.0% + lru 29.4%) | RSS 14.36 GB
+experts loaded/token: 669.2 (per-layer 8.92 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 38184 miss slots; top layers: L6:552 L7:552 L9:552)
+speculation: 1.28 tokens/forward (58 forwards per 74 tokens) | MTP acceptance 67% (16/24)
+PROFILE: expert-disk 31.405s service / 19.676s wait | expert-matmul 2.810s | attention 15.453s (including kvb 0.000s) | lm_head 0.000s | other 13.271s
+ATTENTION: projection/RoPE 0.099s | score-softmax-value 0.075s | output projection 0.031s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.005s | residual P2P 0.000s / 0 hop | orchestration 13.266s
+METAL-ATTN: layer GPU 4524 | gpu-wall 15.15s (kernel 14.72s | cpu-sched 0.02s gpu-sched 0.21s)
+METAL: blocchi GPU 6033 | fallback CPU 0 | expert su GPU 12106 | setup 0.13s gpu-wall 5.73s (kernel 6.31s) scatter 0.02s
+METAL-RESSET: flush 0.48s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 58 | latency p50 677.5 ms | p90 1236.7 ms | p99 1284.5 ms | max 1301.5 ms | 1.28 tok/forward
+[PROF] expert I/O: 111.096 GB fetched (1501.3 MB/token, 2.17 GB/s over the run) | hit 29.4% (0 pin + 2166 lru / 5197 load) | 669.2 loads/token | 31.4s read service / 19.7s felt wait
+[PROF] DISK-CLASS (recency split): cold 1763 x 37.95 GB @ 3.34 GB/s-thread, wall 9.3s @ 4.07 GB/s-wall, avg-conc 1.2 (direct 1753/1763) | warm 3434 x 73.15 GB @ 3.66 GB/s-thread, wall 14.6s @ 5.02 GB/s-wall, avg-conc 1.4 (direct 3398/3434) | disk-busy 19.6s (38% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 38% | expert-matmul 5% | attention 30% | lm_head 0% | other 26%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.005s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 13.266s
+[PROF] verdict: I/O-bound — 38% of the time waits on expert reads (hit 29%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 15 token · +0.00s
+[prefill] layer 5/78 · 15 token · +5.27s
+[prefill] layer 9/78 · 15 token · +8.89s
+[prefill] layer 13/78 · 15 token · +12.29s
+[prefill] layer 17/78 · 15 token · +15.54s
+[prefill] layer 21/78 · 15 token · +18.70s
+[prefill] layer 25/78 · 15 token · +21.85s
+[prefill] layer 29/78 · 15 token · +25.14s
+[prefill] layer 33/78 · 15 token · +28.24s
+[prefill] layer 37/78 · 15 token · +31.30s
+[prefill] layer 41/78 · 15 token · +34.39s
+[prefill] layer 45/78 · 15 token · +37.47s
+[prefill] layer 49/78 · 15 token · +40.63s
+[prefill] layer 53/78 · 15 token · +43.74s
+[prefill] layer 57/78 · 15 token · +46.88s
+[prefill] layer 61/78 · 15 token · +50.04s
+[prefill] layer 65/78 · 15 token · +53.24s
+[prefill] layer 69/78 · 15 token · +56.47s
+[prefill] layer 73/78 · 15 token · +59.68s
+[prefill] layer 77/78 · 15 token · +62.97s
+[prefill] layer 78/78 · 15 token · +63.77s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 14.36 GB  hit 26%  1.46 tok/s  1.67 tok/fw]
+
+[t=32  RSS 14.36 GB  hit 27%  1.38 tok/s  1.63 tok/fw]
+[MTP] 67% acceptance over the last 24 proposals: drafts paused for 256 tokens
+
+[t=48  RSS 14.36 GB  hit 26%  1.41 tok/s  1.52 tok/fw]
+
+[t=64  RSS 14.36 GB  hit 28%  1.45 tok/s  1.34 tok/fw]

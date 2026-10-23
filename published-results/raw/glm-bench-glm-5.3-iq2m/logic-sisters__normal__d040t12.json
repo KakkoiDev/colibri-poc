@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 297.29,
+ "prompt_tokens": 27,
+ "prefill_s": 29.35,
+ "output_tokens": 128,
+ "decode_s": 264.02,
+ "decode_tok_s": 0.48,
+ "zeroed_slots": 61542,
+ "hit_pct": 3.1,
+ "text": "Sally has **1 sister** (and 3 brothers, per the information given... which is also stated in the given information that each brother has 2 sisters... hence, if there are 3 brothers and each brother has 2 sisters, that means there are 2 sisters in the family for each brother to have... but wait, let's think about this more carefully.\n\nActually, let's reconsider this. The classic version of this puzzle often has a twist people overlook: the sisters that the brothers have are Sally and her sister(s), meaning the brothers share the same sisters. So if Sally has 3 brothers, and each",
+ "answer_s": 293.37,
+ "correct": false
+}

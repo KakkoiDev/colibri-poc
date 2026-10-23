@@ -1,0 +1,73 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.28s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 39 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Write a Python function factorial(n) that returns n factorial for a non-negative integer n. Answer as briefly as possible. For code, reply with only the code.<|assistant|><think></think>PROFILO PREFILL (42.92s):
+PROFILE: expert-disk 217.314s service / 23.359s wait | expert-matmul 8.660s | attention 6.218s (including kvb 0.858s) | lm_head 0.008s | other 4.673s
+ATTENTION: projection/RoPE 1.848s | score-softmax-value 0.194s | output projection 3.319s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.120s | residual P2P 0.000s / 0 hop | orchestration 4.552s
+METAL: blocchi GPU 238 | fallback CPU 0 | expert su GPU 8530 | setup 0.05s gpu-wall 8.00s (kernel 8.95s) scatter 0.02s
+METAL-RESSET: flush 0.59s (residency-set commit in moe_submit, outside setup/gpu-wall)
+```python
+def factorial(n):
+    return 1 if n < 2 else n * factorial(n - 1)
+```
+---
+prefill 39 tokens in 42.92s | decode 26 tokens in 62.69s (0.41 tok/s) | expert hit rate 1.7% (pin 0.0% + lru 1.7%) | RSS 8.12 GB
+experts loaded/token: 600.0 (per-layer 8.00 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.00 tokens/forward (26 forwards per 26 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 355.415s service / 47.610s wait | expert-matmul 5.216s | attention 4.998s (including kvb 0.000s) | lm_head 0.000s | other 4.871s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.001s | residual P2P 0.000s / 0 hop | orchestration 4.870s
+METAL-ATTN: layer GPU 2028 | gpu-wall 4.94s (kernel 4.77s | cpu-sched 0.01s gpu-sched 0.08s)
+METAL: blocchi GPU 2451 | fallback CPU 0 | expert su GPU 24130 | setup 0.15s gpu-wall 13.09s (kernel 13.98s) scatter 0.03s
+METAL-RESSET: flush 0.59s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 26 | latency p50 2407.4 ms | p90 2438.0 ms | p99 2444.0 ms | max 2469.8 ms | 1.00 tok/forward
+[PROF] expert I/O: 325.661 GB fetched (12525.4 MB/token, 5.19 GB/s over the run) | hit 1.7% (0 pin + 263 lru / 15337 load) | 600.0 loads/token | 355.4s read service / 47.6s felt wait
+[PROF] DISK-CLASS (recency split): cold 7782 x 165.24 GB @ 0.87 GB/s-thread, wall 46.9s @ 3.53 GB/s-wall, avg-conc 4.0 (direct 7746/7782) | warm 7555 x 160.42 GB @ 0.97 GB/s-thread, wall 43.0s @ 3.73 GB/s-wall, avg-conc 3.9 (direct 7524/7555) | disk-busy 47.6s (76% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 76% | expert-matmul 8% | attention 8% | lm_head 0% | other 8%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.001s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 4.870s
+[PROF] verdict: I/O-bound — 76% of the time waits on expert reads (hit 2%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 11.6 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 39 token · +0.00s
+[prefill] layer 5/78 · 39 token · +1.77s
+[prefill] layer 9/78 · 39 token · +4.53s
+[prefill] layer 13/78 · 39 token · +7.14s
+[prefill] layer 17/78 · 39 token · +9.59s
+[prefill] layer 21/78 · 39 token · +11.63s
+[prefill] layer 25/78 · 39 token · +13.75s
+[prefill] layer 29/78 · 39 token · +16.07s
+[prefill] layer 33/78 · 39 token · +18.10s
+[prefill] layer 37/78 · 39 token · +20.14s
+[prefill] layer 41/78 · 39 token · +22.21s
+[prefill] layer 45/78 · 39 token · +24.27s
+[prefill] layer 49/78 · 39 token · +26.43s
+[prefill] layer 53/78 · 39 token · +28.58s
+[prefill] layer 57/78 · 39 token · +30.71s
+[prefill] layer 61/78 · 39 token · +32.75s
+[prefill] layer 65/78 · 39 token · +34.94s
+[prefill] layer 69/78 · 39 token · +37.15s
+[prefill] layer 73/78 · 39 token · +39.39s
+[prefill] layer 77/78 · 39 token · +41.75s
+[prefill] layer 78/78 · 39 token · +42.31s
+
+[t=16  RSS 8.12 GB  hit 2%  0.44 tok/s  1.00 tok/fw]

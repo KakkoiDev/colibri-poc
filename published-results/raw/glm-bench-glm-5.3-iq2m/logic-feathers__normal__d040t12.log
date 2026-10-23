@@ -1,0 +1,95 @@
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 3.43s | resident dense: 14457.58 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 22 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Which is heavier: a kilogram of feathers or a kilogram of steel?<|assistant|><think></think>PROFILO PREFILL (24.48s):
+PROFILE: expert-disk 88.974s service / 11.473s wait | expert-matmul 7.833s | attention 4.156s (including kvb 1.130s) | lm_head 0.028s | other 0.985s
+ATTENTION: projection/RoPE 0.806s | score-softmax-value 0.031s | output projection 2.189s
+P0-EXEC: routed CPU 7.828s / 8.40 GB/s (13368 row) | routed GPU critical 0.000s | router 0.092s | residual P2P 0.000s / 0 hop | orchestration 0.893s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+A kilogram of feathers and a kilogram of steel weigh the same — they both have exactly the same mass, so on a scale (under normal gravity) they would register exactly the same weight, 9.81 N each (assuming standard gravity, or roughly 1 kilogram-force each). 
+
+Any perceived difference is purely psychological, arising from the habit of associating steel with density and heft, and feathers with lightness and fluffiness — perceptual illusions from volumetric mismatch: kil-sized steel occupies ~1/8 the volume of the1 kg of feathers, so the1 kg of feathers would look far larger/
+---
+prefill 22 tokens in 24.48s | decode 128 tokens in 270.41s (0.47 tok/s) | expert hit rate 2.7% (pin 0.0% + lru 2.7%) | RSS 12.25 GB
+experts loaded/token: 635.3 (per-layer 8.47 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 60876 miss slots; top layers: L8:897 L11:895 L12:892)
+speculation: 1.15 tokens/forward (111 forwards per 128 tokens) | MTP acceptance 67% (16/24)
+PROFILE: expert-disk 49.411s service / 27.874s wait | expert-matmul 16.711s | attention 173.716s (including kvb 0.000s) | lm_head 0.000s | other 52.109s
+ATTENTION: projection/RoPE 57.637s | score-softmax-value 21.220s | output projection 94.844s
+P0-EXEC: routed CPU 16.373s / 11.51 GB/s (18334 row) | routed GPU critical 0.000s | router 6.615s | residual P2P 0.000s / 0 hop | orchestration 45.495s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 111 | latency p50 2390.1 ms | p90 2600.7 ms | p99 2680.7 ms | max 3359.2 ms | 1.15 tok/forward
+[PROF] expert I/O: 183.402 GB fetched (1432.8 MB/token, 0.68 GB/s over the run) | hit 2.7% (0 pin + 447 lru / 16042 load) | 635.3 loads/token | 49.4s read service / 27.9s felt wait
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (0.9 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 10% | expert-matmul 6% | attention 64% | lm_head 0% | other 17%
+[PROF] P0 execution: routed CPU 16.373s / 11.51 GB/s (18334 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 6.615s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 45.495s
+[PROF] verdict: attention-bound (64%) — context length is the cost (DSA on). A lower CTX helps if the workload allows.
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      Glm-5.3 · 256x22B MoE
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+[gguf] ~/colibri-models/gguf/glm-5.3-iq2m/UD-IQ2_M/GLM-5.3-UD-IQ2_M-00001-of-00006.gguf: glm-dsa, 6 part(s), 59949 tensors under the checkpoint's names (1581 renamed, 228 fused expert tensors split per expert, 0 kept as named), read in place
+[METAL] kv_b_proj is fmt=102 on 78/78 layers: the fused Metal attention path serves kv_b only as int4, per-row (fmt=2) or grouped (fmt=4; grouped is served only while COLI_METAL_MOE_EXACT is off), so those layers run decode attention on the CPU absorb path instead. Requantize kv_b to int4 (--kvb-bits 4) to re-enable the fused path.
+[METAL] q_a_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] q_b_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] kv_a_proj_with_mqa is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] o_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.gate_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.up_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.down_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[DSA] indexer active: top-2048 sparse attention beyond 2048 context tokens
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 20.9 GB is 2.9 GB OVER the budget (resident 15.2 GB + reserve 4.9 GB, expert 11.5 MB avg/row).
+[RAM_GB=18.0] resident 15.2 GB + reserve 4.9 GB (ws 0.9, KV 1x1024 0.2, kvb 0.1), experts 11.5 MB avg x 76 layers -> cap lowered 8->1 (projected peak 20.9 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 10.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 0.9 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=on PILOT=0 CACHE_ROUTE=0
+[stop] 25 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 154838 154839 154840 154852 154853 154854 154855 (22 from the tokenizer's special set)
+[prefill] layer 1/78 · 22 token · +0.00s
+[CUDA] no reusable LRU expert slot (in flight or cap reached); skipping cache promotion
+[prefill] layer 5/78 · 22 token · +0.62s
+[prefill] layer 9/78 · 22 token · +2.13s
+[prefill] layer 13/78 · 22 token · +3.64s
+[prefill] layer 17/78 · 22 token · +4.87s
+[prefill] layer 21/78 · 22 token · +5.94s
+[prefill] layer 25/78 · 22 token · +7.04s
+[prefill] layer 29/78 · 22 token · +8.28s
+[prefill] layer 33/78 · 22 token · +9.40s
+[prefill] layer 37/78 · 22 token · +10.47s
+[prefill] layer 41/78 · 22 token · +11.57s
+[prefill] layer 45/78 · 22 token · +12.80s
+[prefill] layer 49/78 · 22 token · +14.06s
+[prefill] layer 53/78 · 22 token · +15.33s
+[prefill] layer 57/78 · 22 token · +16.60s
+[prefill] layer 61/78 · 22 token · +17.84s
+[prefill] layer 65/78 · 22 token · +19.12s
+[prefill] layer 69/78 · 22 token · +20.42s
+[prefill] layer 73/78 · 22 token · +21.72s
+[prefill] layer 77/78 · 22 token · +23.13s
+[prefill] layer 78/78 · 22 token · +23.46s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 12.25 GB  hit 4%  0.73 tok/s  1.88 tok/fw]
+
+[t=32  RSS 12.25 GB  hit 3%  0.63 tok/s  1.63 tok/fw]
+[MTP] 67% acceptance over the last 24 proposals: drafts paused for 256 tokens
+
+[t=48  RSS 12.25 GB  hit 3%  0.59 tok/s  1.52 tok/fw]
+
+[t=64  RSS 12.25 GB  hit 3%  0.53 tok/s  1.34 tok/fw]
+
+[t=80  RSS 12.25 GB  hit 3%  0.51 tok/s  1.25 tok/fw]
+
+[t=96  RSS 12.25 GB  hit 3%  0.49 tok/s  1.20 tok/fw]
+
+[t=112  RSS 12.25 GB  hit 3%  0.48 tok/s  1.17 tok/fw]
+
+[t=128  RSS 12.25 GB  hit 3%  0.47 tok/s  1.14 tok/fw]

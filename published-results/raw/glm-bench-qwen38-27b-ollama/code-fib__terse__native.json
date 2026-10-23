@@ -1,0 +1,19 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 6.22,
+ "prompt_tokens": 55,
+ "prefill_s": 0.115,
+ "output_tokens": 167,
+ "decode_s": 6.095,
+ "load_s": 0.0,
+ "text": "```python\ndef fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```",
+ "thinking_chars": 439,
+ "truncated": false,
+ "decode_tok_s": 27.4,
+ "answer_s": 6.21,
+ "correct": true
+}

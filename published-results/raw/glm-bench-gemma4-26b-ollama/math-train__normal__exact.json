@@ -1,0 +1,19 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 1.27,
+ "prompt_tokens": 37,
+ "prefill_s": 0.207,
+ "output_tokens": 88,
+ "decode_s": 1.061,
+ "load_s": 0.005,
+ "text": "To find the distance traveled, you use the formula:\n\n**Distance = Speed × Time**\n\nGiven:\n*   **Speed** = 60 km/h\n*   **Time** = 2.5 hours\n\n**Calculation:**\nDistance = 60 km/h × 2.5 h\nDistance = 150 km\n\n**Answer:**\nThe train travels **150 kilometres**.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 82.94,
+ "answer_s": 1.27,
+ "correct": true
+}

@@ -1,0 +1,16 @@
+{
+ "text": "NaCl",
+ "usage": {
+  "prompt_tokens": 37,
+  "completion_tokens": 3,
+  "total_tokens": 40,
+  "prompt_tokens_details": {
+   "cached_tokens": 10
+  }
+ },
+ "chunks": 2,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.057,
+ "total_s": 0.068
+}

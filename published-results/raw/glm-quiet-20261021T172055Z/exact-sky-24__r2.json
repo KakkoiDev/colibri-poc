@@ -1,0 +1,18 @@
+{
+ "case": "exact-sky-24__r2",
+ "exit": 0,
+ "wall_s": 84.29,
+ "ram": 18,
+ "ctx": 1024,
+ "ngen": 24,
+ "env": {},
+ "refused": false,
+ "prompt_tokens": 17,
+ "prefill_s": 24.56,
+ "output_tokens": 24,
+ "decode_s": 57.02,
+ "decode_tok_s": 0.42,
+ "zeroed_slots": 0,
+ "hit_pct": 2.1,
+ "text": "The sky appears blue because molecules in Earth's atmosphere scatter shorter wavelengths of sunlight (blue and violet) more strongly than longer"
+}

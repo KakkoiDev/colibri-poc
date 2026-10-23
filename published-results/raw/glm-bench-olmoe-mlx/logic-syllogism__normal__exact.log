@@ -1,0 +1,16 @@
+{
+ "text": "No",
+ "usage": {
+  "prompt_tokens": 43,
+  "completion_tokens": 2,
+  "total_tokens": 45,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 1,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.054,
+ "total_s": 0.059
+}

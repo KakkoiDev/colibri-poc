@@ -1,0 +1,79 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.30s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 51 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Write a Python function fib(n) that returns the n-th Fibonacci number iteratively, with fib(0)=0 and fib(1)=1. Answer as briefly as possible. For code, reply with only the code.<|assistant|><think></think>PROFILO PREFILL (52.41s):
+PROFILE: expert-disk 252.453s service / 26.055s wait | expert-matmul 11.366s | attention 8.367s (including kvb 1.146s) | lm_head 0.008s | other 6.619s
+ATTENTION: projection/RoPE 2.463s | score-softmax-value 0.371s | output projection 4.387s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.183s | residual P2P 0.000s / 0 hop | orchestration 6.436s
+METAL: blocchi GPU 262 | fallback CPU 0 | expert su GPU 9950 | setup 0.07s gpu-wall 10.65s (kernel 11.92s) scatter 0.03s
+METAL-RESSET: flush 0.62s (residency-set commit in moe_submit, outside setup/gpu-wall)
+```python
+def fib(n):
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+```
+---
+prefill 51 tokens in 52.41s | decode 41 tokens in 26.77s (1.53 tok/s) | expert hit rate 26.2% (pin 0.0% + lru 26.2%) | RSS 8.24 GB
+experts loaded/token: 600.0 (per-layer 8.00 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 20725 miss slots; top layers: L8:286 L5:285 L11:285)
+speculation: 1.02 tokens/forward (40 forwards per 41 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 12.990s service / 10.582s wait | expert-matmul 1.487s | attention 8.077s (including kvb 0.000s) | lm_head 0.000s | other 6.628s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.002s | residual P2P 0.000s / 0 hop | orchestration 6.625s
+METAL-ATTN: layer GPU 3120 | gpu-wall 7.99s (kernel 7.73s | cpu-sched 0.01s gpu-sched 0.12s)
+METAL: blocchi GPU 3697 | fallback CPU 0 | expert su GPU 13755 | setup 0.14s gpu-wall 12.03s (kernel 13.19s) scatter 0.03s
+METAL-RESSET: flush 0.62s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 40 | latency p50 649.0 ms | p90 712.7 ms | p99 745.0 ms | max 1173.7 ms | 1.02 tok/forward
+[PROF] expert I/O: 59.603 GB fetched (1453.7 MB/token, 2.23 GB/s over the run) | hit 26.2% (0 pin + 998 lru / 2807 load) | 600.0 loads/token | 13.0s read service / 10.6s felt wait
+[PROF] DISK-CLASS (recency split): cold 1266 x 26.88 GB @ 4.37 GB/s-thread, wall 5.5s @ 4.90 GB/s-wall, avg-conc 1.1 (direct 1259/1266) | warm 1541 x 32.72 GB @ 4.79 GB/s-thread, wall 6.0s @ 5.42 GB/s-wall, avg-conc 1.1 (direct 1532/1541) | disk-busy 10.5s (39% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 40% | expert-matmul 6% | attention 30% | lm_head 0% | other 25%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.002s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 6.625s
+[PROF] verdict: I/O-bound — 40% of the time waits on expert reads (hit 26%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 11.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 51 token · +0.00s
+[prefill] layer 5/78 · 51 token · +2.08s
+[prefill] layer 9/78 · 51 token · +5.34s
+[prefill] layer 13/78 · 51 token · +8.42s
+[prefill] layer 17/78 · 51 token · +11.29s
+[prefill] layer 21/78 · 51 token · +13.72s
+[prefill] layer 25/78 · 51 token · +16.28s
+[prefill] layer 29/78 · 51 token · +19.13s
+[prefill] layer 33/78 · 51 token · +21.68s
+[prefill] layer 37/78 · 51 token · +24.26s
+[prefill] layer 41/78 · 51 token · +26.74s
+[prefill] layer 45/78 · 51 token · +29.32s
+[prefill] layer 49/78 · 51 token · +31.94s
+[prefill] layer 53/78 · 51 token · +34.50s
+[prefill] layer 57/78 · 51 token · +37.21s
+[prefill] layer 61/78 · 51 token · +39.83s
+[prefill] layer 65/78 · 51 token · +42.49s
+[prefill] layer 69/78 · 51 token · +45.18s
+[prefill] layer 73/78 · 51 token · +48.01s
+[prefill] layer 77/78 · 51 token · +50.93s
+[prefill] layer 78/78 · 51 token · +51.63s
+
+[t=16  RSS 8.24 GB  hit 28%  1.59 tok/s  1.00 tok/fw]
+
+[t=32  RSS 8.24 GB  hit 24%  1.56 tok/s  1.03 tok/fw]

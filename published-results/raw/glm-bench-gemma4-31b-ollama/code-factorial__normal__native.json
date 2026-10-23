@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 44.99,
+ "prompt_tokens": 36,
+ "prefill_s": 0.341,
+ "output_tokens": 946,
+ "decode_s": 44.637,
+ "load_s": 0.003,
+ "text": "There are several ways to implement this in Python. Below are the three most common approaches: the **iterative approach**, the **recursive approach**, and using the **built-in library**.\n\n### 1. Iterative Approach (Recommended)\nThis is the most efficient method for most use cases because it avoids the overhead of multiple function calls and prevents \"maximum recursion depth\" errors for large numbers.\n\n```python\ndef factorial(n):\n    # Check if the number is negative\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers.\")\n    \n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n\n# Test cases\nprint(factorial(5))  # Output: 120\nprint(factorial(0))  # Output: 1\n```\n\n### 2. Recursive Approach\nThis approach follows the mathematical definition of a factorial: $n! = n \\times (n-1)!$. It is elegant but can crash if $n$ is too large (usually around 1,000).\n\n```python\ndef factorial(n):\n    # Check if the number is negative\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers.\")\n    \n    # Base case: 0! and 1! are both 1\n    if n <= 1:\n        return 1\n    \n    # Recursive call\n    return n * factorial(n - 1)\n\n# Test cases\nprint(factorial(5))  # Output: 120\nprint(factorial(0))  # Output: 1\n```\n\n### 3. Using the Built-in `math` Module\nIn a real-world professional project, you should use the built-in function because it is written in C and is highly optimized.\n\n```python\nimport math\n\nn = 5\nprint(math.factorial(n)) # Output: 120\n```\n\n### Comparison Table\n\n| Method | Time Complexity | Space Complexity | Pros | Cons |\n| :--- | :--- | :--- | :--- | :--- |\n| **Iterative** | $O(n)$ | $O(1)$ | Efficient, no depth limit | Slightly more code than recursion |\n| **Recursive** | $O(n)$ | $O(n)$ | Clean, mathematical | Slow, risks `RecursionError` |\n| **`math.factorial`** | $O(n)$ | $O(1)$ | Fastest, highly optimized | Requires an import |",
+ "thinking_chars": 1418,
+ "truncated": false,
+ "decode_tok_s": 21.19,
+ "answer_s": 44.98,
+ "correct": true
+}

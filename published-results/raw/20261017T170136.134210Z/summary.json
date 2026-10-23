@@ -1,0 +1,26 @@
+[
+  {
+    "variant": "baseline",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 195.4895992110794,
+    "min_decode_tps": 140.59129169326354,
+    "max_decode_tps": 197.44704579373166,
+    "paired_median_speedup": 1.0,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04891783299990493
+  },
+  {
+    "variant": "stream-packed-64",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 86.38474854157481,
+    "min_decode_tps": 70.13595509145992,
+    "max_decode_tps": 142.83789991383003,
+    "paired_median_speedup": 0.4418839717028502,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.12478920900002777
+  }
+]

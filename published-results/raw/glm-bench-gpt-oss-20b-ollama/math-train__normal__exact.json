@@ -1,0 +1,19 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.43,
+ "prompt_tokens": 84,
+ "prefill_s": 0.186,
+ "output_tokens": 128,
+ "decode_s": 3.243,
+ "load_s": 0.001,
+ "text": "The distance travelled is simply the product of speed and time:\n\n\\[\n\\text{Distance} = \\text{Speed} \\times \\text{Time}\n\\]\n\n\\[\n\\text{Distance} = 60 \\text{ km/h} \\times 2.",
+ "thinking_chars": 227,
+ "truncated": true,
+ "decode_tok_s": 39.47,
+ "answer_s": 3.43,
+ "correct": false
+}

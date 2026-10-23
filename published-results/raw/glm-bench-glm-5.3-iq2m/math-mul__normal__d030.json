@@ -1,0 +1,18 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 180.76,
+ "prompt_tokens": 15,
+ "prefill_s": 35.91,
+ "output_tokens": 47,
+ "decode_s": 141.03,
+ "decode_tok_s": 0.33,
+ "zeroed_slots": 17026,
+ "hit_pct": 1.7,
+ "text": "17 × 23 = 391\n\nTo break it down: 17 × 20 = 340, and 17 × 3 = 51. Adding those together: 340 + 51 = 391.",
+ "answer_s": 176.94,
+ "correct": true
+}

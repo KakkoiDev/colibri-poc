@@ -1,0 +1,2 @@
+clang -O3 -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -Wall -Wextra -Wno-unused-parameter -Wno-misleading-indentation -Wno-unused-function  -MMD -MP colibri.c     -o colibri -lm -L/opt/homebrew/opt/libomp/lib -lomp 
+clang -O3 -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -Wall -Wextra -Wno-unused-parameter -Wno-misleading-indentation -Wno-unused-function  -MMD -MP iobench.c -o iobench -lm -L/opt/homebrew/opt/libomp/lib -lomp 

@@ -1,0 +1,6 @@
+group-256 warmup explain: 199.44 tok/s
+group-256 measured explain: 200.44 tok/s
+group-256 measured code: 200.01 tok/s
+group-256 measured reason: 199.53 tok/s
+group-256 measured story: 200.07 tok/s
+group-256 measured long-context: 144.39 tok/s

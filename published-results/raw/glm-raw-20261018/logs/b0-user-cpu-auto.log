@@ -1,0 +1,40 @@
+# b0-user-cpu-auto 2026-10-17T19:28:42Z dir=~/Code/colibri args= env: RAM_GB= COLI_METAL= PIPE= DIRECT= MTP= CACHE_ROUTE= PILOT=
+Pageouts:                                         79.
+Swapouts:                                          0.
+[OMP] hot-thread tuning skipped on macOS (#707): spin-wait knobs measured slower on Apple Silicon (COLI_NO_OMP_TUNE=1 to skip)
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget -2.0 GB | plan -0.4 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin -2.0 GB -> pinning 0.0 GB
+[RAM_GB=15.4 auto] WARNING: cap=1 is the floor, projected peak 19.0 GB is 3.6 GB OVER the budget (resident 11.1 GB + reserve 6.3 GB, expert 21.2 MB avg/row).
+[RAM] refusing to start: that peak also exceeds the 17.5 GB actually available on this machine, so the kernel would OOM-kill this run mid-generation.
+[RAM] lower PIN_GB, lower the context, or raise the RAM budget if the box really has it (COLI_RAM_OVERCOMMIT=1 overrides this check).
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon-i8mm ==
+loaded in 2.67s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+        2.96 real         0.15 user         1.43 sys
+          8273592320  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              716429  page reclaims
+                  17  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                1768  voluntary context switches
+               18974  involuntary context switches
+           917495377  instructions retired
+           269148475  cycles elapsed
+            29835792  peak memory footprint
+exit 2
+Pageouts:                                         92.
+Swapouts:                                        608.

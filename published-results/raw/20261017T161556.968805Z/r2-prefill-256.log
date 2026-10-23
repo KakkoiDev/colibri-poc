@@ -1,0 +1,6 @@
+prefill-256 warmup explain: 83.56 tok/s
+prefill-256 measured explain: 62.22 tok/s
+prefill-256 measured code: 104.71 tok/s
+prefill-256 measured reason: 64.15 tok/s
+prefill-256 measured story: 82.51 tok/s
+prefill-256 measured long-context: 36.15 tok/s

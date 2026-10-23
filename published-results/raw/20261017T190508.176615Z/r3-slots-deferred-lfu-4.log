@@ -1,0 +1,6 @@
+slots-deferred-lfu-4 warmup explain: 66.16 tok/s
+slots-deferred-lfu-4 measured explain: 71.90 tok/s
+slots-deferred-lfu-4 measured code: 58.16 tok/s
+slots-deferred-lfu-4 measured reason: 61.50 tok/s
+slots-deferred-lfu-4 measured story: 52.20 tok/s
+slots-deferred-lfu-4 measured long-context: 48.36 tok/s

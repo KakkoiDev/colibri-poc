@@ -1,0 +1,19 @@
+{
+ "id": "code-fib",
+ "kind": "code",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 34.64,
+ "prompt_tokens": 40,
+ "prefill_s": 0.121,
+ "output_tokens": 875,
+ "decode_s": 34.511,
+ "load_s": 0.0,
+ "text": "```python\ndef fib(n):\n    \"\"\"Return the n-th Fibonacci number (fib(0)=0, fib(1)=1).\"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```\n\n**How it works**\n\n- `a` and `b` start at `0` and `1` (the first two Fibonacci numbers).\n- Each iteration shifts the window forward by one:\n  - `a` takes the old value of `b`\n  - `b` becomes the sum of the two previous values\n- After `n` iterations, `a` holds `fib(n)`.\n\n| `n` | Iterations | `a` (returned) |\n|-----|-----------|----------------|\n| 0 | 0 | 0 |\n| 1 | 1 | 1 |\n| 2 | 2 | 1 |\n| 3 | 3 | 2 |\n| 5 | 5 | 5 |\n| 10 | 10 | 55 |\n\n**Complexity:** O(n) time, O(1) space — no recursion, no memoization table, just two variables.\n\n**Quick test:**\n\n```python\nfor i in range(11):\n    print(f\"fib({i}) = {fib(i)}\")\n# fib(0) = 0\n# fib(1) = 1\n# fib(2) = 1\n# fib(3) = 2\n# fib(4) = 3\n# fib(5) = 5\n# fib(6) = 8\n# fib(7) = 13\n# fib(8) = 21\n# fib(9) = 34\n# fib(10) = 55\n```\n\n> **Note:** For very large `n` (e.g., > 1000), Python's arbitrary-precision integers handle it fine, but the linear loop may become slow. If you need very large indices, consider matrix exponentiation or the `fast doubling` method, both of which run in O(log n) time.",
+ "thinking_chars": 1186,
+ "truncated": false,
+ "decode_tok_s": 25.35,
+ "answer_s": 34.63,
+ "correct": true
+}

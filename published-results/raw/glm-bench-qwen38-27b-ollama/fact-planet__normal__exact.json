@@ -1,0 +1,19 @@
+{
+ "id": "fact-planet",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 5.66,
+ "prompt_tokens": 22,
+ "prefill_s": 0.234,
+ "output_tokens": 120,
+ "decode_s": 5.417,
+ "load_s": 0.006,
+ "text": "The largest planet in our solar system is **Jupiter**.\n\n### Key Facts:\n- **Size**: Jupiter has a diameter of approximately 139,820 kilometers (86,881 miles), making it about 11 times wider than Earth.\n- **Mass**: It is more massive than all the other planets in the solar system combined.\n- **Type**: It is a gas giant, composed primarily of hydrogen and helium.\n\nJupiter's immense size and mass give it a strong gravitational influence, which helps shape the structure of the solar system.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 22.15,
+ "answer_s": 5.65,
+ "correct": true
+}

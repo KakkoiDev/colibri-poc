@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "terse",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 71.13,
+ "prompt_tokens": 30,
+ "prefill_s": 61.8,
+ "output_tokens": 2,
+ "decode_s": 5.34,
+ "decode_tok_s": 0.37,
+ "zeroed_slots": 609,
+ "hit_pct": 0.8,
+ "text": "NaCl",
+ "answer_s": 67.14,
+ "correct": true
+}

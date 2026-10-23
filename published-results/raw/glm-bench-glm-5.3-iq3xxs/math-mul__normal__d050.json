@@ -1,0 +1,18 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 421.9,
+ "prompt_tokens": 15,
+ "prefill_s": 38.13,
+ "output_tokens": 128,
+ "decode_s": 379.52,
+ "decode_tok_s": 0.34,
+ "zeroed_slots": 66737,
+ "hit_pct": 3.4,
+ "text": "17 × 23 = 391\n\n**How I calculated this:**\n\n17 × 23 can a couple of ways — and I'd like to show a couple of them so you can actually see how it works, so I'll show you what I mean:\n\n**Method 1: Traditional column multiplication**\n\n```\n   17\n × 23\n -----\n   51    ← 17 × 3 (units digit of 23)\n  34 × 10 = 340   ← 17 × 2 (tens digit of 23, shifted left one place)\n -----\n   391\n```\n\nWait",
+ "answer_s": 417.65,
+ "correct": true
+}

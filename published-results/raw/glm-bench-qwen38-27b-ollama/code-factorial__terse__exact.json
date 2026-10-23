@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 2.3,
+ "prompt_tokens": 45,
+ "prefill_s": 0.245,
+ "output_tokens": 57,
+ "decode_s": 2.056,
+ "load_s": 0.0,
+ "text": "```python\ndef factorial(n):\n    if n < 0:\n        raise ValueError(\"n must be non-negative\")\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n```",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 27.72,
+ "answer_s": 2.3,
+ "correct": true
+}

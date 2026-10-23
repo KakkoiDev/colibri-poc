@@ -1,0 +1,18 @@
+{
+ "id": "fact-ww2",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 117.14,
+ "prompt_tokens": 15,
+ "prefill_s": 31.96,
+ "output_tokens": 99,
+ "decode_s": 82.11,
+ "decode_tok_s": 1.21,
+ "zeroed_slots": 46783,
+ "hit_pct": 24.0,
+ "text": "World War II ended in 1945.\n\nHaving ended with the unconditional surrender of Japan, which was announced on 15 August 1945 (and formally signed on 2 September 1945), the war in Europe had already concluded earlier — with Germany's surrender on 8 May 1945 (V-E Day, Victory in Europe Day).\n\nSo, depending on which theatre of war you're referring to, the war ended at different times in 1945.",
+ "answer_s": 114.07,
+ "correct": true
+}

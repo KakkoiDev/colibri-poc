@@ -1,0 +1,18 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.26,
+ "prompt_tokens": 21,
+ "output_tokens": 41,
+ "prefill_s": 0.04,
+ "decode_s": 0.219,
+ "text": "The chemical symbol for gold is Au, derived from the Latin word \"aurum,\" which means gold. This symbol is widely recognized and used in chemistry and various scientific contexts to represent the element gold.",
+ "truncated": false,
+ "tokens_from": "usage",
+ "decode_tok_s": 182.65,
+ "answer_s": 0.26,
+ "correct": true
+}

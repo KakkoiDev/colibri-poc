@@ -1,0 +1,26 @@
+# Quality bench v1: d030t12 · normal
+# ~/Code/colibri-poc/.venv/bin/python glm_bench.py run --name v1 --configs d030t12 --styles normal
+[1/24] fact-capital__normal__d030t12: exit=0 answer=105.92s tokens=73 correct=True
+[2/24] fact-gold__normal__d030t12: exit=0 answer=62.48s tokens=32 correct=True
+[3/24] fact-austen__normal__d030t12: exit=0 answer=137.0s tokens=105 correct=True
+[4/24] fact-planet__normal__d030t12: exit=0 answer=158.72s tokens=128 correct=True
+[5/24] fact-ww2__normal__d030t12: exit=0 answer=134.21s tokens=97 correct=True
+[6/24] fact-salt__normal__d030t12: exit=0 answer=116.28s tokens=80 correct=True
+[7/24] fact-boil__normal__d030t12: exit=0 answer=163.32s tokens=128 correct=True
+[8/24] fact-ocean__normal__d030t12: exit=0 answer=166.44s tokens=128 correct=True
+[9/24] math-mul__normal__d030t12: exit=0 answer=117.65s tokens=80 correct=True
+[10/24] math-pct__normal__d030t12: exit=0 answer=167.92s tokens=128 correct=False
+[11/24] math-pow__normal__d030t12: exit=0 answer=164.04s tokens=128 correct=False
+[12/24] math-train__normal__d030t12: exit=0 answer=173.63s tokens=128 correct=True
+[13/24] math-apples__normal__d030t12: exit=0 answer=104.04s tokens=56 correct=True
+[14/24] logic-sisters__normal__d030t12: exit=0 answer=132.45s tokens=88 correct=True
+[15/24] logic-feathers__normal__d030t12: exit=0 answer=169.82s tokens=128 correct=True
+[16/24] logic-days__normal__d030t12: exit=0 answer=57.58s tokens=30 correct=True
+[17/24] logic-syllogism__normal__d030t12: exit=0 answer=106.62s tokens=60 correct=True
+[18/24] code-fib__normal__d030t12: exit=0 answer=181.12s tokens=128 correct=True
+[19/24] code-palindrome__normal__d030t12: exit=0 answer=178.5s tokens=128 correct=False
+[20/24] code-vowels__normal__d030t12: exit=0 answer=188.31s tokens=128 correct=True
+[21/24] code-reverse-words__normal__d030t12: exit=0 answer=171.01s tokens=128 correct=True
+[22/24] code-factorial__normal__d030t12: exit=0 answer=172.02s tokens=128 correct=True
+[23/24] explain-sky__normal__d030t12: exit=0 answer=163.66s tokens=128 correct=True
+[24/24] explain-hash__normal__d030t12: exit=0 answer=159.65s tokens=128 correct=True

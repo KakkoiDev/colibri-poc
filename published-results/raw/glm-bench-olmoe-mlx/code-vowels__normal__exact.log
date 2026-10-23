@@ -1,0 +1,16 @@
+{
+ "text": "Here is a Python function that counts the number of vowels in a given string:\n\n```python\ndef count_vowels(s):\n    vowels = 'aeiouAEIOU'\n    count = 0\n    for char in s:\n        if char in vowels:\n            count += 1\n    return count\n\n# Example usage:\nprint(count_vowels(\"Hello, World!\"))  # Output: 5\nprint(count_vowels(\"Python\"))  # Output: 2\nprint(count_vowels(\"Assignment\"))  ",
+ "usage": {
+  "prompt_tokens": 53,
+  "completion_tokens": 128,
+  "total_tokens": 181,
+  "prompt_tokens_details": {
+   "cached_tokens": 10
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.054,
+ "total_s": 0.773
+}

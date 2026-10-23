@@ -1,0 +1,18 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 269.13,
+ "prompt_tokens": 15,
+ "prefill_s": 47.96,
+ "output_tokens": 45,
+ "decode_s": 216.81,
+ "decode_tok_s": 0.21,
+ "zeroed_slots": 0,
+ "hit_pct": 0.6,
+ "text": "17 × 23 = 391\n\nYou can verify this by breaking it down: 17 × 23 = 17 × 20 + 17 × 3 = 340 + 51 = 391",
+ "answer_s": 264.77,
+ "correct": true
+}

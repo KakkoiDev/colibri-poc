@@ -1,0 +1,16 @@
+{
+ "text": "To find 15% of 240, you multiply 240 by 0.15 (since 15% is equivalent to 0.15 in decimal form).\n\n\\[ \\text{15\\% of 240} = 240 \\times 0.15 \\]\n\nLet's calculate this using Python to ensure accuracy.\n```python\n# Define the number\nnumber = 240\n\n# Calculate 15% of the number\npercentage_of_number = 0.15 * number\nprint(percentage_of_number)\n```\n```output\n36.0\n```\nThe calculation shows that 15% of 240 is \\(\\box",
+ "usage": {
+  "prompt_tokens": 20,
+  "completion_tokens": 128,
+  "total_tokens": 148,
+  "prompt_tokens_details": {
+   "cached_tokens": 8
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.038,
+ "total_s": 0.741
+}

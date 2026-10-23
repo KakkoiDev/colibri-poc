@@ -1,0 +1,91 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.65s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 22 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Which is heavier: a kilogram of feathers or a kilogram of steel?<|assistant|><think></think>PROFILO PREFILL (29.51s):
+PROFILE: expert-disk 162.385s service / 19.402s wait | expert-matmul 5.080s | attention 3.440s (including kvb 0.472s) | lm_head 0.006s | other 1.586s
+ATTENTION: projection/RoPE 1.054s | score-softmax-value 0.031s | output projection 1.882s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.037s | residual P2P 0.000s / 0 hop | orchestration 1.549s
+METAL: blocchi GPU 214 | fallback CPU 0 | expert su GPU 5756 | setup 0.03s gpu-wall 4.54s (kernel 5.07s) scatter 0.01s
+METAL-RESSET: flush 0.49s (residency-set commit in moe_submit, outside setup/gpu-wall)
+They weigh exactly the same — one kilogram each. This is a classic trick question that plays on our intuition about material density.
+
+The confusion arises because steel is much denser than feathers, so a kilogram of steel would be a small, compact block, while a kilogram of feathers would be a an enormous, fluffy pile. But weight and density are different properties:
+
+- **Weight** measures the gravitational force on an object (here, both are 1 kg).
+- **Density** measures how much mass is packed into a given volume (steel is far denser than feathers).
+
+So while the steel would look tiny next to that
+---
+prefill 22 tokens in 29.51s | decode 128 tokens in 141.54s (0.90 tok/s) | expert hit rate 7.0% (pin 0.0% + lru 7.0%) | RSS 10.59 GB
+experts loaded/token: 664.2 (per-layer 8.86 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 43060 miss slots; top layers: L4:755 L21:698 L5:678)
+speculation: 1.83 tokens/forward (70 forwards per 128 tokens) | MTP acceptance 81% (57/70)
+PROFILE: expert-disk 498.365s service / 95.592s wait | expert-matmul 12.600s | attention 27.269s (including kvb 0.000s) | lm_head 0.000s | other 6.076s
+ATTENTION: projection/RoPE 0.097s | score-softmax-value 0.080s | output projection 0.087s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.014s | residual P2P 0.000s / 0 hop | orchestration 6.063s
+METAL-ATTN: layer GPU 5460 | gpu-wall 26.87s (kernel 26.35s | cpu-sched 0.02s gpu-sched 0.24s)
+METAL: blocchi GPU 7779 | fallback CPU 0 | expert su GPU 35536 | setup 0.28s gpu-wall 16.80s (kernel 17.82s) scatter 0.03s
+METAL-RESSET: flush 0.50s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 70 | latency p50 1941.8 ms | p90 2100.6 ms | p99 2276.8 ms | max 2294.7 ms | 1.83 tok/forward
+[PROF] expert I/O: 594.380 GB fetched (4643.6 MB/token, 4.20 GB/s over the run) | hit 7.0% (0 pin + 2063 lru / 27590 load) | 664.2 loads/token | 498.4s read service / 95.6s felt wait
+[PROF] DISK-CLASS (recency split): cold 12941 x 281.04 GB @ 1.12 GB/s-thread, wall 87.1s @ 3.23 GB/s-wall, avg-conc 2.9 (direct 12883/12941) | warm 14649 x 313.34 GB @ 1.27 GB/s-thread, wall 85.1s @ 3.68 GB/s-wall, avg-conc 2.9 (direct 14571/14649) | disk-busy 95.4s (67% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 68% | expert-matmul 9% | attention 19% | lm_head 0% | other 4%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.014s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 6.063s
+[PROF] verdict: I/O-bound — 68% of the time waits on expert reads (hit 7%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 13.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 22 token · +0.00s
+[prefill] layer 5/78 · 22 token · +1.22s
+[prefill] layer 9/78 · 22 token · +3.16s
+[prefill] layer 13/78 · 22 token · +4.92s
+[prefill] layer 17/78 · 22 token · +6.47s
+[prefill] layer 21/78 · 22 token · +7.80s
+[prefill] layer 25/78 · 22 token · +9.14s
+[prefill] layer 29/78 · 22 token · +10.70s
+[prefill] layer 33/78 · 22 token · +12.08s
+[prefill] layer 37/78 · 22 token · +13.35s
+[prefill] layer 41/78 · 22 token · +14.68s
+[prefill] layer 45/78 · 22 token · +16.08s
+[prefill] layer 49/78 · 22 token · +17.52s
+[prefill] layer 53/78 · 22 token · +18.97s
+[prefill] layer 57/78 · 22 token · +20.39s
+[prefill] layer 61/78 · 22 token · +21.82s
+[prefill] layer 65/78 · 22 token · +23.35s
+[prefill] layer 69/78 · 22 token · +24.83s
+[prefill] layer 73/78 · 22 token · +26.40s
+[prefill] layer 77/78 · 22 token · +27.99s
+[prefill] layer 78/78 · 22 token · +28.33s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.59 GB  hit 8%  0.90 tok/s  1.67 tok/fw]
+
+[t=32  RSS 10.59 GB  hit 7%  0.89 tok/s  1.72 tok/fw]
+
+[t=48  RSS 10.59 GB  hit 7%  0.93 tok/s  1.81 tok/fw]
+
+[t=64  RSS 10.59 GB  hit 7%  0.95 tok/s  1.85 tok/fw]
+
+[t=80  RSS 10.59 GB  hit 7%  0.91 tok/s  1.80 tok/fw]
+
+[t=96  RSS 10.59 GB  hit 7%  0.92 tok/s  1.83 tok/fw]
+
+[t=112  RSS 10.59 GB  hit 7%  0.93 tok/s  1.85 tok/fw]
+
+[t=128  RSS 10.59 GB  hit 7%  0.90 tok/s  1.81 tok/fw]

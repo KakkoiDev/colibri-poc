@@ -1,0 +1,89 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 3.25s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 15 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>What is 17 multiplied by 23?<|assistant|><think></think>PROFILO PREFILL (34.15s):
+PROFILE: expert-disk 133.256s service / 16.836s wait | expert-matmul 4.702s | attention 11.629s (including kvb 1.045s) | lm_head 0.010s | other 0.976s
+ATTENTION: projection/RoPE 3.480s | score-softmax-value 0.024s | output projection 7.080s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.039s | residual P2P 0.000s / 0 hop | orchestration 0.937s
+METAL: blocchi GPU 169 | fallback CPU 0 | expert su GPU 4586 | setup 0.04s gpu-wall 3.55s (kernel 3.92s) scatter 0.01s
+METAL-RESSET: flush 1.10s (residency-set commit in moe_submit, outside setup/gpu-wall)
+17 × 23 = **391**
+
+You can verify this: 17 × 23 = 17 × 20 + 17 × 3 = 340 + 51 = 391 ✓
+
+**A fun fact:** 391 is a semiprime (17 × 23), and both 17 and 23 are prime numbers — the "sexy" primes (a term for prime pairs that differ by 6, like 17 and 23, or 5 and 11, or 11 and 17). The term "sexy" comes from the Latin "sex" meaning "six"
+---
+prefill 15 tokens in 34.15s | decode 128 tokens in 92.84s (1.38 tok/s) | expert hit rate 20.8% (pin 0.0% + lru 20.8%) | RSS 12.21 GB
+experts loaded/token: 609.4 (per-layer 8.12 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 60219 miss slots; top layers: L11:877 L12:871 L5:868)
+speculation: 1.02 tokens/forward (125 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 92.338s service / 52.993s wait | expert-matmul 6.461s | attention 26.603s (including kvb 0.000s) | lm_head 0.000s | other 6.786s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.013s | residual P2P 0.000s / 0 hop | orchestration 6.773s
+METAL-ATTN: layer GPU 9750 | gpu-wall 26.21s (kernel 25.15s | cpu-sched 0.07s gpu-sched 0.47s)
+METAL: blocchi GPU 12467 | fallback CPU 0 | expert su GPU 21807 | setup 0.47s gpu-wall 9.37s (kernel 9.73s) scatter 0.04s
+METAL-RESSET: flush 1.10s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 125 | latency p50 716.2 ms | p90 810.6 ms | p99 1264.1 ms | max 1501.4 ms | 1.02 tok/forward
+[PROF] expert I/O: 289.606 GB fetched (2262.5 MB/token, 3.12 GB/s over the run) | hit 20.8% (0 pin + 3582 lru / 13639 load) | 609.4 loads/token | 92.3s read service / 53.0s felt wait
+[PROF] DISK-CLASS (recency split): cold 4186 x 88.88 GB @ 2.97 GB/s-thread, wall 24.1s @ 3.69 GB/s-wall, avg-conc 1.2 (direct 4171/4186) | warm 9453 x 200.72 GB @ 3.22 GB/s-thread, wall 41.0s @ 4.90 GB/s-wall, avg-conc 1.5 (direct 9422/9453) | disk-busy 52.8s (57% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 57% | expert-matmul 7% | attention 29% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.013s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 6.773s
+[PROF] verdict: I/O-bound — 57% of the time waits on expert reads (hit 21%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 9.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 15 token · +0.00s
+[prefill] layer 5/78 · 15 token · +2.64s
+[prefill] layer 9/78 · 15 token · +4.71s
+[prefill] layer 13/78 · 15 token · +6.49s
+[prefill] layer 17/78 · 15 token · +8.06s
+[prefill] layer 21/78 · 15 token · +9.51s
+[prefill] layer 25/78 · 15 token · +11.14s
+[prefill] layer 29/78 · 15 token · +13.24s
+[prefill] layer 33/78 · 15 token · +14.74s
+[prefill] layer 37/78 · 15 token · +16.30s
+[prefill] layer 41/78 · 15 token · +17.89s
+[prefill] layer 45/78 · 15 token · +19.46s
+[prefill] layer 49/78 · 15 token · +21.21s
+[prefill] layer 53/78 · 15 token · +22.84s
+[prefill] layer 57/78 · 15 token · +24.52s
+[prefill] layer 61/78 · 15 token · +26.22s
+[prefill] layer 65/78 · 15 token · +27.98s
+[prefill] layer 69/78 · 15 token · +29.78s
+[prefill] layer 73/78 · 15 token · +31.49s
+[prefill] layer 77/78 · 15 token · +33.27s
+[prefill] layer 78/78 · 15 token · +33.67s
+
+[t=16  RSS 12.21 GB  hit 22%  1.40 tok/s  1.00 tok/fw]
+
+[t=32  RSS 12.21 GB  hit 19%  1.40 tok/s  1.03 tok/fw]
+
+[t=48  RSS 12.21 GB  hit 20%  1.40 tok/s  1.02 tok/fw]
+
+[t=64  RSS 12.21 GB  hit 21%  1.38 tok/s  1.03 tok/fw]
+
+[t=80  RSS 12.21 GB  hit 21%  1.39 tok/s  1.03 tok/fw]
+
+[t=96  RSS 12.21 GB  hit 21%  1.39 tok/s  1.02 tok/fw]
+
+[t=112  RSS 12.21 GB  hit 20%  1.38 tok/s  1.02 tok/fw]
+
+[t=128  RSS 12.21 GB  hit 21%  1.38 tok/s  1.02 tok/fw]

@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "terse",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 126.09,
+ "prompt_tokens": 45,
+ "prefill_s": 86.25,
+ "output_tokens": 14,
+ "decode_s": 36.12,
+ "decode_tok_s": 0.39,
+ "zeroed_slots": 8033,
+ "hit_pct": 2.3,
+ "text": "15 apples (12 - 5 + 8 = 15)",
+ "answer_s": 122.37,
+ "correct": true
+}

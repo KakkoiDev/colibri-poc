@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 286.77,
+ "prompt_tokens": 27,
+ "prefill_s": 34.54,
+ "output_tokens": 128,
+ "decode_s": 248.08,
+ "decode_tok_s": 0.52,
+ "zeroed_slots": 44229,
+ "hit_pct": 1.5,
+ "text": "# Solving the Sister Puzzle\n\nLet me work through this step by step.\n\n## Setting Up the Problem\n\n**Given information:**\n- Sally has 3 brothers\n- Each of Sally's brothers has 2 sisters\n\n## The Key Insight\n\nHere's the crucial thing to notice: **Sally's brothers and Sally share the same siblings.** The brothers' sisters are Sally herself plus any other sisters in the family.\n\nSince each brother has **2 sisters**, and Sally is one of those sisters, there must be **one additional sister** besides Sally in the family.\n\n## Verification\n\nLet me check this against all the information:",
+ "answer_s": 282.62,
+ "correct": false
+}

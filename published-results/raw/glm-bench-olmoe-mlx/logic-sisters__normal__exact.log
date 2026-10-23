@@ -1,0 +1,16 @@
+{
+ "text": "To solve this problem, let's break it down step-by-step:\n\n1. **Understand the Problem:**\n   - Sally has 3 brothers.\n   - Each brother has 2 sisters.\n\n2. **Identify the Key Points:**\n   - If each brother has 2 sisters, then the total number of sisters must be equal to the number of brothers.\n\n3. **Formulate the Solution:**\n   - Since there are 3 brothers, there must be 3 sisters.\n\nLet's confirm this reasoning using Python and sympy to ensure the logic holds.\n\n```python\n#",
+ "usage": {
+  "prompt_tokens": 32,
+  "completion_tokens": 128,
+  "total_tokens": 160,
+  "prompt_tokens_details": {
+   "cached_tokens": 6
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.056,
+ "total_s": 0.766
+}

@@ -1,0 +1,9 @@
+# Experiment: Stack: 4 cache slots + skip < 0.5 + 12 threads
+# ~/Code/colibri-poc/.venv/bin/python glm_lab.py run-planned cache-cap4-skip050
+Running x-cache-cap4-skip050 ...
+110 runs, 106 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  cache-cap4-skip050: +14%, repeating once to confirm
+Running x-cache-cap4-skip050-r2 ...
+111 runs, 107 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  cache-cap4-skip050: 2.125 tok/s vs 1.87 (13.6%), output changed
+83 experiments -> docs/12-experiment-log.md, site/data/experiments.json

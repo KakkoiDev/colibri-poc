@@ -1,0 +1,8 @@
+# Download and prepare GLM-5.3 UD-IQ2_M (2-bit GGUF)
+# make glm-prep-iq2m
+sh scripts/prep_gguf.sh unsloth/GLM-5.3-GGUF UD-IQ2_M glm-5.3-iq2m
+/dev/disk3s5   1.8Ti   1.1Ti   726Gi    60%    2.1M  7.6G    0%   /System/Volumes/Data
+
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Still waiting to acquire lock on ~/colibri-models/gguf/glm-5.3-iq2m/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+
+Fetching 6 files:  17%|█▋        | 1/6 [00:02<00:12,  2.41s/it]make: *** [glm-prep-iq2m] Terminated: 15

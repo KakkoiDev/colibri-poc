@@ -1,0 +1,19 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 4.04,
+ "prompt_tokens": 105,
+ "prefill_s": 0.195,
+ "output_tokens": 150,
+ "decode_s": 3.839,
+ "load_s": 0.001,
+ "text": "def reverse_words(s):\n    return ' '.join(s.split()[::-1])",
+ "thinking_chars": 571,
+ "truncated": false,
+ "decode_tok_s": 39.07,
+ "answer_s": 4.03,
+ "correct": true
+}

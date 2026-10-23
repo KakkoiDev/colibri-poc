@@ -1,0 +1,18 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 413.0,
+ "prompt_tokens": 28,
+ "prefill_s": 61.68,
+ "output_tokens": 128,
+ "decode_s": 347.26,
+ "decode_tok_s": 0.37,
+ "zeroed_slots": 65264,
+ "hit_pct": 2.6,
+ "text": "# Train Travel Distance Calculation\n\n## Given Information\n- **Speed** = 60 km/h (kilometres per hour)\n- **Time** = 2.5 hours (2 hours and 30 minutes = 2½ hours is a decimal)\n- **Speed Unit** = \"km/h\" (speed measurement unit per hour)\n- **Distance** = ? (in kilometres, to calculate the answer in km)\n- **Distance Unit** = \"km\" (the distance travelled by the train in km)\n\n## Formula Used\nThe formula for calculating distance travelled by a train (or any other vehicle/objects travelling at constant",
+ "answer_s": 408.94,
+ "correct": false
+}

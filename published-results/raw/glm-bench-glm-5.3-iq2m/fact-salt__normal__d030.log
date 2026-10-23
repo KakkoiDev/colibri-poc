@@ -1,0 +1,98 @@
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 3.16s | resident dense: 14457.58 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 15 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>What is the chemical formula of table salt?<|assistant|><think></think>PROFILO PREFILL (35.39s):
+PROFILE: expert-disk 73.756s service / 9.495s wait | expert-matmul 15.202s | attention 8.744s (including kvb 2.126s) | lm_head 0.053s | other 1.898s
+ATTENTION: projection/RoPE 1.314s | score-softmax-value 0.032s | output projection 5.272s
+P0-EXEC: routed CPU 15.198s / 3.57 GB/s (9112 row) | routed GPU critical 0.000s | router 0.070s | residual P2P 0.000s / 0 hop | orchestration 1.829s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+The chemical formula of table salt is **NaCl** — sodium chloride.
+
+It consists of sodium (Na⁺) and chloride (Cl⁻) ions held together in a crystal lattice structure, where each sodium ion is surrounded by chloride ions and vice versa (in a 1:1 ratio). This ionic bonding gives table salt its characteristic properties, such as high melting point (801°C) and its solubility in water.
+
+Note that "table salt" as sold commercially often contains small amounts of additives:
+- **Iodine** (as iodide or iodate) — added to prevent iodine deficiency
+
+---
+prefill 15 tokens in 35.39s | decode 128 tokens in 295.87s (0.43 tok/s) | expert hit rate 1.2% (pin 0.0% + lru 1.2%) | RSS 15.51 GB
+experts loaded/token: 664.2 (per-layer 8.86 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 43633 miss slots; top layers: L4:712 L5:667 L50:649)
+speculation: 1.83 tokens/forward (70 forwards per 128 tokens) | MTP acceptance 81% (57/70)
+PROFILE: expert-disk 166.964s service / 39.682s wait | expert-matmul 74.719s | attention 144.756s (including kvb 0.000s) | lm_head 0.000s | other 36.712s
+ATTENTION: projection/RoPE 18.355s | score-softmax-value 61.376s | output projection 65.015s
+P0-EXEC: routed CPU 74.478s / 4.33 GB/s (37328 row) | routed GPU critical 0.000s | router 1.429s | residual P2P 0.000s / 0 hop | orchestration 35.283s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 70 | latency p50 4037.1 ms | p90 4361.6 ms | p99 4635.4 ms | max 4885.4 ms | 1.83 tok/forward
+[PROF] expert I/O: 318.721 GB fetched (2490.0 MB/token, 1.08 GB/s over the run) | hit 1.2% (0 pin + 344 lru / 27752 load) | 664.2 loads/token | 167.0s read service / 39.7s felt wait
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (0.9 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 13% | expert-matmul 25% | attention 49% | lm_head 0% | other 12%
+[PROF] P0 execution: routed CPU 74.478s / 4.33 GB/s (37328 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 1.429s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 35.283s
+[PROF] verdict: attention-bound (49%) — context length is the cost (DSA on). A lower CTX helps if the workload allows.
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      Glm-5.3 · 256x22B MoE
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+[gguf] ~/colibri-models/gguf/glm-5.3-iq2m/UD-IQ2_M/GLM-5.3-UD-IQ2_M-00001-of-00006.gguf: glm-dsa, 6 part(s), 59949 tensors under the checkpoint's names (1581 renamed, 228 fused expert tensors split per expert, 0 kept as named), read in place
+[METAL] kv_b_proj is fmt=102 on 78/78 layers: the fused Metal attention path serves kv_b only as int4, per-row (fmt=2) or grouped (fmt=4; grouped is served only while COLI_METAL_MOE_EXACT is off), so those layers run decode attention on the CPU absorb path instead. Requantize kv_b to int4 (--kvb-bits 4) to re-enable the fused path.
+[METAL] q_a_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] q_b_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] kv_a_proj_with_mqa is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] o_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.gate_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.up_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.down_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[DSA] indexer active: top-2048 sparse attention beyond 2048 context tokens
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 20.9 GB is 2.9 GB OVER the budget (resident 15.2 GB + reserve 4.9 GB, expert 11.5 MB avg/row).
+[RAM_GB=18.0] resident 15.2 GB + reserve 4.9 GB (ws 0.9, KV 1x1024 0.2, kvb 0.1), experts 11.5 MB avg x 76 layers -> cap lowered 8->1 (projected peak 20.9 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.3 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 0.9 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=on PILOT=0 CACHE_ROUTE=0
+[stop] 25 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 154838 154839 154840 154852 154853 154854 154855 (22 from the tokenizer's special set)
+[prefill] layer 1/78 · 15 token · +0.00s
+[CUDA] no reusable LRU expert slot (in flight or cap reached); skipping cache promotion
+[prefill] layer 5/78 · 15 token · +1.20s
+[prefill] layer 9/78 · 15 token · +3.34s
+[prefill] layer 13/78 · 15 token · +5.35s
+[prefill] layer 17/78 · 15 token · +7.15s
+[prefill] layer 21/78 · 15 token · +8.87s
+[prefill] layer 25/78 · 15 token · +10.55s
+[prefill] layer 29/78 · 15 token · +12.33s
+[prefill] layer 33/78 · 15 token · +13.98s
+[prefill] layer 37/78 · 15 token · +15.65s
+[prefill] layer 41/78 · 15 token · +17.40s
+[prefill] layer 45/78 · 15 token · +19.11s
+[prefill] layer 49/78 · 15 token · +20.92s
+[prefill] layer 53/78 · 15 token · +22.69s
+[prefill] layer 57/78 · 15 token · +24.44s
+[prefill] layer 61/78 · 15 token · +26.22s
+[prefill] layer 65/78 · 15 token · +28.00s
+[prefill] layer 69/78 · 15 token · +29.86s
+[prefill] layer 73/78 · 15 token · +31.67s
+[prefill] layer 77/78 · 15 token · +33.57s
+[prefill] layer 78/78 · 15 token · +34.03s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 15.49 GB  hit 2%  0.44 tok/s  1.88 tok/fw]
+
+[t=32  RSS 15.51 GB  hit 2%  0.45 tok/s  1.94 tok/fw]
+
+[t=48  RSS 15.51 GB  hit 1%  0.44 tok/s  1.88 tok/fw]
+
+[t=64  RSS 15.51 GB  hit 1%  0.44 tok/s  1.85 tok/fw]
+
+[t=80  RSS 15.51 GB  hit 1%  0.45 tok/s  1.88 tok/fw]
+
+[t=96  RSS 15.51 GB  hit 1%  0.44 tok/s  1.86 tok/fw]
+
+[t=112  RSS 15.51 GB  hit 1%  0.43 tok/s  1.79 tok/fw]
+
+[t=128  RSS 15.51 GB  hit 1%  0.43 tok/s  1.81 tok/fw]

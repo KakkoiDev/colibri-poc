@@ -1,0 +1,18 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 118.44,
+ "prompt_tokens": 19,
+ "prefill_s": 27.35,
+ "output_tokens": 128,
+ "decode_s": 88.07,
+ "decode_tok_s": 1.45,
+ "zeroed_slots": 64669,
+ "hit_pct": 32.6,
+ "text": "Water boils at **100°C** (212°F) at standard atmospheric pressure, which is sea level conditions (101.3 kPa, or 1 atmosphere).\n\nThis is a well-established physical constant, and the boiling point is a fundamental reference point for the Celsius temperature scale — indeed, 100°C was originally *defined* as the boiling point of water at standard pressure, making the Celsius scale's two fixed points (0°C (freezing point of water) and 100°C (boiling point of water) precisely 100 degrees apart at exactly this pressure. Because of this, the boiling point of water at sea level is",
+ "answer_s": 115.42,
+ "correct": true
+}

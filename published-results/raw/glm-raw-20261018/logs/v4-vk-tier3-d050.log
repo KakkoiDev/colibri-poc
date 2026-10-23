@@ -1,0 +1,90 @@
+# v4-vk-tier3-d050 2026-10-18T04:16:29Z dir=<tmp>/claude-501/-Users-kakkoidev-Code-pi-local-harness/95e98610-3ae1-4256-8832-7c25ada2f2cd/scratchpad/colibri-vk args=--ram 18 --ctx 1024 env: RAM_GB=18 COLI_METAL= PIPE=1 DIRECT=1 MTP= CACHE_ROUTE= PILOT=
+Pageouts:                                      27598.
+Swapouts:                                    5163538.
+[OMP] hot-thread tuning skipped on macOS (#707): spin-wait knobs measured slower on Apple Silicon (COLI_NO_OMP_TUNE=1 to skip)
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[VK] VRAM pressure-proofing: memory_priority absent, memory_budget on
+[VK] ready: Apple M6, compute qfam 0, memtype 1, fused gate+up, absorb attention, tiled GEMM from S=2 and S*O>=4096
+[VK] expert tier active: routed experts on the shared adaptive tier (vk_tier.c)
+[VK] colibri: dense chain on (COLI_VK_CHAIN=1)
+[VK] colibri chain fit: free 26799882240 B, reserve 1073741824 B, fixed 724041984 B (the engine's 237502720 B, the pools' 486539264 B), tail 952202240 B, layers 220874752 220874752 220874752 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 114706432 B, matrices 220225536 220225536 220225536 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 114057216 B
+[VK] colibri chain: 78 of 78 layers on the device (8.63 GiB), 0 on the CPU (free 24.96 GiB, reserve 1.00 GiB)
+[VK] colibri: dense weights on the device only (an integrated GPU: its memory is the CPU's RAM, the host copy would hold them twice; COLI_VK_DENSE_HOST=1 keeps it)
+[VK] colibri chain: 78 layers on the device (3 dense, 0 with the DSA indexer), 4.4 MiB of parameters
+[VK] colibri chain: 78 of 78 layers placed: 9214967808 B of matrices on the device (the fit counted 9214967808 B for these layers), chain buffers 13021440 B, device memory held 9529458688 B
+[VK] colibri: 625 dense matrices on the device only, 9.47 GiB of host RAM given back; kept on the host: the embedding, routers and norms, the MTP layer's kv_b
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 11.7 GB | plan 2.4 GB (conf 0.41, 81600 selections) | LRU reserve 11.1 GB (cap 7/layer x 1592.5 MB/row-set) | max_pin 0.5 GB -> pinning 0.5 GB  [CAPPED by the LRU reserve]
+[PIN] placement: 0 VRAM + 25 RAM expert (0.5 GB warm) in 0s da ~/colibri-models/glm-5.3/.coli_usage
+[PIN] mlock: 0.5 GB wired in physical RAM (no compression) in 0s
+[RAM_GB=18.0] resident 1.5 GB + reserve 5.4 GB (ws 1.4, KV 1x1024 0.2, kvb 0.1), experts 21.2 MB avg x 75 layers -> cap lowered 8->7 (projected peak 18.0 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.1 GB available | backend CPU
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 7/layer (up to 11.1 GB) | pinned 25 (0.5 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[VK] tier colibri: on, Apple M6, budget 3.00 GiB = 80 experts of 20.2 MiB (fmt 4 gs 64, down fmt 4 gs 64), shared RAM (COLI_VK_TIER_GB), own queue, up to 16 promotions per token, balanced against the CPU, streaming cold experts of prompt steps through 64 slots
+[VK] tier colibri: warm start, 80 experts from the history in 0.3s
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 3.30s | resident dense: 908.09 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 17 tokens | generating up to 48 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Explain in two sentences why the sky is blue.<|assistant|><think></think>[VK] colibri chain: prompt chunks of up to 3584 rows (1402 KiB a row; 10.13 GiB free on the device or in RAM, half of it at most; COLI_VK_CHAIN_ROWS sets it, COLI_VK_CHAIN_ROWS_MAX caps it at 8192)
+[VK] tier colibri stream: a step of 17 rows; cold experts with 16 rows or more go to the device (the GEMM's 16 rows: the upload and the CPU's rows not measured yet); layer 3: 0 resident, 0 streamed, 84 kept on the CPU (136 rows)
+PROFILO PREFILL (77.57s):
+PROFILE: expert-disk 141.510s service / 2.520s wait | expert-matmul 72.349s | attention 0.000s (including kvb 0.000s) | lm_head 0.017s | other 2.682s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 72.341s / 1.48 GB/s (9822 row) | routed GPU critical 0.004s | router 0.342s | residual P2P 0.000s / 0 hop | orchestration 2.340s
+VK-BLOCK: 75 blocks | avg nvk 0.72 (dev2 0.00) / ncpu 130.96 | classify 0.000s | issue 0.006s | take+acc 0.008s (take-wait 0.004s) | d2-iss wrk 0.000s join 0.000s | cpu exec 72.341s wait 2.520s
+The sky appears blue because molecules in the atmosphere (mostly nitrogen and oxygen) scatter
+[t=16  RSS 18.57 GB  hit 75%  0.32 tok/s  1.00 tok/fw]
+ shorter, blue wavelengths of sunlight more strongly than longer, red wavelengths — a phenomenon
+[t=32  RSS 18.79 GB  hit 78%  0.38 tok/s  1.00 tok/fw]
+[RAM-GUARD] RSS 18.8 GB over the 18.0 GB budget (#403): dropped 38 cached experts, cap -> 6
+ called Rayleigh scattering. As sunlight passes through the atmosphere, this scattered blue light
+[t=48  RSS 18.79 GB  hit 78%  0.43 tok/s  1.00 tok/fw]
+[VK] colibri chain: 48 forwards, 7421 frames (71136 ops, 26208 matmuls, 546 tiled GEMM), 17234.8 ms waiting for the device, 171185.6 ms of routed experts on the host, 51.8 MiB on the device
+[VK] tier colibri run: device 637 of 18364 routed experts (3.5%; this run 637 of 18364) | CPU RAM hits 6141, disk loads 1764 | resident 80 (budget 80, 2.85 GiB of 3.00 GiB, 12 blocks, frag 0.15) | uploads 118 (2.07 GiB, 80 warm), evictions 38, skipped 0 queue + 0 rate, failed 0 | device 262.7 ms, CPU share 45495.1 ms, waited 67.5 ms (74% of device time hidden) | balance: device share 0.92, 0 rows handed to the CPU | exclusive: 5 RAM copies of device experts given up first | stream: 42 steps, 0 cold experts (0.0 KiB, 0.00 GB/s) and 0 rows streamed in 42 sub-batches, prefetched 0 (0 used), 5044 cold experts (9822 rows) kept on the CPU
+[VK] colibri: dense weights at exit: 625 matrices on the device only (9.47 GiB of host copies dropped), 0 read back from disk for the CPU (0.0 MiB)
+
+---
+prefill 17 tokens in 77.57s | decode 48 tokens in 112.60s (0.43 tok/s) | expert hit rate 78.4% (pin 0.0% + lru 75.2% + vk 3.2%) | RSS 18.79 GB
+experts loaded/token: 587.5 (per-layer 7.83 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 20036 miss slots; top layers: L6:326 L9:326 L5:325)
+speculation: 1.02 tokens/forward (47 forwards per 48 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 36.066s service / 32.027s wait | expert-matmul 59.300s | attention 0.000s (including kvb 0.000s) | lm_head 0.000s | other 21.268s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 59.229s / 2.83 GB/s (7905 row) | routed GPU critical 0.065s | router 3.790s | residual P2P 0.000s / 0 hop | orchestration 17.479s
+VK-BLOCK: 3525 blocks | avg nvk 0.07 (dev2 0.00) / ncpu 2.24 | classify 0.000s | issue 0.023s | take+acc 0.072s (take-wait 0.065s) | d2-iss wrk 0.000s join 0.000s | cpu exec 59.229s wait 32.027s
+[PROF] decode forwards: 47 | latency p50 2024.5 ms | p90 3723.4 ms | p99 4316.5 ms | max 5767.4 ms | 1.02 tok/forward
+[PROF] expert I/O: 37.456 GB fetched (780.3 MB/token, 0.33 GB/s over the run) | hit 78.4% (0 pin + 6141 lru / 1764 load) | 587.5 loads/token | 36.1s read service / 32.0s felt wait
+[PROF] DISK-CLASS (recency split): cold 1037 x 22.02 GB @ 0.92 GB/s-thread, wall 22.9s @ 0.96 GB/s-wall, avg-conc 1.0 (direct 1032/1037) | warm 727 x 15.44 GB @ 1.28 GB/s-thread, wall 11.5s @ 1.34 GB/s-wall, avg-conc 1.0 (direct 723/727) | disk-busy 33.6s (30% of window)
+[PROF] resident experts: 25 pinned (0.5 GB) + 525 in LRU (11.1 GB, cap 6/layer)
+[PROF] time shares: expert-I/O 28% | expert-matmul 53% | attention 0% | lm_head 0% | other 16%
+[PROF] P0 execution: routed CPU 59.229s / 2.83 GB/s (7905 row) | routed GPU critical 0.065s | tier straggler 905.47x | router 3.790s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 17.479s
+[PROF] verdict: compute-bound in expert matmuls (53%) — more cores/threads help; keep IDOT=1, or move hot experts to a GPU tier (COLI_CUDA / COLI_METAL).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+      194.74 real       242.19 user        55.21 sys
+         20178550784  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+            12791552  page reclaims
+                1277  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+              388676  voluntary context switches
+             2328444  involuntary context switches
+          1421296132  instructions retired
+           428705973  cycles elapsed
+            42975760  peak memory footprint
+exit 0
+Pageouts:                                      28478.
+Swapouts:                                    6168768.

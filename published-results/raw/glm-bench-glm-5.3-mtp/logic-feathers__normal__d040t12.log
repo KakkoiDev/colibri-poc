@@ -1,0 +1,92 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.93s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 22 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Which is heavier: a kilogram of feathers or a kilogram of steel?<|assistant|><think></think>PROFILO PREFILL (29.79s):
+PROFILE: expert-disk 164.229s service / 19.648s wait | expert-matmul 5.103s | attention 3.439s (including kvb 0.472s) | lm_head 0.006s | other 1.588s
+ATTENTION: projection/RoPE 1.054s | score-softmax-value 0.031s | output projection 1.882s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.037s | residual P2P 0.000s / 0 hop | orchestration 1.551s
+METAL: blocchi GPU 214 | fallback CPU 0 | expert su GPU 5756 | setup 0.03s gpu-wall 4.54s (kernel 5.07s) scatter 0.01s
+METAL-RESSET: flush 0.52s (residency-set commit in moe_submit, outside setup/gpu-wall)
+They weigh exactly the same — one kilogram. This is a classic trick question that plays on the intuitive but incorrect assumption that steel is "heavier" than feathers because it's denser.
+
+The key insight is that **weight and density are different concepts**:
+
+- **Weight** is the force of gravity acting on mass, measured in newtons (or as mass in everyday usage, like kilograms on a scale).
+- **Density** is mass per unit volume (kg/m³ or g/cm³).
+
+Steel is much denser than feathers (~7,850 kg/m³ vs. ~0.0025–0.005
+---
+prefill 22 tokens in 29.79s | decode 128 tokens in 89.52s (1.43 tok/s) | expert hit rate 20.7% (pin 0.0% + lru 20.7%) | RSS 10.42 GB
+experts loaded/token: 640.4 (per-layer 8.54 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 59056 miss slots; top layers: L8:894 L3:886 L12:884)
+speculation: 1.19 tokens/forward (108 forwards per 128 tokens) | MTP acceptance 68% (19/28)
+PROFILE: expert-disk 109.270s service / 50.870s wait | expert-matmul 6.467s | attention 26.492s (including kvb 0.000s) | lm_head 0.000s | other 5.690s
+ATTENTION: projection/RoPE 0.034s | score-softmax-value 0.028s | output projection 0.033s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.008s | residual P2P 0.000s / 0 hop | orchestration 5.682s
+METAL-ATTN: layer GPU 8424 | gpu-wall 26.21s (kernel 25.41s | cpu-sched 0.03s gpu-sched 0.40s)
+METAL: blocchi GPU 11471 | fallback CPU 0 | expert su GPU 23394 | setup 0.26s gpu-wall 10.68s (kernel 11.64s) scatter 0.03s
+METAL-RESSET: flush 0.52s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 108 | latency p50 690.6 ms | p90 1259.6 ms | p99 1370.6 ms | max 1410.7 ms | 1.19 tok/forward
+[PROF] expert I/O: 297.825 GB fetched (2326.8 MB/token, 3.33 GB/s over the run) | hit 20.7% (0 pin + 3646 lru / 13945 load) | 640.4 loads/token | 109.3s read service / 50.9s felt wait
+[PROF] DISK-CLASS (recency split): cold 5472 x 117.47 GB @ 2.53 GB/s-thread, wall 30.4s @ 3.86 GB/s-wall, avg-conc 1.5 (direct 5452/5472) | warm 8473 x 180.36 GB @ 2.88 GB/s-thread, wall 38.9s @ 4.64 GB/s-wall, avg-conc 1.6 (direct 8408/8473) | disk-busy 50.6s (57% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 57% | expert-matmul 7% | attention 30% | lm_head 0% | other 6%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.008s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 5.682s
+[PROF] verdict: I/O-bound — 57% of the time waits on expert reads (hit 21%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 12.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 22 token · +0.00s
+[prefill] layer 5/78 · 22 token · +1.24s
+[prefill] layer 9/78 · 22 token · +3.20s
+[prefill] layer 13/78 · 22 token · +4.97s
+[prefill] layer 17/78 · 22 token · +6.56s
+[prefill] layer 21/78 · 22 token · +7.90s
+[prefill] layer 25/78 · 22 token · +9.26s
+[prefill] layer 29/78 · 22 token · +10.89s
+[prefill] layer 33/78 · 22 token · +12.29s
+[prefill] layer 37/78 · 22 token · +13.56s
+[prefill] layer 41/78 · 22 token · +14.89s
+[prefill] layer 45/78 · 22 token · +16.29s
+[prefill] layer 49/78 · 22 token · +17.71s
+[prefill] layer 53/78 · 22 token · +19.19s
+[prefill] layer 57/78 · 22 token · +20.61s
+[prefill] layer 61/78 · 22 token · +22.05s
+[prefill] layer 65/78 · 22 token · +23.59s
+[prefill] layer 69/78 · 22 token · +25.10s
+[prefill] layer 73/78 · 22 token · +26.67s
+[prefill] layer 77/78 · 22 token · +28.25s
+[prefill] layer 78/78 · 22 token · +28.60s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.42 GB  hit 15%  1.41 tok/s  1.67 tok/fw]
+
+[t=32  RSS 10.42 GB  hit 14%  1.45 tok/s  1.82 tok/fw]
+
+[t=48  RSS 10.42 GB  hit 15%  1.33 tok/s  1.68 tok/fw]
+[MTP] 68% acceptance over the last 28 proposals: drafts paused for 256 tokens
+
+[t=64  RSS 10.42 GB  hit 17%  1.37 tok/s  1.43 tok/fw]
+
+[t=80  RSS 10.42 GB  hit 19%  1.39 tok/s  1.32 tok/fw]
+
+[t=96  RSS 10.42 GB  hit 20%  1.41 tok/s  1.25 tok/fw]
+
+[t=112  RSS 10.42 GB  hit 20%  1.42 tok/s  1.21 tok/fw]
+
+[t=128  RSS 10.42 GB  hit 21%  1.43 tok/s  1.18 tok/fw]

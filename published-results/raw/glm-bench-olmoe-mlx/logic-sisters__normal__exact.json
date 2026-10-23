@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.77,
+ "prompt_tokens": 32,
+ "output_tokens": 128,
+ "prefill_s": 0.056,
+ "decode_s": 0.71,
+ "text": "To solve this problem, let's break it down step-by-step:\n\n1. **Understand the Problem:**\n   - Sally has 3 brothers.\n   - Each brother has 2 sisters.\n\n2. **Identify the Key Points:**\n   - If each brother has 2 sisters, then the total number of sisters must be equal to the number of brothers.\n\n3. **Formulate the Solution:**\n   - Since there are 3 brothers, there must be 3 sisters.\n\nLet's confirm this reasoning using Python and sympy to ensure the logic holds.\n\n```python\n#",
+ "truncated": true,
+ "tokens_from": "usage",
+ "decode_tok_s": 178.87,
+ "answer_s": 0.77,
+ "correct": false
+}

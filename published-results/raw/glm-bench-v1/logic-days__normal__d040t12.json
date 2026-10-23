@@ -1,0 +1,18 @@
+{
+ "id": "logic-days",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 115.36,
+ "prompt_tokens": 17,
+ "prefill_s": 24.65,
+ "output_tokens": 120,
+ "decode_s": 87.64,
+ "decode_tok_s": 1.37,
+ "zeroed_slots": 56713,
+ "hit_pct": 24.4,
+ "text": "# Answer: Sunday\n\n## Explanation:\n\n**Step 1:** Identify the starting day — the question specifies **Friday** as the reference point.\n\n**Step 2:** Understand the operation — \"two days after\" means we count forward 2 days from Friday.\n\n**Step 3:** Count forward:\n- 1 day after Friday → **Saturday**\n- 2 days after Friday → **Sunday**\n\n## Verification\nGoing backward to double-check: If Sunday is two days after Friday, then counting back 2 days from Sunday should return us to Friday. ✓\n\n**Final Answer: Sunday**",
+ "answer_s": 112.29,
+ "correct": true
+}

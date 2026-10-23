@@ -1,0 +1,88 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.69s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 27 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>Sally has 3 brothers. Each brother has 2 sisters. How many sisters does Sally have?<|assistant|><think></think>PROFILO PREFILL (34.04s):
+PROFILE: expert-disk 182.900s service / 21.170s wait | expert-matmul 6.151s | attention 4.231s (including kvb 0.586s) | lm_head 0.006s | other 2.484s
+ATTENTION: projection/RoPE 1.291s | score-softmax-value 0.042s | output projection 2.312s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.042s | residual P2P 0.000s / 0 hop | orchestration 2.442s
+METAL: blocchi GPU 226 | fallback CPU 0 | expert su GPU 6498 | setup 0.04s gpu-wall 5.58s (kernel 6.24s) scatter 0.01s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+**1. Identify the core question the user is asking.**
+The user is asking a specific question: "How many sisters does Sally have?" given the established facts that (1) Sally has 3 brothers, and (2) each of her brothers has 2 sisters. This is a classic riddle designed to test logical reasoning about family relationships.
+
+The key insight needed to solve it: **The "2 sisters" that each brother has must include Sally herself and one other sister.** This is because all the siblings (brothers and sisters) share the same set of sisters — the family's daughters. Since Sally is female,
+---
+prefill 27 tokens in 34.04s | decode 128 tokens in 92.26s (1.39 tok/s) | expert hit rate 19.8% (pin 0.0% + lru 19.8%) | RSS 10.20 GB
+experts loaded/token: 635.3 (per-layer 8.47 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 59262 miss slots; top layers: L3:884 L5:883 L11:882)
+speculation: 1.15 tokens/forward (111 forwards per 128 tokens) | MTP acceptance 67% (16/24)
+PROFILE: expert-disk 113.945s service / 53.849s wait | expert-matmul 6.467s | attention 26.382s (including kvb 0.000s) | lm_head 0.000s | other 5.561s
+ATTENTION: projection/RoPE 0.030s | score-softmax-value 0.024s | output projection 0.028s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.008s | residual P2P 0.000s / 0 hop | orchestration 5.553s
+METAL-ATTN: layer GPU 8658 | gpu-wall 26.11s (kernel 25.28s | cpu-sched 0.03s gpu-sched 0.42s)
+METAL: blocchi GPU 11659 | fallback CPU 0 | expert su GPU 24422 | setup 0.27s gpu-wall 11.72s (kernel 12.76s) scatter 0.03s
+METAL-RESSET: flush 0.52s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 111 | latency p50 707.3 ms | p90 1287.3 ms | p99 1376.6 ms | max 1434.8 ms | 1.15 tok/forward
+[PROF] expert I/O: 305.702 GB fetched (2388.3 MB/token, 3.31 GB/s over the run) | hit 19.8% (0 pin + 3547 lru / 14337 load) | 635.3 loads/token | 113.9s read service / 53.8s felt wait
+[PROF] DISK-CLASS (recency split): cold 5776 x 123.64 GB @ 2.59 GB/s-thread, wall 33.3s @ 3.71 GB/s-wall, avg-conc 1.4 (direct 5758/5776) | warm 8561 x 182.06 GB @ 2.76 GB/s-thread, wall 40.0s @ 4.55 GB/s-wall, avg-conc 1.6 (direct 8549/8561) | disk-busy 53.6s (58% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 58% | expert-matmul 7% | attention 29% | lm_head 0% | other 6%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.008s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 5.553s
+[PROF] verdict: I/O-bound — 58% of the time waits on expert reads (hit 20%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 12.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 27 token · +0.00s
+[prefill] layer 5/78 · 27 token · +1.43s
+[prefill] layer 9/78 · 27 token · +3.71s
+[prefill] layer 13/78 · 27 token · +5.70s
+[prefill] layer 17/78 · 27 token · +7.52s
+[prefill] layer 21/78 · 27 token · +9.09s
+[prefill] layer 25/78 · 27 token · +10.68s
+[prefill] layer 29/78 · 27 token · +12.44s
+[prefill] layer 33/78 · 27 token · +14.00s
+[prefill] layer 37/78 · 27 token · +15.58s
+[prefill] layer 41/78 · 27 token · +17.08s
+[prefill] layer 45/78 · 27 token · +18.64s
+[prefill] layer 49/78 · 27 token · +20.30s
+[prefill] layer 53/78 · 27 token · +21.90s
+[prefill] layer 57/78 · 27 token · +23.41s
+[prefill] layer 61/78 · 27 token · +25.08s
+[prefill] layer 65/78 · 27 token · +26.71s
+[prefill] layer 69/78 · 27 token · +28.43s
+[prefill] layer 73/78 · 27 token · +30.26s
+[prefill] layer 77/78 · 27 token · +32.15s
+[prefill] layer 78/78 · 27 token · +32.59s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.20 GB  hit 13%  1.10 tok/s  1.36 tok/fw]
+
+[t=32  RSS 10.20 GB  hit 14%  1.21 tok/s  1.55 tok/fw]
+[MTP] 67% acceptance over the last 24 proposals: drafts paused for 256 tokens
+
+[t=48  RSS 10.20 GB  hit 14%  1.32 tok/s  1.52 tok/fw]
+
+[t=64  RSS 10.20 GB  hit 17%  1.35 tok/s  1.34 tok/fw]
+
+[t=80  RSS 10.20 GB  hit 18%  1.35 tok/s  1.25 tok/fw]
+
+[t=96  RSS 10.20 GB  hit 19%  1.37 tok/s  1.20 tok/fw]
+
+[t=112  RSS 10.20 GB  hit 20%  1.38 tok/s  1.17 tok/fw]
+
+[t=128  RSS 10.20 GB  hit 20%  1.39 tok/s  1.14 tok/fw]

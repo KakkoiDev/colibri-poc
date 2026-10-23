@@ -1,0 +1,62 @@
+[
+  {
+    "variant": "baseline",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 198.99561626649623,
+    "min_decode_tps": 141.61797263600633,
+    "max_decode_tps": 200.7146016873911,
+    "paired_median_speedup": 1.0,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.048297208999997565
+  },
+  {
+    "variant": "stream-lru-8",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 28.380654194035124,
+    "min_decode_tps": 25.74303732544221,
+    "max_decode_tps": 30.720804265740536,
+    "paired_median_speedup": 0.14512548586543955,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.4042324170000029
+  },
+  {
+    "variant": "stream-lru-32",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 48.57529542734005,
+    "min_decode_tps": 43.195347745497266,
+    "max_decode_tps": 52.486805016095396,
+    "paired_median_speedup": 0.25027556217938784,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.3430547909999859
+  },
+  {
+    "variant": "stream-lfu-32",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 48.083956077915175,
+    "min_decode_tps": 41.6588533805597,
+    "max_decode_tps": 55.95103759668773,
+    "paired_median_speedup": 0.24933279403374298,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.2558646659999795
+  },
+  {
+    "variant": "stream-lru-64",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 69.53033258748263,
+    "min_decode_tps": 61.02887291425684,
+    "max_decode_tps": 70.31350525481544,
+    "paired_median_speedup": 0.34955674833373135,
+    "exact_tokens_match": false,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.14078670799995052
+  }
+]

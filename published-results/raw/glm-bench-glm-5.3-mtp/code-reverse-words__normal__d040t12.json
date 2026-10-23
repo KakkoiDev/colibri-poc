@@ -1,0 +1,18 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 131.86,
+ "prompt_tokens": 29,
+ "prefill_s": 38.73,
+ "output_tokens": 128,
+ "decode_s": 90.13,
+ "decode_tok_s": 1.42,
+ "zeroed_slots": 59160,
+ "hit_pct": 21.0,
+ "text": "Here's a clean implementation that relies on Python's built-in capabilities to split, reverse, and join, which is both efficient and readable:\n\n```python\ndef reverse_words(s):\n    return ' '.join(reversed(s.split()))\n```\n\n**How it works:**\n\n1. `s.split()` — splits the string `s` on any whitespace (spaces, tabs, newlines), automatically collapsing multiple consecutive separators into a single delimiter. This handles edge cases like leading/trailing spaces and multiple spaces between words gracefully. For example, `\"  hello   world  \".split()` produces `['hello', 'world']`.\n\n2. `",
+ "answer_s": 128.86,
+ "correct": true
+}

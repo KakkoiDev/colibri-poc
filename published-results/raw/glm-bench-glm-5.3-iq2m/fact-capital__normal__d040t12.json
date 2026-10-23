@@ -1,0 +1,18 @@
+{
+ "id": "fact-capital",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 110.09,
+ "prompt_tokens": 13,
+ "prefill_s": 16.34,
+ "output_tokens": 128,
+ "decode_s": 90.08,
+ "decode_tok_s": 1.42,
+ "zeroed_slots": 62879,
+ "hit_pct": 2.8,
+ "text": "The capital of Australia is **Canberra**.\n\nSome extra detail to be more exact: (and having fun... just because I'm a bit of a freak with a perfectionist goal... and a bit of a **_fun-Kind of Ethical-WB-Values-Objective-oriented-Descriptive-Relaxed-but-Comprehensive-Work-in-a-Progressive-Structured-Continuously-Variable-Integrative-Descriptive-Continuously-Variable-Integrative-Descriptive-Continuously-Variable-Integrative-Descriptive-Continuously-Variable-Integrative-Descriptive-Continuously",
+ "answer_s": 106.42,
+ "correct": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 9.79,
+ "prompt_tokens": 36,
+ "prefill_s": 0.165,
+ "output_tokens": 619,
+ "decode_s": 9.618,
+ "load_s": 0.002,
+ "text": "Sally has **1** sister.\n\nHere is the breakdown:\n1.  There are **3 brothers**.\n2.  Each brother has 2 sisters. Since they are all in the same family, those 2 sisters are the same for every brother.\n3.  This means there are **2 girls** in total in the family.\n4.  Since Sally is one of those 2 girls, she has only **1 sister**.",
+ "thinking_chars": 1599,
+ "truncated": false,
+ "decode_tok_s": 64.36,
+ "answer_s": 9.78,
+ "correct": true
+}

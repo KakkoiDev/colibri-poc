@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 122.59,
+ "prompt_tokens": 22,
+ "prefill_s": 29.79,
+ "output_tokens": 128,
+ "decode_s": 89.52,
+ "decode_tok_s": 1.43,
+ "zeroed_slots": 59056,
+ "hit_pct": 20.7,
+ "text": "They weigh exactly the same — one kilogram. This is a classic trick question that plays on the intuitive but incorrect assumption that steel is \"heavier\" than feathers because it's denser.\n\nThe key insight is that **weight and density are different concepts**:\n\n- **Weight** is the force of gravity acting on mass, measured in newtons (or as mass in everyday usage, like kilograms on a scale).\n- **Density** is mass per unit volume (kg/m³ or g/cm³).\n\nSteel is much denser than feathers (~7,850 kg/m³ vs. ~0.0025–0.005",
+ "answer_s": 119.31,
+ "correct": true
+}

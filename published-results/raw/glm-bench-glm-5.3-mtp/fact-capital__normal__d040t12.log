@@ -1,0 +1,90 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.66s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 13 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>What is the capital of Australia?<|assistant|><think></think>PROFILO PREFILL (27.19s):
+PROFILE: expert-disk 119.458s service / 15.221s wait | expert-matmul 3.472s | attention 7.907s (including kvb 0.690s) | lm_head 0.006s | other 0.585s
+ATTENTION: projection/RoPE 2.370s | score-softmax-value 0.013s | output projection 4.834s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.027s | residual P2P 0.000s / 0 hop | orchestration 0.558s
+METAL: blocchi GPU 162 | fallback CPU 0 | expert su GPU 4280 | setup 0.02s gpu-wall 2.94s (kernel 3.25s) scatter 0.01s
+METAL-RESSET: flush 0.50s (residency-set commit in moe_submit, outside setup/gpu-wall)
+The capital of Australia is **Canberra**. 
+
+Many people might guess Sydney because it's the largest and most famous Australian city (and often mistaken for the capital, much like people guess the incorrect Sydney or even the capital of a country like Turkey being Istanbul rather than the correct one, Ankara), but Sydney is *not* the capital of Australia. 
+
+Sydney is the capital of the state of New South Wales, and Melbourne is the capital of the state of Victoria. 
+
+Canberra is a planned city that was purpose-built to be the capital, located in the Australian Capital Territory (ACT), which was carved out of New South
+---
+prefill 13 tokens in 27.19s | decode 128 tokens in 88.57s (1.45 tok/s) | expert hit rate 15.8% (pin 0.0% + lru 15.8%) | RSS 14.27 GB
+experts loaded/token: 673.6 (per-layer 8.98 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 56864 miss slots; top layers: L5:926 L3:912 L8:899)
+speculation: 1.80 tokens/forward (71 forwards per 128 tokens) | MTP acceptance 79% (56/71)
+PROFILE: expert-disk 135.444s service / 48.607s wait | expert-matmul 6.882s | attention 26.963s (including kvb 0.000s) | lm_head 0.000s | other 6.115s
+ATTENTION: projection/RoPE 0.093s | score-softmax-value 0.078s | output projection 0.086s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.014s | residual P2P 0.000s / 0 hop | orchestration 6.102s
+METAL-ATTN: layer GPU 5538 | gpu-wall 26.57s (kernel 26.04s | cpu-sched 0.02s gpu-sched 0.24s)
+METAL: blocchi GPU 8285 | fallback CPU 0 | expert su GPU 20919 | setup 0.21s gpu-wall 9.55s (kernel 10.60s) scatter 0.02s
+METAL-RESSET: flush 0.51s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 71 | latency p50 1214.8 ms | p90 1280.3 ms | p99 1308.6 ms | max 1321.6 ms | 1.80 tok/forward
+[PROF] expert I/O: 299.635 GB fetched (2340.9 MB/token, 3.38 GB/s over the run) | hit 15.8% (0 pin + 2612 lru / 13900 load) | 673.6 loads/token | 135.4s read service / 48.6s felt wait
+[PROF] DISK-CLASS (recency split): cold 5303 x 115.43 GB @ 2.12 GB/s-thread, wall 33.6s @ 3.43 GB/s-wall, avg-conc 1.6 (direct 5275/5303) | warm 8597 x 184.20 GB @ 2.28 GB/s-thread, wall 40.6s @ 4.54 GB/s-wall, avg-conc 2.0 (direct 8506/8597) | disk-busy 48.4s (55% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 55% | expert-matmul 8% | attention 30% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.014s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 6.102s
+[PROF] verdict: I/O-bound — 55% of the time waits on expert reads (hit 16%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 13.0 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 13 token · +0.00s
+[prefill] layer 5/78 · 13 token · +1.63s
+[prefill] layer 9/78 · 13 token · +3.31s
+[prefill] layer 13/78 · 13 token · +4.79s
+[prefill] layer 17/78 · 13 token · +6.16s
+[prefill] layer 21/78 · 13 token · +7.44s
+[prefill] layer 25/78 · 13 token · +8.73s
+[prefill] layer 29/78 · 13 token · +10.10s
+[prefill] layer 33/78 · 13 token · +11.38s
+[prefill] layer 37/78 · 13 token · +12.65s
+[prefill] layer 41/78 · 13 token · +13.88s
+[prefill] layer 45/78 · 13 token · +15.18s
+[prefill] layer 49/78 · 13 token · +16.56s
+[prefill] layer 53/78 · 13 token · +17.89s
+[prefill] layer 57/78 · 13 token · +19.16s
+[prefill] layer 61/78 · 13 token · +20.47s
+[prefill] layer 65/78 · 13 token · +21.79s
+[prefill] layer 69/78 · 13 token · +23.11s
+[prefill] layer 73/78 · 13 token · +24.47s
+[prefill] layer 77/78 · 13 token · +25.91s
+[prefill] layer 78/78 · 13 token · +26.25s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 14.27 GB  hit 17%  1.41 tok/s  1.67 tok/fw]
+
+[t=32  RSS 14.27 GB  hit 16%  1.48 tok/s  1.82 tok/fw]
+
+[t=48  RSS 14.27 GB  hit 15%  1.40 tok/s  1.74 tok/fw]
+
+[t=64  RSS 14.27 GB  hit 15%  1.41 tok/s  1.75 tok/fw]
+
+[t=80  RSS 14.27 GB  hit 15%  1.42 tok/s  1.76 tok/fw]
+
+[t=96  RSS 14.27 GB  hit 15%  1.42 tok/s  1.76 tok/fw]
+
+[t=112  RSS 14.27 GB  hit 16%  1.45 tok/s  1.79 tok/fw]
+
+[t=128  RSS 14.27 GB  hit 16%  1.45 tok/s  1.79 tok/fw]

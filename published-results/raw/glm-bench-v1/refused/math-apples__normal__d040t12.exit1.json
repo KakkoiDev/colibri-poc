@@ -1,0 +1,12 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 1,
+ "wall_s": 0.05,
+ "zeroed_slots": 0,
+ "hit_pct": null,
+ "answer_s": null,
+ "correct": false
+}

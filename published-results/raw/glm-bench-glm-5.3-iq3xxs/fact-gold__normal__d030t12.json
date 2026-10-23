@@ -1,0 +1,18 @@
+{
+ "id": "fact-gold",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 241.88,
+ "prompt_tokens": 14,
+ "prefill_s": 21.88,
+ "output_tokens": 128,
+ "decode_s": 215.25,
+ "decode_tok_s": 0.59,
+ "zeroed_slots": 42259,
+ "hit_pct": 1.2,
+ "text": "The chemical symbol for gold is **Au**, which comes from the Latin word *aurum*, meaning \"shining dawn\" or \"glow of sunrise.\" This Latin root is also where the word \"aurora\" comes from.\n\nGold's atomic number is 79, and it sits in Group 11 of the periodic table alongside copper and silver. Interestingly, gold is one of the few elements whose symbol doesn't match its English name — a trait it shares with elements like silver (Ag, from *argentum*), iron (Fe, from *ferrum*), and potassium (K, from *kalium*).",
+ "answer_s": 237.13,
+ "correct": true
+}

@@ -1,0 +1,6 @@
+slots-hybrid warmup explain: 47.31 tok/s
+slots-hybrid measured explain: 56.81 tok/s
+slots-hybrid measured code: 57.17 tok/s
+slots-hybrid measured reason: 51.16 tok/s
+slots-hybrid measured story: 43.30 tok/s
+slots-hybrid measured long-context: 41.68 tok/s

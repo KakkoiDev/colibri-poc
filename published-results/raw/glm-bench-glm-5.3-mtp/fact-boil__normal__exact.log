@@ -1,0 +1,79 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.59s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 19 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>At sea level, at what temperature in Celsius does water boil?<|assistant|><think></think>PROFILO PREFILL (27.53s):
+PROFILE: expert-disk 154.345s service / 18.844s wait | expert-matmul 4.557s | attention 2.988s (including kvb 0.399s) | lm_head 0.007s | other 1.130s
+ATTENTION: projection/RoPE 0.912s | score-softmax-value 0.050s | output projection 1.627s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.063s | residual P2P 0.000s / 0 hop | orchestration 1.068s
+METAL: blocchi GPU 204 | fallback CPU 0 | expert su GPU 5486 | setup 0.03s gpu-wall 3.92s (kernel 4.38s) scatter 0.01s
+METAL-RESSET: flush 0.59s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Water boils at **100°C** (212°F) at sea level.
+
+This is because at sea level, the atmospheric pressure is about 1 atmosphere (101.325 kPa), and water's vapor pressure reaches this value at 100°C. At higher altitudes, where the atmospheric pressure is lower, water boils at lower temperatures — for example, in Denver (about 1,600 m above sea level), water boils at roughly 95°C.
+---
+prefill 19 tokens in 27.53s | decode 93 tokens in 223.69s (0.42 tok/s) | expert hit rate 1.6% (pin 0.0% + lru 1.6%) | RSS 10.17 GB
+experts loaded/token: 640.3 (per-layer 8.54 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.90 tokens/forward (49 forwards per 93 tokens) | MTP acceptance 90% (44/49)
+PROFILE: expert-disk 1221.637s service / 169.273s wait | expert-matmul 19.754s | attention 18.344s (including kvb 0.000s) | lm_head 0.000s | other 16.316s
+ATTENTION: projection/RoPE 0.234s | score-softmax-value 0.184s | output projection 0.075s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.010s | residual P2P 0.000s / 0 hop | orchestration 16.306s
+METAL-ATTN: layer GPU 3822 | gpu-wall 17.75s (kernel 17.38s | cpu-sched 0.01s gpu-sched 0.17s)
+METAL: blocchi GPU 4870 | fallback CPU 0 | expert su GPU 55778 | setup 0.34s gpu-wall 23.30s (kernel 23.75s) scatter 0.04s
+METAL-RESSET: flush 0.60s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 49 | latency p50 4409.6 ms | p90 4820.0 ms | p99 4979.2 ms | max 5019.8 ms | 1.90 tok/forward
+[PROF] expert I/O: 1060.869 GB fetched (11407.2 MB/token, 4.74 GB/s over the run) | hit 1.6% (0 pin + 812 lru / 49387 load) | 640.3 loads/token | 1221.6s read service / 169.3s felt wait
+[PROF] DISK-CLASS (recency split): cold 24994 x 538.63 GB @ 0.79 GB/s-thread, wall 166.2s @ 3.24 GB/s-wall, avg-conc 4.1 (direct 24881/24994) | warm 24393 x 522.24 GB @ 0.97 GB/s-thread, wall 147.7s @ 3.54 GB/s-wall, avg-conc 3.6 (direct 24284/24393) | disk-busy 169.1s (76% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 76% | expert-matmul 9% | attention 8% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.010s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 16.306s
+[PROF] verdict: I/O-bound — 76% of the time waits on expert reads (hit 2%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.1 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 19 token · +0.00s
+[prefill] layer 5/78 · 19 token · +1.27s
+[prefill] layer 9/78 · 19 token · +3.07s
+[prefill] layer 13/78 · 19 token · +4.64s
+[prefill] layer 17/78 · 19 token · +6.06s
+[prefill] layer 21/78 · 19 token · +7.31s
+[prefill] layer 25/78 · 19 token · +8.54s
+[prefill] layer 29/78 · 19 token · +10.03s
+[prefill] layer 33/78 · 19 token · +11.29s
+[prefill] layer 37/78 · 19 token · +12.55s
+[prefill] layer 41/78 · 19 token · +13.77s
+[prefill] layer 45/78 · 19 token · +15.09s
+[prefill] layer 49/78 · 19 token · +16.45s
+[prefill] layer 53/78 · 19 token · +17.76s
+[prefill] layer 57/78 · 19 token · +19.07s
+[prefill] layer 61/78 · 19 token · +20.34s
+[prefill] layer 65/78 · 19 token · +21.73s
+[prefill] layer 69/78 · 19 token · +23.09s
+[prefill] layer 73/78 · 19 token · +24.50s
+[prefill] layer 77/78 · 19 token · +25.94s
+[prefill] layer 78/78 · 19 token · +26.29s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 10.17 GB  hit 2%  0.44 tok/s  1.88 tok/fw]
+
+[t=32  RSS 10.17 GB  hit 1%  0.42 tok/s  1.82 tok/fw]
+
+[t=48  RSS 10.17 GB  hit 2%  0.42 tok/s  1.88 tok/fw]
+
+[t=64  RSS 10.17 GB  hit 2%  0.43 tok/s  1.91 tok/fw]
+
+[t=80  RSS 10.17 GB  hit 2%  0.42 tok/s  1.88 tok/fw]

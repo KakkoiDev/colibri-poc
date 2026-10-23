@@ -1,0 +1,7 @@
+{
+  "name": "fused-gate-up",
+  "backend": "mlx",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T165036.378464Z/r1-fused-gate-up.plugin.py",
+  "description": "Combine gate and up expert matrices; preserve routing; extra resident weight copy"
+}

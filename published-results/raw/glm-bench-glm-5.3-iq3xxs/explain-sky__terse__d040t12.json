@@ -1,0 +1,18 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "terse",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 121.21,
+ "prompt_tokens": 29,
+ "prefill_s": 33.49,
+ "output_tokens": 51,
+ "decode_s": 83.74,
+ "decode_tok_s": 0.61,
+ "zeroed_slots": 23177,
+ "hit_pct": 2.0,
+ "text": "The sky is blue because air molecules scatter blue light (shorter wavelengths) more than red light (Rayleigh scattering), so blue light from the sun is scattered across the sky. At sunset, longer-path light appears red/orange for the same reason.",
+ "answer_s": 117.23,
+ "correct": true
+}

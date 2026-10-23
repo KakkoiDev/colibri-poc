@@ -1,0 +1,19 @@
+{
+ "id": "code-factorial",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 6.62,
+ "prompt_tokens": 33,
+ "prefill_s": 0.342,
+ "output_tokens": 128,
+ "decode_s": 6.261,
+ "load_s": 0.007,
+ "text": "Here are the two most common ways to implement this: using **recursion** (the mathematical approach) and using an **iterative loop** (the more efficient approach).\n\n### Option 1: Iterative Approach (Recommended)\nThis method is generally preferred in Python because it avoids the \"maximum recursion depth\" error for large numbers and is slightly faster.\n\n```python\ndef factorial(n):\n    \"\"\"Returns the factorial of a non-negative integer n.\"\"\"\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers.\")\n    \n    result = 1\n    for",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 20.44,
+ "answer_s": 6.6,
+ "correct": false
+}

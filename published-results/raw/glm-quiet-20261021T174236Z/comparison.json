@@ -1,0 +1,240 @@
+{
+ "meta": {
+  "stamp": "20261021T174236Z",
+  "forced": false,
+  "repeats": 2,
+  "conditions_before": {
+   "time": "2026-10-21T17:42:36Z",
+   "free_gb": 27.2,
+   "memory_free_pct": 90,
+   "swap_used_mb": 521.62,
+   "process_count": 449,
+   "load_avg": [
+    1.51708984375,
+    2.03173828125,
+    2.16064453125
+   ],
+   "top_memory_apps": [
+    {
+     "name": "Claude Helper (Renderer)",
+     "rss_gb": 0.5
+    },
+    {
+     "name": "Claude",
+     "rss_gb": 0.17
+    },
+    {
+     "name": "claude",
+     "rss_gb": 0.17
+    },
+    {
+     "name": "com.apple.WebKit.WebContent",
+     "rss_gb": 0.13
+    },
+    {
+     "name": "Claude Helper (Renderer)",
+     "rss_gb": 0.08
+    },
+    {
+     "name": "Claude Helper",
+     "rss_gb": 0.05
+    },
+    {
+     "name": "Claude Helper (Renderer)",
+     "rss_gb": 0.05
+    },
+    {
+     "name": "Claude Helper",
+     "rss_gb": 0.04
+    }
+   ]
+  },
+  "colibri_commit": "bf2442915d6e3dd4cdfd2eb9c2a3d2aa44a25850",
+  "lab_experiments": [],
+  "conditions_after": {
+   "time": "2026-10-21T18:05:06Z",
+   "free_gb": 26.5,
+   "memory_free_pct": 91,
+   "swap_used_mb": 521.62,
+   "process_count": 457,
+   "load_avg": [
+    2.02587890625,
+    2.28466796875,
+    2.2177734375
+   ],
+   "top_memory_apps": [
+    {
+     "name": "Claude Helper (Renderer)",
+     "rss_gb": 0.52
+    },
+    {
+     "name": "claude",
+     "rss_gb": 0.22
+    },
+    {
+     "name": "Claude",
+     "rss_gb": 0.2
+    },
+    {
+     "name": "com.apple.WebKit.WebContent",
+     "rss_gb": 0.17
+    },
+    {
+     "name": "mediaanalysisd",
+     "rss_gb": 0.11
+    },
+    {
+     "name": "Claude Helper (Renderer)",
+     "rss_gb": 0.08
+    },
+    {
+     "name": "corespotlightd",
+     "rss_gb": 0.06
+    },
+    {
+     "name": "Claude Helper",
+     "rss_gb": 0.05
+    }
+   ]
+  }
+ },
+ "cases": [
+  {
+   "case": "exact-sky-24",
+   "busy_run": "c9-best-combo",
+   "busy_tok_s": 0.43,
+   "quiet_tok_s": [
+    0.42,
+    0.42
+   ],
+   "quiet_mean": 0.42,
+   "same_text": [
+    true,
+    true
+   ]
+  },
+  {
+   "case": "skip030-sky-48",
+   "busy_run": "l8-degrade-030",
+   "busy_tok_s": 0.91,
+   "quiet_tok_s": [
+    0.88,
+    0.87
+   ],
+   "quiet_mean": 0.875,
+   "same_text": [
+    true,
+    true
+   ]
+  },
+  {
+   "case": "skip050-sky-48",
+   "busy_run": "l10-degrade-050",
+   "busy_tok_s": 1.57,
+   "quiet_tok_s": [
+    1.57,
+    1.56
+   ],
+   "quiet_mean": 1.565,
+   "same_text": [
+    true,
+    true
+   ]
+  },
+  {
+   "case": "exact-code-48",
+   "busy_run": "q0-code-exact",
+   "busy_tok_s": 0.42,
+   "quiet_tok_s": [
+    0.4,
+    0.4
+   ],
+   "quiet_mean": 0.4,
+   "same_text": [
+    true,
+    true
+   ]
+  },
+  {
+   "case": "skip050-code-48",
+   "busy_run": "q3-code-degrade-050",
+   "busy_tok_s": 1.46,
+   "quiet_tok_s": [
+    1.47,
+    1.47
+   ],
+   "quiet_mean": 1.47,
+   "same_text": [
+    true,
+    true
+   ]
+  },
+  {
+   "case": "exact-sky-24-t12",
+   "busy_run": "t-metal-exact-t12",
+   "busy_tok_s": 0.44,
+   "quiet_tok_s": [
+    0.41,
+    0.4
+   ],
+   "quiet_mean": 0.405,
+   "same_text": [
+    true,
+    true
+   ]
+  },
+  {
+   "case": "skip050-sky-48-t12",
+   "busy_run": "t-metal-skip050-t12",
+   "busy_tok_s": 1.91,
+   "quiet_tok_s": [
+    1.91,
+    1.91
+   ],
+   "quiet_mean": 1.91,
+   "same_text": [
+    true,
+    true
+   ]
+  }
+ ],
+ "ram_sweep": [
+  {
+   "case": "exact-sky-24-ram22__r1",
+   "exit": 0,
+   "wall_s": 84.38,
+   "ram": 22,
+   "ctx": 1024,
+   "ngen": 24,
+   "env": {},
+   "refused": false,
+   "prompt_tokens": 17,
+   "prefill_s": 24.43,
+   "output_tokens": 24,
+   "decode_s": 56.95,
+   "decode_tok_s": 0.42,
+   "zeroed_slots": 0,
+   "hit_pct": 2.8,
+   "text": "The sky appears blue because molecules in Earth's atmosphere scatter shorter wavelengths of sunlight (blue and violet) more strongly than longer"
+  },
+  {
+   "case": "exact-sky-24-ram26__r1",
+   "exit": 0,
+   "wall_s": 84.21,
+   "ram": 26,
+   "ctx": 1024,
+   "ngen": 24,
+   "env": {},
+   "refused": false,
+   "prompt_tokens": 17,
+   "prefill_s": 24.34,
+   "output_tokens": 24,
+   "decode_s": 56.68,
+   "decode_tok_s": 0.42,
+   "zeroed_slots": 0,
+   "hit_pct": 3.6,
+   "text": "The sky appears blue because molecules in Earth's atmosphere scatter shorter wavelengths of sunlight (blue and violet) more strongly than longer"
+  }
+ ],
+ "original": []
+}

@@ -1,0 +1,75 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.30s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 36 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>All bloops are razzies and all razzies are lazzies. Are all bloops lazzies? Answer yes or no.<|assistant|><think></think>PROFILO PREFILL (37.57s):
+PROFILE: expert-disk 182.965s service / 20.575s wait | expert-matmul 8.066s | attention 5.749s (including kvb 0.778s) | lm_head 0.008s | other 3.176s
+ATTENTION: projection/RoPE 1.720s | score-softmax-value 0.186s | output projection 3.065s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.130s | residual P2P 0.000s / 0 hop | orchestration 3.046s
+METAL: blocchi GPU 228 | fallback CPU 0 | expert su GPU 7270 | setup 0.05s gpu-wall 7.41s (kernel 8.28s) scatter 0.02s
+METAL-RESSET: flush 0.59s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Yes.
+
+**Explanation:** If all bloops are razzies, and all razzies are lazzies, then bloops are a subset of lazzies. So every bloop is also a lazzie.
+---
+prefill 36 tokens in 37.57s | decode 46 tokens in 30.38s (1.51 tok/s) | expert hit rate 31.2% (pin 0.0% + lru 31.2%) | RSS 8.09 GB
+experts loaded/token: 613.0 (per-layer 8.17 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 23035 miss slots; top layers: L8:323 L11:322 L12:322)
+speculation: 1.07 tokens/forward (43 forwards per 46 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 15.220s service / 11.478s wait | expert-matmul 1.738s | attention 9.097s (including kvb 0.000s) | lm_head 0.000s | other 8.062s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.003s | residual P2P 0.000s / 0 hop | orchestration 8.060s
+METAL-ATTN: layer GPU 3354 | gpu-wall 9.00s (kernel 8.68s | cpu-sched 0.02s gpu-sched 0.14s)
+METAL: blocchi GPU 4204 | fallback CPU 0 | expert su GPU 11802 | setup 0.14s gpu-wall 9.00s (kernel 9.83s) scatter 0.03s
+METAL-RESSET: flush 0.59s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 43 | latency p50 662.2 ms | p90 744.6 ms | p99 1212.5 ms | max 1266.8 ms | 1.07 tok/forward
+[PROF] expert I/O: 66.185 GB fetched (1438.8 MB/token, 2.18 GB/s over the run) | hit 31.2% (0 pin + 1415 lru / 3117 load) | 613.0 loads/token | 15.2s read service / 11.5s felt wait
+[PROF] DISK-CLASS (recency split): cold 1337 x 28.39 GB @ 4.24 GB/s-thread, wall 5.9s @ 4.84 GB/s-wall, avg-conc 1.1 (direct 1328/1337) | warm 1780 x 37.80 GB @ 4.44 GB/s-thread, wall 7.1s @ 5.35 GB/s-wall, avg-conc 1.2 (direct 1769/1780) | disk-busy 11.4s (38% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 38% | expert-matmul 6% | attention 30% | lm_head 0% | other 27%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.003s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 8.060s
+[PROF] verdict: I/O-bound — 38% of the time waits on expert reads (hit 31%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 11.6 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 36 token · +0.00s
+[prefill] layer 5/78 · 36 token · +1.61s
+[prefill] layer 9/78 · 36 token · +3.99s
+[prefill] layer 13/78 · 36 token · +6.17s
+[prefill] layer 17/78 · 36 token · +8.19s
+[prefill] layer 21/78 · 36 token · +9.98s
+[prefill] layer 25/78 · 36 token · +11.74s
+[prefill] layer 29/78 · 36 token · +13.72s
+[prefill] layer 33/78 · 36 token · +15.56s
+[prefill] layer 37/78 · 36 token · +17.37s
+[prefill] layer 41/78 · 36 token · +19.16s
+[prefill] layer 45/78 · 36 token · +21.01s
+[prefill] layer 49/78 · 36 token · +22.90s
+[prefill] layer 53/78 · 36 token · +24.74s
+[prefill] layer 57/78 · 36 token · +26.63s
+[prefill] layer 61/78 · 36 token · +28.58s
+[prefill] layer 65/78 · 36 token · +30.50s
+[prefill] layer 69/78 · 36 token · +32.41s
+[prefill] layer 73/78 · 36 token · +34.44s
+[prefill] layer 77/78 · 36 token · +36.50s
+[prefill] layer 78/78 · 36 token · +37.01s
+
+[t=16  RSS 8.09 GB  hit 34%  1.63 tok/s  1.07 tok/fw]
+
+[t=32  RSS 8.09 GB  hit 32%  1.56 tok/s  1.07 tok/fw]

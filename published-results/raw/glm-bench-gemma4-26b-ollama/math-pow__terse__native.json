@@ -1,0 +1,19 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 6.74,
+ "prompt_tokens": 43,
+ "prefill_s": 0.203,
+ "output_tokens": 421,
+ "decode_s": 6.537,
+ "load_s": 0.002,
+ "text": "1024",
+ "thinking_chars": 1079,
+ "truncated": false,
+ "decode_tok_s": 64.4,
+ "answer_s": 6.74,
+ "correct": true
+}

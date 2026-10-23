@@ -1,0 +1,19 @@
+{
+ "id": "math-pow",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 2.29,
+ "prompt_tokens": 78,
+ "prefill_s": 0.175,
+ "output_tokens": 84,
+ "decode_s": 2.113,
+ "load_s": 0.001,
+ "text": "2 to the power of 10 is\n\n\\[\n2^{10} = 1024\n\\]\n\n(2 multiplied by itself 10 times equals 1,024).",
+ "thinking_chars": 118,
+ "truncated": false,
+ "decode_tok_s": 39.75,
+ "answer_s": 2.29,
+ "correct": true
+}

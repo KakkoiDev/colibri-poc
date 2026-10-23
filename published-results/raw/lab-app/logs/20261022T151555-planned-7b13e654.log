@@ -1,0 +1,6 @@
+# Experiment: Engine policy "experimental-fast"
+# ~/Code/colibri-poc/.venv/bin/python glm_lab.py run-planned policy-experimental-fast
+Running x-policy-experimental-fast ...
+116 runs, 112 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  policy-experimental-fast: 0.39 tok/s vs 0.44 (-11.4%), output n/a
+83 experiments -> docs/12-experiment-log.md, site/data/experiments.json

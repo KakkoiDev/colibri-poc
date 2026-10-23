@@ -1,0 +1,83 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.53s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 30 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>I have 12 apples, give away 5, then buy 8 more. How many apples do I have?<|assistant|><think></think>PROFILO PREFILL (34.95s):
+PROFILE: expert-disk 177.632s service / 20.307s wait | expert-matmul 7.028s | attention 4.826s (including kvb 0.647s) | lm_head 0.009s | other 2.781s
+ATTENTION: projection/RoPE 1.442s | score-softmax-value 0.177s | output projection 2.559s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.156s | residual P2P 0.000s / 0 hop | orchestration 2.626s
+METAL: blocchi GPU 227 | fallback CPU 0 | expert su GPU 6942 | setup 0.06s gpu-wall 6.17s (kernel 6.88s) scatter 0.02s
+METAL-RESSET: flush 0.78s (residency-set commit in moe_submit, outside setup/gpu-wall)
+**12 - 5 = 7** ← _give away 5 apples from the 12 you have_
+
+**7 + 8 = 15** ← _buy 8 more apples, resulting in 15 total apples_
+
+**Answer: 15 apples**
+
+The answer is straightforward arithmetic: 12 - 5 = 7, then 7 + 8 = 15.
+---
+prefill 30 tokens in 34.95s | decode 79 tokens in 54.97s (1.44 tok/s) | expert hit rate 27.1% (pin 0.0% + lru 27.1%) | RSS 7.38 GB
+experts loaded/token: 630.4 (per-layer 8.41 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 41393 miss slots; top layers: L10:576 L6:575 L8:575)
+speculation: 1.00 tokens/forward (79 forwards per 79 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 26.992s service / 21.680s wait | expert-matmul 3.352s | attention 16.693s (including kvb 0.000s) | lm_head 0.000s | other 13.241s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.009s | residual P2P 0.000s / 0 hop | orchestration 13.232s
+METAL-ATTN: layer GPU 6162 | gpu-wall 16.43s (kernel 15.70s | cpu-sched 0.06s gpu-sched 0.30s)
+METAL: blocchi GPU 7238 | fallback CPU 0 | expert su GPU 14777 | setup 0.30s gpu-wall 9.15s (kernel 9.55s) scatter 0.03s
+METAL-RESSET: flush 0.78s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 79 | latency p50 671.2 ms | p90 736.6 ms | p99 1194.3 ms | max 1244.4 ms | 1.00 tok/forward
+[PROF] expert I/O: 121.287 GB fetched (1535.3 MB/token, 2.21 GB/s over the run) | hit 27.1% (0 pin + 2123 lru / 5712 load) | 630.4 loads/token | 27.0s read service / 21.7s felt wait
+[PROF] DISK-CLASS (recency split): cold 2152 x 45.69 GB @ 4.31 GB/s-thread, wall 9.5s @ 4.82 GB/s-wall, avg-conc 1.1 (direct 2140/2152) | warm 3560 x 75.59 GB @ 4.62 GB/s-thread, wall 14.0s @ 5.41 GB/s-wall, avg-conc 1.2 (direct 3541/3560) | disk-busy 21.5s (39% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 39% | expert-matmul 6% | attention 30% | lm_head 0% | other 24%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.009s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 13.232s
+[PROF] verdict: I/O-bound — 39% of the time waits on expert reads (hit 27%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 10.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 30 token · +0.00s
+[prefill] layer 5/78 · 30 token · +1.74s
+[prefill] layer 9/78 · 30 token · +4.05s
+[prefill] layer 13/78 · 30 token · +6.10s
+[prefill] layer 17/78 · 30 token · +7.90s
+[prefill] layer 21/78 · 30 token · +9.56s
+[prefill] layer 25/78 · 30 token · +11.28s
+[prefill] layer 29/78 · 30 token · +13.11s
+[prefill] layer 33/78 · 30 token · +14.75s
+[prefill] layer 37/78 · 30 token · +16.36s
+[prefill] layer 41/78 · 30 token · +17.94s
+[prefill] layer 45/78 · 30 token · +19.68s
+[prefill] layer 49/78 · 30 token · +21.38s
+[prefill] layer 53/78 · 30 token · +23.18s
+[prefill] layer 57/78 · 30 token · +24.85s
+[prefill] layer 61/78 · 30 token · +26.66s
+[prefill] layer 65/78 · 30 token · +28.39s
+[prefill] layer 69/78 · 30 token · +30.18s
+[prefill] layer 73/78 · 30 token · +32.10s
+[prefill] layer 77/78 · 30 token · +33.99s
+[prefill] layer 78/78 · 30 token · +34.46s
+
+[t=16  RSS 7.38 GB  hit 27%  1.53 tok/s  1.00 tok/fw]
+
+[t=32  RSS 7.38 GB  hit 29%  1.49 tok/s  1.00 tok/fw]
+
+[t=48  RSS 7.38 GB  hit 29%  1.45 tok/s  1.00 tok/fw]
+
+[t=64  RSS 7.38 GB  hit 30%  1.44 tok/s  1.00 tok/fw]

@@ -1,0 +1,18 @@
+{
+ "id": "logic-sisters",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 125.7,
+ "prompt_tokens": 27,
+ "prefill_s": 34.52,
+ "output_tokens": 128,
+ "decode_s": 88.17,
+ "decode_tok_s": 1.45,
+ "zeroed_slots": 64223,
+ "hit_pct": 32.4,
+ "text": "**1. Analyzing the prompt:**\n\n- Subject: Solving a logic word puzzle using family relationships (Sally, brothers, sisters, counting).\n- Constraint: \"3 brothers\" (males), \"2 sisters\" (females implied by \"Each brother has 2 sisters\"), \"How many sisters does Sally have?\" (females, including Sally herself).\n- Question: \"How many sisters does Sally have?\" (females, including Sally herself, as a sister to her brothers).\n- Reasoning: Sally is female (1 sister to 3 brothers, implied by \"Each brother has 2 sisters\" (ma",
+ "answer_s": 122.69,
+ "correct": false
+}

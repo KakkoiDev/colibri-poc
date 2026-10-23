@@ -1,0 +1,18 @@
+{
+ "id": "fact-ocean",
+ "kind": "fact",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.16,
+ "prompt_tokens": 36,
+ "output_tokens": 21,
+ "prefill_s": 0.056,
+ "decode_s": 0.108,
+ "text": "OcEAN_SIZE_MILLIMETERS = 3,676,196,000",
+ "truncated": false,
+ "tokens_from": "usage",
+ "decode_tok_s": 185.19,
+ "answer_s": 0.16,
+ "correct": false
+}

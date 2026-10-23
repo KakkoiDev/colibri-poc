@@ -1,0 +1,91 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.36s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 16 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>What is the largest planet in our solar system?<|assistant|><think></think>PROFILO PREFILL (22.32s):
+PROFILE: expert-disk 120.851s service / 15.111s wait | expert-matmul 4.047s | attention 2.594s (including kvb 0.345s) | lm_head 0.008s | other 0.558s
+ATTENTION: projection/RoPE 0.800s | score-softmax-value 0.051s | output projection 1.397s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.076s | residual P2P 0.000s / 0 hop | orchestration 0.482s
+METAL: blocchi GPU 182 | fallback CPU 0 | expert su GPU 4852 | setup 0.03s gpu-wall 3.37s (kernel 3.76s) scatter 0.01s
+METAL-RESSET: flush 0.63s (residency-set commit in moe_submit, outside setup/gpu-wall)
+The largest planet in our solar system is **Jupiter**.
+
+Some key facts about Jupiter:
+
+- **Size**: Jupiter has a diameter of about 139,820 km (86,881 miles), making it roughly 11 times wider than Earth.
+- **Mass**: It's incredibly massive — about 318 times the mass of Earth. In fact, Jupiter is more than twice as massive as all the other planets in the solar system combined.
+- **Composition**: It's a gas giant, composed mostly of hydrogen and helium.
+- **The Great Red Spot**: Jupiter features a famous giant storm, the Great Red Spot,
+---
+prefill 16 tokens in 22.32s | decode 128 tokens in 303.75s (0.42 tok/s) | expert hit rate 2.1% (pin 0.0% + lru 2.1%) | RSS 8.33 GB
+experts loaded/token: 604.7 (per-layer 8.06 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.05 tokens/forward (122 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 1681.500s service / 228.120s wait | expert-matmul 27.354s | attention 26.114s (including kvb 0.000s) | lm_head 0.000s | other 22.163s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.012s | residual P2P 0.000s / 0 hop | orchestration 22.152s
+METAL-ATTN: layer GPU 9516 | gpu-wall 25.74s (kernel 24.82s | cpu-sched 0.06s gpu-sched 0.42s)
+METAL: blocchi GPU 10915 | fallback CPU 0 | expert su GPU 80732 | setup 0.69s gpu-wall 29.91s (kernel 29.94s) scatter 0.06s
+METAL-RESSET: flush 0.63s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 122 | latency p50 2376.3 ms | p90 2483.9 ms | p99 4164.6 ms | max 6117.4 ms | 1.05 tok/forward
+[PROF] expert I/O: 1577.598 GB fetched (12325.0 MB/token, 5.19 GB/s over the run) | hit 2.1% (0 pin + 1583 lru / 74297 load) | 604.7 loads/token | 1681.5s read service / 228.1s felt wait
+[PROF] DISK-CLASS (recency split): cold 31209 x 662.68 GB @ 0.88 GB/s-thread, wall 219.9s @ 3.01 GB/s-wall, avg-conc 3.4 (direct 31056/31209) | warm 43088 x 914.92 GB @ 0.99 GB/s-thread, wall 210.5s @ 4.35 GB/s-wall, avg-conc 4.4 (direct 42659/43088) | disk-busy 227.9s (75% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 75% | expert-matmul 9% | attention 9% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.012s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 22.152s
+[PROF] verdict: I/O-bound — 75% of the time waits on expert reads (hit 2%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 12.2 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 16 token · +0.00s
+[prefill] layer 5/78 · 16 token · +1.20s
+[prefill] layer 9/78 · 16 token · +2.66s
+[prefill] layer 13/78 · 16 token · +3.89s
+[prefill] layer 17/78 · 16 token · +5.03s
+[prefill] layer 21/78 · 16 token · +6.10s
+[prefill] layer 25/78 · 16 token · +7.15s
+[prefill] layer 29/78 · 16 token · +8.28s
+[prefill] layer 33/78 · 16 token · +9.32s
+[prefill] layer 37/78 · 16 token · +10.40s
+[prefill] layer 41/78 · 16 token · +11.39s
+[prefill] layer 45/78 · 16 token · +12.44s
+[prefill] layer 49/78 · 16 token · +13.57s
+[prefill] layer 53/78 · 16 token · +14.67s
+[prefill] layer 57/78 · 16 token · +15.80s
+[prefill] layer 61/78 · 16 token · +16.98s
+[prefill] layer 65/78 · 16 token · +18.11s
+[prefill] layer 69/78 · 16 token · +19.26s
+[prefill] layer 73/78 · 16 token · +20.42s
+[prefill] layer 77/78 · 16 token · +21.68s
+[prefill] layer 78/78 · 16 token · +21.98s
+
+[t=16  RSS 8.33 GB  hit 2%  0.45 tok/s  1.07 tok/fw]
+
+[t=32  RSS 8.33 GB  hit 2%  0.43 tok/s  1.03 tok/fw]
+
+[t=48  RSS 8.33 GB  hit 2%  0.43 tok/s  1.02 tok/fw]
+
+[t=64  RSS 8.33 GB  hit 2%  0.43 tok/s  1.02 tok/fw]
+
+[t=80  RSS 8.33 GB  hit 2%  0.43 tok/s  1.01 tok/fw]
+
+[t=96  RSS 8.33 GB  hit 2%  0.42 tok/s  1.02 tok/fw]
+
+[t=112  RSS 8.33 GB  hit 2%  0.43 tok/s  1.04 tok/fw]
+
+[t=128  RSS 8.33 GB  hit 2%  0.42 tok/s  1.04 tok/fw]

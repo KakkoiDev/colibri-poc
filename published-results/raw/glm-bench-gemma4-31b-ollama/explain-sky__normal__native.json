@@ -1,0 +1,19 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 60.81,
+ "prompt_tokens": 23,
+ "prefill_s": 0.406,
+ "output_tokens": 946,
+ "decode_s": 60.364,
+ "load_s": 0.029,
+ "text": "The shortest answer is a phenomenon called **Rayleigh scattering**. \n\nHere is the step-by-step breakdown of how it works:\n\n### 1. Sunlight is a rainbow\nAlthough sunlight looks white to us, it is actually made up of all the colors of the rainbow (red, orange, yellow, green, blue, indigo, and violet). Light travels as **waves**, and each color has a different wavelength:\n*   **Red light** has long, lazy wavelengths.\n*   **Blue and violet light** have short, choppy wavelengths.\n\n### 2. The atmosphere is an obstacle course\nThe Earth is surrounded by an atmosphere filled with gases (mostly nitrogen and oxygen). As sunlight travels through the air, it hits the molecules of these gases.\n\n### 3. Scattering the light\nBecause of their size, these gas molecules affect different colors of light differently:\n*   **Long wavelengths (reds and yellows)** are large enough to pass straight through the atmosphere without bumping into much. They travel in a relatively straight line from the sun to your eyes.\n*   **Short wavelengths (blues and violets)** are roughly the same size as the gas molecules. When blue light hits a molecule, it gets absorbed and then \"scattered\" (bounced) in every single direction.\n\nBecause the blue light is bouncing around everywhere in the upper atmosphere, whenever you look up, your eyes are catching that scattered blue light coming from every part of the sky.\n\n### Common Question: Why isn't the sky violet?\nViolet light has an even shorter wavelength than blue light, meaning it scatters even more. Technically, the sky *is* violet! However, we see it as blue for two reasons:\n1.  **The Sun:** The sun emits much more blue light than violet light.\n2.  **Our Eyes:** Human eyes are much more sensitive to blue than to violet. Our brains interpret the mix of scattered violet and blue light simply as **pale blue**.\n\n***\n\n### Bonus: Why are sunsets red?\nWhen the sun is setting, the light has to travel through much more of the Earth's atmosphere to reach you because it is hitting the Earth at a sharp angle. \n\nBy the time the light reaches your eyes, the blue light has been scattered away completely in other directions. The only colors left that can make it through that long journey without being scattered are the **long wavelengths**—the reds, oranges, and yellows.",
+ "thinking_chars": 1736,
+ "truncated": false,
+ "decode_tok_s": 15.67,
+ "answer_s": 60.77,
+ "correct": true
+}

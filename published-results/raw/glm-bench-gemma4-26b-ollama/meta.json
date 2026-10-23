@@ -1,0 +1,28 @@
+{
+ "started": "2026-10-21T14:09:39Z",
+ "backend": "ollama",
+ "ollama_model": "gemma4:26b",
+ "ollama_url": "http://127.0.0.1:11434",
+ "ollama_version": "ollama version is 0.40.6",
+ "ollama_configs": {
+  "exact": {
+   "think": false,
+   "options": {
+    "temperature": 0
+   }
+  },
+  "native": {
+   "options": {},
+   "num_predict": 4096
+  }
+ },
+ "ollama_ps": "NAME    ID    SIZE    PROCESSOR    CONTEXT    RUNNER    UNTIL",
+ "base_env": {},
+ "configs": {},
+ "styles": {
+  "normal": ""
+ },
+ "ram": "18",
+ "ctx": "1024",
+ "ngen": 128
+}

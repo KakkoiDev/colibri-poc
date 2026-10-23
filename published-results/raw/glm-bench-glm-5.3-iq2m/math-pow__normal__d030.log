@@ -1,0 +1,94 @@
+== GLM C engine (glm_moe_dsa), cache=8 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 3.33s | resident dense: 14457.58 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 17 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>What is 2 to the power of 10?<|assistant|><think></think>PROFILO PREFILL (38.79s):
+PROFILE: expert-disk 76.540s service / 9.871s wait | expert-matmul 16.653s | attention 9.990s (including kvb 2.425s) | lm_head 0.053s | other 2.226s
+ATTENTION: projection/RoPE 1.544s | score-softmax-value 0.041s | output projection 5.979s
+P0-EXEC: routed CPU 16.649s / 3.39 GB/s (10328 row) | routed GPU critical 0.000s | router 0.083s | residual P2P 0.000s / 0 hop | orchestration 2.143s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+2 to the power of 10 is **1024**.
+
+This is calculated as: 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2 = 1024
+
+Fun fact: this is why 1024 bytes is often called a "kilobyte" in computing, and it's the basis of the "kibibyte" (KiB) naming convention. Powers of 2 are fundamental to computing because computers work in binary (base 2).
+---
+prefill 17 tokens in 38.79s | decode 112 tokens in 290.56s (0.39 tok/s) | expert hit rate 1.3% (pin 0.0% + lru 1.3%) | RSS 13.98 GB
+experts loaded/token: 661.6 (per-layer 8.82 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 38019 miss slots; top layers: L4:594 L5:578 L3:567)
+speculation: 1.84 tokens/forward (61 forwards per 112 tokens) | MTP acceptance 84% (51/61)
+PROFILE: expert-disk 199.054s service / 43.482s wait | expert-matmul 67.560s | attention 144.467s (including kvb 0.000s) | lm_head 0.000s | other 35.047s
+ATTENTION: projection/RoPE 21.224s | score-softmax-value 53.507s | output projection 69.728s
+P0-EXEC: routed CPU 67.332s / 4.35 GB/s (32743 row) | routed GPU critical 0.000s | router 2.278s | residual P2P 0.000s / 0 hop | orchestration 32.768s
+METAL: blocchi GPU 0 | fallback CPU 0 | expert su GPU 0 | setup 0.00s gpu-wall 0.00s (kernel 0.00s) scatter 0.00s
+METAL-RESSET: flush 0.00s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 61 | latency p50 4662.0 ms | p90 4873.9 ms | p99 4965.6 ms | max 5024.7 ms | 1.84 tok/forward
+[PROF] expert I/O: 289.141 GB fetched (2581.6 MB/token, 1.00 GB/s over the run) | hit 1.3% (0 pin + 321 lru / 25179 load) | 661.6 loads/token | 199.1s read service / 43.5s felt wait
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (0.9 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 15% | expert-matmul 23% | attention 50% | lm_head 0% | other 11%
+[PROF] P0 execution: routed CPU 67.332s / 4.35 GB/s (32743 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 2.278s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 32.768s
+[PROF] verdict: attention-bound (50%) — context length is the cost (DSA on). A lower CTX helps if the workload allows.
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      Glm-5.3 · 256x22B MoE
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+[gguf] ~/colibri-models/gguf/glm-5.3-iq2m/UD-IQ2_M/GLM-5.3-UD-IQ2_M-00001-of-00006.gguf: glm-dsa, 6 part(s), 59949 tensors under the checkpoint's names (1581 renamed, 228 fused expert tensors split per expert, 0 kept as named), read in place
+[METAL] kv_b_proj is fmt=102 on 78/78 layers: the fused Metal attention path serves kv_b only as int4, per-row (fmt=2) or grouped (fmt=4; grouped is served only while COLI_METAL_MOE_EXACT is off), so those layers run decode attention on the CPU absorb path instead. Requantize kv_b to int4 (--kvb-bits 4) to re-enable the fused path.
+[METAL] q_a_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] q_b_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] kv_a_proj_with_mqa is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] o_proj is fmt=101 on 78/78 layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.gate_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.up_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[METAL] shared_experts.down_proj is fmt=101 on 75/75 sparse layers: outside the fused-path allowlist (fmt 1/2/3/4), so the fused Metal decode kernels that bind this tensor skip those layers and they run on the CPU path instead.
+[DSA] indexer active: top-2048 sparse attention beyond 2048 context tokens
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 20.9 GB is 2.9 GB OVER the budget (resident 15.2 GB + reserve 4.9 GB, expert 11.5 MB avg/row).
+[RAM_GB=18.0] resident 15.2 GB + reserve 4.9 GB (ws 0.9, KV 1x1024 0.2, kvb 0.1), experts 11.5 MB avg x 76 layers -> cap lowered 8->1 (projected peak 20.9 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 11.4 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 0.9 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=on PILOT=0 CACHE_ROUTE=0
+[stop] 25 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 154838 154839 154840 154852 154853 154854 154855 (22 from the tokenizer's special set)
+[prefill] layer 1/78 · 17 token · +0.00s
+[CUDA] no reusable LRU expert slot (in flight or cap reached); skipping cache promotion
+[prefill] layer 5/78 · 17 token · +1.40s
+[prefill] layer 9/78 · 17 token · +3.65s
+[prefill] layer 13/78 · 17 token · +5.79s
+[prefill] layer 17/78 · 17 token · +7.71s
+[prefill] layer 21/78 · 17 token · +9.55s
+[prefill] layer 25/78 · 17 token · +11.44s
+[prefill] layer 29/78 · 17 token · +13.46s
+[prefill] layer 33/78 · 17 token · +15.33s
+[prefill] layer 37/78 · 17 token · +17.17s
+[prefill] layer 41/78 · 17 token · +19.01s
+[prefill] layer 45/78 · 17 token · +20.90s
+[prefill] layer 49/78 · 17 token · +22.91s
+[prefill] layer 53/78 · 17 token · +24.83s
+[prefill] layer 57/78 · 17 token · +26.79s
+[prefill] layer 61/78 · 17 token · +28.73s
+[prefill] layer 65/78 · 17 token · +30.73s
+[prefill] layer 69/78 · 17 token · +32.74s
+[prefill] layer 73/78 · 17 token · +34.71s
+[prefill] layer 77/78 · 17 token · +36.77s
+[prefill] layer 78/78 · 17 token · +37.26s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 13.57 GB  hit 2%  0.41 tok/s  1.88 tok/fw]
+
+[t=32  RSS 13.57 GB  hit 1%  0.41 tok/s  1.94 tok/fw]
+
+[t=48  RSS 13.57 GB  hit 1%  0.41 tok/s  1.96 tok/fw]
+
+[t=64  RSS 13.66 GB  hit 1%  0.40 tok/s  1.91 tok/fw]
+
+[t=80  RSS 13.71 GB  hit 1%  0.39 tok/s  1.88 tok/fw]
+
+[t=96  RSS 13.91 GB  hit 1%  0.38 tok/s  1.83 tok/fw]
+
+[t=112  RSS 13.98 GB  hit 1%  0.39 tok/s  1.82 tok/fw]

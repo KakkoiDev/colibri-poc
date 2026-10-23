@@ -1,0 +1,95 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.56s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 29 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Write a Python function reverse_words(s) that returns the words of s in reverse order, separated by single spaces.<|assistant|><think></think>PROFILO PREFILL (36.72s):
+PROFILE: expert-disk 193.135s service / 21.743s wait | expert-matmul 7.087s | attention 4.659s (including kvb 0.647s) | lm_head 0.007s | other 3.227s
+ATTENTION: projection/RoPE 1.423s | score-softmax-value 0.076s | output projection 2.513s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.069s | residual P2P 0.000s / 0 hop | orchestration 3.158s
+METAL: blocchi GPU 228 | fallback CPU 0 | expert su GPU 7419 | setup 0.06s gpu-wall 6.03s (kernel 6.73s) scatter 0.02s
+METAL-RESSET: flush 0.96s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Here's a clean implementation using the built-in `split` method, which handles multiple whitespace characters (spaces, tabs, newlines) as word separators and collapses them into a single space, plus strips leading/trailing whitespace:
+
+```python
+def reverse_words(s):
+    return ' '.join(s.split()[::-1])
+```
+
+**How it works:**
+
+1. `s.split()` — splits the string into a list of words. Consecutive whitespace is treated as a single separator, and the result contains no empty strings. For example, `"  hello   world  ".split()` produces `['hello', 'world']`.
+2
+---
+prefill 29 tokens in 36.72s | decode 128 tokens in 104.61s (1.22 tok/s) | expert hit rate 23.8% (pin 0.0% + lru 23.8%) | RSS 6.89 GB
+experts loaded/token: 600.0 (per-layer 8.00 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.400 (zeroed 58841 miss slots; top layers: L11:868 L8:855 L12:852)
+speculation: 1.01 tokens/forward (127 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 86.707s service / 50.991s wait | expert-matmul 9.255s | attention 37.451s (including kvb 0.000s) | lm_head 0.000s | other 6.909s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.020s | residual P2P 0.000s / 0 hop | orchestration 6.890s
+METAL-ATTN: layer GPU 9906 | gpu-wall 36.89s (kernel 35.57s | cpu-sched 0.12s gpu-sched 0.51s)
+METAL: blocchi GPU 13184 | fallback CPU 0 | expert su GPU 25149 | setup 0.71s gpu-wall 14.28s (kernel 15.44s) scatter 0.07s
+METAL-RESSET: flush 0.96s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 127 | latency p50 813.9 ms | p90 984.2 ms | p99 1086.0 ms | max 1457.3 ms | 1.01 tok/forward
+[PROF] expert I/O: 286.867 GB fetched (2241.1 MB/token, 2.74 GB/s over the run) | hit 23.8% (0 pin + 4220 lru / 13510 load) | 600.0 loads/token | 86.7s read service / 51.0s felt wait
+[PROF] DISK-CLASS (recency split): cold 4988 x 105.91 GB @ 3.11 GB/s-thread, wall 26.7s @ 3.96 GB/s-wall, avg-conc 1.3 (direct 4976/4988) | warm 8522 x 180.95 GB @ 3.45 GB/s-thread, wall 36.6s @ 4.95 GB/s-wall, avg-conc 1.4 (direct 8516/8522) | disk-busy 50.6s (48% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 49% | expert-matmul 9% | attention 36% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.020s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 6.890s
+[PROF] verdict: I/O-bound — 49% of the time waits on expert reads (hit 24%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.400 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 7.5 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 29 token · +0.00s
+[prefill] layer 5/78 · 29 token · +1.89s
+[prefill] layer 9/78 · 29 token · +4.35s
+[prefill] layer 13/78 · 29 token · +6.44s
+[prefill] layer 17/78 · 29 token · +8.38s
+[prefill] layer 21/78 · 29 token · +10.10s
+[prefill] layer 25/78 · 29 token · +11.90s
+[prefill] layer 29/78 · 29 token · +13.88s
+[prefill] layer 33/78 · 29 token · +15.60s
+[prefill] layer 37/78 · 29 token · +17.40s
+[prefill] layer 41/78 · 29 token · +19.02s
+[prefill] layer 45/78 · 29 token · +20.85s
+[prefill] layer 49/78 · 29 token · +22.69s
+[prefill] layer 53/78 · 29 token · +24.47s
+[prefill] layer 57/78 · 29 token · +26.26s
+[prefill] layer 61/78 · 29 token · +27.98s
+[prefill] layer 65/78 · 29 token · +29.71s
+[prefill] layer 69/78 · 29 token · +31.67s
+[prefill] layer 73/78 · 29 token · +33.70s
+[prefill] layer 77/78 · 29 token · +35.62s
+[prefill] layer 78/78 · 29 token · +36.13s
+
+[t=16  RSS 6.89 GB  hit 24%  1.30 tok/s  1.00 tok/fw]
+
+[t=32  RSS 6.89 GB  hit 23%  1.24 tok/s  1.00 tok/fw]
+
+[t=48  RSS 6.89 GB  hit 23%  1.21 tok/s  1.00 tok/fw]
+
+[t=64  RSS 6.89 GB  hit 23%  1.22 tok/s  1.00 tok/fw]
+
+[t=80  RSS 6.89 GB  hit 24%  1.22 tok/s  1.00 tok/fw]
+
+[t=96  RSS 6.89 GB  hit 24%  1.22 tok/s  1.00 tok/fw]
+
+[t=112  RSS 6.89 GB  hit 24%  1.21 tok/s  1.00 tok/fw]
+
+[t=128  RSS 6.89 GB  hit 24%  1.22 tok/s  1.00 tok/fw]

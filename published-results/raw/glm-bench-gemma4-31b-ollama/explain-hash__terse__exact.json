@@ -1,0 +1,19 @@
+{
+ "id": "explain-hash",
+ "kind": "explain",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.87,
+ "prompt_tokens": 34,
+ "prefill_s": 0.335,
+ "output_tokens": 57,
+ "decode_s": 3.516,
+ "load_s": 0.012,
+ "text": "A hash table is a data structure that maps keys to values using a hash function to compute an index into an array of buckets.\n\n```python\nhash_table = {}\nhash_table[\"key\"] = \"value\"\nprint(hash_table[\"key\"])\n```",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 16.21,
+ "answer_s": 3.85,
+ "correct": true
+}

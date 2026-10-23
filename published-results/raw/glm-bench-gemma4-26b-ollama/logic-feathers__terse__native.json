@@ -1,0 +1,19 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "terse",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 75.39,
+ "prompt_tokens": 45,
+ "prefill_s": 0.238,
+ "output_tokens": 4096,
+ "decode_s": 75.148,
+ "load_s": 0.003,
+ "text": "",
+ "thinking_chars": 14207,
+ "truncated": true,
+ "decode_tok_s": 54.51,
+ "answer_s": 75.39,
+ "correct": false
+}

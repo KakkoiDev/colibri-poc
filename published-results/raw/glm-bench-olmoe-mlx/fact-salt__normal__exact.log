@@ -1,0 +1,16 @@
+{
+ "text": "The chemical formula for table salt, which is sodium chloride (NaCl), is derived from the elements sodium (Na) and chlorine (Cl). Each molecule of table salt consists of one sodium atom (Na) and one chloride atom (Cl) bound together with an electrostatic force known as a ionic bond. This compound is neutral overall due to the equal positive and negative charges of the sodium and chloride ions, resulting in no net charge on the molecule as a whole.\n\nThe chemical structure of NaCl is as follows:\n\n- Sodium (Na) has an atomic number of 11, which means it has 11 protons and 11 electrons",
+ "usage": {
+  "prompt_tokens": 22,
+  "completion_tokens": 128,
+  "total_tokens": 150,
+  "prompt_tokens_details": {
+   "cached_tokens": 10
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.039,
+ "total_s": 0.753
+}

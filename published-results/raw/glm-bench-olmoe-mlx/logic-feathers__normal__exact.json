@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.76,
+ "prompt_tokens": 29,
+ "output_tokens": 128,
+ "prefill_s": 0.053,
+ "decode_s": 0.703,
+ "text": "The weight of a kilogram of feathers and a kilogram of steel is the same, as they both weigh 1,000 grams (or 1 kilogram) under the standard definition of weight, which is the force exerted by an object due to gravity.\n\nHowever, the density and mass of feathers and steel are different. Feathers are light and fluffy, with a low density and a high volume, while steel is much denser and heavier. Despite this, if we're talking about the mass (or weight) of a kilogram of each, they would all exert the same force on a scale due to gravity.",
+ "truncated": true,
+ "tokens_from": "usage",
+ "decode_tok_s": 180.65,
+ "answer_s": 0.76,
+ "correct": true
+}

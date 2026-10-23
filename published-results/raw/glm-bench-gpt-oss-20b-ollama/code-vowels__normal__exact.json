@@ -1,0 +1,19 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.47,
+ "prompt_tokens": 97,
+ "prefill_s": 0.189,
+ "output_tokens": 128,
+ "decode_s": 3.273,
+ "load_s": 0.001,
+ "text": "Here’s a compact, idiomatic implementation:\n\n```python\ndef count_vowels(s: str) -> int:\n    \"\"\"Return the number of vowels (a, e,",
+ "thinking_chars": 339,
+ "truncated": true,
+ "decode_tok_s": 39.11,
+ "answer_s": 3.46,
+ "correct": false
+}

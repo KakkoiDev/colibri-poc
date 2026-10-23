@@ -1,0 +1,18 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.74,
+ "prompt_tokens": 20,
+ "output_tokens": 128,
+ "prefill_s": 0.038,
+ "decode_s": 0.703,
+ "text": "To find 15% of 240, you multiply 240 by 0.15 (since 15% is equivalent to 0.15 in decimal form).\n\n\\[ \\text{15\\% of 240} = 240 \\times 0.15 \\]\n\nLet's calculate this using Python to ensure accuracy.\n```python\n# Define the number\nnumber = 240\n\n# Calculate 15% of the number\npercentage_of_number = 0.15 * number\nprint(percentage_of_number)\n```\n```output\n36.0\n```\nThe calculation shows that 15% of 240 is \\(\\box",
+ "truncated": true,
+ "tokens_from": "usage",
+ "decode_tok_s": 180.65,
+ "answer_s": 0.74,
+ "correct": false
+}

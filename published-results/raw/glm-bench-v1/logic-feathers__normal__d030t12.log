@@ -1,0 +1,87 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.57s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 22 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Which is heavier: a kilogram of feathers or a kilogram of steel?<|assistant|><think></think>PROFILO PREFILL (28.69s):
+PROFILE: expert-disk 156.116s service / 18.664s wait | expert-matmul 5.077s | attention 3.417s (including kvb 0.469s) | lm_head 0.006s | other 1.522s
+ATTENTION: projection/RoPE 1.047s | score-softmax-value 0.031s | output projection 1.869s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.037s | residual P2P 0.000s / 0 hop | orchestration 1.485s
+METAL: blocchi GPU 211 | fallback CPU 0 | expert su GPU 5642 | setup 0.04s gpu-wall 4.50s (kernel 5.03s) scatter 0.01s
+METAL-RESSET: flush 0.53s (residency-set commit in moe_submit, outside setup/gpu-wall)
+They weigh exactly the same — a kilogram is a kilogram, regardless of the material. A kilogram of feathers and a kilogram of steel both have a mass of one kilogram, so on a scale they'd balance perfectly.
+
+This is a classic trick question that plays on our intuitions. It feels like steel should be "heavier" because it's denser — a kilogram of steel would fit in your hands as a small, compact block, while a kilogram of feathers would be an enormous, fluffy pile. But density and weight are different things: density is mass per unit volume, and steel is much dens
+---
+prefill 22 tokens in 28.69s | decode 128 tokens in 141.13s (0.91 tok/s) | expert hit rate 10.0% (pin 0.0% + lru 10.0%) | RSS 8.39 GB
+experts loaded/token: 609.4 (per-layer 8.12 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 45346 miss slots; top layers: L4:705 L21:675 L66:657)
+speculation: 1.02 tokens/forward (126 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 320.351s service / 98.156s wait | expert-matmul 11.190s | attention 26.637s (including kvb 0.000s) | lm_head 0.000s | other 5.144s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.006s | residual P2P 0.000s / 0 hop | orchestration 5.138s
+METAL-ATTN: layer GPU 9828 | gpu-wall 26.42s (kernel 25.54s | cpu-sched 0.03s gpu-sched 0.43s)
+METAL: blocchi GPU 12837 | fallback CPU 0 | expert su GPU 37729 | setup 0.36s gpu-wall 15.26s (kernel 16.07s) scatter 0.03s
+METAL-RESSET: flush 0.53s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 126 | latency p50 1097.9 ms | p90 1167.2 ms | p99 1916.9 ms | max 2082.1 ms | 1.02 tok/forward
+[PROF] expert I/O: 613.462 GB fetched (4792.7 MB/token, 4.35 GB/s over the run) | hit 10.0% (0 pin + 3196 lru / 28891 load) | 609.4 loads/token | 320.4s read service / 98.2s felt wait
+[PROF] DISK-CLASS (recency split): cold 11056 x 234.76 GB @ 1.77 GB/s-thread, wall 70.0s @ 3.35 GB/s-wall, avg-conc 1.9 (direct 11005/11056) | warm 17835 x 378.70 GB @ 2.01 GB/s-thread, wall 84.6s @ 4.47 GB/s-wall, avg-conc 2.2 (direct 17748/17835) | disk-busy 97.9s (69% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 70% | expert-matmul 8% | attention 19% | lm_head 0% | other 4%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.006s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 5.138s
+[PROF] verdict: I/O-bound — 70% of the time waits on expert reads (hit 10%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.9 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (12 omp threads) | RAM 34.4 GB total, 12.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 22 token · +0.00s
+[prefill] layer 5/78 · 22 token · +1.26s
+[prefill] layer 9/78 · 22 token · +3.19s
+[prefill] layer 13/78 · 22 token · +4.94s
+[prefill] layer 17/78 · 22 token · +6.49s
+[prefill] layer 21/78 · 22 token · +7.82s
+[prefill] layer 25/78 · 22 token · +9.16s
+[prefill] layer 29/78 · 22 token · +10.71s
+[prefill] layer 33/78 · 22 token · +12.09s
+[prefill] layer 37/78 · 22 token · +13.37s
+[prefill] layer 41/78 · 22 token · +14.68s
+[prefill] layer 45/78 · 22 token · +16.09s
+[prefill] layer 49/78 · 22 token · +17.52s
+[prefill] layer 53/78 · 22 token · +18.96s
+[prefill] layer 57/78 · 22 token · +20.36s
+[prefill] layer 61/78 · 22 token · +21.78s
+[prefill] layer 65/78 · 22 token · +23.31s
+[prefill] layer 69/78 · 22 token · +24.78s
+[prefill] layer 73/78 · 22 token · +26.34s
+[prefill] layer 77/78 · 22 token · +27.94s
+[prefill] layer 78/78 · 22 token · +28.28s
+
+[t=16  RSS 8.39 GB  hit 9%  0.93 tok/s  1.00 tok/fw]
+
+[t=32  RSS 8.39 GB  hit 8%  0.92 tok/s  1.03 tok/fw]
+
+[t=48  RSS 8.39 GB  hit 9%  0.91 tok/s  1.02 tok/fw]
+
+[t=64  RSS 8.39 GB  hit 9%  0.91 tok/s  1.02 tok/fw]
+
+[t=80  RSS 8.39 GB  hit 10%  0.91 tok/s  1.01 tok/fw]
+
+[t=96  RSS 8.39 GB  hit 10%  0.91 tok/s  1.01 tok/fw]
+
+[t=112  RSS 8.39 GB  hit 10%  0.90 tok/s  1.01 tok/fw]
+
+[t=128  RSS 8.39 GB  hit 10%  0.91 tok/s  1.01 tok/fw]

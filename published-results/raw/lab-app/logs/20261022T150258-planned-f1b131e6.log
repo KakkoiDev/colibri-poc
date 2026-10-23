@@ -1,0 +1,6 @@
+# Experiment: Cache-aware routing + 4 cache slots, no skipping
+# ~/Code/colibri-poc/.venv/bin/python glm_lab.py run-planned cache-route-cap4
+Running x-cache-route-cap4 ...
+113 runs, 109 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  cache-route-cap4: 0.41 tok/s vs 0.44 (-6.8%), output n/a
+83 experiments -> docs/12-experiment-log.md, site/data/experiments.json

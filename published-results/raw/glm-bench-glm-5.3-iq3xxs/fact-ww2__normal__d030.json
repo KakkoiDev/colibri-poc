@@ -1,0 +1,18 @@
+{
+ "id": "fact-ww2",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030",
+ "exit": 0,
+ "wall_s": 336.58,
+ "prompt_tokens": 15,
+ "prefill_s": 38.31,
+ "output_tokens": 107,
+ "decode_s": 293.95,
+ "decode_tok_s": 0.36,
+ "zeroed_slots": 34449,
+ "hit_pct": 1.5,
+ "text": "World War II ended in 1945. The war in Europe concluded on May 8, 1945 (V-E Day, after Germany's surrender), while the war in the Pacific ended on September 2, 1945 (V-J Day), when Japan formally signed the instrument of surrender aboard the USS Missouri in Tokyo Bay. Japan's initial announcement of surrender came on August 15, 1945, following the atomic bombings of Hiroshima and Nagasaki and the Soviet declaration of war against Japan.",
+ "answer_s": 332.26,
+ "correct": true
+}

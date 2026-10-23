@@ -1,0 +1,18 @@
+{
+ "id": "math-train",
+ "kind": "math",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 122.77,
+ "prompt_tokens": 28,
+ "prefill_s": 33.67,
+ "output_tokens": 128,
+ "decode_s": 86.19,
+ "decode_tok_s": 1.49,
+ "zeroed_slots": 63389,
+ "hit_pct": 34.3,
+ "text": "# Train Travel Calculation\n\n## Setting Up the Problem\n\n**Given information:**\n- Speed: 60 kilometres per hour (60 km/h)\n- Time duration: 2.5 hours (2½ hours, or 2 hours 30 minutes)\n- Unknown quantity: **Distance travelled** (in kilometres, km)\n\n## Understanding the Relationship\n\nThe fundamental relationship between these three quantities is:\n\n$$\\text{Distance} = \\text{Speed} \\times \\text{Time elapsed}$$\n\nThis is often remembered as the formula **\"d = st\"** (distance equals speed multiplied by time), or as **\"s",
+ "answer_s": 119.86,
+ "correct": false
+}

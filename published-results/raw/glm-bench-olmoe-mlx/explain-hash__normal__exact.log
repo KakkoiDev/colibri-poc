@@ -1,0 +1,16 @@
+{
+ "text": "A hash table, also known as a hash map, is a data structure that implements an associative array abstract data type, a structure that can map keys to values. It uses a hash function to compute an index into an array of buckets or slots, from which the desired value can be retrieved.\n\nHere's how hash tables generally work:\n\n1. **Hash Function**: The first step is applying a hash function to the key to determine the index at which the key-value pair will be stored in the table. The hash function takes the key as input and produces an integer, which is then used as an index into the",
+ "usage": {
+  "prompt_tokens": 19,
+  "completion_tokens": 128,
+  "total_tokens": 147,
+  "prompt_tokens_details": {
+   "cached_tokens": 7
+  }
+ },
+ "chunks": 128,
+ "finish_reason": "length",
+ "max_tokens": 128,
+ "ttft_s": 0.039,
+ "total_s": 0.737
+}

@@ -1,0 +1,16 @@
+{
+ "text": "The chemical symbol for gold is Au, derived from the Latin word \"aurum,\" which means gold. This symbol is widely recognized and used in chemistry and various scientific contexts to represent the element gold.",
+ "usage": {
+  "prompt_tokens": 21,
+  "completion_tokens": 41,
+  "total_tokens": 62,
+  "prompt_tokens_details": {
+   "cached_tokens": 9
+  }
+ },
+ "chunks": 40,
+ "finish_reason": "stop",
+ "max_tokens": 128,
+ "ttft_s": 0.04,
+ "total_s": 0.259
+}

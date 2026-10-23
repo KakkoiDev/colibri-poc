@@ -1,0 +1,6 @@
+sort-never warmup explain: 198.80 tok/s
+sort-never measured explain: 198.37 tok/s
+sort-never measured code: 198.27 tok/s
+sort-never measured reason: 194.15 tok/s
+sort-never measured story: 196.97 tok/s
+sort-never measured long-context: 142.59 tok/s

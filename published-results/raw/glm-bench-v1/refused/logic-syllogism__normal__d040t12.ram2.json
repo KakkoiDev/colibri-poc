@@ -1,0 +1,12 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 2,
+ "wall_s": 10.09,
+ "zeroed_slots": 0,
+ "hit_pct": null,
+ "answer_s": null,
+ "correct": false
+}

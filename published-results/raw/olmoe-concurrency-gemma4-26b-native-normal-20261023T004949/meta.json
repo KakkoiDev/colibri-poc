@@ -1,0 +1,34 @@
+{
+ "campaign_pid": 87294,
+ "model": {
+  "name": "gemma4:26b",
+  "model": "gemma4:26b",
+  "modified_at": "2026-10-10T17:47:30.663074979+09:00",
+  "size": 16147120890,
+  "digest": "d4fa84e5dfc115676f0892591ba522dd75b254fbc1bde861339c3cf8d45c7809",
+  "details": {
+   "parent_model": "",
+   "format": "safetensors",
+   "family": "",
+   "families": null,
+   "parameter_size": "",
+   "quantization_level": "",
+   "runner": "mlx"
+  },
+  "capabilities": [
+   "completion",
+   "vision",
+   "tools",
+   "thinking"
+  ]
+ },
+ "profile": "native",
+ "style": "normal",
+ "levels": "1,4,10",
+ "repeats": 3,
+ "server_pid": 912,
+ "temperature": 0,
+ "num_ctx": 4096,
+ "num_predict": 4096,
+ "note": "Existing Ollama settings; no parallelism reconfiguration. One model at a time. Native keeps model default thinking with temperature zero. Footprint sums daemon and descendants; shared pages may be counted more than once. Requests in flight are not proof of GPU batching."
+}

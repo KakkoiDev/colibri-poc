@@ -1,0 +1,21 @@
+{
+ "case": "skip030-sky-48__r1",
+ "exit": 0,
+ "wall_s": 82.96,
+ "ram": 18,
+ "ctx": 1024,
+ "ngen": 48,
+ "env": {
+  "DEGRADE_ZERO": "1",
+  "DEGRADE_TAU": "0.30"
+ },
+ "refused": false,
+ "prompt_tokens": 17,
+ "prefill_s": 24.66,
+ "output_tokens": 48,
+ "decode_s": 55.54,
+ "decode_tok_s": 0.86,
+ "zeroed_slots": 16666,
+ "hit_pct": 11.9,
+ "text": "The sky appears blue because molecules in the atmosphere scatter shorter (blue) wavelengths of sunlight more than longer (red) wavelengths—a phenomenon called Rayleigh scattering. As sunlight passes through the air, this scattered blue light reaches our eyes from all directions"
+}

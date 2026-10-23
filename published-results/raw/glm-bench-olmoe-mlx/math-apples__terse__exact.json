@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.23,
+ "prompt_tokens": 49,
+ "output_tokens": 34,
+ "prefill_s": 0.054,
+ "decode_s": 0.18,
+ "text": "```python\napples = 12\napples -= 5\napples += 8\nprint(apples)\n```\n\nThe final answer is 13.",
+ "truncated": false,
+ "tokens_from": "usage",
+ "decode_tok_s": 183.33,
+ "answer_s": 0.23,
+ "correct": false
+}

@@ -1,0 +1,18 @@
+{
+ "id": "fact-salt",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 119.16,
+ "prompt_tokens": 15,
+ "prefill_s": 30.0,
+ "output_tokens": 80,
+ "decode_s": 86.28,
+ "decode_tok_s": 0.93,
+ "zeroed_slots": 29208,
+ "hit_pct": 11.1,
+ "text": "The chemical formula of table salt is **NaCl** (sodium chloride).\n\nIt consists of:\n- **Na** — sodium (a metal)\n- **Cl** — chlorine (a nonmetal)\n\nThese two elements bond together ionically, with sodium donating an electron to chlorine, forming Na⁺ and Cl⁻ ions that attract each other and create the familiar crystalline structure of salt.",
+ "answer_s": 116.28,
+ "correct": true
+}

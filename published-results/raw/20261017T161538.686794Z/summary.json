@@ -1,0 +1,14 @@
+[
+  {
+    "variant": "baseline",
+    "successful_rounds": 1,
+    "failed_rounds": 0,
+    "median_decode_tps": 188.46126360687649,
+    "min_decode_tps": 50.9920137742257,
+    "max_decode_tps": 204.1370699281773,
+    "paired_median_speedup": 1.0,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.09092208400033996
+  }
+]

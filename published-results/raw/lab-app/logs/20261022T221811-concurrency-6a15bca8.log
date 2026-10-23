@@ -1,0 +1,17 @@
+# Concurrency on gemma4:26b · terse · native · 1/4/10 clients, 3 repeats
+# ~/Code/colibri-poc/.venv/bin/python model_concurrency.py --model gemma4:26b --style terse --profile native
+N= 1 repeat 1: 70.12 tok/s total, 0 retries, 69.34 per request, p50 2.975 s, p95 23.874 s, memory 24.03 GB, same 21/24
+N= 4 repeat 1: 74.0 tok/s total, 0 retries, 18.73 per request, p50 28.127 s, p95 71.878 s, memory 24.03 GB, same 88/96
+N=10 repeat 1: 75.05 tok/s total, 0 retries, 8.24 per request, p50 81.102 s, p95 132.57 s, memory 24.03 GB, same 219/240
+N=10 repeat 2: 72.95 tok/s total, 0 retries, 7.79 per request, p50 83.617 s, p95 134.228 s, memory 24.03 GB, same 220/240
+N= 4 repeat 2: 72.96 tok/s total, 0 retries, 18.76 per request, p50 28.438 s, p95 76.516 s, memory 24.03 GB, same 88/96
+N= 1 repeat 2: 72.37 tok/s total, 0 retries, 70.07 per request, p50 3.245 s, p95 23.711 s, memory 24.03 GB, same 22/24
+N= 1 repeat 3: 71.87 tok/s total, 0 retries, 70.53 per request, p50 3.071 s, p95 26.697 s, memory 24.02 GB, same 22/24
+N= 4 repeat 3: 69.87 tok/s total, 0 retries, 18.04 per request, p50 30.633 s, p95 84.974 s, memory 24.02 GB, same 88/96
+N=10 repeat 3: 73.31 tok/s total, 0 retries, 7.99 per request, p50 82.6 s, p95 129.027 s, memory 24.03 GB, same 220/240
+| Requests at once | Total tok/s | Per request tok/s | p50 latency s | p95 latency s | Peak server memory GB | Same as single | Correct |
+|---:|---:|---:|---:|---:|---:|---|---|
+| 1 | 71.87 | 70.07 | 3.071 | 23.874 | 24.03 | 21/24, 22/24, 22/24 | 23/24, 23/24, 23/24 |
+| 4 | 72.96 | 18.73 | 28.438 | 76.516 | 24.03 | 88/96, 88/96, 88/96 | 92/96, 92/96, 92/96 |
+| 10 | 73.31 | 7.99 | 82.6 | 132.57 | 24.03 | 219/240, 220/240, 220/240 | 226/240, 226/240, 226/240 |
+-> results/olmoe-concurrency-gemma4-26b-native-terse-20261022T221811

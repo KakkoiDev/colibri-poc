@@ -1,0 +1,19 @@
+{
+ "id": "fact-ocean",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.78,
+ "prompt_tokens": 21,
+ "prefill_s": 0.087,
+ "output_tokens": 41,
+ "decode_s": 0.688,
+ "load_s": 0.006,
+ "text": "The largest ocean on Earth is the **Pacific Ocean**. It covers about 63 million square miles (163 million square kilometers), which is more than all of Earth's land area combined.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 59.59,
+ "answer_s": 0.77,
+ "correct": true
+}

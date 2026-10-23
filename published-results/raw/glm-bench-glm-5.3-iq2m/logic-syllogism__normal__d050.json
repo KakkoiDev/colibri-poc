@@ -1,0 +1,18 @@
+{
+ "id": "logic-syllogism",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 377.44,
+ "prompt_tokens": 36,
+ "prefill_s": 69.7,
+ "output_tokens": 128,
+ "decode_s": 304.04,
+ "decode_tok_s": 0.42,
+ "zeroed_slots": 66023,
+ "hit_pct": 3.5,
+ "text": "Yes. This is a classic syllogism ( often called a transitive syllogism or hypothetical syllogism, working with universal quantifiers ( \"all\" statements, sometimes written as \"A with a leading \"∀\" symbol, sometimes written as \"∀x\" quantifier with a bar over it, sometimes written as \"A\" or \"∀\" or \"∀x\" or \"∀x∈D\" or \"∀x∈W\" or \"∀x∈D∧R\" or \"∀x∈D∨R\" or \"∀x∈D a\" or \"∀x∈D a",
+ "answer_s": 373.74,
+ "correct": true
+}

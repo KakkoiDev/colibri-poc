@@ -1,0 +1,18 @@
+{
+ "id": "math-mul",
+ "kind": "math",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 130.69,
+ "prompt_tokens": 15,
+ "prefill_s": 34.15,
+ "output_tokens": 128,
+ "decode_s": 92.84,
+ "decode_tok_s": 1.38,
+ "zeroed_slots": 60219,
+ "hit_pct": 20.8,
+ "text": "17 × 23 = **391**\n\nYou can verify this: 17 × 23 = 17 × 20 + 17 × 3 = 340 + 51 = 391 ✓\n\n**A fun fact:** 391 is a semiprime (17 × 23), and both 17 and 23 are prime numbers — the \"sexy\" primes (a term for prime pairs that differ by 6, like 17 and 23, or 5 and 11, or 11 and 17). The term \"sexy\" comes from the Latin \"sex\" meaning \"six\"",
+ "answer_s": 126.99,
+ "correct": false
+}

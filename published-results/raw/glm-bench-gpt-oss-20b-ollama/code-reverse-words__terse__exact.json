@@ -1,0 +1,19 @@
+{
+ "id": "code-reverse-words",
+ "kind": "code",
+ "style": "terse",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 3.46,
+ "prompt_tokens": 100,
+ "prefill_s": 0.191,
+ "output_tokens": 128,
+ "decode_s": 3.267,
+ "load_s": 0.001,
+ "text": "",
+ "thinking_chars": 590,
+ "truncated": true,
+ "decode_tok_s": 39.18,
+ "answer_s": 3.46,
+ "correct": false
+}

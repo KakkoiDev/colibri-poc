@@ -1,0 +1,81 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.33s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 16 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>Who wrote the novel Pride and Prejudice?<|assistant|><think></think>PROFILO PREFILL (22.20s):
+PROFILE: expert-disk 120.318s service / 15.045s wait | expert-matmul 4.035s | attention 2.562s (including kvb 0.341s) | lm_head 0.009s | other 0.548s
+ATTENTION: projection/RoPE 0.794s | score-softmax-value 0.042s | output projection 1.385s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.063s | residual P2P 0.000s / 0 hop | orchestration 0.486s
+METAL: blocchi GPU 182 | fallback CPU 0 | expert su GPU 4831 | setup 0.03s gpu-wall 3.33s (kernel 3.72s) scatter 0.01s
+METAL-RESSET: flush 0.66s (residency-set commit in moe_submit, outside setup/gpu-wall)
+Pride and Prejudice was written by Jane Austen, the English novelist known for her sharp social commentary and keen observations of the landed gentry in the early 19th century. Published in 1813, the novel follows the character development of Elizabeth Bennet, the protagonist, as she learns about the repercussions of hasty judgments and comes to appreciate the complexity of human nature. The novel also explores themes of class, pride, prejudice, marriage, and morality, and is widely considered a masterpiece of English literature.
+---
+prefill 16 tokens in 22.20s | decode 105 tokens in 121.60s (0.86 tok/s) | expert hit rate 10.9% (pin 0.0% + lru 10.9%) | RSS 7.74 GB
+experts loaded/token: 605.7 (per-layer 8.08 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.300 (zeroed 37557 miss slots; top layers: L4:570 L59:570 L53:546)
+speculation: 1.00 tokens/forward (105 forwards per 105 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 232.086s service / 73.751s wait | expert-matmul 8.833s | attention 20.924s (including kvb 0.000s) | lm_head 0.000s | other 18.093s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.009s | residual P2P 0.000s / 0 hop | orchestration 18.084s
+METAL-ATTN: layer GPU 8190 | gpu-wall 20.64s (kernel 19.86s | cpu-sched 0.05s gpu-sched 0.35s)
+METAL: blocchi GPU 10838 | fallback CPU 0 | expert su GPU 30700 | setup 0.39s gpu-wall 11.66s (kernel 12.24s) scatter 0.04s
+METAL-RESSET: flush 0.66s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 105 | latency p50 1139.3 ms | p90 1224.2 ms | p99 1285.8 ms | max 2133.9 ms | 1.00 tok/forward
+[PROF] expert I/O: 489.627 GB fetched (4663.1 MB/token, 4.03 GB/s over the run) | hit 10.9% (0 pin + 2810 lru / 23059 load) | 605.7 loads/token | 232.1s read service / 73.8s felt wait
+[PROF] DISK-CLASS (recency split): cold 7997 x 169.81 GB @ 1.91 GB/s-thread, wall 48.6s @ 3.49 GB/s-wall, avg-conc 1.8 (direct 7968/7997) | warm 15062 x 319.82 GB @ 2.23 GB/s-thread, wall 64.4s @ 4.96 GB/s-wall, avg-conc 2.2 (direct 15017/15062) | disk-busy 73.5s (60% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 61% | expert-matmul 7% | attention 17% | lm_head 0% | other 15%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.009s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 18.084s
+[PROF] verdict: I/O-bound — 61% of the time waits on expert reads (hit 11%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.300 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 11.9 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 16 token · +0.00s
+[prefill] layer 5/78 · 16 token · +1.23s
+[prefill] layer 9/78 · 16 token · +2.67s
+[prefill] layer 13/78 · 16 token · +3.98s
+[prefill] layer 17/78 · 16 token · +5.14s
+[prefill] layer 21/78 · 16 token · +6.19s
+[prefill] layer 25/78 · 16 token · +7.24s
+[prefill] layer 29/78 · 16 token · +8.41s
+[prefill] layer 33/78 · 16 token · +9.42s
+[prefill] layer 37/78 · 16 token · +10.44s
+[prefill] layer 41/78 · 16 token · +11.46s
+[prefill] layer 45/78 · 16 token · +12.51s
+[prefill] layer 49/78 · 16 token · +13.65s
+[prefill] layer 53/78 · 16 token · +14.75s
+[prefill] layer 57/78 · 16 token · +15.84s
+[prefill] layer 61/78 · 16 token · +16.97s
+[prefill] layer 65/78 · 16 token · +18.08s
+[prefill] layer 69/78 · 16 token · +19.16s
+[prefill] layer 73/78 · 16 token · +20.34s
+[prefill] layer 77/78 · 16 token · +21.56s
+[prefill] layer 78/78 · 16 token · +21.87s
+
+[t=16  RSS 7.74 GB  hit 10%  0.91 tok/s  1.00 tok/fw]
+
+[t=32  RSS 7.74 GB  hit 12%  0.90 tok/s  1.00 tok/fw]
+
+[t=48  RSS 7.74 GB  hit 11%  0.87 tok/s  1.00 tok/fw]
+
+[t=64  RSS 7.74 GB  hit 11%  0.87 tok/s  1.00 tok/fw]
+
+[t=80  RSS 7.74 GB  hit 11%  0.87 tok/s  1.00 tok/fw]
+
+[t=96  RSS 7.74 GB  hit 11%  0.87 tok/s  1.00 tok/fw]

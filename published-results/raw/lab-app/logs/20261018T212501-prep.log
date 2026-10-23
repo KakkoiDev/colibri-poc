@@ -1,0 +1,7 @@
+# Download and prepare GLM-5.3-Flash UD-IQ3_XXS
+# make glm-prep-flash
+sh scripts/prep_gguf.sh unsloth/GLM-5.3-Flash-GGUF UD-IQ3_XXS glm-5.3-flash-iq3xxs
+clang -O3 -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -Wall -Wextra -Wno-unused-parameter -Wno-misleading-indentation -Wno-unused-function  -MMD -MP -DCOLI_METAL glm53.c backend_metal.o  -o glm53 -lm -L/opt/homebrew/opt/libomp/lib -lomp  -framework Metal -framework Foundation -lc++
+/dev/disk3s5   1.8Ti   947Gi   870Gi    53%    1.9M  9.1G    0%   /System/Volumes/Data
+scripts/prep_gguf.sh: line 17: hf: command not found
+make: *** [glm-prep-flash] Error 127

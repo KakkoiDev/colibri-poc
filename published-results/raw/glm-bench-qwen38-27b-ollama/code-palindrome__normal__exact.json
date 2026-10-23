@@ -1,0 +1,19 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 184.52,
+ "prompt_tokens": 38,
+ "prefill_s": 0.451,
+ "output_tokens": 58,
+ "decode_s": 2.345,
+ "load_s": 0.051,
+ "text": "```python\ndef is_palindrome(s: str) -> bool:\n    \"\"\"\n    Returns True if the string s reads the same forwards and backwards,\n    ignoring case.\n    \"\"\"\n    cleaned = s.lower()\n    return cleaned == cleaned[::-1]\n```",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 24.73,
+ "answer_s": 2.8,
+ "correct": true
+}

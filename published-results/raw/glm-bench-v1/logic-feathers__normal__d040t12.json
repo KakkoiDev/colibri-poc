@@ -1,0 +1,18 @@
+{
+ "id": "logic-feathers",
+ "kind": "logic",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 126.09,
+ "prompt_tokens": 22,
+ "prefill_s": 31.19,
+ "output_tokens": 128,
+ "decode_s": 91.69,
+ "decode_tok_s": 1.4,
+ "zeroed_slots": 59032,
+ "hit_pct": 23.0,
+ "text": "They weigh exactly the same — one kilogram. This is a classic trick question designed to catch people who reflexively answer \"steel\" because it's denser or \"feathers\" because thebuoyancy myth confuses them. The material doesn't matter; only the total mass does.\n\nA kilogram is a unit of mass, not weight, so even in different gravitational fields, a kilogram of anything has identical mass (and, on Earth at the same location, identical weight). The feathers would simply take up far more space — you'd need a huge pile of them, while the steel could be a small block or cube",
+ "answer_s": 122.88,
+ "correct": true
+}

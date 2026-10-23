@@ -1,0 +1,19 @@
+{
+ "id": "explain-sky",
+ "kind": "explain",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 2.27,
+ "prompt_tokens": 20,
+ "prefill_s": 0.106,
+ "output_tokens": 128,
+ "decode_s": 2.153,
+ "load_s": 0.004,
+ "text": "The short answer is a phenomenon called **Rayleigh scattering**.\n\nTo understand why the sky is blue, you have to look at three things: sunlight, Earth's atmosphere, and how light behaves.\n\n### 1. Sunlight is a spectrum\nAlthough sunlight looks white to us, it is actually made up of all the colors of the rainbow (red, orange, yellow, green, blue, indigo, and violet). Light travels as **waves**, and each color has a different wavelength. \n*   **Red light** has long, lazy wavelengths.\n*   **Blue and violet light** have much shorter, cho",
+ "thinking_chars": 0,
+ "truncated": true,
+ "decode_tok_s": 59.45,
+ "answer_s": 2.26,
+ "correct": true
+}

@@ -1,0 +1,6 @@
+allocator-off warmup explain: 197.66 tok/s
+allocator-off measured explain: 194.15 tok/s
+allocator-off measured code: 193.30 tok/s
+allocator-off measured reason: 194.75 tok/s
+allocator-off measured story: 197.14 tok/s
+allocator-off measured long-context: 142.33 tok/s

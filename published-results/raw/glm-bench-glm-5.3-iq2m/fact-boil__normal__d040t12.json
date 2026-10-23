@@ -1,0 +1,18 @@
+{
+ "id": "fact-boil",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 222.87,
+ "prompt_tokens": 19,
+ "prefill_s": 22.86,
+ "output_tokens": 128,
+ "decode_s": 196.09,
+ "decode_tok_s": 0.65,
+ "zeroed_slots": 60855,
+ "hit_pct": 2.3,
+ "text": "Water boils at **100°C** (212°F) at standard atmospheric pressure at sea level. The boiling point of water is determined by atmospheric pressure, not by the temperature alone. Since atmospheric pressure at sea level (about 101.325 kPa or 14.7 psi) is essentially constant, water reaches its boiling point at exactly 100°C. \n\nHowever, if you go to higher altitudes, atmospheric pressure decreases, and the boiling point drops below 100°C. For example, at 5,000 feet (about 1,524 meters), water boils at roughly 95°C, and at 10",
+ "answer_s": 218.95,
+ "correct": true
+}

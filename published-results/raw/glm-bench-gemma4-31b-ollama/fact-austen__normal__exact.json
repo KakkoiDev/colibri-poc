@@ -1,0 +1,19 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 0.93,
+ "prompt_tokens": 21,
+ "prefill_s": 0.321,
+ "output_tokens": 12,
+ "decode_s": 0.591,
+ "load_s": 0.015,
+ "text": "**Jane Austen** wrote the novel *Pride and Prejudice*.",
+ "thinking_chars": 0,
+ "truncated": false,
+ "decode_tok_s": 20.3,
+ "answer_s": 0.91,
+ "correct": true
+}

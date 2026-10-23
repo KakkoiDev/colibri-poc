@@ -1,0 +1,18 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d040t12",
+ "exit": 0,
+ "wall_s": 141.59,
+ "prompt_tokens": 16,
+ "prefill_s": 19.57,
+ "output_tokens": 128,
+ "decode_s": 118.28,
+ "decode_tok_s": 1.08,
+ "zeroed_slots": 59730,
+ "hit_pct": 2.2,
+ "text": "Pride and Prejudice was written by Jane Austen. The novel was published in 1813 (though Austen originally titled it *First Impressions* and drafted it in the late 1790s, it was heavily revised before its eventual publication). It's widely considered a masterpiece of English literature and one of the most beloved novels of all time, known for its wit, social commentary, and exploration of love, class, and marriage in Regency-era England.\n\nA few key facts about the author and her work:\n\n1. **Austen's life and background**: Jane Austen (1775–1817) was",
+ "answer_s": 137.85,
+ "correct": true
+}

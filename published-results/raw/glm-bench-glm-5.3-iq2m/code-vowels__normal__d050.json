@@ -1,0 +1,18 @@
+{
+ "id": "code-vowels",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 385.39,
+ "prompt_tokens": 42,
+ "prefill_s": 83.26,
+ "output_tokens": 128,
+ "decode_s": 298.33,
+ "decode_tok_s": 0.43,
+ "zeroed_slots": 66160,
+ "hit_pct": 2.5,
+ "text": "I'll write a `count_vowels` function that counts vowels (a, e, i, o, u) in a given string, case-insensitively (that is, 'A' and 'a' are both counted as vowels, upper or lower doesn't matter — one is enough for the other, same letter, same sound, same meaning, same count, same result, same value, same answer, same outcome, same output, same conclusion, same end, same finish, same same, same same same, same same same same, same same same same same, same same same same same same, same",
+ "answer_s": 381.59,
+ "correct": false
+}

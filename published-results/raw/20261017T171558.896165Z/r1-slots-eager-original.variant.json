@@ -1,0 +1,10 @@
+{
+  "name": "slots-eager-original",
+  "backend": "mlx",
+  "description": "Bounded complete-expert GPU slots; original weights and routing; explicit staging and I/O policy",
+  "prefill_step_size": 512,
+  "plugin": "~/Code/colibri-poc/results/20261017T171558.896165Z/r1-slots-eager-original.plugin.py",
+  "env": {
+    "SLOTS_LAZY": "0"
+  }
+}

@@ -1,0 +1,77 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.64s | resident dense: 10869.90 MB | layers=78 experts=256 | MTP ACTIVE (draft=1)
+prompt: 13 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=1
+[gMASK]<sop><|user|>What is the capital of Australia?<|assistant|><think></think>PROFILO PREFILL (56.26s):
+PROFILE: expert-disk 121.060s service / 15.396s wait | expert-matmul 3.248s | attention 35.504s (including kvb 2.740s) | lm_head 0.008s | other 2.108s
+ATTENTION: projection/RoPE 10.682s | score-softmax-value 0.025s | output projection 22.056s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.047s | residual P2P 0.000s / 0 hop | orchestration 2.062s
+METAL: blocchi GPU 162 | fallback CPU 0 | expert su GPU 4280 | setup 0.02s gpu-wall 2.67s (kernel 2.99s) scatter 0.01s
+METAL-RESSET: flush 0.55s (residency-set commit in moe_submit, outside setup/gpu-wall)
+The capital of Australia is **Canberra**.
+
+While Sydney and Melbourne are larger and more famous, Canberra was purpose-built as the capital in the early 1900s as a compromise between the two rival cities, which both wanted to be the capital. It's located in the Australian Capital Territory (ACT), between Sydney and Melbourne.
+---
+prefill 13 tokens in 56.26s | decode 67 tokens in 158.95s (0.42 tok/s) | expert hit rate 1.5% (pin 0.0% + lru 1.5%) | RSS 14.20 GB
+experts loaded/token: 634.9 (per-layer 8.46 across 75; baseline topk=8) | TOPK=0 TOPP=0.00
+speculation: 1.91 tokens/forward (35 forwards per 67 tokens) | MTP acceptance 91% (32/35)
+PROFILE: expert-disk 868.475s service / 120.579s wait | expert-matmul 14.121s | attention 13.069s (including kvb 0.000s) | lm_head 0.000s | other 11.177s
+ATTENTION: projection/RoPE 0.167s | score-softmax-value 0.128s | output projection 0.051s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.007s | residual P2P 0.000s / 0 hop | orchestration 11.170s
+METAL-ATTN: layer GPU 2730 | gpu-wall 12.65s (kernel 12.38s | cpu-sched 0.01s gpu-sched 0.13s)
+METAL: blocchi GPU 3461 | fallback CPU 0 | expert su GPU 40248 | setup 0.24s gpu-wall 16.53s (kernel 16.83s) scatter 0.03s
+METAL-RESSET: flush 0.55s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 35 | latency p50 4353.0 ms | p90 4759.6 ms | p99 4845.0 ms | max 4845.3 ms | 1.91 tok/forward
+[PROF] expert I/O: 759.529 GB fetched (11336.2 MB/token, 4.78 GB/s over the run) | hit 1.5% (0 pin + 545 lru / 35356 load) | 634.9 loads/token | 868.5s read service / 120.6s felt wait
+[PROF] DISK-CLASS (recency split): cold 16822 x 363.14 GB @ 0.78 GB/s-thread, wall 118.3s @ 3.07 GB/s-wall, avg-conc 3.9 (direct 16749/16822) | warm 18534 x 396.39 GB @ 0.98 GB/s-thread, wall 106.8s @ 3.71 GB/s-wall, avg-conc 3.8 (direct 18395/18534) | disk-busy 120.5s (76% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 76 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 76% | expert-matmul 9% | attention 8% | lm_head 0% | other 7%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.007s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 11.170s
+[PROF] verdict: I/O-bound — 76% of the time waits on expert reads (hit 2%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 429 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (4.7 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] active: native speculative decoding (draft=1)
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 19.5 GB is 1.5 GB OVER the budget (resident 11.4 GB + reserve 6.4 GB, expert 21.5 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 19.5 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 12.8 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=1 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 13 token · +0.00s
+[prefill] layer 5/78 · 13 token · +4.55s
+[prefill] layer 9/78 · 13 token · +7.60s
+[prefill] layer 13/78 · 13 token · +10.47s
+[prefill] layer 17/78 · 13 token · +13.26s
+[prefill] layer 21/78 · 13 token · +15.95s
+[prefill] layer 25/78 · 13 token · +18.66s
+[prefill] layer 29/78 · 13 token · +21.45s
+[prefill] layer 33/78 · 13 token · +24.12s
+[prefill] layer 37/78 · 13 token · +26.81s
+[prefill] layer 41/78 · 13 token · +29.45s
+[prefill] layer 45/78 · 13 token · +32.15s
+[prefill] layer 49/78 · 13 token · +34.92s
+[prefill] layer 53/78 · 13 token · +37.65s
+[prefill] layer 57/78 · 13 token · +40.32s
+[prefill] layer 61/78 · 13 token · +43.04s
+[prefill] layer 65/78 · 13 token · +45.76s
+[prefill] layer 69/78 · 13 token · +48.49s
+[prefill] layer 73/78 · 13 token · +51.28s
+[prefill] layer 77/78 · 13 token · +54.11s
+[prefill] layer 78/78 · 13 token · +54.81s
+[SPEC_PIN] draft+verify pinned to the S=1 kernel family: int4=idot int8=idot (#163; SPEC_PIN=0 for A/B)
+
+[t=16  RSS 14.20 GB  hit 1%  0.44 tok/s  1.88 tok/fw]
+
+[t=32  RSS 14.20 GB  hit 1%  0.44 tok/s  1.94 tok/fw]
+
+[t=48  RSS 14.20 GB  hit 1%  0.42 tok/s  1.88 tok/fw]
+
+[t=64  RSS 14.20 GB  hit 2%  0.43 tok/s  1.91 tok/fw]

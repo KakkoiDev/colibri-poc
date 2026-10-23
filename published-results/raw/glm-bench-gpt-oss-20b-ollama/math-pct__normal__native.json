@@ -1,0 +1,19 @@
+{
+ "id": "math-pct",
+ "kind": "math",
+ "style": "normal",
+ "config": "native",
+ "exit": 0,
+ "wall_s": 1.91,
+ "prompt_tokens": 76,
+ "prefill_s": 0.18,
+ "output_tokens": 69,
+ "decode_s": 1.73,
+ "load_s": 0.001,
+ "text": "15% of 240 is **36**.",
+ "thinking_chars": 128,
+ "truncated": false,
+ "decode_tok_s": 39.88,
+ "answer_s": 1.91,
+ "correct": true
+}

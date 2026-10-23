@@ -1,0 +1,9 @@
+# Experiment: Skip < 0.6 with 12 threads
+# ~/Code/colibri-poc/.venv/bin/python glm_lab.py run-planned skip060-t12
+Running x-skip060-t12 ...
+117 runs, 113 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  skip060-t12: +14%, repeating once to confirm
+Running x-skip060-t12-r2 ...
+118 runs, 114 ok -> ~/Code/colibri-poc/published-results/glm-20261018
+  skip060-t12: 2.13 tok/s vs 1.87 (13.9%), output changed
+83 experiments -> docs/12-experiment-log.md, site/data/experiments.json

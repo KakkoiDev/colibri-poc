@@ -1,0 +1,85 @@
+== GLM C engine (glm_moe_dsa), cache=1 experts/layer | compute experts@8-bit dense@8-bit | idot: neon ==
+loaded in 2.28s | resident dense: 10604.26 MB | layers=78 experts=256 | MTP absent (draft=5)
+prompt: 13 tokens | generating up to 128 (EOS stop=154820) | n-gram draft=5
+[gMASK]<sop><|user|>What is the capital of Australia?<|assistant|><think></think>PROFILO PREFILL (55.18s):
+PROFILE: expert-disk 104.961s service / 13.294s wait | expert-matmul 3.101s | attention 36.568s (including kvb 2.918s) | lm_head 0.008s | other 2.207s
+ATTENTION: projection/RoPE 10.954s | score-softmax-value 0.030s | output projection 22.665s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.055s | residual P2P 0.000s / 0 hop | orchestration 2.152s
+METAL: blocchi GPU 159 | fallback CPU 0 | expert su GPU 4203 | setup 0.02s gpu-wall 2.71s (kernel 3.05s) scatter 0.01s
+METAL-RESSET: flush 0.36s (residency-set commit in moe_submit, outside setup/gpu-wall)
+The capital of Australia is **Canberra**. This is a bit of a trivia question (with a bit of a a "trick" wrapped around it — as you'll see with (a) some of the "seemingly 'easy'/'obvious'/'straightforward'/'obvious'" answers, and (b) some of the "seemingly 'easy'/'obvious'/'straightforward'/'obvious'" answers, and (c) some of the "seemingly 'easy'/'obvious'/'straightforward'/'obvious'" answers, and (d) some of the
+---
+prefill 13 tokens in 55.18s | decode 128 tokens in 82.30s (1.56 tok/s) | expert hit rate 31.9% (pin 0.0% + lru 31.9%) | RSS 12.98 GB
+experts loaded/token: 604.7 (per-layer 8.06 across 75; baseline topk=8) | TOPK=0 TOPP=0.00 | DEGRADE_ZERO tau=0.500 (zeroed 64471 miss slots; top layers: L6:891 L3:889 L5:889)
+speculation: 1.04 tokens/forward (123 forwards per 128 tokens) | MTP acceptance 0% (0/0)
+PROFILE: expert-disk 37.398s service / 30.319s wait | expert-matmul 4.801s | attention 25.579s (including kvb 0.000s) | lm_head 0.000s | other 21.602s
+ATTENTION: projection/RoPE 0.000s | score-softmax-value 0.000s | output projection 0.000s
+P0-EXEC: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | router 0.010s | residual P2P 0.000s / 0 hop | orchestration 21.593s
+METAL-ATTN: layer GPU 9594 | gpu-wall 25.28s (kernel 24.38s | cpu-sched 0.06s gpu-sched 0.40s)
+METAL: blocchi GPU 11278 | fallback CPU 0 | expert su GPU 16430 | setup 0.30s gpu-wall 7.08s (kernel 7.20s) scatter 0.03s
+METAL-RESSET: flush 0.36s (residency-set commit in moe_submit, outside setup/gpu-wall)
+[PROF] decode forwards: 123 | latency p50 645.6 ms | p90 709.5 ms | p99 1182.1 ms | max 1210.1 ms | 1.04 tok/forward
+[PROF] expert I/O: 176.855 GB fetched (1381.7 MB/token, 2.15 GB/s over the run) | hit 31.9% (0 pin + 3898 lru / 8329 load) | 604.7 loads/token | 37.4s read service / 30.3s felt wait
+[PROF] DISK-CLASS (recency split): cold 2823 x 59.94 GB @ 4.56 GB/s-thread, wall 12.0s @ 5.00 GB/s-wall, avg-conc 1.1 (direct 2820/2823) | warm 5506 x 116.91 GB @ 4.83 GB/s-thread, wall 20.7s @ 5.65 GB/s-wall, avg-conc 1.2 (direct 5496/5506) | disk-busy 30.1s (37% of window)
+[PROF] resident experts: 0 pinned (0.0 GB) + 75 in LRU (1.6 GB, cap 1/layer)
+[PROF] time shares: expert-I/O 37% | expert-matmul 6% | attention 31% | lm_head 0% | other 26%
+[PROF] P0 execution: routed CPU 0.000s / 0.00 GB/s (0 row) | routed GPU critical 0.000s | tier straggler 0.00x | router 0.010s | residual P2P 0.000s (0 hop, 0.000 ms/hop) | orchestration 21.593s
+[PROF] verdict: I/O-bound — 37% of the time waits on expert reads (hit 32%). More cache is the lever: raise RAM_GB (or add RAM).
+
+    (\      colibri v2.0.0
+     )·>     tiny engine, immense model
+    / \      GLM-5.2/5.3 · 744B MoE · 419 GB on disk
+             run
+             
+  ──────────────────────────────────────────────────────────
+
+[DEGRADE] zero-fill ON, tau=0.500 (approximate mode: miss slots with per-position gate weight < tau are never loaded)
+[METAL] residency-set: on (macOS 15+, moe_submit skips per-buffer useResource:)
+[METAL] mode: batched routed experts on GPU (unified-memory zero-copy)
+[METAL] keep-alive spinner ON
+METAL: fast SSD (5.4 GB/s) — page cache favored, expert cache minimal (cap 1); override with --cap
+[MTP] absent (draft=5)
+[USAGE] expert history: 81600 selections (~/colibri-models/glm-5.3/.coli_usage)
+[PIN] auto: budget 1.5 GB | plan 0.3 GB (conf 0.41, 81600 selections) | LRU reserve 0.0 GB (cap 0/layer x 1592.5 MB/row-set) | max_pin 1.5 GB -> pinning 0.3 GB
+[RAM_GB=18.0] WARNING: cap=1 is the floor, projected peak 18.1 GB is 0.1 GB OVER the budget (resident 11.1 GB + reserve 5.4 GB, expert 21.2 MB avg/row).
+[RAM_GB=18.0] cap=1 ok (projected peak 18.1 GB)
+[PROF] machine: Apple M6 | 12 cores (2 omp threads) | RAM 34.4 GB total, 13.6 GB available | backend Metal
+[PROF] config: RAM_GB=18.0 CTX=1024 | expert cache cap 1/layer (up to 1.6 GB) | pinned 0 (0.0 GB) | DRAFT=5 PIPE=1 DIRECT=1 MMAP=0 IDOT=1 DSA=off PILOT=0 CACHE_ROUTE=0
+[stop] 18 stop tokens: 154820 154827 154829 154821 154822 154823 154824 154825 154826 154828 154830 154831 154832 154833 154834 154835 154836 154837 (15 from the tokenizer's special set)
+[prefill] layer 1/78 · 13 token · +0.00s
+[prefill] layer 5/78 · 13 token · +4.61s
+[prefill] layer 9/78 · 13 token · +7.68s
+[prefill] layer 13/78 · 13 token · +10.53s
+[prefill] layer 17/78 · 13 token · +13.31s
+[prefill] layer 21/78 · 13 token · +16.03s
+[prefill] layer 25/78 · 13 token · +18.76s
+[prefill] layer 29/78 · 13 token · +21.52s
+[prefill] layer 33/78 · 13 token · +24.20s
+[prefill] layer 37/78 · 13 token · +26.88s
+[prefill] layer 41/78 · 13 token · +29.51s
+[prefill] layer 45/78 · 13 token · +32.21s
+[prefill] layer 49/78 · 13 token · +34.99s
+[prefill] layer 53/78 · 13 token · +37.70s
+[prefill] layer 57/78 · 13 token · +40.29s
+[prefill] layer 61/78 · 13 token · +42.92s
+[prefill] layer 65/78 · 13 token · +45.55s
+[prefill] layer 69/78 · 13 token · +48.19s
+[prefill] layer 73/78 · 13 token · +50.95s
+[prefill] layer 77/78 · 13 token · +53.76s
+[prefill] layer 78/78 · 13 token · +54.46s
+
+[t=16  RSS 12.98 GB  hit 35%  1.55 tok/s  1.00 tok/fw]
+
+[t=32  RSS 12.98 GB  hit 36%  1.57 tok/s  1.03 tok/fw]
+
+[t=48  RSS 12.98 GB  hit 36%  1.55 tok/s  1.02 tok/fw]
+
+[t=64  RSS 12.98 GB  hit 35%  1.53 tok/s  1.02 tok/fw]
+
+[t=80  RSS 12.98 GB  hit 34%  1.54 tok/s  1.04 tok/fw]
+
+[t=96  RSS 12.98 GB  hit 33%  1.54 tok/s  1.03 tok/fw]
+
+[t=112  RSS 12.98 GB  hit 33%  1.55 tok/s  1.03 tok/fw]
+
+[t=128  RSS 12.98 GB  hit 32%  1.56 tok/s  1.03 tok/fw]

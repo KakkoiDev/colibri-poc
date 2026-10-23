@@ -1,0 +1,50 @@
+[
+  {
+    "variant": "baseline",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 191.40672280404954,
+    "min_decode_tps": 136.15447895715337,
+    "max_decode_tps": 195.74945848494733,
+    "paired_median_speedup": 1.0,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.05006487500031653
+  },
+  {
+    "variant": "resident-fused",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 194.2230036663093,
+    "min_decode_tps": 138.8734936862169,
+    "max_decode_tps": 197.58520272004054,
+    "paired_median_speedup": 1.0089513225173181,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04752991699933773
+  },
+  {
+    "variant": "resident-compiled",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 192.46571284621817,
+    "min_decode_tps": 138.95931597619347,
+    "max_decode_tps": 194.65848746164744,
+    "paired_median_speedup": 1.005532669002712,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.05030687500038766
+  },
+  {
+    "variant": "resident-compiled-fused",
+    "successful_rounds": 3,
+    "failed_rounds": 0,
+    "median_decode_tps": 192.3925408579791,
+    "min_decode_tps": 139.08157670972017,
+    "max_decode_tps": 196.71277084594604,
+    "paired_median_speedup": 1.0083315004432019,
+    "exact_tokens_match": true,
+    "equal_output_lengths": true,
+    "median_ttft_s": 0.04901799999970535
+  }
+]

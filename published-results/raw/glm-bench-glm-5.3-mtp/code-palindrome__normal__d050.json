@@ -1,0 +1,18 @@
+{
+ "id": "code-palindrome",
+ "kind": "code",
+ "style": "normal",
+ "config": "d050",
+ "exit": 0,
+ "wall_s": 135.55,
+ "prompt_tokens": 32,
+ "prefill_s": 42.89,
+ "output_tokens": 128,
+ "decode_s": 89.61,
+ "decode_tok_s": 1.43,
+ "zeroed_slots": 65114,
+ "hit_pct": 25.4,
+ "text": "```python\ndef is_palindrome(s):\n    \"\"\"\n    Return True if the string s reads the same forwards and backwards,\n    ignoring case.\n\n    An empty string is considered a palindrome (it \"reads\" the same\n    both ways, trivially). Strings of length 1 are also palindromes.\n\n    Examples:\n        >>> is_palindrome(\"racecar\")\n        True\n        >>> is_palindrome(\"RaceCar\")\n        True\n        >>> is_palindrome(\"hello\")\n        False\n        >>> is_palindrome(\"\")\n        True\n        >>> is_palindrome(\"a\")\n        True\n    \"\"\"\n    # Normalize case",
+ "answer_s": 132.5,
+ "correct": false
+}

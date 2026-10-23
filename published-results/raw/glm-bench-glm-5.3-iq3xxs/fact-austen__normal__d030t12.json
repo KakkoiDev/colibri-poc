@@ -1,0 +1,18 @@
+{
+ "id": "fact-austen",
+ "kind": "fact",
+ "style": "normal",
+ "config": "d030t12",
+ "exit": 0,
+ "wall_s": 225.88,
+ "prompt_tokens": 16,
+ "prefill_s": 22.07,
+ "output_tokens": 117,
+ "decode_s": 199.05,
+ "decode_tok_s": 0.59,
+ "zeroed_slots": 37684,
+ "hit_pct": 1.1,
+ "text": "Pride and Prejudice was written by Jane Austen. It was first published in 1813 and is one of her most famous and beloved works. The novel follows the story of Elizabeth Bennet, one of five sisters in a genteel family, as she navigates issues of class, marriage, and morality in early 19th-century England. The novel's famous opening line, \"It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife,\" is one of the most recognizable openings in English literature.",
+ "answer_s": 221.12,
+ "correct": true
+}

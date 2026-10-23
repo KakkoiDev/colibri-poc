@@ -1,0 +1,18 @@
+{
+ "id": "math-apples",
+ "kind": "math",
+ "style": "normal",
+ "config": "exact",
+ "exit": 0,
+ "wall_s": 177.98,
+ "prompt_tokens": 30,
+ "prefill_s": 65.81,
+ "output_tokens": 23,
+ "decode_s": 107.94,
+ "decode_tok_s": 0.21,
+ "zeroed_slots": 0,
+ "hit_pct": 0.5,
+ "text": "12 - 5 = 7\n7 + 8 = 15\n\nYou have **15 apples**.",
+ "answer_s": 173.75,
+ "correct": true
+}

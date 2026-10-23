@@ -1,0 +1,18 @@
+{
+ "case": "exact-code-48__r1",
+ "exit": 0,
+ "wall_s": 157.73,
+ "ram": 18,
+ "ctx": 1024,
+ "ngen": 48,
+ "env": {},
+ "refused": false,
+ "prompt_tokens": 26,
+ "prefill_s": 34.62,
+ "output_tokens": 48,
+ "decode_s": 120.23,
+ "decode_tok_s": 0.4,
+ "zeroed_slots": 0,
+ "hit_pct": 1.7,
+ "text": "Here's an iterative Python function to compute the n-th Fibonacci number:\n\n```python\ndef fibonacci(n):\n    \"\"\"Return the n-th Fibonacci number (iteratively).\n    \n    Uses the convention: F(0) = 0, F"
+}
