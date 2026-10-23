@@ -20727,8 +20727,8 @@
   },
   {
    "path": "lab-app/logs/20261023T205341-concurrency-753c45ae.log",
-   "bytes": 191,
-   "sha256": "bdf914d7a4d797b10ab4b27d362c2933e790e22cdbb6f75cd9e281c8cd8de06d"
+   "bytes": 281,
+   "sha256": "7d0533991591509968c7d8dd71eb9a4e12e9b784167ad0bc699714086b2e00e4"
   },
   {
    "path": "olmoe-concurrency-gemma4-26b-mlx-native-normal-20261023T151822/failure.json",
@@ -20932,13 +20932,13 @@
   },
   {
    "path": "parallel-bench-20261023T205341-32566/server.log",
-   "bytes": 6670,
-   "sha256": "e600ff0e9dbfbee7a07f40a6d76ca7e03087b1dd9e4fac6cd84036e66dbb05ad"
+   "bytes": 10746,
+   "sha256": "82a54aebe90b6ae0af79e227452231ffb3a6e71323add7231dd3d9fcae47b177"
   },
   {
    "path": "parallel-bench-20261023T205341-32566/summary.json",
-   "bytes": 309,
-   "sha256": "1ccb68aa781f8a83b6016d9270317aefbded87b25988d0a55cb4e53d9198db60"
+   "bytes": 7706,
+   "sha256": "c158dc33c87fae0cfd0fb7aa6c4418ff8c4534d4ea7898fd4f30d892f7e6dfe9"
   },
   {
    "path": "parallel-smoke-20261023/capacity.py",

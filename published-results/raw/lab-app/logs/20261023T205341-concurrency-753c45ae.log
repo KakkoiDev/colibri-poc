@@ -1,2 +1,4 @@
 # Parallel capability + stress on qwen3.8:27b-mlx · normal · up to 16 clients, 2K/8K contexts
 # ~/Code/colibri-poc/.venv/bin/python parallel_bench.py --model qwen3.8:27b-mlx --style normal
+Capability: not_supported
+~/Code/colibri-poc/results/parallel-bench-20261023T205341-32566
