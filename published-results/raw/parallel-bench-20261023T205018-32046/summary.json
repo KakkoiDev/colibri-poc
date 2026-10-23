@@ -1,0 +1,14 @@
+{
+  "model": "gpt-oss:20b",
+  "digest": "a0b38d0b19f7c5dd3589e5e6598edfed41c81969d73f9e4774011c1328e9dad8",
+  "status": "running",
+  "phase": "capability",
+  "style": "normal",
+  "thinking": false,
+  "parallel_slots": 16,
+  "stress": [],
+  "busy_machine": true,
+  "engine": {
+    "version": "0.40.7"
+  }
+}
