@@ -450,8 +450,18 @@
 
   function concurrencyView(campaigns) {
     var box = h('div', { class: 'stack' }, h('p', { class: 'hint', text: 'One model, multiple clients. Total tokens/s includes all requests and waiting; per-request rate includes latency. Decode speed comes separately from server telemetry. Overlapping output streams are evidence of overlap, not proof of GPU batching. Memory sums the server process tree.' }));
-    if (!campaigns.length) box.appendChild(h('p', { text: 'No parallel-request tests yet. Select Parallel 1/4/10 in Run benchmarks.' }));
+    if (!campaigns.length) box.appendChild(h('p', { text: 'No parallel-request tests yet. Select Parallel capability + stress in Run benchmarks.' }));
     campaigns.forEach(function (c) {
+      if (c.parallel) {
+        var p = c.parallel, rows = (p.capability ? [p.capability] : []).concat(p.stress || []);
+        box.appendChild(card([h('h2', { text: c.model + ' · ' + p.status.replace(/_/g, ' ') + ' · ' + (p.phase || 'finished') }),
+          h('p', { text: p.status === 'not_supported' ? 'Parallel generation not supported in this tested setup. Stress test skipped.' : p.status === 'error' ? 'Test error: ' + p.error : 'Direct answers · shared model · up to ' + p.parallel_slots + ' clients. First row is the capability check.' }),
+          h('p', { class: 'hint', text: p.stress_stop || 'Short smoke/stress workload; no correctness score or guarantee for long conversations. Memory is server-reported allocation.' }),
+          h('div', { class: 'table-scroll' }, h('table', { class: 'table' },
+            h('thead', {}, h('tr', {}, ['Clients', 'Context limit', 'Interleaved streams', 'Total tokens/s', 'Allocation GB'].map(function (x) { return h('th', { text: x }); }))),
+            h('tbody', {}, rows.map(function (x) { return h('tr', {}, [x.clients, x.context_limit, x.overlapping_streams, f2(x.total_tok_s, 2), x.server_reported_bytes ? f2(x.server_reported_bytes / 1e9, 2) : 'Unavailable'].map(function (v) { return h('td', { text: String(v) }); })); }))))]));
+        return;
+      }
       var rows = c.summary ? c.summary.by_level : [], table = h('table', { class: 'table' },
         h('caption', { text: c.model + ' · ' + c.style + ' · ' + c.profile }),
         h('thead', {}, h('tr', {}, ['Clients', 'Total tokens/s', 'Correct', 'Mean decode tokens/s', 'Per request tokens/s', 'p95 seconds', 'Peak GB', 'Output overlap', 'Cut off'].map(function (x) { return h('th', { scope: 'col', text: x }); }))),

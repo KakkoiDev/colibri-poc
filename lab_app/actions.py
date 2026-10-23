@@ -143,7 +143,7 @@ def build_command(kind, args):
         style, profile = args.get('style', 'terse'), args.get('profile', 'native')
         if model not in ollama_models() or style not in _styles() or profile not in {'native', 'direct'}:
             raise ActionError('Choose an installed model, known style and native/direct profile')
-        return [PY, 'model_concurrency.py', '--model', model, '--style', style, '--profile', profile], f'Concurrency on {model} · {style} · {profile} · 1/4/10 clients, 3 repeats'
+        return [PY, 'parallel_bench.py', '--model', model, '--style', style], f'Parallel capability + stress on {model} · {style} · up to 16 clients, 2K/8K contexts'
     if kind == 'quiet':
         flags = args.get('flags') or []
         if any(f not in QUIET_FLAGS for f in flags):

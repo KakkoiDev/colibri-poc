@@ -25,7 +25,7 @@ class BenchCatalogTests(unittest.TestCase):
         job = bc.jobs_for(['concurrency:qwen3.8:27b-mlx:terse'])[0]
         self.assertEqual(job['kind'], 'concurrency')
         argv, title = a.build_command(job['kind'], job['args'])
-        self.assertIn('model_concurrency.py', argv)
+        self.assertIn('parallel_bench.py', argv)
         self.assertIn('qwen3.8:27b-mlx', argv)
         with self.assertRaises(a.ActionError):
             a.build_command('concurrency', dict(ollama_model='not-installed'))

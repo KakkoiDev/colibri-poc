@@ -435,3 +435,11 @@ Completed dashboard jobs auto-publish through scripts/lab_results_sync.py; data 
 site/data/concurrency.json, public view site/concurrency.html. Registry entry
 sm-installed-20-30b-concurrent currently says running: update it after all eight
 finish, including failures. This does not test partial expert residency.
+
+
+## 2026-10-23: actual parallel smoke
+See results/parallel-smoke-20261023/report.md and raw timing JSON. GPT-OSS 20B: 16 overlapping streams confirmed on isolated 16-slot Ollama. Gemma/Qwen MLX serialize even with four slots. Temporary server stopped; main Ollama unchanged. Long campaign queue PAUSED, running lab PID78980 stopped; four queued jobs preserved. Do not resume long serialized tests automatically. Memory maximum and long-history capacity not established.
+
+
+## Parallel capability bench implementation
+Dashboard concurrency now launches parallel_bench.py: isolated sixteen-slot endpoint, repeated interleaved-stream gate, unsupported skips stress, supported ramps2/4/8/16 clients at2K/8K contexts. Direct/no-thinking,128 outputs. Tests85 pass(8 skipped). Results API/UI exposes parallel-bench folders; old olmoe records retained. PLH implementation is in separate user-requested task01a16787-787b-74f1-8eef-187c0e590776. Queue remains paused.

@@ -1715,7 +1715,7 @@
  },
  {
   "id": "sm-installed-20-30b-concurrent",
-  "title": "Every installed 20–30B package: shared-model 1/4/10-client concurrency",
+  "title": "Every installed 20\u201330B package: shared-model 1/4/10-client concurrency",
   "category": "small-models",
   "date": "2026-10-22",
   "change": "Existing OLMoE concurrency harness adapted to Ollama streaming; gemma4:26b, gemma4:26b-mlx, gpt-oss:20b, qwen3.8:27b-mlx; normal and terse; 3 repeats",
@@ -1733,5 +1733,39 @@
    "public_page": "site/concurrency.html",
    "docs": "docs/19-model-concurrency.md"
   }
+ },
+ {
+  "id": "sm-parallel-generation-smoke-20261023",
+  "title": "Actual parallel generation and shared-weight capacity smoke",
+  "category": "serving",
+  "date": "2026-10-23",
+  "hypothesis": "Explicit parallel slots enable overlapping generation without duplicating model weights.",
+  "change": "Isolated Ollama 0.40.7; four slots capability test then sixteen slots GPT-OSS capacity; think=false, context 2048, max output 128.",
+  "runs": [
+   "results/parallel-smoke-20261023"
+  ],
+  "lossy": false,
+  "verdict": "measured",
+  "conclusion": "GPT-OSS 20B confirmed 16 overlapping streamed requests; Gemma/Qwen MLX serialized. At least 16 short requests fit, maximum untested.",
+  "tradeoffs": "No quality conclusion; busy machine; short prompts; engine allocation telemetry only; existing long campaign paused.",
+  "sources": [
+   "https://github.com/ollama/ollama/issues/17280"
+  ]
+ },
+ {
+  "id": "parallel-capability-gated-stress",
+  "title": "Gate parallel stress on actual output interleaving",
+  "category": "serving",
+  "date": "2026-10-23",
+  "change": "parallel_bench.py replaces dashboard concurrency action; isolated sixteen-slot server; context ramp2K/8K.",
+  "hypothesis": "A short capability gate avoids useless stress runs on serialized backends.",
+  "lossy": false,
+  "verdict": "measured",
+  "runs": [
+   "results/parallel-bench-20261023T155416-91212",
+   "results/parallel-bench-20261023T155512-91385"
+  ],
+  "conclusion": "Live validation: Gemma26B not_supported and stress skipped. GPT-OSS20B confirmed2/4/8/16 overlapping streams at both2K/8K context limits. Long prompts ~5545 tokens;16-client long-context total throughput31.9tok/s. No swap increase. Not a correctness or maximum-capacity claim.",
+  "tradeoffs": "Short direct outputs, allocation telemetry and swap delta; no accuracy or maximum-capacity claim."
  }
 ]

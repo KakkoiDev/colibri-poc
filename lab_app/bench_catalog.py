@@ -88,7 +88,7 @@ def items():
                                  setting=c, style=st))
 
         for st in styles:
-            out.append(_item(f'concurrency:{om}:{st}', gid, f'Parallel requests · {st}',
+            out.append(_item(f'concurrency:{om}:{st}', gid, f'Parallel capability + stress · {st}',
                 'One shared model; 1, 4 and 10 clients, 3 repeats; correctness, total tokens/s and memory. Native thinking, temperature zero, 4096-token budget.',
                 dict(kind='concurrency', args=dict(ollama_model=om, style=st, profile='native')), quiet=False, style=st))
 

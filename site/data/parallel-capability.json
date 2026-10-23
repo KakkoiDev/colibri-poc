@@ -1,0 +1,231 @@
+[
+  {
+    "model": "gemma4:26b",
+    "digest": "d4fa84e5dfc115676f0892591ba522dd75b254fbc1bde861339c3cf8d45c7809",
+    "status": "not_supported",
+    "style": "terse",
+    "thinking": false,
+    "parallel_slots": 16,
+    "busy_machine": true,
+    "engine": {
+      "version": "0.40.7"
+    },
+    "scope": "Exact model digest, engine version, parallel slots and direct/no-thinking profile on this run. Not a model-intrinsic claim.",
+    "phase": "finished",
+    "capability": [
+      {
+        "clients": 2,
+        "context_limit": 2048,
+        "wall_s": 3.7171215410016885,
+        "total_tok_s": 68.87049486442491,
+        "overlapping_streams": 0,
+        "swap_before_mib": 1353.06,
+        "swap_after_mib": 1353.06,
+        "server_reported_bytes": 16153334136,
+        "memory_note": "Ollama reported allocation, not physical peak RAM. Context limit is per request; actual prompt tokens are recorded.",
+        "actual_prompt_tokens": [
+          37,
+          37
+        ]
+      }
+    ],
+    "stress": []
+  },
+  {
+    "model": "gpt-oss:20b",
+    "digest": "a0b38d0b19f7c5dd3589e5e6598edfed41c81969d73f9e4774011c1328e9dad8",
+    "status": "supported",
+    "style": "terse",
+    "thinking": false,
+    "parallel_slots": 16,
+    "busy_machine": true,
+    "engine": {
+      "version": "0.40.7"
+    },
+    "scope": "Exact model digest, engine version, parallel slots and direct/no-thinking profile on this run. Not a model-intrinsic claim.",
+    "phase": "finished",
+    "capability": [
+      {
+        "clients": 2,
+        "context_limit": 2048,
+        "wall_s": 4.315521834001629,
+        "total_tok_s": 59.3207518921577,
+        "overlapping_streams": 2,
+        "swap_before_mib": 1353.06,
+        "swap_after_mib": 1353.06,
+        "server_reported_bytes": 13589901474,
+        "memory_note": "Ollama reported allocation, not physical peak RAM. Context limit is per request; actual prompt tokens are recorded.",
+        "actual_prompt_tokens": [
+          85,
+          85
+        ]
+      }
+    ],
+    "stress": [
+      {
+        "clients": 2,
+        "context_limit": 2048,
+        "wall_s": 4.155919457998607,
+        "total_tok_s": 61.59888385403975,
+        "overlapping_streams": 2,
+        "swap_before_mib": 1353.06,
+        "swap_after_mib": 1353.06,
+        "server_reported_bytes": 13589901474,
+        "memory_note": "Ollama reported allocation, not physical peak RAM. Context limit is per request; actual prompt tokens are recorded.",
+        "actual_prompt_tokens": [
+          85,
+          85
+        ]
+      },
+      {
+        "clients": 4,
+        "context_limit": 2048,
+        "wall_s": 5.929082041000584,
+        "total_tok_s": 86.35400833711446,
+        "overlapping_streams": 4,
+        "swap_before_mib": 1353.06,
+        "swap_after_mib": 1353.06,
+        "server_reported_bytes": 13589901474,
+        "memory_note": "Ollama reported allocation, not physical peak RAM. Context limit is per request; actual prompt tokens are recorded.",
+        "actual_prompt_tokens": [
+          85,
+          85,
+          85,
+          85
+        ]
+      },
+      {
+        "clients": 8,
+        "context_limit": 2048,
+        "wall_s": 9.179095290999612,
+        "total_tok_s": 111.55783522631732,
+        "overlapping_streams": 8,
+        "swap_before_mib": 1353.06,
+        "swap_after_mib": 1353.06,
+        "server_reported_bytes": 13589901474,
+        "memory_note": "Ollama reported allocation, not physical peak RAM. Context limit is per request; actual prompt tokens are recorded.",
+        "actual_prompt_tokens": [
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85
+        ]
+      },
+      {
+        "clients": 16,
+        "context_limit": 2048,
+        "wall_s": 15.686351624999588,
+        "total_tok_s": 130.55935815795877,
+        "overlapping_streams": 16,
+        "swap_before_mib": 1353.06,
+        "swap_after_mib": 1353.06,
+        "server_reported_bytes": 13589901474,
+        "memory_note": "Ollama reported allocation, not physical peak RAM. Context limit is per request; actual prompt tokens are recorded.",
+        "actual_prompt_tokens": [
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85,
+          85
+        ]
+      },
+      {
+        "clients": 2,
+        "context_limit": 8192,
+        "wall_s": 18.73699804199896,
+        "total_tok_s": 13.662807640059325,
+        "overlapping_streams": 2,
+        "swap_before_mib": 1353.06,
+        "swap_after_mib": 1353.06,
+        "server_reported_bytes": 13589901474,
+        "memory_note": "Ollama reported allocation, not physical peak RAM. Context limit is per request; actual prompt tokens are recorded.",
+        "actual_prompt_tokens": [
+          5545,
+          5545
+        ]
+      },
+      {
+        "clients": 4,
+        "context_limit": 8192,
+        "wall_s": 17.567575791999843,
+        "total_tok_s": 29.144601740278894,
+        "overlapping_streams": 4,
+        "swap_before_mib": 1353.06,
+        "swap_after_mib": 1353.06,
+        "server_reported_bytes": 13543418100,
+        "memory_note": "Ollama reported allocation, not physical peak RAM. Context limit is per request; actual prompt tokens are recorded.",
+        "actual_prompt_tokens": [
+          5545,
+          5545,
+          5545,
+          5545
+        ]
+      },
+      {
+        "clients": 8,
+        "context_limit": 8192,
+        "wall_s": 32.81951262500115,
+        "total_tok_s": 31.200950839834846,
+        "overlapping_streams": 8,
+        "swap_before_mib": 1353.06,
+        "swap_after_mib": 1353.06,
+        "server_reported_bytes": 13543418100,
+        "memory_note": "Ollama reported allocation, not physical peak RAM. Context limit is per request; actual prompt tokens are recorded.",
+        "actual_prompt_tokens": [
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545
+        ]
+      },
+      {
+        "clients": 16,
+        "context_limit": 8192,
+        "wall_s": 64.14081908300068,
+        "total_tok_s": 31.929745040358924,
+        "overlapping_streams": 16,
+        "swap_before_mib": 1353.06,
+        "swap_after_mib": 1345.06,
+        "server_reported_bytes": 13543418100,
+        "memory_note": "Ollama reported allocation, not physical peak RAM. Context limit is per request; actual prompt tokens are recorded.",
+        "actual_prompt_tokens": [
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545,
+          5545
+        ]
+      }
+    ]
+  }
+]

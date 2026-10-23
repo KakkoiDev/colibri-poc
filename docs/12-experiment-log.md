@@ -11,7 +11,7 @@ Target: **5.0 tok/s**. Best exact: **0.46 tok/s** (Metal exact: 6 threads instea
 
 Memory is not judged: peak RSS varied 6.2-9.3 GB between two runs with identical settings, so it reflects what macOS kept resident rather than the setting.
 
-Verdicts: confirmed 1, failed 1, improves 22, inconclusive 1, measured 2, no clear change 27, not run 15, reference 1, running 1, worse 13.
+Verdicts: confirmed 1, failed 1, improves 22, inconclusive 1, measured 4, no clear change 27, not run 15, reference 1, running 1, worse 13.
 
 ```mermaid
 flowchart LR
@@ -281,3 +281,13 @@ flowchart LR
 - **Prompt-lookup drafts off (COLI_LOOKUP=0)** (`lookup-off`): change `COLI_LOOKUP=0`. Why: Colibri drafts n-grams from the prompt by default (our runs show 1.04 tokens per forward). Each verify reads experts for every drafted row, so on an SSD-bound run a rejected draft costs a full extra set of expert reads; turning it off could be faster, or show the gate already pays for itself (code prompt repeats more n-grams). Result: 0.40 tok/s vs 0.44 reference (-9%), prompt read 24.7 s. Prompt-lookup drafts neither help nor hurt exact decoding on the sky prompt. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise. Reference: `r2-p0-sky-exact`.
 - **Prompt-lookup drafts off, code prompt** (`lookup-off-code`): change `COLI_LOOKUP=0 (code prompt)`. Why: The code prompt repeats more n-grams than the sky prompt, so drafts may pay there even if they cost on sky. Result: 0.40 tok/s vs 0.42 on the code prompt. Drafts from the prompt do not pay off here either. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise. Reference: `r2-p0-code-exact`.
 - **int8 MTP draft head for GLM-5.3** (`mtp-int8`): change `glm-5.3 + int8 MTP head (symlinked copy ~/colibri-models/glm-5.3-mtp)`. Why: Our glm-5.3 container has no MTP head ("MTP absent"). Colibri reports 2.2-2.8 tokens per forward when it pays. On an SSD-bound run a 3-row verify reads more experts (2% hits), so exact-mode gain is uncertain; output stays identical (only verified tokens are kept). Result: 0.42 tok/s vs 0.44 without the head. The int8 MTP draft head did not speed up exact decoding: drafted tokens still need every expert of the verify pass, so SSD reads stay the limit (io 78% of time). The quality bench (glm-5.3-mtp) matched int4 within noise. Single run on the everyday (busy) Mac during the quiet-run campaign; differences under ~10% are noise. Tradeoffs: ~10 GB more on disk; the head's dense part stays resident (its experts stream like the others), so some RAM leaves the expert cache. Reference: `r2-p0-sky-exact`.
+
+## serving
+
+| Experiment | Verdict | tok/s (ref → new) | Change | Prompt reading s (ref → new) | Output | Effects | Runs |
+|---|---|---|---:|---|---|---|---|
+| **Actual parallel generation and shared-weight capacity smoke** | measured | — → — | — | — → — | n/a | — | results/parallel-smoke-20261023 |
+| **Gate parallel stress on actual output interleaving** | measured | — → — | — | — → — | n/a | — | results/parallel-bench-20261023T155416-91212, results/parallel-bench-20261023T155512-91385 |
+
+- **Actual parallel generation and shared-weight capacity smoke** (`sm-parallel-generation-smoke-20261023`): change `Isolated Ollama 0.40.7; four slots capability test then sixteen slots GPT-OSS capacity; think=false, context 2048, max output 128.`. Why: Explicit parallel slots enable overlapping generation without duplicating model weights. Result: GPT-OSS 20B confirmed 16 overlapping streamed requests; Gemma/Qwen MLX serialized. At least 16 short requests fit, maximum untested. Tradeoffs: No quality conclusion; busy machine; short prompts; engine allocation telemetry only; existing long campaign paused.
+- **Gate parallel stress on actual output interleaving** (`parallel-capability-gated-stress`): change `parallel_bench.py replaces dashboard concurrency action; isolated sixteen-slot server; context ramp2K/8K.`. Why: A short capability gate avoids useless stress runs on serialized backends. Result: Live validation: Gemma26B not_supported and stress skipped. GPT-OSS20B confirmed2/4/8/16 overlapping streams at both2K/8K context limits. Long prompts ~5545 tokens;16-client long-context total throughput31.9tok/s. No swap increase. Not a correctness or maximum-capacity claim. Tradeoffs: Short direct outputs, allocation telemetry and swap delta; no accuracy or maximum-capacity claim.

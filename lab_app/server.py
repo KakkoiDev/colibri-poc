@@ -816,7 +816,7 @@ def run_matrix():
             return dict(base, state='partial', result=f"{i['done']}/{i['total']} answered")
         return dict(base, state='failed' if failed else 'ready' if i['group'] in ('quiet', 'planned') else 'never')
 
-    columns.insert(len(RUN_STD), dict(id='q:concurrency', title='Parallel 1/4/10', group='Quality', lossy=False))
+    columns.insert(len(RUN_STD), dict(id='q:concurrency', title='Parallel capability + stress', group='Quality', lossy=False))
     rows, hidden = [], []
     for g in groups:
         if g['kind'] != 'model':
@@ -978,6 +978,12 @@ def run_output(run):
 
 def concurrency_results():
     campaigns = []
+    for folder in sorted((ROOT / 'results').glob('parallel-bench-*'), reverse=True):
+        try:
+            data = json.loads((folder / 'summary.json').read_text())
+            campaigns.append(dict(name=folder.name, model=data['model'], parallel=data))
+        except (OSError, ValueError, KeyError):
+            pass
     for folder in sorted((ROOT / 'results').glob('olmoe-concurrency-*'), reverse=True):
         try:
             meta = json.loads((folder / 'meta.json').read_text())

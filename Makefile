@@ -85,3 +85,8 @@ lab-app-uninstall:
 glm-prep-qwen36:
 	df -h ~ | tail -1
 	hf download Kreuzzelg/qwen36-35b-a3b-colibri-i4-gs64 --local-dir ~/colibri-models/qwen36-35b-a3b
+
+# Usage: make bench-parallel MODEL=gpt-oss:20b
+.PHONY: bench-parallel
+bench-parallel:
+	$(PYTHON) parallel_bench.py --model $(MODEL)
