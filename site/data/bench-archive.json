@@ -19666,6 +19666,11 @@
    "sha256": "a8ef7a72a4bf164eb072a763ae2c3c2418fbb67411cc7feffc118f557ed27740"
   },
   {
+   "path": "glm-raw-20261018/colibri-moltenvk-portability.diff",
+   "bytes": 1968,
+   "sha256": "29c5b5f9ad1b5872a74da2d4d425deb8de68bc12c7fbe4f43fcf3209f49ec5c1"
+  },
+  {
    "path": "glm-raw-20261018/logs/b0-user-cpu-auto.log",
    "bytes": 2499,
    "sha256": "b7d3d2eb0d981cf27f6d2ce32cf5b022c3f71ddca54d1a38dbb71d9ac7f7ba23"

@@ -36,7 +36,7 @@ def saved_json(path):
 def archive_results(source, target):
     """Archive benchmark evidence, including failed/partial runs; exclude app state and downloads."""
     entries = []
-    extensions = {'.json', '.jsonl', '.csv', '.md', '.txt', '.log', '.out', '.py', '.sh'}
+    extensions = {'.json', '.jsonl', '.csv', '.md', '.txt', '.log', '.out', '.py', '.sh', '.diff', '.patch'}
     for path in sorted((source / 'results').rglob('*')):
         rel = path.relative_to(source / 'results')
         if path.is_symlink() or not path.is_file() or path.suffix not in extensions:
